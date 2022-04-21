@@ -1,3 +1,7 @@
+**This document is an individual draft proposal. It has not been adopted by the Private Advertising Technology Community Group.**
+
+-------
+
 # Private Aggregation API explainer
 
 Author: Alex Turner (alexmt@chromium.org)
@@ -436,3 +440,7 @@ allowed, such errors could be used as an information channel. While these errors
 could still appear in the console, it would also aid developers if we add a
 mechanism for aggregate error reporting. This reporting could be automatic or
 could be required to be configured according to the developers' preferences.
+
+------
+
+**This document is an individual draft proposal. It has not been adopted by the Private Advertising Technology Community Group.**
