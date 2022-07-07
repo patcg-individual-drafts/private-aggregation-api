@@ -68,8 +68,12 @@ This API introduces a `sendHistogramReport()` function; see
 [examples](#examples) below. This call constructs an aggregatable report, which
 contains an encrypted payload for later computation via the aggregation service.
 The API queues the constructed report to be sent to the reporting endpoint of
-the script's origin (in other words, the reporting origin) after a delay. The
-report will mirror the [structure proposed for the Attribution Reporting
+the script's origin (in other words, the reporting origin) after a delay. For
+the endpoint URL paths, we propose
+`/.well-known/private-aggregation/report-fledge` and
+`/.well-known/private-aggregation/report-shared-storage` for reports triggered
+within a FLEDGE or Shared Storage context, respectively. The report will mirror
+the [structure proposed for the Attribution Reporting
 API](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#aggregatable-reports).
 After the endpoint receives the reports, it batches the reports and sends them
 to the aggregation service for processing. The output of that process is a
@@ -244,9 +248,11 @@ examples of metadata that could be included, along with some potential risks:
   - Could be used to identify users on the reporting site within a time window
   - Note that combining this with the actual timestamp the report was received
     could reveal if the user's device was offline, etc.
-- The reporting origin
+- The reporting origin and endpoint path
   - Determined by the execution context's origin, but a site could use different
     subdomains, e.g. to separate use cases.
+  - The endpoint path indicates which API triggered the report (e.g. FLEDGE or
+    Shared Storage).
 - The API version
   - A version string used to allow future incompatible changes to the API. This
     should usually correspond to the browser version and should not change
