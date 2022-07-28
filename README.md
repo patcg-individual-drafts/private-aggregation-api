@@ -15,6 +15,7 @@ Author: Alex Turner (alexmt@chromium.org)
 - [Goals](#goals)
   - [Non-goals](#non-goals)
 - [Operations](#operations)
+- [Reports](#reports)
 - [Privacy and security](#privacy-and-security)
   - [Metadata readable by the reporting origin](#metadata-readable-by-the-reporting-origin)
     - [Open question: what metadata to allow](#open-question-what-metadata-to-allow)
@@ -69,8 +70,7 @@ This API introduces a `sendHistogramReport()` function; see
 contains an encrypted payload for later computation via the aggregation service.
 The API queues the constructed report to be sent to the reporting endpoint of
 the script's origin (in other words, the reporting origin) after a delay. The
-report will mirror the [structure proposed for the Attribution Reporting
-API](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#aggregatable-reports).
+report format is detailed [below](#reports).
 After the endpoint receives the reports, it batches the reports and sends them
 to the aggregation service for processing. The output of that process is a
 summary report containing the (approximate) result, which is dispatched back to
@@ -231,6 +231,29 @@ The operation would be indicated by using the appropriate JavaScript call, e.g.
 `sendHistogramReport()` and `sendCountDistinctReport()` for histograms and count
 distinct, respectively.
 
+## Reports
+
+The report will mirror the [structure proposed for the Attribution Reporting
+API](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#aggregatable-reports).
+However, a few details will change. For example, fields with no equivalent
+on this API (e.g. `attribution_destination` and `source_registration_time`)
+won't be present. Additionally, the `api` field will contain either `"fledge"`
+or `"shared-storage"` to reflect which API's context requested the report.
+
+The following is an example report showing the JSON format
+```jsonc
+{
+  "shared_info": "{\"api\":\"fledge\",\"report_id\":\"[UUID]\",\"reporting_origin\":\"https://reporter.example\",\"scheduled_report_time\":\"[timestamp in seconds]\",\"version\":\"[api version]\"}",
+  
+  "aggregation_service_payloads": [
+    {
+      "payload": "[base64-encoded data]",
+      "key_id": "[string]"
+    }
+  ]
+}
+```
+
 ## Privacy and security
 
 ### Metadata readable by the reporting origin
@@ -247,6 +270,9 @@ examples of metadata that could be included, along with some potential risks:
 - The reporting origin
   - Determined by the execution context's origin, but a site could use different
     subdomains, e.g. to separate use cases.
+- Which API triggered the report
+  - The `api` field indicates which API triggered the report (e.g. FLEDGE or
+    Shared Storage).
 - The API version
   - A version string used to allow future incompatible changes to the API. This
     should usually correspond to the browser version and should not change
