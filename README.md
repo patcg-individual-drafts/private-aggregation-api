@@ -278,10 +278,12 @@ can be fully understood during roll-out and help flush out any bugs (either in
 browser or caller code), and more easily compare the performance to cookie-based
 alternatives.
 
-This mechanism is similar to Attribution Reporting API’s [debug aggregatable
+This mechanism is similar to Attribution Reporting API's [debug aggregatable
 reports](https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#optional-extended-debugging-reports).
 When the debug mode is enabled for a report, a cleartext version of the payload
-will be included in the report.
+will be included in the report. Additionally, the shared_info will also include
+the flag `"debug_mode": "enabled"` to allow the aggregation service to support
+debugging functionality on these reports.
 
 This data will only be available in a transitional phase while third-party
 cookies are available and are already capable of user tracking. The debug mode
