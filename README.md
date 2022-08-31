@@ -15,6 +15,10 @@ Author: Alex Turner (alexmt@chromium.org)
 - [Goals](#goals)
   - [Non-goals](#non-goals)
 - [Operations](#operations)
+- [Reports](#reports)
+  - [Temporary debugging mechanism](#temporary-debugging-mechanism)
+    - [Enabling](#enabling)
+    - [Debug keys](#debug-keys)
 - [Privacy and security](#privacy-and-security)
   - [Metadata readable by the reporting origin](#metadata-readable-by-the-reporting-origin)
     - [Open question: what metadata to allow](#open-question-what-metadata-to-allow)
@@ -69,8 +73,7 @@ This API introduces a `sendHistogramReport()` function; see
 contains an encrypted payload for later computation via the aggregation service.
 The API queues the constructed report to be sent to the reporting endpoint of
 the script's origin (in other words, the reporting origin) after a delay. The
-report will mirror the [structure proposed for the Attribution Reporting
-API](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#aggregatable-reports).
+report format and endpoint paths are detailed [below](#reports).
 After the endpoint receives the reports, it batches the reports and sends them
 to the aggregation service for processing. The output of that process is a
 summary report containing the (approximate) result, which is dispatched back to
@@ -231,6 +234,83 @@ The operation would be indicated by using the appropriate JavaScript call, e.g.
 `sendHistogramReport()` and `sendCountDistinctReport()` for histograms and count
 distinct, respectively.
 
+## Reports
+
+The report will mirror the [structure proposed for the Attribution Reporting
+API](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#aggregatable-reports).
+However, a few details will change. For example, fields with no equivalent
+on this API (e.g. `attribution_destination` and `source_registration_time`)
+won't be present. Additionally, the `api` field will contain either `"fledge"`
+or `"shared-storage"` to reflect which API's context requested the report.
+
+The following is an example report showing the JSON format
+```jsonc
+{
+  "shared_info": "{\"api\":\"fledge\",\"report_id\":\"[UUID]\",\"reporting_origin\":\"https://reporter.example\",\"scheduled_report_time\":\"[timestamp in seconds]\",\"version\":\"[api version]\"}",
+
+  "aggregation_service_payloads": [
+    {
+      "payload": "[base64-encoded data]",
+      "key_id": "[string]",
+
+      // Optional debugging information if debugging is enabled
+      "debug_cleartext_payload": "[base64-encoded unencrypted payload]",
+    }
+  ],
+
+  // Optional debugging information if debugging is enabled and debug key specified
+  "debug_key": "[64 bit unsigned integer]"
+}
+```
+
+As described earlier, these reports will be sent to the reporting origin after a
+delay. The URL path used for sending the reports will be
+`/.well-known/private-aggregation/report-fledge` and
+`/.well-known/private-aggregation/report-shared-storage` for reports triggered
+within a FLEDGE or Shared Storage context, respectively.
+
+### Temporary debugging mechanism
+
+_While third-party cookies are still available_, we plan to have a temporary
+mechanism available that allows for easier debugging. This mechanism involves
+temporarily relaxing some privacy constraints. It will help ensure that the API
+can be fully understood during roll-out and help flush out any bugs (either in
+browser or caller code), and more easily compare the performance to cookie-based
+alternatives.
+
+This mechanism is similar to Attribution Reporting API's [debug aggregatable
+reports](https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#optional-extended-debugging-reports).
+When the debug mode is enabled for a report, a cleartext version of the payload
+will be included in the report. Additionally, the shared_info will also include
+the flag `"debug_mode": "enabled"` to allow the aggregation service to support
+debugging functionality on these reports.
+
+This data will only be available in a transitional phase while third-party
+cookies are available and are already capable of user tracking. The debug mode
+will be disabled if third-party cookies are disabled/deprecated.
+
+#### Enabling
+
+The following javascript call will then enable debug mode for all future reports
+requested in that context (e.g. shared storage operation or FLEDGE function
+call):
+```
+privateAggregation.enableDebugMode();
+```
+The browser can optionally apply debug mode to reports requested earlier in that
+context.
+
+#### Debug keys
+To allow sites to associate reports with the contexts that triggered them, we
+also allow setting 64-bit unsigned integer debug keys. These keys are passed as
+an optional field to the javascript call, for example:
+```
+privateAggregation.enableDebugMode({debug_key: 1234});
+```
+
+This javascript function can only be called once per context. Any subsequent
+calls will be ignored.
+
 ## Privacy and security
 
 ### Metadata readable by the reporting origin
@@ -247,6 +327,9 @@ examples of metadata that could be included, along with some potential risks:
 - The reporting origin
   - Determined by the execution context's origin, but a site could use different
     subdomains, e.g. to separate use cases.
+- Which API triggered the report
+  - The `api` field and the endpoint path indicates which API triggered the
+    report (e.g. FLEDGE or Shared Storage).
 - The API version
   - A version string used to allow future incompatible changes to the API. This
     should usually correspond to the browser version and should not change
@@ -254,7 +337,7 @@ examples of metadata that could be included, along with some potential risks:
 - Privacy budget key
   - Used by the aggregation service to limit the number of queries per report;
     does not provide any additional leak as it is a hash of other data available
-    in the clear. See [report
+    in the clear. See [attribution report
     format](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#aggregatable-reports)
     and [contribution bounding and
     budgeting](#contribution-bounding-and-budgeting) for more detail.
@@ -262,6 +345,11 @@ examples of metadata that could be included, along with some potential risks:
   - If we do not carefully add padding or enforce that all reports are of the
     same natural size, this may expose some information about the contents of
     the report.
+- Debugging information
+  - If [debugging](#temporary-debug-mechanism) is enabled, some additional
+    metadata will be provided. While this information may be potentially
+    identifying, it will only be available temporarily: while third-party
+    cookies are enabled.
 - Developer-selected metadata
   - See [open question: what metadata to
     allow](#open-question-what-metadata-to-allow).
