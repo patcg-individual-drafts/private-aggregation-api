@@ -305,7 +305,7 @@ To allow sites to associate reports with the contexts that triggered them, we
 also allow setting 64-bit unsigned integer debug keys. These keys are passed as
 an optional field to the javascript call, for example:
 ```
-privateAggregation.enableDebugMode({debug_key: 1234});
+privateAggregation.enableDebugMode({debug_key: 1234n});
 ```
 
 This javascript function can only be called once per context. Any subsequent
