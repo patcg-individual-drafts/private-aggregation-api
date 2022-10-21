@@ -19,6 +19,7 @@ Author: Alex Turner (alexmt@chromium.org)
   - [Temporary debugging mechanism](#temporary-debugging-mechanism)
     - [Enabling](#enabling)
     - [Debug keys](#debug-keys)
+    - [Duplicate debug report](#duplicate-debug-report)
 - [Privacy and security](#privacy-and-security)
   - [Metadata readable by the reporting origin](#metadata-readable-by-the-reporting-origin)
     - [Open question: what metadata to allow](#open-question-what-metadata-to-allow)
@@ -310,6 +311,20 @@ privateAggregation.enableDebugMode({debug_key: 1234n});
 
 This javascript function can only be called once per context. Any subsequent
 calls will be ignored.
+
+#### Duplicate debug report
+
+When debug mode is enabled, an additional, duplicate debug report will be sent
+immediately (i.e. without the random delay) to a separate debug endpoint. This
+endpoint will use a path like
+`/.well-known/debug/private-aggregation/report-fledge` (and the equivalent for
+Shared Storage).
+
+The debug reports should be almost identical to the normal reports, including
+the additional debug fields. However, the payload ciphertext will differ due to
+repeating the encryption operation and the `key_id` may differ if the previous
+key had since expired or the browser randomly chose a different valid public
+key.
 
 ## Privacy and security
 
