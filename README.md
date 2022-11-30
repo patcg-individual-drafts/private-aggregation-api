@@ -20,6 +20,9 @@ Author: Alex Turner (alexmt@chromium.org)
     - [Enabling](#enabling)
     - [Debug keys](#debug-keys)
     - [Duplicate debug report](#duplicate-debug-report)
+  - [Reducing volume by batching](#reducing-volume-by-batching)
+    - [Batching scope](#batching-scope)
+    - [Contributions limit](#contributions-limit)
 - [Privacy and security](#privacy-and-security)
   - [Metadata readable by the reporting origin](#metadata-readable-by-the-reporting-origin)
     - [Open question: what metadata to allow](#open-question-what-metadata-to-allow)
@@ -325,6 +328,36 @@ the additional debug fields. However, the payload ciphertext will differ due to
 repeating the encryption operation and the `key_id` may differ if the previous
 key had since expired or the browser randomly chose a different valid public
 key.
+
+### Reducing volume by batching
+
+In the case of multiple calls to `sendHistogramReport()`, we can reduce report
+volume by sending a single report with multiple contributions instead of
+multiple reports. For this to be possible, the different calls must involve the
+same reporting origin and the same API (i.e. FLEDGE or Shared Storage).
+Additionally, the calls must be made at a similar time as the reporting time
+will necessarily be shared.
+
+#### Batching scope
+
+For calls within a Shared Storage worklet, calls within the same Shared Storage
+operation should be batched together.
+
+For calls within a FLEDGE worklet, calls using the same reporting origin within
+the same auction should be batched together. This should happen even between
+different interest groups or FLEDGE function calls. One consideration in the
+short term is that these calls may have different associated [debug modes or
+keys](#temporary-debugging-mechanism). In this case, only calls sharing those
+details should be batched together.
+
+#### Contributions limit
+
+We will also need a limit on the number of contributions within a single report.
+In the case that too many contributions are specified with a ‘batching scope’,
+we should truncate them to the limit.
+
+If necessary, we could instead split the contributions back into multiple
+reports, each respecting the limit.
 
 ## Privacy and security
 
