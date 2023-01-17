@@ -23,6 +23,7 @@ Author: Alex Turner (alexmt@chromium.org)
   - [Reducing volume by batching](#reducing-volume-by-batching)
     - [Batching scope](#batching-scope)
     - [Contributions limit](#contributions-limit)
+    - [Padding](#padding)
 - [Privacy and security](#privacy-and-security)
   - [Metadata readable by the reporting origin](#metadata-readable-by-the-reporting-origin)
     - [Open question: what metadata to allow](#open-question-what-metadata-to-allow)
@@ -358,6 +359,12 @@ we should truncate them to the limit.
 
 If necessary, we could instead split the contributions back into multiple
 reports, each respecting the limit.
+
+#### Padding
+
+The size of the encrypted payload may reveal information about the number of
+contributions embedded in the aggregatable report. This can be mitigated by
+padding the plaintext payload (e.g. to a fixed size).
 
 ## Privacy and security
 
