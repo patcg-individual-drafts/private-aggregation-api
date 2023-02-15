@@ -123,6 +123,7 @@ Please use the "Raise My Hand" feature in Google Meet
 28. Jukka Ranta (ComScore)
 29. Ruchi Lohani (Google, Privacy Sandbox)
 30. Martin Pal (Google Privacy Sandbox)
+31. Kuang Yi Chen (Amazon)
 
 **Cursor Parking**
 
