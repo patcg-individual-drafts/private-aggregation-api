@@ -124,6 +124,7 @@ Please use the "Raise My Hand" feature in Google Meet
 29. Ruchi Lohani (Google, Privacy Sandbox)
 30. Martin Pal (Google Privacy Sandbox)
 31. Kuang Yi Chen (Amazon)
+32. Konrad Krakowiak (Google Ads)
 
 **Cursor Parking**
 
