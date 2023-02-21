@@ -69,7 +69,7 @@ Zach Mastromatto
     * Evgeny: We (Google Ads) are asking for a level of privacy protection from Privacy Sandbox, then enabling engineering on top of that to create a reach metric. Chrome should not provide an identity layer. The blocking of processing batches multiple times that needs to be removed is an example of an area that can improve Reach calculations without sacrificing privacy.
     * Raimundo: Two challenges we need to solve for Reach. 1) How do you count for people not reach (flexibility) and 2) across all data sources and devices. We already count unique people and we need to be able to deduplicate across all devices, not even just browser. How do you bring in unique counts from devices that do not have Privacy Sandbox enabled?
     * Vishal: Reach measurement is very foundational and core to Brand advertisers around the world. We are more than welcome to bring those advertisers in for feedback if Chrome wishes. This is a core metric used to measure across all of TV and digital.
-    * Jukka: It sounds like we would need a unique identifier across all platforms and media for a single person. When we talk about counting we’re talking really about estimating. We can deal with a world where browser and app usage on the same device is separate. We use panels for modeling purposes. Not accurate at a per-person level, but can be done in aggregate. Reach is what advertisers want the most and want it automatically without much hassle. They also care about privacy though too. We need to make this solution workable for both.
+    * Jukka: It might sound like we would need a unique identifier across all platforms and media for a single person. However, when we talk about counting we’re talking really about estimating. We can deal with a world where browser and app usage on the same device is separate. We use panels for modeling purposes. Not accurate at a per-person level, but can be done in aggregate. Reach is what advertisers want the most and want it automatically without much hassle. They also care about privacy though too. We need to make this solution workable for both.
       * Asha: It is probably not possible to make a universal identity, so we need to support adtechs in facilitating the estimation counts after the fact.
     * Sanjay: The amount of utility for an advertiser decreases when the fidelity of the signal decreases. This isn’t on Chrome to uniquely solve though for all adtechs across all devices. The industry needs to come to a consensus on the signals that are important for Reach and the privacy guardrails. This is true for all browsers, not just Chrome.
     * Evgeny: Allowing count(distinct) would unlock the ability to do modeling and increase flexibility on one or two orders of magnitude over what is possible now. It unlocks a key toolbox of modelling.
@@ -120,7 +120,7 @@ Please use the "Raise My Hand" feature in Google Meet
 25. Gaurav Bajaj (Amazon Ads)
 26. Anatolii Bed (Amazon Ads)
 27. Sanjay Saravanan (Meta)
-28. Jukka Ranta (ComScore)
+28. Jukka Ranta (Comscore)
 29. Ruchi Lohani (Google, Privacy Sandbox)
 30. Martin Pal (Google Privacy Sandbox)
 31. Kuang Yi Chen (Amazon)
