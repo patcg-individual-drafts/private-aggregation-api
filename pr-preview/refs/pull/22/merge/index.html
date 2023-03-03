@@ -1,0 +1,1821 @@
+<!doctype html><html lang="en">
+ <head>
+  <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+  <meta content="width=device-width, initial-scale=1, shrink-to-fit=no" name="viewport">
+  <title>Private Aggregation API</title>
+  <meta content="w3c/CG-DRAFT" name="w3c-status">
+  <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
+  <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
+  <meta content="Bikeshed version 077497365, updated Thu Mar 2 15:15:29 2023 -0800" name="generator">
+  <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
+  <meta content="a1704ca6929ccc302c2f10e8a16bea12e9bbf8f0" name="document-revision">
+<style>/* style-autolinks */
+.css.css, .property.property, .descriptor.descriptor {
+    color: var(--a-normal-text);
+    font-size: inherit;
+    font-family: inherit;
+}
+.css::before, .property::before, .descriptor::before {
+    content: "‘";
+}
+.css::after, .property::after, .descriptor::after {
+    content: "’";
+}
+.property, .descriptor {
+    /* Don't wrap property and descriptor names */
+    white-space: nowrap;
+}
+.type { /* CSS value <type> */
+    font-style: italic;
+}
+pre .property::before, pre .property::after {
+    content: "";
+}
+[data-link-type="property"]::before,
+[data-link-type="propdesc"]::before,
+[data-link-type="descriptor"]::before,
+[data-link-type="value"]::before,
+[data-link-type="function"]::before,
+[data-link-type="at-rule"]::before,
+[data-link-type="selector"]::before,
+[data-link-type="maybe"]::before {
+    content: "‘";
+}
+[data-link-type="property"]::after,
+[data-link-type="propdesc"]::after,
+[data-link-type="descriptor"]::after,
+[data-link-type="value"]::after,
+[data-link-type="function"]::after,
+[data-link-type="at-rule"]::after,
+[data-link-type="selector"]::after,
+[data-link-type="maybe"]::after {
+    content: "’";
+}
+
+[data-link-type].production::before,
+[data-link-type].production::after,
+.prod [data-link-type]::before,
+.prod [data-link-type]::after {
+    content: "";
+}
+
+[data-link-type=element],
+[data-link-type=element-attr] {
+    font-family: Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    font-size: .9em;
+}
+[data-link-type=element]::before { content: "<" }
+[data-link-type=element]::after  { content: ">" }
+
+[data-link-type=biblio] {
+    white-space: pre;
+}
+</style>
+<style>/* style-colors */
+
+/* Any --*-text not paired with a --*-bg is assumed to have a transparent bg */
+:root {
+    color-scheme: light dark;
+
+    --text: black;
+    --bg: white;
+
+    --unofficial-watermark: url(https://www.w3.org/StyleSheets/TR/2016/logos/UD-watermark);
+
+    --logo-bg: #1a5e9a;
+    --logo-active-bg: #c00;
+    --logo-text: white;
+
+    --tocnav-normal-text: #707070;
+    --tocnav-normal-bg: var(--bg);
+    --tocnav-hover-text: var(--tocnav-normal-text);
+    --tocnav-hover-bg: #f8f8f8;
+    --tocnav-active-text: #c00;
+    --tocnav-active-bg: var(--tocnav-normal-bg);
+
+    --tocsidebar-text: var(--text);
+    --tocsidebar-bg: #f7f8f9;
+    --tocsidebar-shadow: rgba(0,0,0,.1);
+    --tocsidebar-heading-text: hsla(203,20%,40%,.7);
+
+    --toclink-text: var(--text);
+    --toclink-underline: #3980b5;
+    --toclink-visited-text: var(--toclink-text);
+    --toclink-visited-underline: #054572;
+
+    --heading-text: #005a9c;
+
+    --hr-text: var(--text);
+
+    --algo-border: #def;
+
+    --del-text: red;
+    --del-bg: transparent;
+    --ins-text: #080;
+    --ins-bg: transparent;
+
+    --a-normal-text: #034575;
+    --a-normal-underline: #bbb;
+    --a-visited-text: var(--a-normal-text);
+    --a-visited-underline: #707070;
+    --a-hover-bg: rgba(75%, 75%, 75%, .25);
+    --a-active-text: #c00;
+    --a-active-underline: #c00;
+
+    --blockquote-border: silver;
+    --blockquote-bg: transparent;
+    --blockquote-text: currentcolor;
+
+    --issue-border: #e05252;
+    --issue-bg: #fbe9e9;
+    --issue-text: var(--text);
+    --issueheading-text: #831616;
+
+    --example-border: #e0cb52;
+    --example-bg: #fcfaee;
+    --example-text: var(--text);
+    --exampleheading-text: #574b0f;
+
+    --note-border: #52e052;
+    --note-bg: #e9fbe9;
+    --note-text: var(--text);
+    --noteheading-text: hsl(120, 70%, 30%);
+    --notesummary-underline: silver;
+
+    --assertion-border: #aaa;
+    --assertion-bg: #eee;
+    --assertion-text: black;
+
+    --advisement-border: orange;
+    --advisement-bg: #fec;
+    --advisement-text: var(--text);
+    --advisementheading-text: #b35f00;
+
+    --warning-border: red;
+    --warning-bg: hsla(40,100%,50%,0.95);
+    --warning-text: var(--text);
+
+    --amendment-border: #330099;
+    --amendment-bg: #F5F0FF;
+    --amendment-text: var(--text);
+    --amendmentheading-text: #220066;
+
+    --def-border: #8ccbf2;
+    --def-bg: #def;
+    --def-text: var(--text);
+    --defrow-border: #bbd7e9;
+
+    --datacell-border: silver;
+
+    --indexinfo-text: #707070;
+
+    --indextable-hover-text: black;
+    --indextable-hover-bg: #f7f8f9;
+
+    --outdatedspec-bg: rgba(0, 0, 0, .5);
+    --outdatedspec-text: black;
+    --outdated-bg: maroon;
+    --outdated-text: white;
+    --outdated-shadow: red;
+
+    --editedrec-bg: darkorange;
+}
+</style>
+<style>/* style-counters */
+body {
+    counter-reset: example figure issue;
+}
+.issue {
+    counter-increment: issue;
+}
+.issue:not(.no-marker)::before {
+    content: "Issue " counter(issue);
+}
+
+.example {
+    counter-increment: example;
+}
+.example:not(.no-marker)::before {
+    content: "Example " counter(example);
+}
+.invalid.example:not(.no-marker)::before,
+.illegal.example:not(.no-marker)::before {
+    content: "Invalid Example" counter(example);
+}
+
+figcaption {
+    counter-increment: figure;
+}
+figcaption:not(.no-marker)::before {
+    content: "Figure " counter(figure) " ";
+}
+</style>
+<style>/* style-dfn-panel */
+:root {
+    --dfnpanel-bg: #ddd;
+    --dfnpanel-text: var(--text);
+}
+.dfn-panel {
+    position: absolute;
+    z-index: 35;
+    width: 20em;
+    min-width: min-content;
+    max-width: 300px;
+    height: auto;
+    max-height: 500px;
+    overflow: auto;
+    padding: 0.5em 0.75em;
+    font: small Helvetica Neue, sans-serif, Droid Sans Fallback;
+    background: var(--dfnpanel-bg);
+    color: var(--dfnpanel-text);
+    border: outset 0.2em;
+    white-space: normal; /* in case it's moved into a pre */
+}
+.dfn-panel:not(.on) { display: none; }
+.dfn-panel * { margin: 0; padding: 0; text-indent: 0; }
+.dfn-panel > b { display: block; }
+.dfn-panel a { color: var(--dfnpanel-text); }
+.dfn-panel a:not(:hover) { text-decoration: none !important; border-bottom: none !important; }
+.dfn-panel > b + b { margin-top: 0.25em; }
+.dfn-panel ul { padding: 0; }
+.dfn-panel li { list-style: inside; }
+.dfn-panel.activated {
+    display: inline-block;
+    position: fixed;
+    left: .5em;
+    bottom: 2em;
+    margin: 0 auto;
+    max-width: calc(100vw - 1.5em - .4em - .5em);
+    max-height: 30vh;
+}
+
+.dfn-paneled { cursor: pointer; }
+</style>
+<style>/* style-issues */
+a[href].issue-return {
+    float: right;
+    float: inline-end;
+    color: var(--issueheading-text);
+    font-weight: bold;
+    text-decoration: none;
+}
+</style>
+<style>/* style-md-lists */
+/* This is a weird hack for me not yet following the commonmark spec
+   regarding paragraph and lists. */
+[data-md] > :first-child {
+    margin-top: 0;
+}
+[data-md] > :last-child {
+    margin-bottom: 0;
+}
+</style>
+<style>/* style-selflinks */
+
+:root {
+    --selflink-text: white;
+    --selflink-bg: gray;
+    --selflink-hover-text: black;
+}
+.heading, .issue, .note, .example, li, dt {
+    position: relative;
+}
+a.self-link {
+    position: absolute;
+    top: 0;
+    left: calc(-1 * (3.5rem - 26px));
+    width: calc(3.5rem - 26px);
+    height: 2em;
+    text-align: center;
+    border: none;
+    transition: opacity .2s;
+    opacity: .5;
+}
+a.self-link:hover {
+    opacity: 1;
+}
+.heading > a.self-link {
+    font-size: 83%;
+}
+.example > a.self-link,
+.note > a.self-link,
+.issue > a.self-link {
+    /* These blocks are overflow:auto, so positioning outside
+       doesn't work. */
+    left: auto;
+    right: 0;
+}
+li > a.self-link {
+    left: calc(-1 * (3.5rem - 26px) - 2em);
+}
+dfn > a.self-link {
+    top: auto;
+    left: auto;
+    opacity: 0;
+    width: 1.5em;
+    height: 1.5em;
+    background: var(--selflink-bg);
+    color: var(--selflink-text);
+    font-style: normal;
+    transition: opacity .2s, background-color .2s, color .2s;
+}
+dfn:hover > a.self-link {
+    opacity: 1;
+}
+dfn > a.self-link:hover {
+    color: var(--selflink-hover-text);
+}
+
+a.self-link::before            { content: "¶"; }
+.heading > a.self-link::before { content: "§"; }
+dfn > a.self-link::before      { content: "#"; }
+</style>
+<style>/* style-syntax-highlighting */
+
+            pre.idl.highlight {
+                background: var(--borderedblock-bg, var(--def-bg));
+            }
+            
+code.highlight { padding: .1em; border-radius: .3em; }
+pre.highlight, pre > code.highlight { display: block; padding: 1em; margin: .5em 0; overflow: auto; border-radius: 0; }
+
+.highlight:not(.idl) { background: rgba(0, 0, 0, .03); }
+c-[a] { color: #990055 } /* Keyword.Declaration */
+c-[b] { color: #990055 } /* Keyword.Type */
+c-[c] { color: #708090 } /* Comment */
+c-[d] { color: #708090 } /* Comment.Multiline */
+c-[e] { color: #0077aa } /* Name.Attribute */
+c-[f] { color: #669900 } /* Name.Tag */
+c-[g] { color: #222222 } /* Name.Variable */
+c-[k] { color: #990055 } /* Keyword */
+c-[l] { color: #000000 } /* Literal */
+c-[m] { color: #000000 } /* Literal.Number */
+c-[n] { color: #0077aa } /* Name */
+c-[o] { color: #999999 } /* Operator */
+c-[p] { color: #999999 } /* Punctuation */
+c-[s] { color: #a67f59 } /* Literal.String */
+c-[t] { color: #a67f59 } /* Literal.String.Single */
+c-[u] { color: #a67f59 } /* Literal.String.Double */
+c-[cp] { color: #708090 } /* Comment.Preproc */
+c-[c1] { color: #708090 } /* Comment.Single */
+c-[cs] { color: #708090 } /* Comment.Special */
+c-[kc] { color: #990055 } /* Keyword.Constant */
+c-[kn] { color: #990055 } /* Keyword.Namespace */
+c-[kp] { color: #990055 } /* Keyword.Pseudo */
+c-[kr] { color: #990055 } /* Keyword.Reserved */
+c-[ld] { color: #000000 } /* Literal.Date */
+c-[nc] { color: #0077aa } /* Name.Class */
+c-[no] { color: #0077aa } /* Name.Constant */
+c-[nd] { color: #0077aa } /* Name.Decorator */
+c-[ni] { color: #0077aa } /* Name.Entity */
+c-[ne] { color: #0077aa } /* Name.Exception */
+c-[nf] { color: #0077aa } /* Name.Function */
+c-[nl] { color: #0077aa } /* Name.Label */
+c-[nn] { color: #0077aa } /* Name.Namespace */
+c-[py] { color: #0077aa } /* Name.Property */
+c-[ow] { color: #999999 } /* Operator.Word */
+c-[mb] { color: #000000 } /* Literal.Number.Bin */
+c-[mf] { color: #000000 } /* Literal.Number.Float */
+c-[mh] { color: #000000 } /* Literal.Number.Hex */
+c-[mi] { color: #000000 } /* Literal.Number.Integer */
+c-[mo] { color: #000000 } /* Literal.Number.Oct */
+c-[sb] { color: #a67f59 } /* Literal.String.Backtick */
+c-[sc] { color: #a67f59 } /* Literal.String.Char */
+c-[sd] { color: #a67f59 } /* Literal.String.Doc */
+c-[se] { color: #a67f59 } /* Literal.String.Escape */
+c-[sh] { color: #a67f59 } /* Literal.String.Heredoc */
+c-[si] { color: #a67f59 } /* Literal.String.Interpol */
+c-[sx] { color: #a67f59 } /* Literal.String.Other */
+c-[sr] { color: #a67f59 } /* Literal.String.Regex */
+c-[ss] { color: #a67f59 } /* Literal.String.Symbol */
+c-[vc] { color: #0077aa } /* Name.Variable.Class */
+c-[vg] { color: #0077aa } /* Name.Variable.Global */
+c-[vi] { color: #0077aa } /* Name.Variable.Instance */
+c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
+</style>
+<style>/* style-darkmode */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text: #ddd;
+        --bg: black;
+
+        --unofficial-watermark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cg fill='%23100808' transform='translate(200 200) rotate(-45) translate(-200 -200)' stroke='%23100808' stroke-width='3'%3E%3Ctext x='50%25' y='220' style='font: bold 70px sans-serif; text-anchor: middle; letter-spacing: 6px;'%3EUNOFFICIAL%3C/text%3E%3Ctext x='50%25' y='305' style='font: bold 70px sans-serif; text-anchor: middle; letter-spacing: 6px;'%3EDRAFT%3C/text%3E%3C/g%3E%3C/svg%3E");
+
+        --logo-bg: #1a5e9a;
+        --logo-active-bg: #c00;
+        --logo-text: white;
+
+        --tocnav-normal-text: #999;
+        --tocnav-normal-bg: var(--bg);
+        --tocnav-hover-text: var(--tocnav-normal-text);
+        --tocnav-hover-bg: #080808;
+        --tocnav-active-text: #f44;
+        --tocnav-active-bg: var(--tocnav-normal-bg);
+
+        --tocsidebar-text: var(--text);
+        --tocsidebar-bg: #080808;
+        --tocsidebar-shadow: rgba(255,255,255,.1);
+        --tocsidebar-heading-text: hsla(203,20%,40%,.7);
+
+        --toclink-text: var(--text);
+        --toclink-underline: #6af;
+        --toclink-visited-text: var(--toclink-text);
+        --toclink-visited-underline: #054572;
+
+        --heading-text: #8af;
+
+        --hr-text: var(--text);
+
+        --algo-border: #456;
+
+        --del-text: #f44;
+        --del-bg: transparent;
+        --ins-text: #4a4;
+        --ins-bg: transparent;
+
+        --a-normal-text: #6af;
+        --a-normal-underline: #555;
+        --a-visited-text: var(--a-normal-text);
+        --a-visited-underline: var(--a-normal-underline);
+        --a-hover-bg: rgba(25%, 25%, 25%, .2);
+        --a-active-text: #f44;
+        --a-active-underline: var(--a-active-text);
+
+        --borderedblock-bg: rgba(255, 255, 255, .05);
+
+        --blockquote-border: silver;
+        --blockquote-bg: var(--borderedblock-bg);
+        --blockquote-text: currentcolor;
+
+        --issue-border: #e05252;
+        --issue-bg: var(--borderedblock-bg);
+        --issue-text: var(--text);
+        --issueheading-text: hsl(0deg, 70%, 70%);
+
+        --example-border: hsl(50deg, 90%, 60%);
+        --example-bg: var(--borderedblock-bg);
+        --example-text: var(--text);
+        --exampleheading-text: hsl(50deg, 70%, 70%);
+
+        --note-border: hsl(120deg, 100%, 35%);
+        --note-bg: var(--borderedblock-bg);
+        --note-text: var(--text);
+        --noteheading-text: hsl(120, 70%, 70%);
+        --notesummary-underline: silver;
+
+        --assertion-border: #444;
+        --assertion-bg: var(--borderedblock-bg);
+        --assertion-text: var(--text);
+
+        --advisement-border: orange;
+        --advisement-bg: #222218;
+        --advisement-text: var(--text);
+        --advisementheading-text: #f84;
+
+        --warning-border: red;
+        --warning-bg: hsla(40,100%,20%,0.95);
+        --warning-text: var(--text);
+
+        --amendment-border: #330099;
+        --amendment-bg: #080010;
+        --amendment-text: var(--text);
+        --amendmentheading-text: #cc00ff;
+
+        --def-border: #8ccbf2;
+        --def-bg: #080818;
+        --def-text: var(--text);
+        --defrow-border: #136;
+
+        --datacell-border: silver;
+
+        --indexinfo-text: #aaa;
+
+        --indextable-hover-text: var(--text);
+        --indextable-hover-bg: #181818;
+
+        --outdatedspec-bg: rgba(255, 255, 255, .5);
+        --outdatedspec-text: black;
+        --outdated-bg: maroon;
+        --outdated-text: white;
+        --outdated-shadow: red;
+
+        --editedrec-bg: darkorange;
+    }
+    /* In case a transparent-bg image doesn't expect to be on a dark bg,
+       which is quite common in practice... */
+    img { background: white; }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --selflink-text: black;
+        --selflink-bg: silver;
+        --selflink-hover-text: white;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --dfnpanel-bg: #222;
+        --dfnpanel-text: var(--text);
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    .highlight:not(.idl) { background: rgba(255, 255, 255, .05); }
+
+    c-[a] { color: #d33682 } /* Keyword.Declaration */
+    c-[b] { color: #d33682 } /* Keyword.Type */
+    c-[c] { color: #2aa198 } /* Comment */
+    c-[d] { color: #2aa198 } /* Comment.Multiline */
+    c-[e] { color: #268bd2 } /* Name.Attribute */
+    c-[f] { color: #b58900 } /* Name.Tag */
+    c-[g] { color: #cb4b16 } /* Name.Variable */
+    c-[k] { color: #d33682 } /* Keyword */
+    c-[l] { color: #657b83 } /* Literal */
+    c-[m] { color: #657b83 } /* Literal.Number */
+    c-[n] { color: #268bd2 } /* Name */
+    c-[o] { color: #657b83 } /* Operator */
+    c-[p] { color: #657b83 } /* Punctuation */
+    c-[s] { color: #6c71c4 } /* Literal.String */
+    c-[t] { color: #6c71c4 } /* Literal.String.Single */
+    c-[u] { color: #6c71c4 } /* Literal.String.Double */
+    c-[ch] { color: #2aa198 } /* Comment.Hashbang */
+    c-[cp] { color: #2aa198 } /* Comment.Preproc */
+    c-[cpf] { color: #2aa198 } /* Comment.PreprocFile */
+    c-[c1] { color: #2aa198 } /* Comment.Single */
+    c-[cs] { color: #2aa198 } /* Comment.Special */
+    c-[kc] { color: #d33682 } /* Keyword.Constant */
+    c-[kn] { color: #d33682 } /* Keyword.Namespace */
+    c-[kp] { color: #d33682 } /* Keyword.Pseudo */
+    c-[kr] { color: #d33682 } /* Keyword.Reserved */
+    c-[ld] { color: #657b83 } /* Literal.Date */
+    c-[nc] { color: #268bd2 } /* Name.Class */
+    c-[no] { color: #268bd2 } /* Name.Constant */
+    c-[nd] { color: #268bd2 } /* Name.Decorator */
+    c-[ni] { color: #268bd2 } /* Name.Entity */
+    c-[ne] { color: #268bd2 } /* Name.Exception */
+    c-[nf] { color: #268bd2 } /* Name.Function */
+    c-[nl] { color: #268bd2 } /* Name.Label */
+    c-[nn] { color: #268bd2 } /* Name.Namespace */
+    c-[py] { color: #268bd2 } /* Name.Property */
+    c-[ow] { color: #657b83 } /* Operator.Word */
+    c-[mb] { color: #657b83 } /* Literal.Number.Bin */
+    c-[mf] { color: #657b83 } /* Literal.Number.Float */
+    c-[mh] { color: #657b83 } /* Literal.Number.Hex */
+    c-[mi] { color: #657b83 } /* Literal.Number.Integer */
+    c-[mo] { color: #657b83 } /* Literal.Number.Oct */
+    c-[sa] { color: #6c71c4 } /* Literal.String.Affix */
+    c-[sb] { color: #6c71c4 } /* Literal.String.Backtick */
+    c-[sc] { color: #6c71c4 } /* Literal.String.Char */
+    c-[dl] { color: #6c71c4 } /* Literal.String.Delimiter */
+    c-[sd] { color: #6c71c4 } /* Literal.String.Doc */
+    c-[se] { color: #6c71c4 } /* Literal.String.Escape */
+    c-[sh] { color: #6c71c4 } /* Literal.String.Heredoc */
+    c-[si] { color: #6c71c4 } /* Literal.String.Interpol */
+    c-[sx] { color: #6c71c4 } /* Literal.String.Other */
+    c-[sr] { color: #6c71c4 } /* Literal.String.Regex */
+    c-[ss] { color: #6c71c4 } /* Literal.String.Symbol */
+    c-[fm] { color: #268bd2 } /* Name.Function.Magic */
+    c-[vc] { color: #cb4b16 } /* Name.Variable.Class */
+    c-[vg] { color: #cb4b16 } /* Name.Variable.Global */
+    c-[vi] { color: #cb4b16 } /* Name.Variable.Instance */
+    c-[vm] { color: #cb4b16 } /* Name.Variable.Magic */
+    c-[il] { color: #657b83 } /* Literal.Number.Integer.Long */
+}
+</style>
+ <body class="h-entry">
+  <div class="head">
+   <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
+   <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-03-03">3 March 2023</time></p>
+   <details open>
+    <summary>More details about this document</summary>
+    <div data-fill-with="spec-metadata">
+     <dl>
+      <dt>This version:
+      <dd><a class="u-url" href="https://patcg-individual-drafts.github.io/private-aggregation-api">https://patcg-individual-drafts.github.io/private-aggregation-api</a>
+      <dt>Issue Tracking:
+      <dd><a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/">GitHub</a>
+      <dd><a href="#issues-index">Inline In Spec</a>
+      <dt class="editor">Editor:
+      <dd class="editor p-author h-card vcard"><a class="p-name fn u-email email" href="mailto:alexmt@chromium.org">Alexander Turner</a> (<a class="p-org org" href="https://www.google.com">Google</a>)
+     </dl>
+    </div>
+   </details>
+   <div data-fill-with="warning"></div>
+   <p class="copyright" data-fill-with="copyright"><a href="https://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2023 <a href="https://www.w3.org/">World Wide Web Consortium</a>. <abbr title="World Wide Web Consortium">W3C</abbr><sup>®</sup> <a href="https://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="https://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document" rel="license">permissive document license</a> rules apply. </p>
+   <hr title="Separator for header">
+  </div>
+  <div class="p-summary" data-fill-with="abstract">
+   <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
+   <p>A generic API for measuring aggregate, cross-site data in a privacy preserving manner.</p>
+  </div>
+  <h2 class="no-num no-toc no-ref heading settled" id="sotd"><span class="content">Status of this document</span></h2>
+  <div data-fill-with="status">
+   <p></p>
+  </div>
+  <div data-fill-with="at-risk"></div>
+  <nav data-fill-with="table-of-contents" id="toc">
+   <h2 class="no-num no-toc no-ref" id="contents">Table of Contents</h2>
+   <ol class="toc" role="directory">
+    <li><a href="#intro"><span class="secno">1</span> <span class="content">Introduction</span></a>
+    <li>
+     <a href="#general-methods"><span class="secno">2</span> <span class="content">General methods</span></a>
+     <ol class="toc">
+      <li><a href="#worklet-interface"><span class="secno">2.1</span> <span class="content">Worklet interface</span></a>
+     </ol>
+    <li><a href="#shared-storage"><span class="secno">3</span> <span class="content">Exposing to Shared Storage</span></a>
+    <li><a href="#fledge"><span class="secno">4</span> <span class="content">Exposing to FLEDGE</span></a>
+    <li>
+     <a href="#structures"><span class="secno">5</span> <span class="content">Structures</span></a>
+     <ol class="toc">
+      <li><a href="#aggregatable-report"><span class="secno">5.1</span> <span class="content">Aggregatable report</span></a>
+      <li><a href="#worklet-type-identifier"><span class="secno">5.2</span> <span class="content">Worklet type identifier</span></a>
+      <li><a href="#signal-base-value"><span class="secno">5.3</span> <span class="content">Signal base value</span></a>
+     </ol>
+    <li><a href="#storage"><span class="secno">6</span> <span class="content">Storage</span></a>
+    <li><a href="#vendor-specific-values"><span class="secno">7</span> <span class="content">Vendor-specific values</span></a>
+    <li>
+     <a href="#algorithms"><span class="secno">8</span> <span class="content">Algorithms</span></a>
+     <ol class="toc">
+      <li><a href="#scheduling-reports"><span class="secno">8.1</span> <span class="content">Scheduling reports</span></a>
+      <li><a href="#sending-reports"><span class="secno">8.2</span> <span class="content">Sending reports</span></a>
+     </ol>
+    <li>
+     <a href="#w3c-conformance"><span class="secno"></span> <span class="content">Conformance</span></a>
+     <ol class="toc">
+      <li><a href="#w3c-conventions"><span class="secno"></span> <span class="content">Document conventions</span></a>
+      <li><a href="#w3c-conformant-algorithms"><span class="secno"></span> <span class="content">Conformant Algorithms</span></a>
+     </ol>
+    <li>
+     <a href="#index"><span class="secno"></span> <span class="content">Index</span></a>
+     <ol class="toc">
+      <li><a href="#index-defined-here"><span class="secno"></span> <span class="content">Terms defined by this specification</span></a>
+      <li><a href="#index-defined-elsewhere"><span class="secno"></span> <span class="content">Terms defined by reference</span></a>
+     </ol>
+    <li>
+     <a href="#references"><span class="secno"></span> <span class="content">References</span></a>
+     <ol class="toc">
+      <li><a href="#normative"><span class="secno"></span> <span class="content">Normative References</span></a>
+     </ol>
+    <li><a href="#idl-index"><span class="secno"></span> <span class="content">IDL Index</span></a>
+    <li><a href="#issues-index"><span class="secno"></span> <span class="content">Issues Index</span></a>
+   </ol>
+  </nav>
+  <main>
+   <h2 class="heading settled" data-level="1" id="intro"><span class="secno">1. </span><span class="content">Introduction</span><a class="self-link" href="#intro"></a></h2>
+   <p><em>This section is non-normative.</em></p>
+   <p class="issue" id="issue-ee65b1dc"><a class="self-link" href="#issue-ee65b1dc"></a> Fill out intro</p>
+   <h2 class="heading settled" data-level="2" id="general-methods"><span class="secno">2. </span><span class="content">General methods</span><a class="self-link" href="#general-methods"></a></h2>
+   <h3 class="heading settled" data-level="2.1" id="worklet-interface"><span class="secno">2.1. </span><span class="content">Worklet interface</span><a class="self-link" href="#worklet-interface"></a></h3>
+<pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed" id="ref-for-Exposed"><c- g>Exposed</c-></a>=(<c- n>FledgeWorkletGlobalScope</c->,<c- n>SharedStorageWorkletGlobalScope</c->)]
+<c- b>interface</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="interface" data-export id="privateaggregation"><code><c- g>PrivateAggregation</c-></code></dfn> {
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined" id="ref-for-idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-privateaggregation-sendhistogramreport" id="ref-for-dom-privateaggregation-sendhistogramreport"><c- g>sendHistogramReport</c-></a>(<a data-link-type="idl-name" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution"><c- n>PAHistogramContribution</c-></a> <dfn class="idl-code" data-dfn-for="PrivateAggregation/sendHistogramReport(contribution)" data-dfn-type="argument" data-export id="dom-privateaggregation-sendhistogramreport-contribution-contribution"><code><c- g>contribution</c-></code><a class="self-link" href="#dom-privateaggregation-sendhistogramreport-contribution-contribution"></a></dfn>);
+};
+
+[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed" id="ref-for-Exposed①"><c- g>Exposed</c-></a>=(<c- n>FledgeWorkletGlobalScope</c->,<c- n>SharedStorageWorkletGlobalScope</c->)]
+<c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-pahistogramcontribution"><code><c- g>PAHistogramContribution</c-></code></dfn> {
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint"><c- b>bigint</c-></a> <dfn class="idl-code" data-dfn-for="PAHistogramContribution" data-dfn-type="dict-member" data-export data-type="bigint " id="dom-pahistogramcontribution-bucket"><code><c- g>bucket</c-></code><a class="self-link" href="#dom-pahistogramcontribution-bucket"></a></dfn>;
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long"><c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="PAHistogramContribution" data-dfn-type="dict-member" data-export data-type="long " id="dom-pahistogramcontribution-value"><code><c- g>value</c-></code></dfn>;
+};
+</pre>
+   <p>Each <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation">PrivateAggregation</a></code> has a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="contributions-cache">contributions cache</dfn>, an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set">ordered set</a>. Immediately after the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/worklets.html#workletglobalscope" id="ref-for-workletglobalscope">WorkletGlobalScope</a></code> object is <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/worklets.html#terminate-a-worklet-global-scope" id="ref-for-terminate-a-worklet-global-scope">terminated</a>, <a data-link-type="dfn" href="#process-the-contributions-cache" id="ref-for-process-the-contributions-cache">process the contributions cache</a>.</p>
+   <p class="note" role="note"><span class="marker">Note:</span> these steps are defined separately for each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/worklets.html#workletglobalscope" id="ref-for-workletglobalscope①">WorkletGlobalScope</a></code>.</p>
+   <p class="issue" id="issue-86cd9fd0"><a class="self-link" href="#issue-86cd9fd0"></a> Is this timing ok?</p>
+   <p class="issue" id="issue-62f18f5a"><a class="self-link" href="#issue-62f18f5a"></a> Need to work out how to refer to the worklet.</p>
+   <p class="issue" id="issue-92e6f03d"><a class="self-link" href="#issue-92e6f03d"></a> Should we spec enableDebugMode? It’s temporary anyway.</p>
+   <div class="algorithm" data-algorithm="sendHistogramReport(PAHistogramContribution contribution)" data-algorithm-for="PrivateAggregation"> The <dfn class="dfn-paneled idl-code" data-dfn-for="PrivateAggregation" data-dfn-type="method" data-export data-lt="sendHistogramReport(contribution)" id="dom-privateaggregation-sendhistogramreport"><code>sendHistogramReport(PAHistogramContribution contribution)</code></dfn> method steps are: </div>
+   <ol>
+    <li data-md>
+     <p>Throw error if <var>contribution</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value">value</a></code> is negative.</p>
+   </ol>
+   <p class="issue" id="issue-7431afcd"><a class="self-link" href="#issue-7431afcd"></a> Check that value can actually be zero in the pipeline. Also actually throw an error properly</p>
+   <ol>
+    <li data-md>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append">Append</a> <var>contribution</var> to the <a data-link-type="dfn" href="#contributions-cache" id="ref-for-contributions-cache">contributions cache</a>.</p>
+   </ol>
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="process-the-contributions-cache">process the contributions cache</dfn> given a <a data-link-type="dfn" href="#contributions-cache" id="ref-for-contributions-cache①">contributions cache</a> <var>contributionsCache</var>, run the following steps:</p>
+   <ol>
+    <li data-md>
+     <p>Let <var>scope</var> be the <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/worklets.html#workletglobalscope" id="ref-for-workletglobalscope②">WorkletGlobalScope</a></code> associated with <var>contributionsCache</var>.</p>
+    <li data-md>
+     <p>If <var>scope</var> is a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope" id="ref-for-sharedstorageworkletglobalscope">SharedStorageWorkletGlobalScope</a></code>:</p>
+     <ol>
+      <li data-md>
+       <p><a data-link-type="dfn" href="#process-the-shared-storage-contributions-cache" id="ref-for-process-the-shared-storage-contributions-cache">Process the shared storage contributions cache</a> given <var>contributionsCache</var> and <var>scope</var>.</p>
+      <li data-md>
+       <p>Return</p>
+     </ol>
+    <li data-md>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert">Assert</a> <var>scope</var> is a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/turtledove/#fledgeworkletglobalscope" id="ref-for-fledgeworkletglobalscope">FledgeWorkletGlobalScope</a></code>.</p>
+    <li data-md>
+     <p><a data-link-type="dfn" href="#process-the-fledge-contributions-cache" id="ref-for-process-the-fledge-contributions-cache">Process the FLEDGE contributions cache</a> given <var>contributionsCache</var>.</p>
+   </ol>
+   <p class="issue" id="issue-6b954b9c"><a class="self-link" href="#issue-6b954b9c"></a> Is there a better way to do overloading?</p>
+   <h2 class="heading settled" data-level="3" id="shared-storage"><span class="secno">3. </span><span class="content">Exposing to Shared Storage</span><a class="self-link" href="#shared-storage"></a></h2>
+<pre class="idl highlight def"><c- b>partial</c-> <c- b>interface</c-> <a class="idl-code" data-link-type="interface" href="https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope" id="ref-for-sharedstorageworkletglobalscope①"><c- g>SharedStorageWorkletGlobalScope</c-></a> {
+  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#privateaggregation" id="ref-for-privateaggregation①"><c- n>PrivateAggregation</c-></a> <dfn class="idl-code" data-dfn-for="SharedStorageWorkletGlobalScope" data-dfn-type="attribute" data-export data-readonly data-type="PrivateAggregation" id="dom-sharedstorageworkletglobalscope-privateaggregation"><code><c- g>privateAggregation</c-></code><a class="self-link" href="#dom-sharedstorageworkletglobalscope-privateaggregation"></a></dfn>;
+};
+</pre>
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="process-the-shared-storage-contributions-cache">process the shared storage contributions cache</dfn> given a <a data-link-type="dfn" href="#contributions-cache" id="ref-for-contributions-cache②">contributions cache</a> <var>contributionsCache</var> and a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope" id="ref-for-sharedstorageworkletglobalscope②">SharedStorageWorkletGlobalScope</a></code> <var>scope</var>, run the <a data-link-type="dfn" href="#privateaggregation-report-sending-steps" id="ref-for-privateaggregation-report-sending-steps">report sending steps</a> with <var>scope</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object" id="ref-for-relevant-settings-object">relevant settings object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin">origin</a>, "<code><a data-link-type="dfn" href="#worklet-type-identifier-shared-storage" id="ref-for-worklet-type-identifier-shared-storage">shared-storage</a></code>" and <var>contributionsCache</var>.</p>
+   <h2 class="heading settled" data-level="4" id="fledge"><span class="secno">4. </span><span class="content">Exposing to FLEDGE</span><a class="self-link" href="#fledge"></a></h2>
+<pre class="idl highlight def"><c- b>partial</c-> <c- b>interface</c-> <a class="idl-code" data-link-type="interface" href="https://wicg.github.io/turtledove/#fledgeworkletglobalscope" id="ref-for-fledgeworkletglobalscope①"><c- g>FledgeWorkletGlobalScope</c-></a> {
+  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#privateaggregation" id="ref-for-privateaggregation②"><c- n>PrivateAggregation</c-></a> <dfn class="idl-code" data-dfn-for="FledgeWorkletGlobalScope" data-dfn-type="attribute" data-export data-readonly data-type="PrivateAggregation" id="dom-fledgeworkletglobalscope-privateaggregation"><code><c- g>privateAggregation</c-></code><a class="self-link" href="#dom-fledgeworkletglobalscope-privateaggregation"></a></dfn>;
+};
+
+[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed" id="ref-for-Exposed②"><c- g>Exposed</c-></a>=<c- n>FledgeWorkletGlobalScope</c->]
+<c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-pasignalvalue"><code><c- g>PASignalValue</c-></code></dfn> {
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString"><c- b>DOMString</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="PASignalValue" data-dfn-type="dict-member" data-export data-type="DOMString " id="dom-pasignalvalue-basevalue"><code><c- g>baseValue</c-></code></dfn>;
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-double" id="ref-for-idl-double"><c- b>double</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="PASignalValue" data-dfn-type="dict-member" data-export data-type="double " id="dom-pasignalvalue-scale"><code><c- g>scale</c-></code></dfn>;
+  (<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint①"><c- b>bigint</c-></a> <c- b>or</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long①"><c- b>long</c-></a>) <dfn class="dfn-paneled idl-code" data-dfn-for="PASignalValue" data-dfn-type="dict-member" data-export data-type="(bigint or long) " id="dom-pasignalvalue-offset"><code><c- g>offset</c-></code></dfn>;
+};
+
+[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed" id="ref-for-Exposed③"><c- g>Exposed</c-></a>=<c- n>FledgeWorkletGlobalScope</c->]
+<c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-paextendedhistogramcontribution"><code><c- g>PAExtendedHistogramContribution</c-></code></dfn> {
+  <c- b>required</c-> (<a data-link-type="idl-name" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue"><c- n>PASignalValue</c-></a> <c- b>or</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint②"><c- b>bigint</c-></a>) <dfn class="dfn-paneled idl-code" data-dfn-for="PAExtendedHistogramContribution" data-dfn-type="dict-member" data-export data-type="(PASignalValue or bigint) " id="dom-paextendedhistogramcontribution-bucket"><code><c- g>bucket</c-></code></dfn>;
+  <c- b>required</c-> (<a data-link-type="idl-name" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue①"><c- n>PASignalValue</c-></a> <c- b>or</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long②"><c- b>long</c-></a>) <dfn class="dfn-paneled idl-code" data-dfn-for="PAExtendedHistogramContribution" data-dfn-type="dict-member" data-export data-type="(PASignalValue or long) " id="dom-paextendedhistogramcontribution-value"><code><c- g>value</c-></code></dfn>;
+};
+
+[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed" id="ref-for-Exposed④"><c- g>Exposed</c-></a>=<c- n>FledgeWorkletGlobalScope</c->]
+<c- b>partial</c-> <c- b>interface</c-> <a class="idl-code" data-link-type="interface" href="#privateaggregation" id="ref-for-privateaggregation③"><c- g>PrivateAggregation</c-></a> {
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined" id="ref-for-idl-undefined①"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-privateaggregation-reportcontributionforevent" id="ref-for-dom-privateaggregation-reportcontributionforevent"><c- g>reportContributionForEvent</c-></a>(<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString①"><c- b>DOMString</c-></a> <dfn class="idl-code" data-dfn-for="PrivateAggregation/reportContributionForEvent(event, contribution)" data-dfn-type="argument" data-export id="dom-privateaggregation-reportcontributionforevent-event-contribution-event"><code><c- g>event</c-></code><a class="self-link" href="#dom-privateaggregation-reportcontributionforevent-event-contribution-event"></a></dfn>, <a data-link-type="idl-name" href="#dictdef-paextendedhistogramcontribution" id="ref-for-dictdef-paextendedhistogramcontribution"><c- n>PAExtendedHistogramContribution</c-></a> <dfn class="idl-code" data-dfn-for="PrivateAggregation/reportContributionForEvent(event, contribution)" data-dfn-type="argument" data-export id="dom-privateaggregation-reportcontributionforevent-event-contribution-contribution"><code><c- g>contribution</c-></code><a class="self-link" href="#dom-privateaggregation-reportcontributionforevent-event-contribution-contribution"></a></dfn>);
+};
+</pre>
+   <p class="issue" id="issue-6c6263d3"><a class="self-link" href="#issue-6c6263d3"></a> Do we want to align naming with implementation?</p>
+   <p class="issue" id="issue-aee9d58d"><a class="self-link" href="#issue-aee9d58d"></a> How do we handle the type for offsets? Do we make it universally bigint or do we have a separate PASignalValue and PASignalBucket?</p>
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="process-the-fledge-contributions-cache">process the FLEDGE contributions cache</dfn> given a <a data-link-type="dfn" href="#contributions-cache" id="ref-for-contributions-cache③">contributions cache</a> <var>contributionsCache</var> and a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/turtledove/#fledgeworkletglobalscope" id="ref-for-fledgeworkletglobalscope②">FledgeWorkletGlobalScope</a></code> <var>scope</var>, run the following steps:</p>
+   <ol>
+    <li data-md>
+     <p>Let <var>filledInContributions</var> be a new empty <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set①">ordered set</a>.</p>
+    <li data-md>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate">For each</a> <var>contribution</var> of <var>contributionsCache</var>:</p>
+     <ol>
+      <li data-md>
+       <p>If <var>contribution</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-paextendedhistogramcontribution" id="ref-for-dictdef-paextendedhistogramcontribution①">PAExtendedHistogramContribution</a></code>,</p>
+       <ol>
+        <li data-md>
+         <p>Set <var>contributions</var>’s <code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-bucket" id="ref-for-dom-paextendedhistogramcontribution-bucket">bucket</a></code> be the result of <a data-link-type="dfn" href="#fill-in-the-signal-value" id="ref-for-fill-in-the-signal-value">filling in the signal value</a> of <var>contributions</var>’s <code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-bucket" id="ref-for-dom-paextendedhistogramcontribution-bucket①">bucket</a></code>.</p>
+        <li data-md>
+         <p>Set <var>contributions</var>’s <code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-value" id="ref-for-dom-paextendedhistogramcontribution-value">value</a></code> be the result of <a data-link-type="dfn" href="#fill-in-the-signal-value" id="ref-for-fill-in-the-signal-value①">filling in the signal value</a> of <var>contributions</var>’s <code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-value" id="ref-for-dom-paextendedhistogramcontribution-value①">value</a></code>.</p>
+       </ol>
+      <li data-md>
+       <p>Otherwise, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①">assert</a>: <var>contribution</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution①">PAHistogramContribution</a></code>.</p>
+      <li data-md>
+       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append①">Append</a> <var>contribution</var> to <var>filledInContributions</var>.</p>
+     </ol>
+    <li data-md>
+     <p>Run the <a data-link-type="dfn" href="#privateaggregation-report-sending-steps" id="ref-for-privateaggregation-report-sending-steps①">report sending steps</a> with <var>scope</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object" id="ref-for-relevant-settings-object①">relevant settings object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin①">origin</a>, "<code><a data-link-type="dfn" href="#worklet-type-identifier-fledge" id="ref-for-worklet-type-identifier-fledge">fledge</a></code>" and <var>contributionsCache</var>.</p>
+   </ol>
+   <p class="issue" id="issue-5b10211a"><a class="self-link" href="#issue-5b10211a"></a> Probably move to algorithms? Or at least some of it.</p>
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fill-in-the-signal-value">fill in the signal value</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue②">PASignalValue</a></code> <var>value</var>, run the following steps:</p>
+   <ol>
+    <li data-md>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert②">Assert</a> <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-basevalue" id="ref-for-dom-pasignalvalue-basevalue">baseValue</a></code> is a valid <a data-link-type="dfn" href="#signal-base-value" id="ref-for-signal-base-value">signal base value</a>. (TODO: do we need to convert it to a string from a DOMString?)</p>
+    <li data-md>
+     <p>Let <var>numericBaseValue</var> be the result of <a data-link-type="dfn" href="#determine-the-numeric-value" id="ref-for-determine-the-numeric-value">determining the numeric value</a> of <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-basevalue" id="ref-for-dom-pasignalvalue-basevalue①">baseValue</a></code>.</p>
+    <li data-md>
+     <p>Let <var>scale</var> be the <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-double" id="ref-for-idl-double①">double</a></code> 1.0</p>
+    <li data-md>
+     <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-scale" id="ref-for-dom-pasignalvalue-scale">scale</a></code> is set, set <var>scale</var> to <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-scale" id="ref-for-dom-pasignalvalue-scale①">scale</a></code>.</p>
+    <li data-md>
+     <p>Let <var>scaledBaseValue</var> be the result of multiplying <var>scale</var> with <var>numericBaseValue</var>.</p>
+    <li data-md>
+     <p>Let <var>scaledBaseValue</var> be the integer result of rounding <var>scaledBaseValue</var> to the nearest integer. If two integers are equally close, the result should be the integer closer to negative infinity. (TODO: add refs here?)</p>
+    <li data-md>
+     <p>Let <var>returnValue</var> be the result of adding <var>scaledBaseValue</var> to <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset">offset</a></code>.</p>
+    <li data-md>
+     <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset①">offset</a></code> is a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long③">long</a></code>, clamp <var>returnValue</var> to the range [0, 65535] and return the result. (TODO: make this more proper).</p>
+    <li data-md>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert③">Assert</a>: <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset②">offset</a></code> is a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint③">bigint</a></code>. (Not yet true see below.)</p>
+    <li data-md>
+     <p>Clamp <var>returnValue</var> to the range [0, 2^128-1] and return the result.</p>
+   </ol>
+   <p class="issue" id="issue-1ff4f0b5"><a class="self-link" href="#issue-1ff4f0b5"></a> should we avoid the weirdness around <var>scale</var> not being set by setting it somewhere? (Could add an assert)</p>
+   <p class="issue" id="issue-20d81011"><a class="self-link" href="#issue-20d81011"></a> same for offset -- even worse as we can’t determine the type if it’s not set.</p>
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="determine-the-numeric-value">determine the numeric value</dfn> of a <a data-link-type="dfn" href="#signal-base-value" id="ref-for-signal-base-value①">signal base value</a> <var>signalBaseValue</var>, run the following steps:</p>
+   <ol>
+    <li data-md>
+     <p>If <var>signalBaseValue</var> is "<code><a data-link-type="dfn" href="#signal-base-value-winning-bid" id="ref-for-signal-base-value-winning-bid">winning-bid</a></code>":</p>
+     <ol>
+      <li data-md>
+       <p>If there was a winning bid, return its score.</p>
+      <li data-md>
+       <p>Otherwise, return 0.</p>
+     </ol>
+    <li data-md>
+     <p>If <var>signalBaseValue</var> is "<code><a data-link-type="dfn" href="#signal-base-value-highest-scoring-other-bid" id="ref-for-signal-base-value-highest-scoring-other-bid">highest-scoring-other-bid</a></code>":</p>
+     <ol>
+      <li data-md>
+       <p>If there was a bid that did not win, return the score of the highest scoring bid that did not win.</p>
+      <li data-md>
+       <p>Otherwise, return 0.</p>
+     </ol>
+    <li data-md>
+     <p>If <var>signalBaseValue</var> is "<code><a data-link-type="dfn" href="#signal-base-value-script-run-time" id="ref-for-signal-base-value-script-run-time">script-run-time</a></code>":</p>
+     <ol>
+      <li data-md>
+       <p>Return the time the script took to run in milliseconds. (TODO: Which script??)</p>
+     </ol>
+    <li data-md>
+     <p>If <var>signalBaseValue</var> is "<code><a data-link-type="dfn" href="#signal-base-value-signals-fetch-time" id="ref-for-signal-base-value-signals-fetch-time">signals-fetch-time</a></code>":</p>
+     <ol>
+      <li data-md>
+       <p>If there was a trusted bidding signals network fetch that successfully completed, return the time it took for that request to complete in milliseconds.</p>
+      <li data-md>
+       <p>Otherwise, return 0.</p>
+     </ol>
+    <li data-md>
+     <p>If <var>signalBaseValue</var> is "<code><a data-link-type="dfn" href="#signal-base-value-bid-reject-reason" id="ref-for-signal-base-value-bid-reject-reason">bid-reject-reason</a></code>":</p>
+     <ol>
+      <li data-md>
+       <p>TODO: need to scope to a bid. The bid associated with this call? How do we do that nicely?</p>
+      <li data-md>
+       <p>If the bid did not succeed purely because it didn’t meet the required k-anonymity threshold, return 0.</p>
+      <li data-md>
+       <p>If the bid was invalid, return 1.</p>
+      <li data-md>
+       <p>If the bid was below the auction floor, return 2. (TODO: What does this mean?)</p>
+      <li data-md>
+       <p>Etc.</p>
+     </ol>
+    <li data-md>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert④">Assert</a>: false.</p>
+   </ol>
+   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="validate an extended histogram contribution" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-validate-an-extended-histogram-contribution">validate an extended histogram contribution</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-paextendedhistogramcontribution" id="ref-for-dictdef-paextendedhistogramcontribution②">PAExtendedHistogramContribution</a></code> <var>contribution</var>:</p>
+   <ol>
+    <li data-md>
+     <p>TODO (probably need to check offsets are valid and the right type etc. Also that base values are one of a set)</p>
+   </ol>
+   <div class="algorithm" data-algorithm="reportContributionForEvent(DOMString event, PAExtendedHistogramContribution contribution)" data-algorithm-for="PrivateAggregation"> The <dfn class="dfn-paneled idl-code" data-dfn-for="PrivateAggregation" data-dfn-type="method" data-export data-lt="reportContributionForEvent(event, contribution)" id="dom-privateaggregation-reportcontributionforevent"><code>reportContributionForEvent(DOMString event, PAExtendedHistogramContribution contribution)</code></dfn> method steps are: </div>
+   <ol>
+    <li data-md>
+     <p>Run the <a data-link-type="dfn" href="#privateaggregation-validate-an-extended-histogram-contribution" id="ref-for-privateaggregation-validate-an-extended-histogram-contribution">validate an extended histogram contribution</a> steps on <var>contribution</var>.</p>
+    <li data-md>
+     <p>These should just check that if bucket is a PASignalValue, its offset is NOT
+a long and if a value is a PASignalValue, its offset is NOT a bigint.</p>
+    <li data-md>
+     <p>Put the contribution in some sort of queue.</p>
+    <li data-md>
+     <p>Elsewhere, on context destruction AND/OR event handling, process the queue.</p>
+   </ol>
+   <p class="issue" id="issue-510bee71"><a class="self-link" href="#issue-510bee71"></a> where should this queue be given it has to outlive the fenced frame?</p>
+   <h2 class="heading settled" data-level="5" id="structures"><span class="secno">5. </span><span class="content">Structures</span><a class="self-link" href="#structures"></a></h2>
+   <h3 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="5.1" data-lt="Aggregatable report" data-noexport id="aggregatable-report"><span class="secno">5.1. </span><span class="content">Aggregatable report</span><a class="self-link" href="#aggregatable-report" id="ref-for-aggregatable-report"></a></h3>
+   <p>An aggregatable report is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#struct" id="ref-for-struct">struct</a> with the following items:</p>
+   <dl>
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="aggregatable report" data-dfn-type="dfn" data-noexport id="aggregatable-report-reporting-endpoint">reporting endpoint</dfn>
+    <dd data-md>
+     <p>A (suitable?) URL</p>
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="aggregatable report" data-dfn-type="dfn" data-noexport id="aggregatable-report-original-report-time">original report time</dfn>
+    <dd data-md>
+     <p>A point in time</p>
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="aggregatable report" data-dfn-type="dfn" data-noexport id="aggregatable-report-contributions">contributions</dfn>
+    <dd data-md>
+     <p>An <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set②">ordered set</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution②">PAHistogramContribution</a></code></p>
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="aggregatable report" data-dfn-type="dfn" data-noexport id="aggregatable-report-api">api</dfn>
+    <dd data-md>
+     <p>A <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier">worklet type identifier</a></p>
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="aggregatable report" data-dfn-type="dfn" data-noexport id="aggregatable-report-report-id">report ID</dfn>
+    <dd data-md>
+     <p>A string</p>
+   </dl>
+   <p class="issue" id="issue-e77e137b"><a class="self-link" href="#issue-e77e137b"></a> Handle operation types, aggregation modes, aggregation coordinators, maybe retries/offline</p>
+   <h3 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="5.2" data-lt="Worklet type identifier" data-noexport id="worklet-type-identifier"><span class="secno">5.2. </span><span class="content">Worklet type identifier</span><a class="self-link" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier⑤"></a></h3>
+    A worklet type identifier is one of the following: 
+   <dl>
+    <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="worklet type identifier" data-dfn-type="dfn" data-noexport id="worklet-type-identifier-fledge"><code>fledge</code></dfn>"
+    <dd data-md>
+     <p>The global scope was a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/turtledove/#fledgeworkletglobalscope" id="ref-for-fledgeworkletglobalscope③">FledgeWorkletGlobalScope</a></code>.</p>
+    <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="worklet type identifier" data-dfn-type="dfn" data-noexport id="worklet-type-identifier-shared-storage"><code>shared-storage</code></dfn>"
+    <dd data-md>
+     <p>The global scope was a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope" id="ref-for-sharedstorageworkletglobalscope③">SharedStorageWorkletGlobalScope</a></code>.</p>
+   </dl>
+   <h3 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="5.3" data-lt="Signal base value" data-noexport id="signal-base-value"><span class="secno">5.3. </span><span class="content">Signal base value</span><a class="self-link" href="#signal-base-value" id="ref-for-signal-base-value②"></a></h3>
+    A signal base value is one of the following: 
+   <dl>
+    <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="signal base value" data-dfn-type="dfn" data-noexport id="signal-base-value-winning-bid"><code>winning-bid</code></dfn>"
+    <dd data-md>
+     <p>The score of the winning bid.</p>
+    <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="signal base value" data-dfn-type="dfn" data-noexport id="signal-base-value-highest-scoring-other-bid"><code>highest-scoring-other-bid</code></dfn>"
+    <dd data-md>
+     <p>The score of the highest scoring bid that did not win.</p>
+    <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="signal base value" data-dfn-type="dfn" data-noexport id="signal-base-value-script-run-time"><code>script-run-time</code></dfn>"
+    <dd data-md>
+     <p>The running time of the script in ms(?).</p>
+    <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="signal base value" data-dfn-type="dfn" data-noexport id="signal-base-value-signals-fetch-time"><code>signals-fetch-time</code></dfn>"
+    <dd data-md>
+     <p>The time it took for the signals fetch to complete in ms(?)</p>
+    <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="signal base value" data-dfn-type="dfn" data-noexport id="signal-base-value-bid-reject-reason"><code>bid-reject-reason</code></dfn>"
+    <dd data-md>
+     <p>The reason a bid was rejected (TODO: new enum needed).</p>
+   </dl>
+   <h2 class="heading settled" data-level="6" id="storage"><span class="secno">6. </span><span class="content">Storage</span><a class="self-link" href="#storage"></a></h2>
+   <p>A user agent holds an <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="aggregatable-report-cache">aggregatable report cache</dfn>, which is an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set③">ordered set</a> of <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report②">aggregatable reports</a>.</p>
+   <h2 class="heading settled" data-level="7" id="vendor-specific-values"><span class="secno">7. </span><span class="content">Vendor-specific values</span><a class="self-link" href="#vendor-specific-values"></a></h2>
+   <p class="issue" id="issue-aaafd09e"><a class="self-link" href="#issue-aaafd09e"></a> Should we use "implementation-defined" instead?</p>
+   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="max-stored-reports">Max stored reports</dfn> is a positive integer that controls how many unsent reports can be queued waiting.</p>
+   <h2 class="heading settled" data-level="8" id="algorithms"><span class="secno">8. </span><span class="content">Algorithms</span><a class="self-link" href="#algorithms"></a></h2>
+   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="obtain a reporting endpoint" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-obtain-a-reporting-endpoint">obtain a reporting endpoint</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin②">Origin</a> <var>reportingOrigin</var> and <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier①">worklet type identifier</a> <var>api</var>:</p>
+   <ol>
+    <li data-md>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑤">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin">potentially trustworthy origin</a>.</p>
+    <li data-md>
+     <p>BLAH</p>
+    <li data-md>
+     <p>Let <var>path</var> be the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string-concatenate" id="ref-for-string-concatenate">concatenation</a> of «"<code>.well-known/private-aggregation/report-</code>", <var>api</var>».</p>
+    <li data-md>
+     <p>Let <var>base</var> be the result on running the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-parser" id="ref-for-concept-url-parser">URL parser</a> on the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#ascii-serialisation-of-an-origin" id="ref-for-ascii-serialisation-of-an-origin">serialization</a> of <var>reportingOrigin</var>.</p>
+    <li data-md>
+     <p>Return the result of running the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-parser" id="ref-for-concept-url-parser①">URL parser</a> on <var>path</var> with <var>base</var>.</p>
+   </ol>
+   <p>To <dfn class="dfn-paneled" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-obtain-an-aggregatable-report">obtain an aggregatable report</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin③">Origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier②">worklet type identifier</a> <var>api</var> and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set④">ordered set</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution③">PAHistogramContribution</a></code> <var>contributions</var>:</p>
+   <ol>
+    <li data-md>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑥">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin①">potentially trustworthy origin</a>.</p>
+    <li data-md>
+     <p>Let <var>report</var> be a new <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report①">aggregatable report</a> with the items:</p>
+     <dl>
+      <dt data-md><a data-link-type="dfn" href="#aggregatable-report-reporting-endpoint" id="ref-for-aggregatable-report-reporting-endpoint">reporting endpoint</a>
+      <dd data-md>
+       <p>The result of <a data-link-type="dfn" href="#privateaggregation-obtain-a-reporting-endpoint" id="ref-for-privateaggregation-obtain-a-reporting-endpoint">obtaining a reporting endpoint</a> given <var>reportingOrigin</var> and <var>api</var>.</p>
+      <dt data-md><a data-link-type="dfn" href="#aggregatable-report-original-report-time" id="ref-for-aggregatable-report-original-report-time">original report time</a>
+      <dd data-md>
+       <p>The current time</p>
+      <dt data-md><a data-link-type="dfn" href="#aggregatable-report-contributions" id="ref-for-aggregatable-report-contributions">contributions</a>
+      <dd data-md>
+       <p><var>contributions</var></p>
+      <dt data-md><a data-link-type="dfn" href="#aggregatable-report-api" id="ref-for-aggregatable-report-api">api</a>
+      <dd data-md>
+       <p><var>api</var></p>
+      <dt data-md><a data-link-type="dfn" href="#aggregatable-report-report-id" id="ref-for-aggregatable-report-report-id">report ID</a>
+      <dd data-md>
+       <p>The result of <a data-link-type="dfn" href="https://w3c.github.io/webcrypto/#dfn-generate-a-random-uuid" id="ref-for-dfn-generate-a-random-uuid">generating a random UUID</a>.</p>
+     </dl>
+   </ol>
+   <h3 class="heading settled" data-level="8.1" id="scheduling-reports"><span class="secno">8.1. </span><span class="content">Scheduling reports</span><a class="self-link" href="#scheduling-reports"></a></h3>
+   <p class="issue" id="issue-a39b5350"><a class="self-link" href="#issue-a39b5350"></a> Fill out</p>
+   <p>The <dfn class="dfn-paneled algorithm" data-algorithm="report sending steps" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-report-sending-steps">report sending steps</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin④">Origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier③">worklet type identifier</a> <var>api</var> and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set⑤">ordered set</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution④">PAHistogramContribution</a></code> <var>contributions</var> are as follows:</p>
+   <ol>
+    <li data-md>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑦">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin②">potentially trustworthy origin</a>.</p>
+    <li data-md>
+     <p>Let <var>approvedContributions</var> be a new empty <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set⑥">ordered set</a>.</p>
+    <li data-md>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate①">For each</a> <var>contribution</var> of <var>contributions</var>:</p>
+    <li data-md>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑧">Assert</a>: <var>contribution</var>’s <var>value</var> is non-negative.</p>
+    <li data-md>
+     <p>Let <var>sufficient_budget</var> be the result of running <a data-link-type="dfn" href="#privateaggregation-consume-budget-if-permitted" id="ref-for-privateaggregation-consume-budget-if-permitted">consume budget if permitted</a> on <var>value</var>, <var>reportingOrigin</var> and <var>api</var>.</p>
+    <li data-md>
+     <p>If <var>sufficient_budget</var>, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append②">Append</a> <var>contribution</var> to <var>approvedContributions</var>.</p>
+    <li data-md>
+     <p>Otherwise, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-break" id="ref-for-iteration-break">break</a></p>
+    <li data-md>
+     <p>If <var>approvedContributions</var> is <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-empty" id="ref-for-list-empty">empty</a>, return.</p>
+    <li data-md>
+     <p>Let <var>report</var> be the result of <a data-link-type="dfn" href="#privateaggregation-obtain-an-aggregatable-report" id="ref-for-privateaggregation-obtain-an-aggregatable-report">obtaining an aggregatable report</a> given <var>reportingOrigin</var>, <var>api</var> and <var>approvedContributions</var>.</p>
+    <li data-md>
+     <p>If the user agent’s <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache">aggregatable report cache</a> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size">size</a> is larger than <a data-link-type="dfn" href="#max-stored-reports" id="ref-for-max-stored-reports">max stored reports</a>, return.</p>
+    <li data-md>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append③">Append</a> <var>report</var> to the user agent’s <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache①">aggregatable report cache</a>.</p>
+   </ol>
+   <p class="issue" id="issue-b92a47e8"><a class="self-link" href="#issue-b92a47e8"></a> Do we need to ensure the reports aren’t queued after being sent?</p>
+   <p class="issue" id="issue-6f54c043"><a class="self-link" href="#issue-6f54c043"></a> <var>api</var> param</p>
+   <p class="issue" id="issue-cce8e53a"><a class="self-link" href="#issue-cce8e53a"></a> wording of how to assign <var>sufficient_budget</var></p>
+   <p class="issue" id="issue-4e3d86bc"><a class="self-link" href="#issue-4e3d86bc"></a> non-negative or positive value?</p>
+   <p class="issue" id="issue-a82d4aa0"><a class="self-link" href="#issue-a82d4aa0"></a> Do we need to address user settings here at all?</p>
+   <p class="issue" id="issue-1ed24345"><a class="self-link" href="#issue-1ed24345"></a> Batching</p>
+   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="consume budget if permitted" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-consume-budget-if-permitted">consume budget if permitted</dfn> given a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long④">long</a></code> <var>value</var>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑤">origin</a> <var>origin</var> and an <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier④">worklet type identifier</a> <var>api</var> are a user agent-determined sequence of steps that returns a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-boolean" id="ref-for-idl-boolean">boolean</a></code> indicating whether there is a sufficient 'contribution budget' left to send the requested contribution <var>value</var>. The algorithm should assume that the contribution will be sent if true is returned (and won’t otherwise).</p>
+   <p class="issue" id="issue-aea683b6"><a class="self-link" href="#issue-aea683b6"></a> Do we want to specify how budgeting works? ARA does, but leaves the exact values up to the implementer.</p>
+   <p>Example algo:</p>
+   <ol>
+    <li data-md>
+     <p>Maintain a store somewhere of all previous reports or like the last 24 h or something</p>
+    <li data-md>
+     <p>Let <var>budget_already_used</var> be 0.</p>
+    <li data-md>
+     <p>For each entry in this store:</p>
+     <ol>
+      <li data-md>
+       <p>If time is more than 24 hours ago, delete it.</p>
+      <li data-md>
+       <p>(Optionally, if the time is old enough, delete it.)</p>
+       <ul>
+        <li data-md>
+         <p>We could make this just a general, if the time is earlier than the budget scope beginning (which is a user agent-determined time and a function of "now"). That feels a bit too tied to the implementation...</p>
+       </ul>
+      <li data-md>
+       <p>If different <var>origin</var> or different <var>api</var>, continue.</p>
+      <li data-md>
+       <p>Increment <var>budget_already_used</var> by this entry’s <var>value</var>.</p>
+     </ol>
+    <li data-md>
+     <p>Set <var>is_allowed</var> to a boolean indicating whether <var>budget_already_used</var> + the requested contribution is less than or equal to the maximum daily allowed budget.</p>
+    <li data-md>
+     <p>If <var>is_allowed</var></p>
+     <ol>
+      <li data-md>
+       <p>Add entry to the store</p>
+     </ol>
+    <li data-md>
+     <p>Return <var>is_allowed</var>.</p>
+   </ol>
+   <p>So we could do this and then specify that implementers should use an algo with similar results to this? Or we could say the user agent may reject additional reports for algorithmic simplicity or something. => Probably a question for spec mentor and/or john and/or charlie.</p>
+   <p class="issue" id="issue-45815b88"><a class="self-link" href="#issue-45815b88"></a> Don’t we need to take into account the time "now" as well?</p>
+   <p class="issue" id="issue-afde777d"><a class="self-link" href="#issue-afde777d"></a> Need to define the API enum or replace with a string or something.</p>
+   <h3 class="heading settled" data-level="8.2" id="sending-reports"><span class="secno">8.2. </span><span class="content">Sending reports</span><a class="self-link" href="#sending-reports"></a></h3>
+   <p class="issue" id="issue-ab2c4421"><a class="self-link" href="#issue-ab2c4421"></a> See Report delivery in ARA spec. We may want to align, but not sure it’s worth it
+while debug modes are around.</p>
+  </main>
+  <div data-fill-with="conformance">
+   <h2 class="no-ref no-num heading settled" id="w3c-conformance"><span class="content">Conformance</span><a class="self-link" href="#w3c-conformance"></a></h2>
+   <h3 class="no-ref no-num heading settled" id="w3c-conventions"><span class="content">Document conventions</span><a class="self-link" href="#w3c-conventions"></a></h3>
+   <p>Conformance requirements are expressed
+    with a combination of descriptive assertions
+    and RFC 2119 terminology.
+    The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL”
+    in the normative parts of this document
+    are to be interpreted as described in RFC 2119.
+    However, for readability,
+    these words do not appear in all uppercase letters in this specification. </p>
+   <p>All of the text of this specification is normative
+    except sections explicitly marked as non-normative, examples, and notes. <a data-link-type="biblio" href="#biblio-rfc2119" title="Key words for use in RFCs to Indicate Requirement Levels">[RFC2119]</a> </p>
+   <p>Examples in this specification are introduced with the words “for example”
+    or are set apart from the normative text
+    with <code>class="example"</code>,
+    like this: </p>
+   <div class="example" id="w3c-example">
+    <a class="self-link" href="#w3c-example"></a> 
+    <p>This is an example of an informative example. </p>
+   </div>
+   <p>Informative notes begin with the word “Note”
+    and are set apart from the normative text
+    with <code>class="note"</code>,
+    like this: </p>
+   <p class="note" role="note">Note, this is an informative note.</p>
+   <h3 class="no-ref no-num heading settled" id="w3c-conformant-algorithms"><span class="content">Conformant Algorithms</span><a class="self-link" href="#w3c-conformant-algorithms"></a></h3>
+   <p>Requirements phrased in the imperative as part of algorithms
+    (such as "strip any leading space characters"
+    or "return false and abort these steps")
+    are to be interpreted with the meaning of the key word
+    ("must", "should", "may", etc)
+    used in introducing the algorithm. </p>
+   <p>Conformance requirements phrased as algorithms or specific steps
+    can be implemented in any manner,
+    so long as the end result is equivalent.
+    In particular, the algorithms defined in this specification
+    are intended to be easy to understand
+    and are not intended to be performant.
+    Implementers are encouraged to optimize. </p>
+  </div>
+<script src="https://www.w3.org/scripts/TR/2021/fixup.js"></script>
+  <h2 class="no-num no-ref heading settled" id="index"><span class="content">Index</span><a class="self-link" href="#index"></a></h2>
+  <h3 class="no-num no-ref heading settled" id="index-defined-here"><span class="content">Terms defined by this specification</span><a class="self-link" href="#index-defined-here"></a></h3>
+  <ul class="index">
+   <li><a href="#aggregatable-report">Aggregatable report</a><span>, in § 5</span>
+   <li><a href="#aggregatable-report-cache">aggregatable report cache</a><span>, in § 6</span>
+   <li><a href="#aggregatable-report-api">api</a><span>, in § 5.1</span>
+   <li><a href="#dom-pasignalvalue-basevalue">baseValue</a><span>, in § 4</span>
+   <li><a href="#signal-base-value-bid-reject-reason">bid-reject-reason</a><span>, in § 5.3</span>
+   <li>
+    bucket
+    <ul>
+     <li><a href="#dom-paextendedhistogramcontribution-bucket">dict-member for PAExtendedHistogramContribution</a><span>, in § 4</span>
+     <li><a href="#dom-pahistogramcontribution-bucket">dict-member for PAHistogramContribution</a><span>, in § 2.1</span>
+    </ul>
+   <li><a href="#privateaggregation-consume-budget-if-permitted">consume budget if permitted</a><span>, in § 8.1</span>
+   <li><a href="#aggregatable-report-contributions">contributions</a><span>, in § 5.1</span>
+   <li><a href="#contributions-cache">contributions cache</a><span>, in § 2.1</span>
+   <li><a href="#determine-the-numeric-value">determine the numeric value</a><span>, in § 4</span>
+   <li><a href="#fill-in-the-signal-value">fill in the signal value</a><span>, in § 4</span>
+   <li><a href="#worklet-type-identifier-fledge">fledge</a><span>, in § 5.2</span>
+   <li><a href="#signal-base-value-highest-scoring-other-bid">highest-scoring-other-bid</a><span>, in § 5.3</span>
+   <li><a href="#max-stored-reports">Max stored reports</a><span>, in § 7</span>
+   <li><a href="#privateaggregation-obtain-an-aggregatable-report">obtain an aggregatable report</a><span>, in § 8</span>
+   <li><a href="#privateaggregation-obtain-a-reporting-endpoint">obtain a reporting endpoint</a><span>, in § 8</span>
+   <li><a href="#dom-pasignalvalue-offset">offset</a><span>, in § 4</span>
+   <li><a href="#aggregatable-report-original-report-time">original report time</a><span>, in § 5.1</span>
+   <li><a href="#dictdef-paextendedhistogramcontribution">PAExtendedHistogramContribution</a><span>, in § 4</span>
+   <li><a href="#dictdef-pahistogramcontribution">PAHistogramContribution</a><span>, in § 2.1</span>
+   <li><a href="#dictdef-pasignalvalue">PASignalValue</a><span>, in § 4</span>
+   <li><a href="#privateaggregation">PrivateAggregation</a><span>, in § 2.1</span>
+   <li>
+    privateAggregation
+    <ul>
+     <li><a href="#dom-fledgeworkletglobalscope-privateaggregation">attribute for FledgeWorkletGlobalScope</a><span>, in § 4</span>
+     <li><a href="#dom-sharedstorageworkletglobalscope-privateaggregation">attribute for SharedStorageWorkletGlobalScope</a><span>, in § 3</span>
+    </ul>
+   <li><a href="#process-the-contributions-cache">process the contributions cache</a><span>, in § 2.1</span>
+   <li><a href="#process-the-fledge-contributions-cache">process the FLEDGE contributions cache</a><span>, in § 4</span>
+   <li><a href="#process-the-shared-storage-contributions-cache">process the shared storage contributions cache</a><span>, in § 3</span>
+   <li><a href="#dom-privateaggregation-reportcontributionforevent">reportContributionForEvent(event, contribution)</a><span>, in § 4</span>
+   <li><a href="#aggregatable-report-report-id">report ID</a><span>, in § 5.1</span>
+   <li><a href="#aggregatable-report-reporting-endpoint">reporting endpoint</a><span>, in § 5.1</span>
+   <li><a href="#privateaggregation-report-sending-steps">report sending steps</a><span>, in § 8.1</span>
+   <li><a href="#dom-pasignalvalue-scale">scale</a><span>, in § 4</span>
+   <li><a href="#signal-base-value-script-run-time">script-run-time</a><span>, in § 5.3</span>
+   <li><a href="#dom-privateaggregation-sendhistogramreport">sendHistogramReport(contribution)</a><span>, in § 2.1</span>
+   <li><a href="#worklet-type-identifier-shared-storage">shared-storage</a><span>, in § 5.2</span>
+   <li><a href="#signal-base-value">Signal base value</a><span>, in § 5.2</span>
+   <li><a href="#signal-base-value-signals-fetch-time">signals-fetch-time</a><span>, in § 5.3</span>
+   <li><a href="#privateaggregation-validate-an-extended-histogram-contribution">validate an extended histogram contribution</a><span>, in § 4</span>
+   <li>
+    value
+    <ul>
+     <li><a href="#dom-paextendedhistogramcontribution-value">dict-member for PAExtendedHistogramContribution</a><span>, in § 4</span>
+     <li><a href="#dom-pahistogramcontribution-value">dict-member for PAHistogramContribution</a><span>, in § 2.1</span>
+    </ul>
+   <li><a href="#signal-base-value-winning-bid">winning-bid</a><span>, in § 5.3</span>
+   <li><a href="#worklet-type-identifier">Worklet type identifier</a><span>, in § 5.1</span>
+  </ul>
+  <aside aria-labelledby="infopaneltitle-for-4deb1c936885d62029e983c05b93bbda" class="dfn-panel" data-for="4deb1c936885d62029e983c05b93bbda" id="infopanel-for-4deb1c936885d62029e983c05b93bbda">
+   <span id="infopaneltitle-for-4deb1c936885d62029e983c05b93bbda" style="display:none">Info about the 'FledgeWorkletGlobalScope' external reference.</span><a href="https://wicg.github.io/turtledove/#fledgeworkletglobalscope">https://wicg.github.io/turtledove/#fledgeworkletglobalscope</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-fledgeworkletglobalscope">2.1. Worklet interface</a>
+    <li><a href="#ref-for-fledgeworkletglobalscope①">4. Exposing to FLEDGE</a> <a href="#ref-for-fledgeworkletglobalscope②">(2)</a>
+    <li><a href="#ref-for-fledgeworkletglobalscope③">5.2. Worklet type identifier</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-0e450e8a64820ae6c0c9f0db36914314" class="dfn-panel" data-for="0e450e8a64820ae6c0c9f0db36914314" id="infopanel-for-0e450e8a64820ae6c0c9f0db36914314">
+   <span id="infopaneltitle-for-0e450e8a64820ae6c0c9f0db36914314" style="display:none">Info about the 'SharedStorageWorkletGlobalScope' external reference.</span><a href="https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope">https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-sharedstorageworkletglobalscope">2.1. Worklet interface</a>
+    <li><a href="#ref-for-sharedstorageworkletglobalscope①">3. Exposing to Shared Storage</a> <a href="#ref-for-sharedstorageworkletglobalscope②">(2)</a>
+    <li><a href="#ref-for-sharedstorageworkletglobalscope③">5.2. Worklet type identifier</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-f1c3158ad16b10a1e2f5e18807f043d3" class="dfn-panel" data-for="f1c3158ad16b10a1e2f5e18807f043d3" id="infopanel-for-f1c3158ad16b10a1e2f5e18807f043d3">
+   <span id="infopaneltitle-for-f1c3158ad16b10a1e2f5e18807f043d3" style="display:none">Info about the 'WorkletGlobalScope' external reference.</span><a href="https://html.spec.whatwg.org/multipage/worklets.html#workletglobalscope">https://html.spec.whatwg.org/multipage/worklets.html#workletglobalscope</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-workletglobalscope">2.1. Worklet interface</a> <a href="#ref-for-workletglobalscope①">(2)</a> <a href="#ref-for-workletglobalscope②">(3)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-e66f9f7d45934e77669cb907bd0c7636" class="dfn-panel" data-for="e66f9f7d45934e77669cb907bd0c7636" id="infopanel-for-e66f9f7d45934e77669cb907bd0c7636">
+   <span id="infopaneltitle-for-e66f9f7d45934e77669cb907bd0c7636" style="display:none">Info about the 'origin' external reference.</span><a href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin">https://html.spec.whatwg.org/multipage/browsers.html#concept-origin</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-concept-origin">3. Exposing to Shared Storage</a>
+    <li><a href="#ref-for-concept-origin①">4. Exposing to FLEDGE</a>
+    <li><a href="#ref-for-concept-origin②">8. Algorithms</a> <a href="#ref-for-concept-origin③">(2)</a>
+    <li><a href="#ref-for-concept-origin④">8.1. Scheduling reports</a> <a href="#ref-for-concept-origin⑤">(2)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-bfb9cb6617f81a424ab20212af73bae3" class="dfn-panel" data-for="bfb9cb6617f81a424ab20212af73bae3" id="infopanel-for-bfb9cb6617f81a424ab20212af73bae3">
+   <span id="infopaneltitle-for-bfb9cb6617f81a424ab20212af73bae3" style="display:none">Info about the 'relevant settings object' external reference.</span><a href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object">https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-relevant-settings-object">3. Exposing to Shared Storage</a>
+    <li><a href="#ref-for-relevant-settings-object①">4. Exposing to FLEDGE</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-2aeb953708ac6466a37697c533cf366f" class="dfn-panel" data-for="2aeb953708ac6466a37697c533cf366f" id="infopanel-for-2aeb953708ac6466a37697c533cf366f">
+   <span id="infopaneltitle-for-2aeb953708ac6466a37697c533cf366f" style="display:none">Info about the 'serialization of an origin' external reference.</span><a href="https://html.spec.whatwg.org/multipage/browsers.html#ascii-serialisation-of-an-origin">https://html.spec.whatwg.org/multipage/browsers.html#ascii-serialisation-of-an-origin</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-ascii-serialisation-of-an-origin">8. Algorithms</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-6d1f737f1fe3dbd01f26fbf2f2644f9c" class="dfn-panel" data-for="6d1f737f1fe3dbd01f26fbf2f2644f9c" id="infopanel-for-6d1f737f1fe3dbd01f26fbf2f2644f9c">
+   <span id="infopaneltitle-for-6d1f737f1fe3dbd01f26fbf2f2644f9c" style="display:none">Info about the 'terminate a worklet global scope' external reference.</span><a href="https://html.spec.whatwg.org/multipage/worklets.html#terminate-a-worklet-global-scope">https://html.spec.whatwg.org/multipage/worklets.html#terminate-a-worklet-global-scope</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-terminate-a-worklet-global-scope">2.1. Worklet interface</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-53c2c70bc752d6cf2a1f7deddc029549" class="dfn-panel" data-for="53c2c70bc752d6cf2a1f7deddc029549" id="infopanel-for-53c2c70bc752d6cf2a1f7deddc029549">
+   <span id="infopaneltitle-for-53c2c70bc752d6cf2a1f7deddc029549" style="display:none">Info about the 'append' external reference.</span><a href="https://infra.spec.whatwg.org/#set-append">https://infra.spec.whatwg.org/#set-append</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-set-append">2.1. Worklet interface</a>
+    <li><a href="#ref-for-set-append①">4. Exposing to FLEDGE</a>
+    <li><a href="#ref-for-set-append②">8.1. Scheduling reports</a> <a href="#ref-for-set-append③">(2)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-7618b9a6d44febb7e784c8f39faac140" class="dfn-panel" data-for="7618b9a6d44febb7e784c8f39faac140" id="infopanel-for-7618b9a6d44febb7e784c8f39faac140">
+   <span id="infopaneltitle-for-7618b9a6d44febb7e784c8f39faac140" style="display:none">Info about the 'assert' external reference.</span><a href="https://infra.spec.whatwg.org/#assert">https://infra.spec.whatwg.org/#assert</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-assert">2.1. Worklet interface</a>
+    <li><a href="#ref-for-assert①">4. Exposing to FLEDGE</a> <a href="#ref-for-assert②">(2)</a> <a href="#ref-for-assert③">(3)</a> <a href="#ref-for-assert④">(4)</a>
+    <li><a href="#ref-for-assert⑤">8. Algorithms</a> <a href="#ref-for-assert⑥">(2)</a>
+    <li><a href="#ref-for-assert⑦">8.1. Scheduling reports</a> <a href="#ref-for-assert⑧">(2)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-2889fa868b02a31759864aaf77f851d6" class="dfn-panel" data-for="2889fa868b02a31759864aaf77f851d6" id="infopanel-for-2889fa868b02a31759864aaf77f851d6">
+   <span id="infopaneltitle-for-2889fa868b02a31759864aaf77f851d6" style="display:none">Info about the 'break' external reference.</span><a href="https://infra.spec.whatwg.org/#iteration-break">https://infra.spec.whatwg.org/#iteration-break</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-iteration-break">8.1. Scheduling reports</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-b554fa62e66e696c005b983f794a74e2" class="dfn-panel" data-for="b554fa62e66e696c005b983f794a74e2" id="infopanel-for-b554fa62e66e696c005b983f794a74e2">
+   <span id="infopaneltitle-for-b554fa62e66e696c005b983f794a74e2" style="display:none">Info about the 'concatenation' external reference.</span><a href="https://infra.spec.whatwg.org/#string-concatenate">https://infra.spec.whatwg.org/#string-concatenate</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-string-concatenate">8. Algorithms</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-de8dad85bc31aef3359c7c7dbd918fe7" class="dfn-panel" data-for="de8dad85bc31aef3359c7c7dbd918fe7" id="infopanel-for-de8dad85bc31aef3359c7c7dbd918fe7">
+   <span id="infopaneltitle-for-de8dad85bc31aef3359c7c7dbd918fe7" style="display:none">Info about the 'empty' external reference.</span><a href="https://infra.spec.whatwg.org/#list-empty">https://infra.spec.whatwg.org/#list-empty</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-list-empty">8.1. Scheduling reports</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-9fda9133089970d69ace9de8f46a334c" class="dfn-panel" data-for="9fda9133089970d69ace9de8f46a334c" id="infopanel-for-9fda9133089970d69ace9de8f46a334c">
+   <span id="infopaneltitle-for-9fda9133089970d69ace9de8f46a334c" style="display:none">Info about the 'iterate' external reference.</span><a href="https://infra.spec.whatwg.org/#list-iterate">https://infra.spec.whatwg.org/#list-iterate</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-list-iterate">4. Exposing to FLEDGE</a>
+    <li><a href="#ref-for-list-iterate①">8.1. Scheduling reports</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-80524ea4c0063fe3cf0b6c49a40e31bf" class="dfn-panel" data-for="80524ea4c0063fe3cf0b6c49a40e31bf" id="infopanel-for-80524ea4c0063fe3cf0b6c49a40e31bf">
+   <span id="infopaneltitle-for-80524ea4c0063fe3cf0b6c49a40e31bf" style="display:none">Info about the 'ordered set' external reference.</span><a href="https://infra.spec.whatwg.org/#ordered-set">https://infra.spec.whatwg.org/#ordered-set</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-ordered-set">2.1. Worklet interface</a>
+    <li><a href="#ref-for-ordered-set①">4. Exposing to FLEDGE</a>
+    <li><a href="#ref-for-ordered-set②">5.1. Aggregatable report</a>
+    <li><a href="#ref-for-ordered-set③">6. Storage</a>
+    <li><a href="#ref-for-ordered-set④">8. Algorithms</a>
+    <li><a href="#ref-for-ordered-set⑤">8.1. Scheduling reports</a> <a href="#ref-for-ordered-set⑥">(2)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-bed8381510f5967f5d37a33de776e857" class="dfn-panel" data-for="bed8381510f5967f5d37a33de776e857" id="infopanel-for-bed8381510f5967f5d37a33de776e857">
+   <span id="infopaneltitle-for-bed8381510f5967f5d37a33de776e857" style="display:none">Info about the 'size' external reference.</span><a href="https://infra.spec.whatwg.org/#list-size">https://infra.spec.whatwg.org/#list-size</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-list-size">8.1. Scheduling reports</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-3ee316b93eb2dbe81d01a666cce50f9b" class="dfn-panel" data-for="3ee316b93eb2dbe81d01a666cce50f9b" id="infopanel-for-3ee316b93eb2dbe81d01a666cce50f9b">
+   <span id="infopaneltitle-for-3ee316b93eb2dbe81d01a666cce50f9b" style="display:none">Info about the 'struct' external reference.</span><a href="https://infra.spec.whatwg.org/#struct">https://infra.spec.whatwg.org/#struct</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-struct">5.1. Aggregatable report</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-7681ab11c75a55e6b34d4abc7604c144" class="dfn-panel" data-for="7681ab11c75a55e6b34d4abc7604c144" id="infopanel-for-7681ab11c75a55e6b34d4abc7604c144">
+   <span id="infopaneltitle-for-7681ab11c75a55e6b34d4abc7604c144" style="display:none">Info about the 'potentially trustworthy origin' external reference.</span><a href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin">https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-potentially-trustworthy-origin">8. Algorithms</a> <a href="#ref-for-potentially-trustworthy-origin①">(2)</a>
+    <li><a href="#ref-for-potentially-trustworthy-origin②">8.1. Scheduling reports</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-07df417653faafb38ece7480f2c15a3e" class="dfn-panel" data-for="07df417653faafb38ece7480f2c15a3e" id="infopanel-for-07df417653faafb38ece7480f2c15a3e">
+   <span id="infopaneltitle-for-07df417653faafb38ece7480f2c15a3e" style="display:none">Info about the 'url parser' external reference.</span><a href="https://url.spec.whatwg.org/#concept-url-parser">https://url.spec.whatwg.org/#concept-url-parser</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-concept-url-parser">8. Algorithms</a> <a href="#ref-for-concept-url-parser①">(2)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-16fad91c327e57fb9f5bc7bfc71ec5c1" class="dfn-panel" data-for="16fad91c327e57fb9f5bc7bfc71ec5c1" id="infopanel-for-16fad91c327e57fb9f5bc7bfc71ec5c1">
+   <span id="infopaneltitle-for-16fad91c327e57fb9f5bc7bfc71ec5c1" style="display:none">Info about the 'generate a random uuid' external reference.</span><a href="https://w3c.github.io/webcrypto/#dfn-generate-a-random-uuid">https://w3c.github.io/webcrypto/#dfn-generate-a-random-uuid</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dfn-generate-a-random-uuid">8. Algorithms</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-d0f238a61de9310f1738a214749fab18" class="dfn-panel" data-for="d0f238a61de9310f1738a214749fab18" id="infopanel-for-d0f238a61de9310f1738a214749fab18">
+   <span id="infopaneltitle-for-d0f238a61de9310f1738a214749fab18" style="display:none">Info about the 'DOMString' external reference.</span><a href="https://webidl.spec.whatwg.org/#idl-DOMString">https://webidl.spec.whatwg.org/#idl-DOMString</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-idl-DOMString">4. Exposing to FLEDGE</a> <a href="#ref-for-idl-DOMString①">(2)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-dde049eb112f043fc45407ec0d4cb457" class="dfn-panel" data-for="dde049eb112f043fc45407ec0d4cb457" id="infopanel-for-dde049eb112f043fc45407ec0d4cb457">
+   <span id="infopaneltitle-for-dde049eb112f043fc45407ec0d4cb457" style="display:none">Info about the 'Exposed' external reference.</span><a href="https://webidl.spec.whatwg.org/#Exposed">https://webidl.spec.whatwg.org/#Exposed</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-Exposed">2.1. Worklet interface</a> <a href="#ref-for-Exposed①">(2)</a>
+    <li><a href="#ref-for-Exposed②">4. Exposing to FLEDGE</a> <a href="#ref-for-Exposed③">(2)</a> <a href="#ref-for-Exposed④">(3)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-e882d7e982b1edeea348be3ce3f60337" class="dfn-panel" data-for="e882d7e982b1edeea348be3ce3f60337" id="infopanel-for-e882d7e982b1edeea348be3ce3f60337">
+   <span id="infopaneltitle-for-e882d7e982b1edeea348be3ce3f60337" style="display:none">Info about the 'bigint' external reference.</span><a href="https://webidl.spec.whatwg.org/#idl-bigint">https://webidl.spec.whatwg.org/#idl-bigint</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-idl-bigint">2.1. Worklet interface</a>
+    <li><a href="#ref-for-idl-bigint①">4. Exposing to FLEDGE</a> <a href="#ref-for-idl-bigint②">(2)</a> <a href="#ref-for-idl-bigint③">(3)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-f8062b07e25ed0281f5cbfb9a54070b4" class="dfn-panel" data-for="f8062b07e25ed0281f5cbfb9a54070b4" id="infopanel-for-f8062b07e25ed0281f5cbfb9a54070b4">
+   <span id="infopaneltitle-for-f8062b07e25ed0281f5cbfb9a54070b4" style="display:none">Info about the 'boolean' external reference.</span><a href="https://webidl.spec.whatwg.org/#idl-boolean">https://webidl.spec.whatwg.org/#idl-boolean</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-idl-boolean">8.1. Scheduling reports</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-d3fd0dc5b12c87e613395fec1824ac77" class="dfn-panel" data-for="d3fd0dc5b12c87e613395fec1824ac77" id="infopanel-for-d3fd0dc5b12c87e613395fec1824ac77">
+   <span id="infopaneltitle-for-d3fd0dc5b12c87e613395fec1824ac77" style="display:none">Info about the 'double' external reference.</span><a href="https://webidl.spec.whatwg.org/#idl-double">https://webidl.spec.whatwg.org/#idl-double</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-idl-double">4. Exposing to FLEDGE</a> <a href="#ref-for-idl-double①">(2)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-a189a0d7ce5bc36522126b11ca418f0a" class="dfn-panel" data-for="a189a0d7ce5bc36522126b11ca418f0a" id="infopanel-for-a189a0d7ce5bc36522126b11ca418f0a">
+   <span id="infopaneltitle-for-a189a0d7ce5bc36522126b11ca418f0a" style="display:none">Info about the 'long' external reference.</span><a href="https://webidl.spec.whatwg.org/#idl-long">https://webidl.spec.whatwg.org/#idl-long</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-idl-long">2.1. Worklet interface</a>
+    <li><a href="#ref-for-idl-long①">4. Exposing to FLEDGE</a> <a href="#ref-for-idl-long②">(2)</a> <a href="#ref-for-idl-long③">(3)</a>
+    <li><a href="#ref-for-idl-long④">8.1. Scheduling reports</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-cee863f1f2ec91066cfb7f5d309d59dc" class="dfn-panel" data-for="cee863f1f2ec91066cfb7f5d309d59dc" id="infopanel-for-cee863f1f2ec91066cfb7f5d309d59dc">
+   <span id="infopaneltitle-for-cee863f1f2ec91066cfb7f5d309d59dc" style="display:none">Info about the 'undefined' external reference.</span><a href="https://webidl.spec.whatwg.org/#idl-undefined">https://webidl.spec.whatwg.org/#idl-undefined</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-idl-undefined">2.1. Worklet interface</a>
+    <li><a href="#ref-for-idl-undefined①">4. Exposing to FLEDGE</a>
+   </ul>
+  </aside>
+  <h3 class="no-num no-ref heading settled" id="index-defined-elsewhere"><span class="content">Terms defined by reference</span><a class="self-link" href="#index-defined-elsewhere"></a></h3>
+  <ul class="index">
+   <li>
+    <a data-link-type="biblio">[]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="4deb1c936885d62029e983c05b93bbda">FledgeWorkletGlobalScope</span>
+     <li><span class="dfn-paneled" id="0e450e8a64820ae6c0c9f0db36914314">SharedStorageWorkletGlobalScope</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[HTML]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="f1c3158ad16b10a1e2f5e18807f043d3">WorkletGlobalScope</span>
+     <li><span class="dfn-paneled" id="e66f9f7d45934e77669cb907bd0c7636">origin</span>
+     <li><span class="dfn-paneled" id="bfb9cb6617f81a424ab20212af73bae3">relevant settings object</span>
+     <li><span class="dfn-paneled" id="2aeb953708ac6466a37697c533cf366f">serialization of an origin</span>
+     <li><span class="dfn-paneled" id="6d1f737f1fe3dbd01f26fbf2f2644f9c">terminate a worklet global scope</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[INFRA]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="53c2c70bc752d6cf2a1f7deddc029549">append</span>
+     <li><span class="dfn-paneled" id="7618b9a6d44febb7e784c8f39faac140">assert</span>
+     <li><span class="dfn-paneled" id="2889fa868b02a31759864aaf77f851d6">break</span>
+     <li><span class="dfn-paneled" id="b554fa62e66e696c005b983f794a74e2">concatenation</span>
+     <li><span class="dfn-paneled" id="de8dad85bc31aef3359c7c7dbd918fe7">empty</span>
+     <li><span class="dfn-paneled" id="9fda9133089970d69ace9de8f46a334c">iterate</span>
+     <li><span class="dfn-paneled" id="80524ea4c0063fe3cf0b6c49a40e31bf">ordered set</span>
+     <li><span class="dfn-paneled" id="bed8381510f5967f5d37a33de776e857">size</span>
+     <li><span class="dfn-paneled" id="3ee316b93eb2dbe81d01a666cce50f9b">struct</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[SECURE-CONTEXTS]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="7681ab11c75a55e6b34d4abc7604c144">potentially trustworthy origin</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[URL]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="07df417653faafb38ece7480f2c15a3e">url parser</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[WebCryptoAPI]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="16fad91c327e57fb9f5bc7bfc71ec5c1">generate a random uuid</span>
+    </ul>
+   <li>
+    <a data-link-type="biblio">[WEBIDL]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="d0f238a61de9310f1738a214749fab18">DOMString</span>
+     <li><span class="dfn-paneled" id="dde049eb112f043fc45407ec0d4cb457">Exposed</span>
+     <li><span class="dfn-paneled" id="e882d7e982b1edeea348be3ce3f60337">bigint</span>
+     <li><span class="dfn-paneled" id="f8062b07e25ed0281f5cbfb9a54070b4">boolean</span>
+     <li><span class="dfn-paneled" id="d3fd0dc5b12c87e613395fec1824ac77">double</span>
+     <li><span class="dfn-paneled" id="a189a0d7ce5bc36522126b11ca418f0a">long</span>
+     <li><span class="dfn-paneled" id="cee863f1f2ec91066cfb7f5d309d59dc">undefined</span>
+    </ul>
+  </ul>
+  <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
+  <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
+  <dl>
+   <dt id="biblio-html">[HTML]
+   <dd>Anne van Kesteren; et al. <a href="https://html.spec.whatwg.org/multipage/"><cite>HTML Standard</cite></a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
+   <dt id="biblio-infra">[INFRA]
+   <dd>Anne van Kesteren; Domenic Denicola. <a href="https://infra.spec.whatwg.org/"><cite>Infra Standard</cite></a>. Living Standard. URL: <a href="https://infra.spec.whatwg.org/">https://infra.spec.whatwg.org/</a>
+   <dt id="biblio-rfc2119">[RFC2119]
+   <dd>S. Bradner. <a href="https://datatracker.ietf.org/doc/html/rfc2119"><cite>Key words for use in RFCs to Indicate Requirement Levels</cite></a>. March 1997. Best Current Practice. URL: <a href="https://datatracker.ietf.org/doc/html/rfc2119">https://datatracker.ietf.org/doc/html/rfc2119</a>
+   <dt id="biblio-secure-contexts">[SECURE-CONTEXTS]
+   <dd>Mike West. <a href="https://w3c.github.io/webappsec-secure-contexts/"><cite>Secure Contexts</cite></a>. URL: <a href="https://w3c.github.io/webappsec-secure-contexts/">https://w3c.github.io/webappsec-secure-contexts/</a>
+   <dt id="biblio-url">[URL]
+   <dd>Anne van Kesteren. <a href="https://url.spec.whatwg.org/"><cite>URL Standard</cite></a>. Living Standard. URL: <a href="https://url.spec.whatwg.org/">https://url.spec.whatwg.org/</a>
+   <dt id="biblio-webcryptoapi">[WebCryptoAPI]
+   <dd>Mark Watson. <a href="https://w3c.github.io/webcrypto/"><cite>Web Cryptography API</cite></a>. URL: <a href="https://w3c.github.io/webcrypto/">https://w3c.github.io/webcrypto/</a>
+   <dt id="biblio-webidl">[WEBIDL]
+   <dd>Edgar Chen; Timothy Gu. <a href="https://webidl.spec.whatwg.org/"><cite>Web IDL Standard</cite></a>. Living Standard. URL: <a href="https://webidl.spec.whatwg.org/">https://webidl.spec.whatwg.org/</a>
+  </dl>
+  <h2 class="no-num no-ref heading settled" id="idl-index"><span class="content">IDL Index</span><a class="self-link" href="#idl-index"></a></h2>
+<pre class="idl highlight def">[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed"><c- g>Exposed</c-></a>=(<c- n>FledgeWorkletGlobalScope</c->,<c- n>SharedStorageWorkletGlobalScope</c->)]
+<c- b>interface</c-> <a href="#privateaggregation"><code><c- g>PrivateAggregation</c-></code></a> {
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-privateaggregation-sendhistogramreport"><c- g>sendHistogramReport</c-></a>(<a data-link-type="idl-name" href="#dictdef-pahistogramcontribution"><c- n>PAHistogramContribution</c-></a> <a href="#dom-privateaggregation-sendhistogramreport-contribution-contribution"><code><c- g>contribution</c-></code></a>);
+};
+
+[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed"><c- g>Exposed</c-></a>=(<c- n>FledgeWorkletGlobalScope</c->,<c- n>SharedStorageWorkletGlobalScope</c->)]
+<c- b>dictionary</c-> <a href="#dictdef-pahistogramcontribution"><code><c- g>PAHistogramContribution</c-></code></a> {
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint"><c- b>bigint</c-></a> <a data-type="bigint " href="#dom-pahistogramcontribution-bucket"><code><c- g>bucket</c-></code></a>;
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-long"><c- b>long</c-></a> <a data-type="long " href="#dom-pahistogramcontribution-value"><code><c- g>value</c-></code></a>;
+};
+
+<c- b>partial</c-> <c- b>interface</c-> <a class="idl-code" data-link-type="interface" href="https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope"><c- g>SharedStorageWorkletGlobalScope</c-></a> {
+  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#privateaggregation"><c- n>PrivateAggregation</c-></a> <a data-readonly data-type="PrivateAggregation" href="#dom-sharedstorageworkletglobalscope-privateaggregation"><code><c- g>privateAggregation</c-></code></a>;
+};
+
+<c- b>partial</c-> <c- b>interface</c-> <a class="idl-code" data-link-type="interface" href="https://wicg.github.io/turtledove/#fledgeworkletglobalscope"><c- g>FledgeWorkletGlobalScope</c-></a> {
+  <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#privateaggregation"><c- n>PrivateAggregation</c-></a> <a data-readonly data-type="PrivateAggregation" href="#dom-fledgeworkletglobalscope-privateaggregation"><code><c- g>privateAggregation</c-></code></a>;
+};
+
+[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed"><c- g>Exposed</c-></a>=<c- n>FledgeWorkletGlobalScope</c->]
+<c- b>dictionary</c-> <a href="#dictdef-pasignalvalue"><code><c- g>PASignalValue</c-></code></a> {
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString"><c- b>DOMString</c-></a> <a data-type="DOMString " href="#dom-pasignalvalue-basevalue"><code><c- g>baseValue</c-></code></a>;
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-double"><c- b>double</c-></a> <a data-type="double " href="#dom-pasignalvalue-scale"><code><c- g>scale</c-></code></a>;
+  (<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint"><c- b>bigint</c-></a> <c- b>or</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-long"><c- b>long</c-></a>) <a data-type="(bigint or long) " href="#dom-pasignalvalue-offset"><code><c- g>offset</c-></code></a>;
+};
+
+[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed"><c- g>Exposed</c-></a>=<c- n>FledgeWorkletGlobalScope</c->]
+<c- b>dictionary</c-> <a href="#dictdef-paextendedhistogramcontribution"><code><c- g>PAExtendedHistogramContribution</c-></code></a> {
+  <c- b>required</c-> (<a data-link-type="idl-name" href="#dictdef-pasignalvalue"><c- n>PASignalValue</c-></a> <c- b>or</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint"><c- b>bigint</c-></a>) <a data-type="(PASignalValue or bigint) " href="#dom-paextendedhistogramcontribution-bucket"><code><c- g>bucket</c-></code></a>;
+  <c- b>required</c-> (<a data-link-type="idl-name" href="#dictdef-pasignalvalue"><c- n>PASignalValue</c-></a> <c- b>or</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-long"><c- b>long</c-></a>) <a data-type="(PASignalValue or long) " href="#dom-paextendedhistogramcontribution-value"><code><c- g>value</c-></code></a>;
+};
+
+[<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed"><c- g>Exposed</c-></a>=<c- n>FledgeWorkletGlobalScope</c->]
+<c- b>partial</c-> <c- b>interface</c-> <a class="idl-code" data-link-type="interface" href="#privateaggregation"><c- g>PrivateAggregation</c-></a> {
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-privateaggregation-reportcontributionforevent"><c- g>reportContributionForEvent</c-></a>(<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString"><c- b>DOMString</c-></a> <a href="#dom-privateaggregation-reportcontributionforevent-event-contribution-event"><code><c- g>event</c-></code></a>, <a data-link-type="idl-name" href="#dictdef-paextendedhistogramcontribution"><c- n>PAExtendedHistogramContribution</c-></a> <a href="#dom-privateaggregation-reportcontributionforevent-event-contribution-contribution"><code><c- g>contribution</c-></code></a>);
+};
+
+</pre>
+  <h2 class="no-num no-ref heading settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
+  <div style="counter-reset:issue">
+   <div class="issue"> Fill out intro <a class="issue-return" href="#issue-ee65b1dc" title="Jump to section">↵</a></div>
+   <div class="issue"> Is this timing ok? <a class="issue-return" href="#issue-86cd9fd0" title="Jump to section">↵</a></div>
+   <div class="issue"> Need to work out how to refer to the worklet. <a class="issue-return" href="#issue-62f18f5a" title="Jump to section">↵</a></div>
+   <div class="issue"> Should we spec enableDebugMode? It’s temporary anyway. <a class="issue-return" href="#issue-92e6f03d" title="Jump to section">↵</a></div>
+   <div class="issue"> Check that value can actually be zero in the pipeline. Also actually throw an error properly <a class="issue-return" href="#issue-7431afcd" title="Jump to section">↵</a></div>
+   <div class="issue"> Is there a better way to do overloading? <a class="issue-return" href="#issue-6b954b9c" title="Jump to section">↵</a></div>
+   <div class="issue"> Do we want to align naming with implementation? <a class="issue-return" href="#issue-6c6263d3" title="Jump to section">↵</a></div>
+   <div class="issue"> How do we handle the type for offsets? Do we make it universally bigint or do we have a separate PASignalValue and PASignalBucket? <a class="issue-return" href="#issue-aee9d58d" title="Jump to section">↵</a></div>
+   <div class="issue"> Probably move to algorithms? Or at least some of it. <a class="issue-return" href="#issue-5b10211a" title="Jump to section">↵</a></div>
+   <div class="issue"> should we avoid the weirdness around <var>scale</var> not being set by setting it somewhere? (Could add an assert) <a class="issue-return" href="#issue-1ff4f0b5" title="Jump to section">↵</a></div>
+   <div class="issue"> same for offset -- even worse as we can’t determine the type if it’s not set. <a class="issue-return" href="#issue-20d81011" title="Jump to section">↵</a></div>
+   <div class="issue"> where should this queue be given it has to outlive the fenced frame? <a class="issue-return" href="#issue-510bee71" title="Jump to section">↵</a></div>
+   <div class="issue"> Handle operation types, aggregation modes, aggregation coordinators, maybe retries/offline <a class="issue-return" href="#issue-e77e137b" title="Jump to section">↵</a></div>
+   <div class="issue"> Should we use "implementation-defined" instead? <a class="issue-return" href="#issue-aaafd09e" title="Jump to section">↵</a></div>
+   <div class="issue"> Fill out <a class="issue-return" href="#issue-a39b5350" title="Jump to section">↵</a></div>
+   <div class="issue"> Do we need to ensure the reports aren’t queued after being sent? <a class="issue-return" href="#issue-b92a47e8" title="Jump to section">↵</a></div>
+   <div class="issue"> <var>api</var> param <a class="issue-return" href="#issue-6f54c043" title="Jump to section">↵</a></div>
+   <div class="issue"> wording of how to assign <var>sufficient_budget</var> <a class="issue-return" href="#issue-cce8e53a" title="Jump to section">↵</a></div>
+   <div class="issue"> non-negative or positive value? <a class="issue-return" href="#issue-4e3d86bc" title="Jump to section">↵</a></div>
+   <div class="issue"> Do we need to address user settings here at all? <a class="issue-return" href="#issue-a82d4aa0" title="Jump to section">↵</a></div>
+   <div class="issue"> Batching <a class="issue-return" href="#issue-1ed24345" title="Jump to section">↵</a></div>
+   <div class="issue"> Do we want to specify how budgeting works? ARA does, but leaves the exact values up to the implementer. <a class="issue-return" href="#issue-aea683b6" title="Jump to section">↵</a></div>
+   <div class="issue"> Don’t we need to take into account the time "now" as well? <a class="issue-return" href="#issue-45815b88" title="Jump to section">↵</a></div>
+   <div class="issue"> Need to define the API enum or replace with a string or something. <a class="issue-return" href="#issue-afde777d" title="Jump to section">↵</a></div>
+   <div class="issue"> See Report delivery in ARA spec. We may want to align, but not sure it’s worth it
+while debug modes are around. <a class="issue-return" href="#issue-ab2c4421" title="Jump to section">↵</a></div>
+  </div>
+  <aside aria-labelledby="infopaneltitle-for-privateaggregation" class="dfn-panel" data-for="privateaggregation" id="infopanel-for-privateaggregation">
+   <span id="infopaneltitle-for-privateaggregation" style="display:none">Info about the 'PrivateAggregation' definition.</span><b><a href="#privateaggregation">#privateaggregation</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-privateaggregation">2.1. Worklet interface</a>
+    <li><a href="#ref-for-privateaggregation①">3. Exposing to Shared Storage</a>
+    <li><a href="#ref-for-privateaggregation②">4. Exposing to FLEDGE</a> <a href="#ref-for-privateaggregation③">(2)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-dictdef-pahistogramcontribution" class="dfn-panel" data-for="dictdef-pahistogramcontribution" id="infopanel-for-dictdef-pahistogramcontribution">
+   <span id="infopaneltitle-for-dictdef-pahistogramcontribution" style="display:none">Info about the 'PAHistogramContribution' definition.</span><b><a href="#dictdef-pahistogramcontribution">#dictdef-pahistogramcontribution</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dictdef-pahistogramcontribution">2.1. Worklet interface</a>
+    <li><a href="#ref-for-dictdef-pahistogramcontribution①">4. Exposing to FLEDGE</a>
+    <li><a href="#ref-for-dictdef-pahistogramcontribution②">5.1. Aggregatable report</a>
+    <li><a href="#ref-for-dictdef-pahistogramcontribution③">8. Algorithms</a>
+    <li><a href="#ref-for-dictdef-pahistogramcontribution④">8.1. Scheduling reports</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-dom-pahistogramcontribution-value" class="dfn-panel" data-for="dom-pahistogramcontribution-value" id="infopanel-for-dom-pahistogramcontribution-value">
+   <span id="infopaneltitle-for-dom-pahistogramcontribution-value" style="display:none">Info about the 'value' definition.</span><b><a href="#dom-pahistogramcontribution-value">#dom-pahistogramcontribution-value</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-pahistogramcontribution-value">2.1. Worklet interface</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-contributions-cache" class="dfn-panel" data-for="contributions-cache" id="infopanel-for-contributions-cache">
+   <span id="infopaneltitle-for-contributions-cache" style="display:none">Info about the 'contributions cache' definition.</span><b><a href="#contributions-cache">#contributions-cache</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-contributions-cache">2.1. Worklet interface</a> <a href="#ref-for-contributions-cache①">(2)</a>
+    <li><a href="#ref-for-contributions-cache②">3. Exposing to Shared Storage</a>
+    <li><a href="#ref-for-contributions-cache③">4. Exposing to FLEDGE</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-dom-privateaggregation-sendhistogramreport" class="dfn-panel" data-for="dom-privateaggregation-sendhistogramreport" id="infopanel-for-dom-privateaggregation-sendhistogramreport">
+   <span id="infopaneltitle-for-dom-privateaggregation-sendhistogramreport" style="display:none">Info about the 'sendHistogramReport(PAHistogramContribution contribution)' definition.</span><b><a href="#dom-privateaggregation-sendhistogramreport">#dom-privateaggregation-sendhistogramreport</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-privateaggregation-sendhistogramreport">2.1. Worklet interface</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-process-the-contributions-cache" class="dfn-panel" data-for="process-the-contributions-cache" id="infopanel-for-process-the-contributions-cache">
+   <span id="infopaneltitle-for-process-the-contributions-cache" style="display:none">Info about the 'process the contributions cache' definition.</span><b><a href="#process-the-contributions-cache">#process-the-contributions-cache</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-process-the-contributions-cache">2.1. Worklet interface</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-process-the-shared-storage-contributions-cache" class="dfn-panel" data-for="process-the-shared-storage-contributions-cache" id="infopanel-for-process-the-shared-storage-contributions-cache">
+   <span id="infopaneltitle-for-process-the-shared-storage-contributions-cache" style="display:none">Info about the 'process the shared storage contributions cache' definition.</span><b><a href="#process-the-shared-storage-contributions-cache">#process-the-shared-storage-contributions-cache</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-process-the-shared-storage-contributions-cache">2.1. Worklet interface</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-dictdef-pasignalvalue" class="dfn-panel" data-for="dictdef-pasignalvalue" id="infopanel-for-dictdef-pasignalvalue">
+   <span id="infopaneltitle-for-dictdef-pasignalvalue" style="display:none">Info about the 'PASignalValue' definition.</span><b><a href="#dictdef-pasignalvalue">#dictdef-pasignalvalue</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dictdef-pasignalvalue">4. Exposing to FLEDGE</a> <a href="#ref-for-dictdef-pasignalvalue①">(2)</a> <a href="#ref-for-dictdef-pasignalvalue②">(3)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-dom-pasignalvalue-basevalue" class="dfn-panel" data-for="dom-pasignalvalue-basevalue" id="infopanel-for-dom-pasignalvalue-basevalue">
+   <span id="infopaneltitle-for-dom-pasignalvalue-basevalue" style="display:none">Info about the 'baseValue' definition.</span><b><a href="#dom-pasignalvalue-basevalue">#dom-pasignalvalue-basevalue</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-pasignalvalue-basevalue">4. Exposing to FLEDGE</a> <a href="#ref-for-dom-pasignalvalue-basevalue①">(2)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-dom-pasignalvalue-scale" class="dfn-panel" data-for="dom-pasignalvalue-scale" id="infopanel-for-dom-pasignalvalue-scale">
+   <span id="infopaneltitle-for-dom-pasignalvalue-scale" style="display:none">Info about the 'scale' definition.</span><b><a href="#dom-pasignalvalue-scale">#dom-pasignalvalue-scale</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-pasignalvalue-scale">4. Exposing to FLEDGE</a> <a href="#ref-for-dom-pasignalvalue-scale①">(2)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-dom-pasignalvalue-offset" class="dfn-panel" data-for="dom-pasignalvalue-offset" id="infopanel-for-dom-pasignalvalue-offset">
+   <span id="infopaneltitle-for-dom-pasignalvalue-offset" style="display:none">Info about the 'offset' definition.</span><b><a href="#dom-pasignalvalue-offset">#dom-pasignalvalue-offset</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-pasignalvalue-offset">4. Exposing to FLEDGE</a> <a href="#ref-for-dom-pasignalvalue-offset①">(2)</a> <a href="#ref-for-dom-pasignalvalue-offset②">(3)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-dictdef-paextendedhistogramcontribution" class="dfn-panel" data-for="dictdef-paextendedhistogramcontribution" id="infopanel-for-dictdef-paextendedhistogramcontribution">
+   <span id="infopaneltitle-for-dictdef-paextendedhistogramcontribution" style="display:none">Info about the 'PAExtendedHistogramContribution' definition.</span><b><a href="#dictdef-paextendedhistogramcontribution">#dictdef-paextendedhistogramcontribution</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dictdef-paextendedhistogramcontribution">4. Exposing to FLEDGE</a> <a href="#ref-for-dictdef-paextendedhistogramcontribution①">(2)</a> <a href="#ref-for-dictdef-paextendedhistogramcontribution②">(3)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-dom-paextendedhistogramcontribution-bucket" class="dfn-panel" data-for="dom-paextendedhistogramcontribution-bucket" id="infopanel-for-dom-paextendedhistogramcontribution-bucket">
+   <span id="infopaneltitle-for-dom-paextendedhistogramcontribution-bucket" style="display:none">Info about the 'bucket' definition.</span><b><a href="#dom-paextendedhistogramcontribution-bucket">#dom-paextendedhistogramcontribution-bucket</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-paextendedhistogramcontribution-bucket">4. Exposing to FLEDGE</a> <a href="#ref-for-dom-paextendedhistogramcontribution-bucket①">(2)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-dom-paextendedhistogramcontribution-value" class="dfn-panel" data-for="dom-paextendedhistogramcontribution-value" id="infopanel-for-dom-paextendedhistogramcontribution-value">
+   <span id="infopaneltitle-for-dom-paextendedhistogramcontribution-value" style="display:none">Info about the 'value' definition.</span><b><a href="#dom-paextendedhistogramcontribution-value">#dom-paextendedhistogramcontribution-value</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-paextendedhistogramcontribution-value">4. Exposing to FLEDGE</a> <a href="#ref-for-dom-paextendedhistogramcontribution-value①">(2)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-process-the-fledge-contributions-cache" class="dfn-panel" data-for="process-the-fledge-contributions-cache" id="infopanel-for-process-the-fledge-contributions-cache">
+   <span id="infopaneltitle-for-process-the-fledge-contributions-cache" style="display:none">Info about the 'process the FLEDGE contributions cache' definition.</span><b><a href="#process-the-fledge-contributions-cache">#process-the-fledge-contributions-cache</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-process-the-fledge-contributions-cache">2.1. Worklet interface</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-fill-in-the-signal-value" class="dfn-panel" data-for="fill-in-the-signal-value" id="infopanel-for-fill-in-the-signal-value">
+   <span id="infopaneltitle-for-fill-in-the-signal-value" style="display:none">Info about the 'fill in the signal value' definition.</span><b><a href="#fill-in-the-signal-value">#fill-in-the-signal-value</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-fill-in-the-signal-value">4. Exposing to FLEDGE</a> <a href="#ref-for-fill-in-the-signal-value①">(2)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-determine-the-numeric-value" class="dfn-panel" data-for="determine-the-numeric-value" id="infopanel-for-determine-the-numeric-value">
+   <span id="infopaneltitle-for-determine-the-numeric-value" style="display:none">Info about the 'determine the numeric value' definition.</span><b><a href="#determine-the-numeric-value">#determine-the-numeric-value</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-determine-the-numeric-value">4. Exposing to FLEDGE</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-privateaggregation-validate-an-extended-histogram-contribution" class="dfn-panel" data-for="privateaggregation-validate-an-extended-histogram-contribution" id="infopanel-for-privateaggregation-validate-an-extended-histogram-contribution">
+   <span id="infopaneltitle-for-privateaggregation-validate-an-extended-histogram-contribution" style="display:none">Info about the 'validate an extended histogram contribution' definition.</span><b><a href="#privateaggregation-validate-an-extended-histogram-contribution">#privateaggregation-validate-an-extended-histogram-contribution</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-privateaggregation-validate-an-extended-histogram-contribution">4. Exposing to FLEDGE</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-dom-privateaggregation-reportcontributionforevent" class="dfn-panel" data-for="dom-privateaggregation-reportcontributionforevent" id="infopanel-for-dom-privateaggregation-reportcontributionforevent">
+   <span id="infopaneltitle-for-dom-privateaggregation-reportcontributionforevent" style="display:none">Info about the 'reportContributionForEvent(DOMString event, PAExtendedHistogramContribution contribution)' definition.</span><b><a href="#dom-privateaggregation-reportcontributionforevent">#dom-privateaggregation-reportcontributionforevent</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dom-privateaggregation-reportcontributionforevent">4. Exposing to FLEDGE</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-aggregatable-report" class="dfn-panel" data-for="aggregatable-report" id="infopanel-for-aggregatable-report">
+   <span id="infopaneltitle-for-aggregatable-report" style="display:none">Info about the '5.1. Aggregatable report' definition.</span><b><a href="#aggregatable-report">#aggregatable-report</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-aggregatable-report">5.1. Aggregatable report</a>
+    <li><a href="#ref-for-aggregatable-report">6. Storage</a>
+    <li><a href="#ref-for-aggregatable-report①">8. Algorithms</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-aggregatable-report-reporting-endpoint" class="dfn-panel" data-for="aggregatable-report-reporting-endpoint" id="infopanel-for-aggregatable-report-reporting-endpoint">
+   <span id="infopaneltitle-for-aggregatable-report-reporting-endpoint" style="display:none">Info about the 'reporting endpoint' definition.</span><b><a href="#aggregatable-report-reporting-endpoint">#aggregatable-report-reporting-endpoint</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-aggregatable-report-reporting-endpoint">8. Algorithms</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-aggregatable-report-original-report-time" class="dfn-panel" data-for="aggregatable-report-original-report-time" id="infopanel-for-aggregatable-report-original-report-time">
+   <span id="infopaneltitle-for-aggregatable-report-original-report-time" style="display:none">Info about the 'original report time' definition.</span><b><a href="#aggregatable-report-original-report-time">#aggregatable-report-original-report-time</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-aggregatable-report-original-report-time">8. Algorithms</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-aggregatable-report-contributions" class="dfn-panel" data-for="aggregatable-report-contributions" id="infopanel-for-aggregatable-report-contributions">
+   <span id="infopaneltitle-for-aggregatable-report-contributions" style="display:none">Info about the 'contributions' definition.</span><b><a href="#aggregatable-report-contributions">#aggregatable-report-contributions</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-aggregatable-report-contributions">8. Algorithms</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-aggregatable-report-api" class="dfn-panel" data-for="aggregatable-report-api" id="infopanel-for-aggregatable-report-api">
+   <span id="infopaneltitle-for-aggregatable-report-api" style="display:none">Info about the 'api' definition.</span><b><a href="#aggregatable-report-api">#aggregatable-report-api</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-aggregatable-report-api">8. Algorithms</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-aggregatable-report-report-id" class="dfn-panel" data-for="aggregatable-report-report-id" id="infopanel-for-aggregatable-report-report-id">
+   <span id="infopaneltitle-for-aggregatable-report-report-id" style="display:none">Info about the 'report ID' definition.</span><b><a href="#aggregatable-report-report-id">#aggregatable-report-report-id</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-aggregatable-report-report-id">8. Algorithms</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-worklet-type-identifier" class="dfn-panel" data-for="worklet-type-identifier" id="infopanel-for-worklet-type-identifier">
+   <span id="infopaneltitle-for-worklet-type-identifier" style="display:none">Info about the '5.2. Worklet type identifier' definition.</span><b><a href="#worklet-type-identifier">#worklet-type-identifier</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-worklet-type-identifier">5.1. Aggregatable report</a>
+    <li><a href="#ref-for-worklet-type-identifier">5.2. Worklet type identifier</a>
+    <li><a href="#ref-for-worklet-type-identifier①">8. Algorithms</a> <a href="#ref-for-worklet-type-identifier②">(2)</a>
+    <li><a href="#ref-for-worklet-type-identifier③">8.1. Scheduling reports</a> <a href="#ref-for-worklet-type-identifier④">(2)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-worklet-type-identifier-fledge" class="dfn-panel" data-for="worklet-type-identifier-fledge" id="infopanel-for-worklet-type-identifier-fledge">
+   <span id="infopaneltitle-for-worklet-type-identifier-fledge" style="display:none">Info about the 'fledge' definition.</span><b><a href="#worklet-type-identifier-fledge">#worklet-type-identifier-fledge</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-worklet-type-identifier-fledge">4. Exposing to FLEDGE</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-worklet-type-identifier-shared-storage" class="dfn-panel" data-for="worklet-type-identifier-shared-storage" id="infopanel-for-worklet-type-identifier-shared-storage">
+   <span id="infopaneltitle-for-worklet-type-identifier-shared-storage" style="display:none">Info about the 'shared-storage' definition.</span><b><a href="#worklet-type-identifier-shared-storage">#worklet-type-identifier-shared-storage</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-worklet-type-identifier-shared-storage">3. Exposing to Shared Storage</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-signal-base-value" class="dfn-panel" data-for="signal-base-value" id="infopanel-for-signal-base-value">
+   <span id="infopaneltitle-for-signal-base-value" style="display:none">Info about the '5.3. Signal base value' definition.</span><b><a href="#signal-base-value">#signal-base-value</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-signal-base-value">4. Exposing to FLEDGE</a> <a href="#ref-for-signal-base-value①">(2)</a>
+    <li><a href="#ref-for-signal-base-value">5.3. Signal base value</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-signal-base-value-winning-bid" class="dfn-panel" data-for="signal-base-value-winning-bid" id="infopanel-for-signal-base-value-winning-bid">
+   <span id="infopaneltitle-for-signal-base-value-winning-bid" style="display:none">Info about the 'winning-bid' definition.</span><b><a href="#signal-base-value-winning-bid">#signal-base-value-winning-bid</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-signal-base-value-winning-bid">4. Exposing to FLEDGE</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-signal-base-value-highest-scoring-other-bid" class="dfn-panel" data-for="signal-base-value-highest-scoring-other-bid" id="infopanel-for-signal-base-value-highest-scoring-other-bid">
+   <span id="infopaneltitle-for-signal-base-value-highest-scoring-other-bid" style="display:none">Info about the 'highest-scoring-other-bid' definition.</span><b><a href="#signal-base-value-highest-scoring-other-bid">#signal-base-value-highest-scoring-other-bid</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-signal-base-value-highest-scoring-other-bid">4. Exposing to FLEDGE</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-signal-base-value-script-run-time" class="dfn-panel" data-for="signal-base-value-script-run-time" id="infopanel-for-signal-base-value-script-run-time">
+   <span id="infopaneltitle-for-signal-base-value-script-run-time" style="display:none">Info about the 'script-run-time' definition.</span><b><a href="#signal-base-value-script-run-time">#signal-base-value-script-run-time</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-signal-base-value-script-run-time">4. Exposing to FLEDGE</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-signal-base-value-signals-fetch-time" class="dfn-panel" data-for="signal-base-value-signals-fetch-time" id="infopanel-for-signal-base-value-signals-fetch-time">
+   <span id="infopaneltitle-for-signal-base-value-signals-fetch-time" style="display:none">Info about the 'signals-fetch-time' definition.</span><b><a href="#signal-base-value-signals-fetch-time">#signal-base-value-signals-fetch-time</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-signal-base-value-signals-fetch-time">4. Exposing to FLEDGE</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-signal-base-value-bid-reject-reason" class="dfn-panel" data-for="signal-base-value-bid-reject-reason" id="infopanel-for-signal-base-value-bid-reject-reason">
+   <span id="infopaneltitle-for-signal-base-value-bid-reject-reason" style="display:none">Info about the 'bid-reject-reason' definition.</span><b><a href="#signal-base-value-bid-reject-reason">#signal-base-value-bid-reject-reason</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-signal-base-value-bid-reject-reason">4. Exposing to FLEDGE</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-aggregatable-report-cache" class="dfn-panel" data-for="aggregatable-report-cache" id="infopanel-for-aggregatable-report-cache">
+   <span id="infopaneltitle-for-aggregatable-report-cache" style="display:none">Info about the 'aggregatable report cache' definition.</span><b><a href="#aggregatable-report-cache">#aggregatable-report-cache</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-aggregatable-report-cache">8.1. Scheduling reports</a> <a href="#ref-for-aggregatable-report-cache①">(2)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-max-stored-reports" class="dfn-panel" data-for="max-stored-reports" id="infopanel-for-max-stored-reports">
+   <span id="infopaneltitle-for-max-stored-reports" style="display:none">Info about the 'Max stored reports' definition.</span><b><a href="#max-stored-reports">#max-stored-reports</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-max-stored-reports">8.1. Scheduling reports</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-privateaggregation-obtain-a-reporting-endpoint" class="dfn-panel" data-for="privateaggregation-obtain-a-reporting-endpoint" id="infopanel-for-privateaggregation-obtain-a-reporting-endpoint">
+   <span id="infopaneltitle-for-privateaggregation-obtain-a-reporting-endpoint" style="display:none">Info about the 'obtain a reporting endpoint' definition.</span><b><a href="#privateaggregation-obtain-a-reporting-endpoint">#privateaggregation-obtain-a-reporting-endpoint</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-privateaggregation-obtain-a-reporting-endpoint">8. Algorithms</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-privateaggregation-obtain-an-aggregatable-report" class="dfn-panel" data-for="privateaggregation-obtain-an-aggregatable-report" id="infopanel-for-privateaggregation-obtain-an-aggregatable-report">
+   <span id="infopaneltitle-for-privateaggregation-obtain-an-aggregatable-report" style="display:none">Info about the 'obtain an aggregatable report' definition.</span><b><a href="#privateaggregation-obtain-an-aggregatable-report">#privateaggregation-obtain-an-aggregatable-report</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-privateaggregation-obtain-an-aggregatable-report">8.1. Scheduling reports</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-privateaggregation-report-sending-steps" class="dfn-panel" data-for="privateaggregation-report-sending-steps" id="infopanel-for-privateaggregation-report-sending-steps">
+   <span id="infopaneltitle-for-privateaggregation-report-sending-steps" style="display:none">Info about the 'report sending steps' definition.</span><b><a href="#privateaggregation-report-sending-steps">#privateaggregation-report-sending-steps</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-privateaggregation-report-sending-steps">3. Exposing to Shared Storage</a>
+    <li><a href="#ref-for-privateaggregation-report-sending-steps①">4. Exposing to FLEDGE</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-privateaggregation-consume-budget-if-permitted" class="dfn-panel" data-for="privateaggregation-consume-budget-if-permitted" id="infopanel-for-privateaggregation-consume-budget-if-permitted">
+   <span id="infopaneltitle-for-privateaggregation-consume-budget-if-permitted" style="display:none">Info about the 'consume budget if permitted' definition.</span><b><a href="#privateaggregation-consume-budget-if-permitted">#privateaggregation-consume-budget-if-permitted</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-privateaggregation-consume-budget-if-permitted">8.1. Scheduling reports</a>
+   </ul>
+  </aside>
+<script>/* script-dfn-panel */
+"use strict";
+{
+    function queryAll(sel) {
+        return [].slice.call(document.querySelectorAll(sel));
+    }
+
+    // Add popup behavior to all dfns to show the corresponding dfn-panel.
+    var dfns = document.querySelectorAll('.dfn-paneled');
+    for (let dfn of dfns) { insertDfnPopupAction(dfn); }
+
+    document.body.addEventListener("click", (e) => {
+        // If not handled already, just hide all dfn panels.
+        hideAllDfnPanels();
+    });
+
+    function hideAllDfnPanels() {
+        // Turn off any currently "on" or "activated" panels.
+        queryAll(".dfn-panel.on, .dfn-panel.activated").forEach(el=>hideDfnPanel(el));
+    }
+
+    function showDfnPanel(dfnPanel, dfn) {
+        hideAllDfnPanels(); // Only display one at this time.
+        dfn.setAttribute("aria-expanded", "true");
+        dfnPanel.classList.add("on");
+        dfnPanel.style.left = "5px";
+        dfnPanel.style.top = "0px";
+        const panelRect = dfnPanel.getBoundingClientRect();
+        const panelWidth = panelRect.right - panelRect.left;
+        if (panelRect.right > document.body.scrollWidth) {
+            // Panel's overflowing the screen.
+            // Just drop it below the dfn and flip it rightward instead.
+            // This still wont' fix things if the screen is *really* wide,
+            // but fixing that's a lot harder without 'anchor()'.
+            dfnPanel.style.top = "1.5em";
+            dfnPanel.style.left = "auto";
+            dfnPanel.style.right = "0px";
+        }
+    }
+
+    function pinDfnPanel(dfnPanel) {
+        // Switch it to "activated" state, which pins it.
+        dfnPanel.classList.add("activated");
+        dfnPanel.style.left = null;
+        dfnPanel.style.top = null;
+    }
+
+    function hideDfnPanel(dfnPanel, dfn) {
+        if(!dfn) {
+            dfn = document.getElementById(dfnPanel.getAttribute("data-for"));
+        }
+        dfn.setAttribute("aria-expanded", "false")
+        dfnPanel.classList.remove("on");
+        dfnPanel.classList.remove("activated");
+    }
+
+    function toggleDfnPanel(dfnPanel, dfn) {
+        if(dfnPanel.classList.contains("on")) {
+            hideDfnPanel(dfnPanel, dfn);
+        } else {
+            showDfnPanel(dfnPanel, dfn);
+        }
+    }
+
+    function insertDfnPopupAction(dfn) {
+        // Find dfn panel
+        const dfnPanel = document.querySelector(`.dfn-panel[data-for='${dfn.id}']`);
+        if (dfnPanel) {
+            const panelWrapper = document.createElement('span');
+            panelWrapper.appendChild(dfnPanel);
+            panelWrapper.style.position = "relative";
+            panelWrapper.style.height = "0px";
+            dfn.insertAdjacentElement("afterend", panelWrapper);
+            dfn.setAttribute('role', 'button');
+            dfn.setAttribute('aria-expanded', 'false')
+            dfn.tabIndex = 0;
+            dfn.classList.add('has-dfn-panel');
+            dfn.addEventListener('click', (event) => {
+                showDfnPanel(dfnPanel, dfn);
+                event.stopPropagation();
+            });
+            dfn.addEventListener('keypress', (event) => {
+                const kc = event.keyCode;
+                // 32->Space, 13->Enter
+                if(kc == 32 || kc == 13) {
+                    toggleDfnPanel(dfnPanel, dfn);
+                    event.stopPropagation();
+                    event.preventDefault();
+                }
+            });
+
+            dfnPanel.addEventListener('click', (event) => {
+                pinDfnPanel(dfnPanel);
+                event.stopPropagation();
+            });
+
+            dfnPanel.addEventListener('keydown', (event) => {
+                if(event.keyCode == 27) { // Escape key
+                    hideDfnPanel(dfnPanel, dfn);
+                    event.stopPropagation();
+                    event.preventDefault();
+                }
+            })
+
+        } else {
+            console.log("Couldn't find .dfn-panel[data-for='" + dfn.id + "']");
+        }
+    }
+}
+</script>
