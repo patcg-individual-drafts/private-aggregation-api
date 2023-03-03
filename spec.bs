@@ -236,8 +236,9 @@ An aggregatable report is a [=struct=] with the following items:
 : <dfn>report ID</dfn>
 :: A string
 
-Issue: Handle operation types, aggregation modes, aggregation coordinators, maybe retries/offline
 </dl>
+
+Issue: Handle operation types, aggregation modes, aggregation coordinators, maybe retries/offline
 
 <h3 dfn-type=dfn>Worklet type identifier</h3>
 A worklet type identifier is one of the following:
