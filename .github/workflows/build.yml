@@ -1,18 +1,21 @@
 name: Build
 on:
+  pull_request:
+    paths: ["**.bs"]
   push:
     branches: [main]
     paths: ["**.bs"]
 jobs:
   build:
     name: Build
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: w3c/spec-prod@v2
-        with:
-          TOOLCHAIN: bikeshed
-          DESTINATION: index.html
-          SOURCE: spec.bs
-          GH_PAGES_BRANCH: gh-pages
-          BUILD_FAIL_ON: warning
+    - uses: actions/checkout@v3
+    - name: Build
+      run: make
+    - name: Deploy
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./out
