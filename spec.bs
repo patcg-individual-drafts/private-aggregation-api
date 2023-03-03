@@ -44,8 +44,8 @@ interface PrivateAggregation {
 
 [Exposed=(FledgeWorkletGlobalScope,SharedStorageWorkletGlobalScope)]
 dictionary PAHistogramContribution {
-  bigint bucket;
-  long value;
+  required bigint bucket;
+  required long value;
 };
 </xmp>
 
