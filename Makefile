@@ -21,8 +21,6 @@ $(OUT_DIR)/spec.html: spec.bs $(OUT_DIR)
 		exit 22 \
 	);
 
-remote: spec.html
-
 $(OUT_DIR):
 	@ mkdir -p $@
 
