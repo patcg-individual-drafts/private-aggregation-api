@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: w3c/spec-prod@v2
+      - uses: pythagoraskitty/w3c-spec-prod@v1.2
         with:
           TOOLCHAIN: bikeshed
           DESTINATION: pr-preview/${{ github.ref }}/index.html
