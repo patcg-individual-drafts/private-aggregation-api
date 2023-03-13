@@ -7,7 +7,7 @@ Group: patcg
 Repository: patcg-individual-drafts/private-aggregation-api
 URL: https://patcg-individual-drafts.github.io/private-aggregation-api
 Editor: Alexander Turner, Google https://www.google.com, alexmt@chromium.org
-Abstract: A generic API for measuring aggregate, cross-site data in a privacy preserving manner.
+Abstract: A generic API for measuring aggregate, cross-site data in a privacy preserving manner. (TODO: expand?)
 
 <!--- Warning: Not Ready -->
 Markup Shorthands: markdown on
@@ -73,11 +73,11 @@ To <dfn>process the contributions cache</dfn> given a [=contributions cache=] |c
 1. Let |scope| be the {{WorkletGlobalScope}} associated with |contributionsCache|.
 1. If |scope| is a {{SharedStorageWorkletGlobalScope}}:
     1. [=Process the shared storage contributions cache=] given |contributionsCache| and |scope|.
-    1. Return
+    1. Return.
 1. [=Assert=] |scope| is a {{FledgeWorkletGlobalScope}}.
 1. [=Process the FLEDGE contributions cache=] given |contributionsCache|.
 
-Issue: Is there a better way to do overloading?
+Issue: Is there a better way to do overloading/asserts here?
 
 Exposing to Shared Storage {#shared-storage}
 ============================================
@@ -129,14 +129,14 @@ To <dfn>process the FLEDGE contributions cache</dfn> given a [=contributions cac
         1.  Set |contributions|'s {{PAExtendedHistogramContribution/value}} be the result of [=filling in the signal value=] of |contributions|'s {{PAExtendedHistogramContribution/value}}.
     1. Otherwise, [=assert=]: |contribution| is a {{PAHistogramContribution}}.
     1. [=set/Append=] |contribution| to |filledInContributions|.
-1. Run the [=PrivateAggregation/report sending steps=] with |scope|'s [=relevant settings object=]'s [=origin=], "<code>[=worklet type identifier/fledge=]</code>" and |contributionsCache|.
+1. Run the [=PrivateAggregation/report sending steps=] with |scope|'s [=relevant settings object=]'s [=origin=], "<code>[=worklet type identifier/fledge=]</code>" and |filledInContributions|.
 
 Issue: Probably move to algorithms? Or at least some of it.
 
 To <dfn>fill in the signal value</dfn> given a {{PASignalValue}} |value|, run the following steps:
 1. [=Assert=] |value|'s {{PASignalValue/baseValue}} is a valid [=signal base value=]. (TODO: do we need to convert it to a string from a DOMString?)
 1. Let |numericBaseValue| be the result of [=determining the numeric value=] of |value|'s {{PASignalValue/baseValue}}.
-1. Let |scale| be the {{double}} 1.0
+1. Let |scale| be the {{double}} 1.0.
 1. If |value|'s {{PASignalValue/scale}} is set, set |scale| to |value|'s {{PASignalValue/scale}}.
 1. Let |scaledBaseValue| be the result of multiplying |scale| with |numericBaseValue|.
 1. Let |scaledBaseValue| be the integer result of rounding |scaledBaseValue| to the nearest integer. If two integers are equally close, the result should be the integer closer to negative infinity. (TODO: add refs here?)
@@ -165,23 +165,26 @@ A signal base value is one of the following:
 
 To <dfn>determine the numeric value</dfn> of a [=signal base value=] |signalBaseValue|, run the following steps:
 1. If |signalBaseValue| is "<code>[=signal base value/winning-bid=]</code>":
-    1. If there was a winning bid, return its score.
+    1. If there was a winning bid, return its bid value.
     1. Otherwise, return 0.
 1. If |signalBaseValue| is "<code>[=signal base value/highest-scoring-other-bid=]</code>":
-    1. If there was a bid that did not win, return the score of the highest scoring bid that did not win.
+    1. If there was a bid that did not win, return the bid value of the highest <em>scoring</em> bid that did not win. (TODO: check behavior if there's no winner.)
     1. Otherwise, return 0.
 1. If |signalBaseValue| is "<code>[=signal base value/script-run-time=]</code>":
     1. Return the time the script took to run in milliseconds. (TODO: Which script??)
 1. If |signalBaseValue| is "<code>[=signal base value/signals-fetch-time=]</code>":
-    1. If there was a trusted bidding signals network fetch that successfully completed, return the time it took for that request to complete in milliseconds.
+    1. If there was a trusted bidding signals network fetch that successfully completed, return the time it took for that request to complete in milliseconds. (TODO: clarify which request.)
     1. Otherwise, return 0.
 1. If |signalBaseValue| is "<code>[=signal base value/bid-reject-reason=]</code>":
     1. TODO: need to scope to a bid. The bid associated with this call? How do we do that nicely?
+    1. TODO: consider moving this part to its own algorithm
     1. If the bid did not succeed purely because it didn't meet the required k-anonymity threshold, return 0.
     1. If the bid was invalid, return 1.
     1. If the bid was below the auction floor, return 2. (TODO: What does this mean?)
     1. Etc.
 1. [=Assert=]: false.
+
+Issue: Do we need any sort of contextual argument (e.g. representing the auction)?
 
 <!-- [Exposed=FledgeWorkletGlobalScope]
 dictionary PASignalValue {
@@ -250,13 +253,15 @@ A worklet type identifier is one of the following:
 
 </dl>
 
+Issue: consider renaming worklet type identifier
+
 <h3 dfn-type=dfn>Signal base value</h3>
 A signal base value is one of the following:
 <dl dfn-for="signal base value">
 : "<dfn><code>winning-bid</code></dfn>"
-:: The score of the winning bid.
+:: The bid value of the winning bid.
 : "<dfn><code>highest-scoring-other-bid</code></dfn>"
-:: The score of the highest scoring bid that did not win.
+:: The bid value of the highest scoring bid that did not win.
 : "<dfn><code>script-run-time</code></dfn>"
 :: The running time of the script in ms(?).
 : "<dfn><code>signals-fetch-time</code></dfn>"
@@ -266,6 +271,7 @@ A signal base value is one of the following:
 
 </dl>
 
+Issue: Make sure these definitions match "determine the numeric value" algorithm
 
 Storage {#storage}
 ==================
@@ -290,7 +296,6 @@ Algorithms {#algorithms}
 
 To <dfn algorithm for="PrivateAggregation">obtain a reporting endpoint</dfn> given an [=Origin=] |reportingOrigin| and [=worklet type identifier=] |api|:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
-1. BLAH
 1. Let |path| be the [=string/concatenation=] of «"<code>.well-known/private-aggregation/report-</code>", |api|».
 1. Let |base| be the result on running the [=URL parser=] on the [=serialization of an origin|serialization=] of |reportingOrigin|.
 1. Return the result of running the [=URL parser=] on |path| with |base|.
@@ -319,11 +324,11 @@ The <dfn algorithm for="PrivateAggregation">report sending steps</dfn> given an 
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |approvedContributions| be a new empty [=ordered set=].
 1. [=set/iterate|For each=] |contribution| of |contributions|:
-  <!-- 1. [=Assert=]: |contribution| is a {{PAHistogramContribution}}. -->
-  1. [=Assert=]: |contribution|'s |value| is non-negative.
-  1. Let |sufficient_budget| be the result of running [=PrivateAggregation/consume budget if permitted=] on |value|, |reportingOrigin| and |api|.
-  1. If |sufficient_budget|, [=set/Append=] |contribution| to |approvedContributions|.
-  1. Otherwise, [=iteration/break=]
+    <!-- 1. [=Assert=]: |contribution| is a {{PAHistogramContribution}}. -->
+    1. [=Assert=]: |contribution|'s |value| is non-negative.
+    1. Let |sufficient_budget| be the result of running [=PrivateAggregation/consume budget if permitted=] on |value|, |reportingOrigin| and |api|.
+    1. If |sufficient_budget|, [=set/Append=] |contribution| to |approvedContributions|.
+    1. Otherwise, [=iteration/break=]
 1. If |approvedContributions| is [=set/empty=], return.
 1. Let |report| be the result of [=PrivateAggregation/obtaining an aggregatable report=] given |reportingOrigin|, |api| and |approvedContributions|.
 1. If the user agent's [=aggregatable report cache=] [=set/size=] is larger than [=max stored reports=], return.
@@ -341,11 +346,11 @@ Issue: Do we need to address user settings here at all?
 
 Issue: Batching
 
-To <dfn algorithm for="PrivateAggregation">consume budget if permitted</dfn> given a {{long}} |value|, an [=origin=] |origin| and an [=worklet type identifier=] |api| are a user agent-determined sequence of steps that returns a {{boolean}} indicating whether there is a sufficient 'contribution budget' left to send the requested contribution |value|. The algorithm should assume that the contribution will be sent if true is returned (and won't otherwise).
+To <dfn algorithm for="PrivateAggregation">consume budget if permitted</dfn> given a {{long}} |value|, an [=origin=] <var ignore=''>origin</var> and an [=worklet type identifier=] |api| are a user agent-determined sequence of steps that returns a {{boolean}} indicating whether there is a sufficient 'contribution budget' left to send the requested contribution |value|. The algorithm should assume that the contribution will be sent if true is returned (and won't otherwise).
 
 Issue: Do we want to specify how budgeting works? ARA does, but leaves the exact values up to the implementer.
 
-Example algo:
+<!-- Example algo:
 1. Maintain a store somewhere of all previous reports or like the last 24 h or something
 1. Let |budget_already_used| be 0.
 1. For each entry in this store:
@@ -359,7 +364,7 @@ Example algo:
     1. Add entry to the store
 1. Return |is_allowed|.
 
-So we could do this and then specify that implementers should use an algo with similar results to this? Or we could say the user agent may reject additional reports for algorithmic simplicity or something. => Probably a question for spec mentor and/or john and/or charlie.
+So we could do this and then specify that implementers should use an algo with similar results to this? Or we could say the user agent may reject additional reports for algorithmic simplicity or something. -->
 
 Issue: Don't we need to take into account the time "now" as well?
 
