@@ -6,9 +6,9 @@
   <meta content="w3c/CG-DRAFT" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="Bikeshed version 077497365, updated Thu Mar 2 15:15:29 2023 -0800" name="generator">
+  <meta content="Bikeshed version d9f9c3533, updated Fri Mar 10 11:31:29 2023 -0800" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="e8495da6d075aa83f99a9288d4d477f858219306" name="document-revision">
+  <meta content="6eb78377d2cf1e5dcaf79b1b5b4806fe9c77523b" name="document-revision">
 <style>/* style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -589,7 +589,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-03-09">9 March 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-03-13">13 March 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -610,7 +610,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   </div>
   <div class="p-summary" data-fill-with="abstract">
    <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
-   <p>A generic API for measuring aggregate, cross-site data in a privacy preserving manner.</p>
+   <p>A generic API for measuring aggregate, cross-site data in a privacy preserving manner. (TODO: expand?)</p>
   </div>
   <h2 class="no-num no-toc no-ref heading settled" id="sotd"><span class="content">Status of this document</span></h2>
   <div data-fill-with="status">
@@ -706,14 +706,14 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
       <li data-md>
        <p><a data-link-type="dfn" href="#process-the-shared-storage-contributions-cache" id="ref-for-process-the-shared-storage-contributions-cache">Process the shared storage contributions cache</a> given <var>contributionsCache</var> and <var>scope</var>.</p>
       <li data-md>
-       <p>Return</p>
+       <p>Return.</p>
      </ol>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert">Assert</a> <var>scope</var> is a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/turtledove/#fledgeworkletglobalscope" id="ref-for-fledgeworkletglobalscope">FledgeWorkletGlobalScope</a></code>.</p>
     <li data-md>
      <p><a data-link-type="dfn" href="#process-the-fledge-contributions-cache" id="ref-for-process-the-fledge-contributions-cache">Process the FLEDGE contributions cache</a> given <var>contributionsCache</var>.</p>
    </ol>
-   <p class="issue" id="issue-6b954b9c"><a class="self-link" href="#issue-6b954b9c"></a> Is there a better way to do overloading?</p>
+   <p class="issue" id="issue-1c5ca213"><a class="self-link" href="#issue-1c5ca213"></a> Is there a better way to do overloading/asserts here?</p>
    <h2 class="heading settled" data-level="3" id="shared-storage"><span class="secno">3. </span><span class="content">Exposing to Shared Storage</span><a class="self-link" href="#shared-storage"></a></h2>
 <pre class="idl highlight def"><c- b>partial</c-> <c- b>interface</c-> <a class="idl-code" data-link-type="interface" href="https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope" id="ref-for-sharedstorageworkletglobalscope①"><c- g>SharedStorageWorkletGlobalScope</c-></a> {
   <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#privateaggregation" id="ref-for-privateaggregation①"><c- n>PrivateAggregation</c-></a> <dfn class="idl-code" data-dfn-for="SharedStorageWorkletGlobalScope" data-dfn-type="attribute" data-export data-readonly data-type="PrivateAggregation" id="dom-sharedstorageworkletglobalscope-privateaggregation"><code><c- g>privateAggregation</c-></code><a class="self-link" href="#dom-sharedstorageworkletglobalscope-privateaggregation"></a></dfn>;
@@ -766,7 +766,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
        <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append①">Append</a> <var>contribution</var> to <var>filledInContributions</var>.</p>
      </ol>
     <li data-md>
-     <p>Run the <a data-link-type="dfn" href="#privateaggregation-report-sending-steps" id="ref-for-privateaggregation-report-sending-steps①">report sending steps</a> with <var>scope</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object" id="ref-for-relevant-settings-object①">relevant settings object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin①">origin</a>, "<code><a data-link-type="dfn" href="#worklet-type-identifier-fledge" id="ref-for-worklet-type-identifier-fledge">fledge</a></code>" and <var>contributionsCache</var>.</p>
+     <p>Run the <a data-link-type="dfn" href="#privateaggregation-report-sending-steps" id="ref-for-privateaggregation-report-sending-steps①">report sending steps</a> with <var>scope</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object" id="ref-for-relevant-settings-object①">relevant settings object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin①">origin</a>, "<code><a data-link-type="dfn" href="#worklet-type-identifier-fledge" id="ref-for-worklet-type-identifier-fledge">fledge</a></code>" and <var>filledInContributions</var>.</p>
    </ol>
    <p class="issue" id="issue-5b10211a"><a class="self-link" href="#issue-5b10211a"></a> Probably move to algorithms? Or at least some of it.</p>
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fill-in-the-signal-value">fill in the signal value</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue②">PASignalValue</a></code> <var>value</var>, run the following steps:</p>
@@ -776,7 +776,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     <li data-md>
      <p>Let <var>numericBaseValue</var> be the result of <a data-link-type="dfn" href="#determine-the-numeric-value" id="ref-for-determine-the-numeric-value">determining the numeric value</a> of <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-basevalue" id="ref-for-dom-pasignalvalue-basevalue①">baseValue</a></code>.</p>
     <li data-md>
-     <p>Let <var>scale</var> be the <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-double" id="ref-for-idl-double①">double</a></code> 1.0</p>
+     <p>Let <var>scale</var> be the <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-double" id="ref-for-idl-double①">double</a></code> 1.0.</p>
     <li data-md>
      <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-scale" id="ref-for-dom-pasignalvalue-scale">scale</a></code> is set, set <var>scale</var> to <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-scale" id="ref-for-dom-pasignalvalue-scale①">scale</a></code>.</p>
     <li data-md>
@@ -800,7 +800,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <p>If <var>signalBaseValue</var> is "<code><a data-link-type="dfn" href="#signal-base-value-winning-bid" id="ref-for-signal-base-value-winning-bid">winning-bid</a></code>":</p>
      <ol>
       <li data-md>
-       <p>If there was a winning bid, return its score.</p>
+       <p>If there was a winning bid, return its bid value.</p>
       <li data-md>
        <p>Otherwise, return 0.</p>
      </ol>
@@ -808,7 +808,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <p>If <var>signalBaseValue</var> is "<code><a data-link-type="dfn" href="#signal-base-value-highest-scoring-other-bid" id="ref-for-signal-base-value-highest-scoring-other-bid">highest-scoring-other-bid</a></code>":</p>
      <ol>
       <li data-md>
-       <p>If there was a bid that did not win, return the score of the highest scoring bid that did not win.</p>
+       <p>If there was a bid that did not win, return the bid value of the highest <em>scoring</em> bid that did not win. (TODO: check behavior if there’s no winner.)</p>
       <li data-md>
        <p>Otherwise, return 0.</p>
      </ol>
@@ -822,7 +822,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <p>If <var>signalBaseValue</var> is "<code><a data-link-type="dfn" href="#signal-base-value-signals-fetch-time" id="ref-for-signal-base-value-signals-fetch-time">signals-fetch-time</a></code>":</p>
      <ol>
       <li data-md>
-       <p>If there was a trusted bidding signals network fetch that successfully completed, return the time it took for that request to complete in milliseconds.</p>
+       <p>If there was a trusted bidding signals network fetch that successfully completed, return the time it took for that request to complete in milliseconds. (TODO: clarify which request.)</p>
       <li data-md>
        <p>Otherwise, return 0.</p>
      </ol>
@@ -831,6 +831,8 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <ol>
       <li data-md>
        <p>TODO: need to scope to a bid. The bid associated with this call? How do we do that nicely?</p>
+      <li data-md>
+       <p>TODO: consider moving this part to its own algorithm</p>
       <li data-md>
        <p>If the bid did not succeed purely because it didn’t meet the required k-anonymity threshold, return 0.</p>
       <li data-md>
@@ -843,6 +845,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert④">Assert</a>: false.</p>
    </ol>
+   <p class="issue" id="issue-58befe42"><a class="self-link" href="#issue-58befe42"></a> Do we need any sort of contextual argument (e.g. representing the auction)?</p>
    <p>To <dfn class="dfn-paneled algorithm" data-algorithm="validate an extended histogram contribution" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-validate-an-extended-histogram-contribution">validate an extended histogram contribution</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-paextendedhistogramcontribution" id="ref-for-dictdef-paextendedhistogramcontribution②">PAExtendedHistogramContribution</a></code> <var>contribution</var>:</p>
    <ol>
     <li data-md>
@@ -892,15 +895,16 @@ a long and if a value is a PASignalValue, its offset is NOT a bigint.</p>
     <dd data-md>
      <p>The global scope was a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope" id="ref-for-sharedstorageworkletglobalscope③">SharedStorageWorkletGlobalScope</a></code>.</p>
    </dl>
+   <p class="issue" id="issue-50f5428b"><a class="self-link" href="#issue-50f5428b"></a> consider renaming worklet type identifier</p>
    <h3 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="5.3" data-lt="Signal base value" data-noexport id="signal-base-value"><span class="secno">5.3. </span><span class="content">Signal base value</span><a class="self-link" href="#signal-base-value" id="ref-for-signal-base-value②"></a></h3>
     A signal base value is one of the following: 
    <dl>
     <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="signal base value" data-dfn-type="dfn" data-noexport id="signal-base-value-winning-bid"><code>winning-bid</code></dfn>"
     <dd data-md>
-     <p>The score of the winning bid.</p>
+     <p>The bid value of the winning bid.</p>
     <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="signal base value" data-dfn-type="dfn" data-noexport id="signal-base-value-highest-scoring-other-bid"><code>highest-scoring-other-bid</code></dfn>"
     <dd data-md>
-     <p>The score of the highest scoring bid that did not win.</p>
+     <p>The bid value of the highest scoring bid that did not win.</p>
     <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="signal base value" data-dfn-type="dfn" data-noexport id="signal-base-value-script-run-time"><code>script-run-time</code></dfn>"
     <dd data-md>
      <p>The running time of the script in ms(?).</p>
@@ -911,6 +915,7 @@ a long and if a value is a PASignalValue, its offset is NOT a bigint.</p>
     <dd data-md>
      <p>The reason a bid was rejected (TODO: new enum needed).</p>
    </dl>
+   <p class="issue" id="issue-7e205185"><a class="self-link" href="#issue-7e205185"></a> Make sure these definitions match "determine the numeric value" algorithm</p>
    <h2 class="heading settled" data-level="6" id="storage"><span class="secno">6. </span><span class="content">Storage</span><a class="self-link" href="#storage"></a></h2>
    <p>A user agent holds an <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="aggregatable-report-cache">aggregatable report cache</dfn>, which is an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set③">ordered set</a> of <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report②">aggregatable reports</a>.</p>
    <h2 class="heading settled" data-level="7" id="vendor-specific-values"><span class="secno">7. </span><span class="content">Vendor-specific values</span><a class="self-link" href="#vendor-specific-values"></a></h2>
@@ -921,8 +926,6 @@ a long and if a value is a PASignalValue, its offset is NOT a bigint.</p>
    <ol>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑤">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin">potentially trustworthy origin</a>.</p>
-    <li data-md>
-     <p>BLAH</p>
     <li data-md>
      <p>Let <var>path</var> be the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string-concatenate" id="ref-for-string-concatenate">concatenation</a> of «"<code>.well-known/private-aggregation/report-</code>", <var>api</var>».</p>
     <li data-md>
@@ -964,14 +967,16 @@ a long and if a value is a PASignalValue, its offset is NOT a bigint.</p>
      <p>Let <var>approvedContributions</var> be a new empty <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set⑥">ordered set</a>.</p>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate①">For each</a> <var>contribution</var> of <var>contributions</var>:</p>
-    <li data-md>
-     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑧">Assert</a>: <var>contribution</var>’s <var>value</var> is non-negative.</p>
-    <li data-md>
-     <p>Let <var>sufficient_budget</var> be the result of running <a data-link-type="dfn" href="#privateaggregation-consume-budget-if-permitted" id="ref-for-privateaggregation-consume-budget-if-permitted">consume budget if permitted</a> on <var>value</var>, <var>reportingOrigin</var> and <var>api</var>.</p>
-    <li data-md>
-     <p>If <var>sufficient_budget</var>, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append②">Append</a> <var>contribution</var> to <var>approvedContributions</var>.</p>
-    <li data-md>
-     <p>Otherwise, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-break" id="ref-for-iteration-break">break</a></p>
+     <ol>
+      <li data-md>
+       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑧">Assert</a>: <var>contribution</var>’s <var>value</var> is non-negative.</p>
+      <li data-md>
+       <p>Let <var>sufficient_budget</var> be the result of running <a data-link-type="dfn" href="#privateaggregation-consume-budget-if-permitted" id="ref-for-privateaggregation-consume-budget-if-permitted">consume budget if permitted</a> on <var>value</var>, <var>reportingOrigin</var> and <var>api</var>.</p>
+      <li data-md>
+       <p>If <var>sufficient_budget</var>, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append②">Append</a> <var>contribution</var> to <var>approvedContributions</var>.</p>
+      <li data-md>
+       <p>Otherwise, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-break" id="ref-for-iteration-break">break</a></p>
+     </ol>
     <li data-md>
      <p>If <var>approvedContributions</var> is <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-empty" id="ref-for-list-empty">empty</a>, return.</p>
     <li data-md>
@@ -989,40 +994,6 @@ a long and if a value is a PASignalValue, its offset is NOT a bigint.</p>
    <p class="issue" id="issue-1ed24345"><a class="self-link" href="#issue-1ed24345"></a> Batching</p>
    <p>To <dfn class="dfn-paneled algorithm" data-algorithm="consume budget if permitted" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-consume-budget-if-permitted">consume budget if permitted</dfn> given a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long④">long</a></code> <var>value</var>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑤">origin</a> <var>origin</var> and an <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier④">worklet type identifier</a> <var>api</var> are a user agent-determined sequence of steps that returns a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-boolean" id="ref-for-idl-boolean">boolean</a></code> indicating whether there is a sufficient 'contribution budget' left to send the requested contribution <var>value</var>. The algorithm should assume that the contribution will be sent if true is returned (and won’t otherwise).</p>
    <p class="issue" id="issue-aea683b6"><a class="self-link" href="#issue-aea683b6"></a> Do we want to specify how budgeting works? ARA does, but leaves the exact values up to the implementer.</p>
-   <p>Example algo:</p>
-   <ol>
-    <li data-md>
-     <p>Maintain a store somewhere of all previous reports or like the last 24 h or something</p>
-    <li data-md>
-     <p>Let <var>budget_already_used</var> be 0.</p>
-    <li data-md>
-     <p>For each entry in this store:</p>
-     <ol>
-      <li data-md>
-       <p>If time is more than 24 hours ago, delete it.</p>
-      <li data-md>
-       <p>(Optionally, if the time is old enough, delete it.)</p>
-       <ul>
-        <li data-md>
-         <p>We could make this just a general, if the time is earlier than the budget scope beginning (which is a user agent-determined time and a function of "now"). That feels a bit too tied to the implementation...</p>
-       </ul>
-      <li data-md>
-       <p>If different <var>origin</var> or different <var>api</var>, continue.</p>
-      <li data-md>
-       <p>Increment <var>budget_already_used</var> by this entry’s <var>value</var>.</p>
-     </ol>
-    <li data-md>
-     <p>Set <var>is_allowed</var> to a boolean indicating whether <var>budget_already_used</var> + the requested contribution is less than or equal to the maximum daily allowed budget.</p>
-    <li data-md>
-     <p>If <var>is_allowed</var></p>
-     <ol>
-      <li data-md>
-       <p>Add entry to the store</p>
-     </ol>
-    <li data-md>
-     <p>Return <var>is_allowed</var>.</p>
-   </ol>
-   <p>So we could do this and then specify that implementers should use an algo with similar results to this? Or we could say the user agent may reject additional reports for algorithmic simplicity or something. => Probably a question for spec mentor and/or john and/or charlie.</p>
    <p class="issue" id="issue-45815b88"><a class="self-link" href="#issue-45815b88"></a> Don’t we need to take into account the time "now" as well?</p>
    <p class="issue" id="issue-afde777d"><a class="self-link" href="#issue-afde777d"></a> Need to define the API enum or replace with a string or something.</p>
    <h3 class="heading settled" data-level="8.2" id="sending-reports"><span class="secno">8.2. </span><span class="content">Sending reports</span><a class="self-link" href="#sending-reports"></a></h3>
@@ -1432,14 +1403,17 @@ while debug modes are around.</p>
    <div class="issue"> Need to work out how to refer to the worklet. <a class="issue-return" href="#issue-62f18f5a" title="Jump to section">↵</a></div>
    <div class="issue"> Should we spec enableDebugMode? It’s temporary anyway. <a class="issue-return" href="#issue-92e6f03d" title="Jump to section">↵</a></div>
    <div class="issue"> Check that value can actually be zero in the pipeline. Also actually throw an error properly <a class="issue-return" href="#issue-7431afcd" title="Jump to section">↵</a></div>
-   <div class="issue"> Is there a better way to do overloading? <a class="issue-return" href="#issue-6b954b9c" title="Jump to section">↵</a></div>
+   <div class="issue"> Is there a better way to do overloading/asserts here? <a class="issue-return" href="#issue-1c5ca213" title="Jump to section">↵</a></div>
    <div class="issue"> Do we want to align naming with implementation? <a class="issue-return" href="#issue-6c6263d3" title="Jump to section">↵</a></div>
    <div class="issue"> How do we handle the type for offsets? Do we make it universally bigint or do we have a separate PASignalValue and PASignalBucket? <a class="issue-return" href="#issue-aee9d58d" title="Jump to section">↵</a></div>
    <div class="issue"> Probably move to algorithms? Or at least some of it. <a class="issue-return" href="#issue-5b10211a" title="Jump to section">↵</a></div>
    <div class="issue"> should we avoid the weirdness around <var>scale</var> not being set by setting it somewhere? (Could add an assert) <a class="issue-return" href="#issue-1ff4f0b5" title="Jump to section">↵</a></div>
    <div class="issue"> same for offset -- even worse as we can’t determine the type if it’s not set. <a class="issue-return" href="#issue-20d81011" title="Jump to section">↵</a></div>
+   <div class="issue"> Do we need any sort of contextual argument (e.g. representing the auction)? <a class="issue-return" href="#issue-58befe42" title="Jump to section">↵</a></div>
    <div class="issue"> where should this queue be given it has to outlive the fenced frame? <a class="issue-return" href="#issue-510bee71" title="Jump to section">↵</a></div>
    <div class="issue"> Handle operation types, aggregation modes, aggregation coordinators, maybe retries/offline <a class="issue-return" href="#issue-e77e137b" title="Jump to section">↵</a></div>
+   <div class="issue"> consider renaming worklet type identifier <a class="issue-return" href="#issue-50f5428b" title="Jump to section">↵</a></div>
+   <div class="issue"> Make sure these definitions match "determine the numeric value" algorithm <a class="issue-return" href="#issue-7e205185" title="Jump to section">↵</a></div>
    <div class="issue"> Should we use "implementation-defined" instead? <a class="issue-return" href="#issue-aaafd09e" title="Jump to section">↵</a></div>
    <div class="issue"> Fill out <a class="issue-return" href="#issue-a39b5350" title="Jump to section">↵</a></div>
    <div class="issue"> Do we need to ensure the reports aren’t queued after being sent? <a class="issue-return" href="#issue-b92a47e8" title="Jump to section">↵</a></div>
