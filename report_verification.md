@@ -227,7 +227,7 @@ of a bidder in a particular auction is inherently cross-site data, see
 [below](#specifying-a-contextual-id-and-each-possible-ig-owner). So, our options
 are more limited and we focus on mechanisms using Private State Tokens.
 
-However, note also that there are no eixsting network requests that we can easily reuse
+However, note also that there are no existing network requests that we can easily reuse
 for token issuance. While there is a trusted signals fetch, that is
 intentionally uncredentialed. Much like using an ID, we can’t just add a network
 request for each bidder as that would reveal cross-site data.
