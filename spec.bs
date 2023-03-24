@@ -7,7 +7,7 @@ Group: patcg
 Repository: patcg-individual-drafts/private-aggregation-api
 URL: https://patcg-individual-drafts.github.io/private-aggregation-api
 Editor: Alexander Turner, Google https://www.google.com, alexmt@chromium.org
-Abstract: A generic API for measuring aggregate, cross-site data in a privacy preserving manner. (TODO: expand?)
+Abstract: A generic API for measuring aggregate, cross-site data in a privacy preserving manner. The potentially identifying cross-site data is encapsulated into <em>aggregatable reports</em>. To prevent leakage, this data is encrypted, ensuring it can only be processed by an <em>aggregation service</em>. During processing, this service will add noise and impose limits on how many queries can be performed.
 
 <!--- Warning: Not Ready -->
 Markup Shorthands: markdown on
@@ -27,8 +27,43 @@ Introduction {#intro}
 
 <em>This section is non-normative.</em>
 
-Issue: Fill out intro
+Motivation {#motivation}
+------------------------
 
+Browsers are now working to prevent cross-site user tracking, including by
+partitioning storage and removing third-party cookies. There are a range of APIs
+proposals to continue supporting legitimate use cases in a way that respects
+user privacy. Many of these APIs, including Shared Storage and FLEDGE, isolate
+potentially identifying cross-site data in special contexts, which ensures that
+the data cannot escape the user agent.
+
+Relative to cross-site data from an individual user, aggregate data about groups
+of users can be less sensitive and yet would be sufficient for a wide range of
+use cases. An aggregation service has been proposed to allow reporting noisy,
+aggregated cross-site data. This service was originally proposed for use by the
+Attribution Reporting API, but allowing more general aggregation would support
+additional use cases. In particular, the FLEDGE and Shared Storage proposals
+expect this functionality to become available.
+
+Overview {#overview}
+--------------------
+
+This document oulines a general-purpose API that can be called from isolated
+contexts that have access to cross-site data (such as a Shared Storage worklet).
+Within these contexts, potentially identifying data can be encapsulated into
+"aggregatable reports". To prevent leakage, the cross-site data in these reports
+is encrypted to ensure it can only be processed by the aggregation service.
+During processing, this service adds noise and imposes limits on how many
+queries can be performed.
+
+This API provides functions allowing the origin to construct an aggregatable
+report and specify the values to be embedded into its encrypted payload (for
+later computation via the aggregation service). These calls result in the
+aggregatable report being queued to be sent to the reporting endpoint of the
+script's origin after a delay. After the endpoint receives the reports, it will
+batch the reports and send them to the aggregation service for processing. The
+output of that process is a summary report containing the (approximate) result,
+which is dispatched back to the script's origin.
 
 General methods {#general-methods}
 ==================================
@@ -49,35 +84,26 @@ dictionary PAHistogramContribution {
 };
 </xmp>
 
-Each {{PrivateAggregation}} has a <dfn>contributions cache</dfn>, an [=ordered set=]. Immediately after the {{WorkletGlobalScope}} object is [=terminate a worklet global scope|terminated=], [=process the contributions cache=].
+Each {{PrivateAggregation}} has a <dfn>contributions cache</dfn>, a [=list=].
 
-Note: these steps are defined separately for each {{WorkletGlobalScope}}.
-
-Issue: Is this timing ok?
-
-Issue: Need to work out how to refer to the worklet.
+Note: the steps to process the contributions cache are defined separately for
+each {{WorkletGlobalScope}}.
 
 Issue: Should we spec enableDebugMode? It's temporary anyway.
+
+Issue: Need to spec Permissions Policy integration.
 
 <div algorithm>
 The <dfn method for="PrivateAggregation">sendHistogramReport(PAHistogramContribution contribution)</dfn> method steps are:
 </div>
 
 1. Throw error if |contribution|'s {{PAHistogramContribution/value}} is negative.
+1. Throw error if |contribution|'s {{PAHistogramContribution/bucket}} is not in the range [0, 2<sup>128</sup>−1].
 
-Issue: Check that value can actually be zero in the pipeline. Also actually throw an error properly
+Issue: Check that value can actually be zero in the spec pipeline. Also actually throw an error properly
+Issue: Also handle bucket being out of bounds.
 
-1. [=set/Append=] |contribution| to the [=contributions cache=].
-
-To <dfn>process the contributions cache</dfn> given a [=contributions cache=] |contributionsCache|, run the following steps:
-1. Let |scope| be the {{WorkletGlobalScope}} associated with |contributionsCache|.
-1. If |scope| is a {{SharedStorageWorkletGlobalScope}}:
-    1. [=Process the shared storage contributions cache=] given |contributionsCache| and |scope|.
-    1. Return.
-1. [=Assert=] |scope| is a {{FledgeWorkletGlobalScope}}.
-1. [=Process the FLEDGE contributions cache=] given |contributionsCache|.
-
-Issue: Is there a better way to do overloading/asserts here?
+1. [=list/Append=] |contribution| to the [=contributions cache=].
 
 Exposing to Shared Storage {#shared-storage}
 ============================================
@@ -88,7 +114,11 @@ partial interface SharedStorageWorkletGlobalScope {
 };
 </xmp>
 
-To <dfn>process the shared storage contributions cache</dfn> given a [=contributions cache=] |contributionsCache| and a {{SharedStorageWorkletGlobalScope}} |scope|, run the [=PrivateAggregation/report sending steps=] with |scope|'s [=relevant settings object=]'s [=origin=], "<code>[=worklet type identifier/shared-storage=]</code>" and |contributionsCache|.
+Immediately after an operation completes, [=process the shared storage contributions cache=] with the worklet's [=contributions cache=] and the worklet's global scope.
+
+Issue: How to handle batching different operation invocations properly. This doesn't work for simultaneous operations.
+
+To <dfn>process the shared storage contributions cache</dfn> given a [=contributions cache=] |contributionsCache| and a {{SharedStorageWorkletGlobalScope}} |scope|, run the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], "<code>[=worklet type identifier/shared-storage=]</code>" and |contributionsCache|.
 
 Exposing to FLEDGE {#fledge}
 ============================
@@ -119,35 +149,56 @@ partial interface PrivateAggregation {
 
 Issue: Do we want to align naming with implementation?
 
-Issue: How do we handle the type for offsets? Do we make it universally bigint or do we have a separate PASignalValue and PASignalBucket?
+Immediately after an auction completes, [=process the FLEDGE contributions cache=] with the worklet's [=contributions cache=] and the worklet's global scope.
+
+Issue: Does FLEDGE have one global scope per auction or multiple?
+
+Issue: How to handle fenced frame-triggered contributions and other event-triggered contributions.
+
+<div algorithm>
+The <dfn method for="PrivateAggregation">reportContributionForEvent(DOMString event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
+</div>
+
+1. Run the [=PrivateAggregation/validate an extended histogram contribution=] steps on |contribution|.
+  1. These should just check that if bucket is a PASignalValue, its offset is NOT
+    a long and if a value is a PASignalValue, its offset is NOT a bigint.
+
+1. Put the contribution in some sort of queue.
+
+1. Elsewhere, on context destruction AND/OR event handling, process the queue.
+
+Issue: where should this queue be given it has to outlive the fenced frame?
 
 To <dfn>process the FLEDGE contributions cache</dfn> given a [=contributions cache=] |contributionsCache| and a {{FledgeWorkletGlobalScope}} |scope|, run the following steps:
-1. Let |filledInContributions| be a new empty [=ordered set=].
-1. [=set/iterate|For each=] |contribution| of |contributionsCache|:
-    1. If |contribution| is a {{PAExtendedHistogramContribution}},
-        1. Set |contributions|'s {{PAExtendedHistogramContribution/bucket}} be the result of [=filling in the signal value=] of |contributions|'s {{PAExtendedHistogramContribution/bucket}}.
-        1.  Set |contributions|'s {{PAExtendedHistogramContribution/value}} be the result of [=filling in the signal value=] of |contributions|'s {{PAExtendedHistogramContribution/value}}.
-    1. Otherwise, [=assert=]: |contribution| is a {{PAHistogramContribution}}.
-    1. [=set/Append=] |contribution| to |filledInContributions|.
-1. Run the [=PrivateAggregation/report sending steps=] with |scope|'s [=relevant settings object=]'s [=origin=], "<code>[=worklet type identifier/fledge=]</code>" and |filledInContributions|.
+1. Let |filledInContributions| be a new empty [=list=].
+1. [=list/iterate|For each=] |contribution| of |contributionsCache|:
+    1. [=list/Append=] the result of [=filling in the contribution=] |contribution| to |filledInContributions|.
+1. Run the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], "<code>[=worklet type identifier/fledge=]</code>" and |filledInContributions|.
+
+To <dfn>fill in the contribution</dfn> given a |contribution|, run the following steps:
+1. If |contribution| is a {{PAHistogramContribution}}, return |contribution|.
+1. Otherwise, [=assert=] |contribution| is a {{PAExtendedHistogramContribution}}.
+1. Let |bucket| be |contribution|'s {{PAExtendedHistogramContribution/bucket}}.
+1. If |bucket| is a {{PASignalValue}}, let |bucket| be the result of [=filling in the signal value=] given |bucket| and 65535.
+1. Let |value| be |contribution|'s {{PAExtendedHistogramContribution/value}}.
+1. If |value| is a {{PASignalValue}}, let |value| be the result of [=filling in the signal value=] given |value| and 2<sup>128</sup>−1.
+1. Return a new {{PAHistogramContribution}} with the items:
+    : {{PAHistogramContribution/bucket}}
+    :: |bucket|
+    : {{PAHistogramContribution/value}}
+    :: |value|
 
 Issue: Probably move to algorithms? Or at least some of it.
 
-To <dfn>fill in the signal value</dfn> given a {{PASignalValue}} |value|, run the following steps:
-1. [=Assert=] |value|'s {{PASignalValue/baseValue}} is a valid [=signal base value=]. (TODO: do we need to convert it to a string from a DOMString?)
-1. Let |numericBaseValue| be the result of [=determining the numeric value=] of |value|'s {{PASignalValue/baseValue}}.
-1. Let |scale| be the {{double}} 1.0.
-1. If |value|'s {{PASignalValue/scale}} is set, set |scale| to |value|'s {{PASignalValue/scale}}.
-1. Let |scaledBaseValue| be the result of multiplying |scale| with |numericBaseValue|.
-1. Let |scaledBaseValue| be the integer result of rounding |scaledBaseValue| to the nearest integer. If two integers are equally close, the result should be the integer closer to negative infinity. (TODO: add refs here?)
-1. Let |returnValue| be the result of adding |scaledBaseValue| to |value|'s {{PASignalValue/offset}}.
-1. If |value|'s {{PASignalValue/offset}} is a {{long}}, clamp |returnValue| to the range [0, 65535] and return the result. (TODO: make this more proper).
-1. [=Assert=]: |value|'s {{PASignalValue/offset}} is a {{bigint}}. (Not yet true see below.)
-1. Clamp |returnValue| to the range [0, 2^128-1] and return the result.
-
-Issue: should we avoid the weirdness around |scale| not being set by setting it somewhere? (Could add an assert)
-
-Issue: same for offset -- even worse as we can't determine the type if it's not set.
+To <dfn>fill in the signal value</dfn> given a {{PASignalValue}} |value| and an integer |maxAllowed|, run the following steps:
+1. [=Assert=] |value|'s {{PASignalValue/baseValue}} is a valid [=signal base value=].
+1. Let |returnValue| be the result of [=determining the numeric value=] of |value|'s {{PASignalValue/baseValue}}.
+1. If |value|'s {{PASignalValue/scale}} is set:
+    1. Let |returnValue| be the result of multiplying |value|'s {{PASignalValue/scale}} with |returnValue|.
+1. Let |returnValue| be the integer result of rounding |returnValue| to the nearest integer. If two integers are equally close, the result should be the integer closer to negative infinity. (TODO: add refs here?)
+1. If |value|'s {{PASignalValue/offset}} is set:
+    1. Let |returnValue| be the result of adding |returnValue| to |value|'s {{PASignalValue/offset}}.
+1. Clamp |returnValue| to the range [0, |maxAllowed|] and return the result.
 
 <!-- <h3 dfn-type=dfn>Signal base value</h3>
 A signal base value is one of the following:
@@ -194,12 +245,12 @@ dictionary PASignalValue {
 }; -->
 
 <!--
-To <dfn>process the contributions cache</dfn> given an [=ordered set=] |contributionsCache|, run the [=PrivateAggregation/report sending steps=] with the associated {{WorkletGlobalScope}}'s [=relevant settings object=]'s [=origin=], the the associated {{WorkletGlobalScope}}'s [=PrivateAggregation/api identifier=] and |contributionsCache|.
+To <dfn>process the contributions cache</dfn> given an [=ordered set=] |contributionsCache|, run the [=PrivateAggregation/report scheduling steps=] with the associated {{WorkletGlobalScope}}'s [=relevant settings object=]'s [=origin=], the the associated {{WorkletGlobalScope}}'s [=PrivateAggregation/api identifier=] and |contributionsCache|.
 
-To <dfn>process the contributions cache</dfn> given a {{WorkletGlobalScope}} |scope| and an [=ordered set=] |contributionsCache|, run the [=PrivateAggregation/report sending steps=] with |scope|'s [=relevant settings object=]'s [=origin=], the |scope's| [=PrivateAggregation/api identifier=] and the [=contributions cache=].
+To <dfn>process the contributions cache</dfn> given a {{WorkletGlobalScope}} |scope| and an [=ordered set=] |contributionsCache|, run the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], the |scope's| [=PrivateAggregation/api identifier=] and the [=contributions cache=].
 
 
-Immediately after the {{WorkletGlobalScope}} object is [=terminate a worklet global scope|terminated=], run the [=PrivateAggregation/report sending steps=] with the {{WorkletGlobalScope}}'s [=relevant settings object=]'s [=origin=], the {{WorkletGlobalScope}} [=PrivateAggregation/api identifier=] and the [=contributions cache=].
+Immediately after the {{WorkletGlobalScope}} object is [=terminate a worklet global scope|terminated=], run the [=PrivateAggregation/report scheduling steps=] with the {{WorkletGlobalScope}}'s [=relevant settings object=]'s [=origin=], the {{WorkletGlobalScope}} [=PrivateAggregation/api identifier=] and the [=contributions cache=].
  -->
 
 
@@ -207,19 +258,8 @@ Immediately after the {{WorkletGlobalScope}} object is [=terminate a worklet glo
 To <dfn algorithm for="PrivateAggregation">validate an extended histogram contribution</dfn> given a {{PAExtendedHistogramContribution}} |contribution|:
 1. TODO (probably need to check offsets are valid and the right type etc. Also that base values are one of a set)
 
-<div algorithm>
-The <dfn method for="PrivateAggregation">reportContributionForEvent(DOMString event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
-</div>
+Issue: Need to document limits on offset, etc.
 
-1. Run the [=PrivateAggregation/validate an extended histogram contribution=] steps on |contribution|.
-  1. These should just check that if bucket is a PASignalValue, its offset is NOT
-    a long and if a value is a PASignalValue, its offset is NOT a bigint.
-
-1. Put the contribution in some sort of queue.
-
-1. Elsewhere, on context destruction AND/OR event handling, process the queue.
-
-Issue: where should this queue be given it has to outlive the fenced frame?
 
 Structures {#structures}
 ========================
@@ -241,7 +281,7 @@ An aggregatable report is a [=struct=] with the following items:
 
 </dl>
 
-Issue: Handle operation types, aggregation modes, aggregation coordinators, maybe retries/offline
+Issue: Handle operation types, aggregation coordinators, maybe retries/offline, report verification
 
 <h3 dfn-type=dfn>Worklet type identifier</h3>
 A worklet type identifier is one of the following:
@@ -281,9 +321,11 @@ A user agent holds an <dfn>aggregatable report cache</dfn>, which is an [=ordere
 Vendor-specific values {#vendor-specific-values}
 ================================================
 
-Issue: Should we use "implementation-defined" instead?
+Issue: Should we use the term "implementation-defined" instead?
 
 <dfn>Max stored reports</dfn> is a positive integer that controls how many unsent reports can be queued waiting.
+
+Issue: More
 
 Algorithms {#algorithms}
 ====================
@@ -320,18 +362,18 @@ Scheduling reports {#scheduling-reports}
 Issue: Fill out
 
 
-The <dfn algorithm for="PrivateAggregation">report sending steps</dfn> given an [=Origin=] |reportingOrigin|, a [=worklet type identifier=] |api| and a [=ordered set=] of {{PAHistogramContribution}} |contributions| are as follows:
+The <dfn algorithm for="PrivateAggregation">report scheduling steps</dfn> given an [=Origin=] |reportingOrigin|, a [=worklet type identifier=] |api| and a [=ordered set=] of {{PAHistogramContribution}} |contributions| are as follows:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |approvedContributions| be a new empty [=ordered set=].
 1. [=set/iterate|For each=] |contribution| of |contributions|:
     <!-- 1. [=Assert=]: |contribution| is a {{PAHistogramContribution}}. -->
     1. [=Assert=]: |contribution|'s |value| is non-negative.
     1. Let |sufficient_budget| be the result of running [=PrivateAggregation/consume budget if permitted=] on |value|, |reportingOrigin| and |api|.
-    1. If |sufficient_budget|, [=set/Append=] |contribution| to |approvedContributions|.
+    1. If |sufficient_budget|, [=set/append=] |contribution| to |approvedContributions|.
     1. Otherwise, [=iteration/break=]
 1. If |approvedContributions| is [=set/empty=], return.
 1. Let |report| be the result of [=PrivateAggregation/obtaining an aggregatable report=] given |reportingOrigin|, |api| and |approvedContributions|.
-1. If the user agent's [=aggregatable report cache=] [=set/size=] is larger than [=max stored reports=], return.
+1. If the user agent's [=aggregatable report cache=] [=set/size=] is larger than [=max stored reports=], return. (TODO: does this match implementation?)
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
 Issue: Do we need to ensure the reports aren't queued after being sent?
