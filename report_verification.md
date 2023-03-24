@@ -35,7 +35,7 @@
       - [New network request](#new-network-request)
       - [Different security model](#different-security-model)
       - [Difficult to decide on number of tokens to issue](#difficult-to-decide-on-number-of-tokens-to-issue)
-      - [Requires new token storage](#requires-new-token-storage)
+      - [Requires new persistent token storage](#requires-new-persistent-token-storage)
     - [Using signals from both auction running time and interest group joining time](#using-signals-from-both-auction-running-time-and-interest-group-joining-time)
       - [Separate token headers/fields](#separate-token-headersfields)
       - [Each origin picks one option](#each-origin-picks-one-option)
@@ -84,20 +84,20 @@ created out of thin air, but practical attacks are challenging. More details
 ## Shared Storage
 
 When triggering a Shared Storage operation that could send an aggregatable
-report, we propose allowing the site to specify a high-entropy (64-bit) ID from
+report, we propose allowing the site to specify a high-entropy ID from
 outside the isolated context. This ID would then be embedded unencrypted in the
 report issued by that worklet operation, e.g. adding the following key to the
 report:
 
 ```jsonc
-"context_id" : "1234567890",
+"context_id" : "example_string",
 ```
 
 This would be achieved by adding a new optional parameter to the Shared Storage
 `run()` and `selectURL()` APIs, e.g.:
 
 ```js
-sharedStorage.run("someOperation", {"contextId": 1234567890n});
+sharedStorage.run('someOperation', {'contextId': 'example_string'});
 ```
 
 Note that this design does not support report verification for Shared Storage
@@ -182,11 +182,11 @@ early.
 
 We propose a very similar mechanism for FLEDGE seller reporting as for Shared
 Storage worklets. That is, we’ll allow the site to specify a high-entropy
-(64-bit) ID from outside the isolated context and this ID would then be embedded
+ID from outside the isolated context and this ID would then be embedded
 unencrypted in the report issued by that seller within that auction, e.g.:
 
 ```jsonc
-"context_id" : "1234567890",
+"context_id" : "example_string",
 ```
 
 The seller would specify this ID through an optional parameter into the
@@ -196,7 +196,7 @@ The seller would specify this ID through an optional parameter into the
 const myAuctionConfig = {
   ...
   'privateAggregationConfig': {
-    'contextId': 1234567890n,
+    'contextId': 'example_string',
   }
 };
 const auctionResultPromise = navigator.runAdAuction(myAuctionConfig);
@@ -219,12 +219,15 @@ protections).
 
 ## FLEDGE bidders
 
+**Note: Unlike the above sections which offer relatively straightforward approaches,
+this section is highly complex and nuanced. Feedback is appreciated!**
+
 We can’t easily use a contextual ID for the FLEDGE bidder case as the existence
 of a bidder in a particular auction is inherently cross-site data, see
 [below](#specifying-a-contextual-id-and-each-possible-ig-owner). So, our options
 are more limited and we focus on mechanisms using Private State Tokens.
 
-However, note also that there are no network requests that we can easily reuse
+However, note also that there are no eixsting network requests that we can easily reuse
 for token issuance. While there is a trusted signals fetch, that is
 intentionally uncredentialed. Much like using an ID, we can’t just add a network
 request for each bidder as that would reveal cross-site data.
@@ -261,7 +264,8 @@ that the report was associated with a `runAdAuction()` request that was signed.
 
 #### New network requests
 
-This requires the addition of a new network request for each listed token issuer.
+This requires the addition of a new network request for each listed token issuer,
+emitted when `runAdAuction` is invoked.
 
 #### Need to list all possible token issuers
 
@@ -412,6 +416,8 @@ We could consider mitigations in the future. For example:
   private bit to avoid an invalid traffic oracle.
 - refusing to send reports to reporting origins using report verification if no
   token was available/issued.
+- sending null reports with some frequency for buyers that delegate to an issuer
+  who issued tokens.
 
 ### Alternatives considered
 
@@ -459,7 +465,7 @@ issued, later auctions may not be able to be attested. Issuing too many may
 degrade performance, e.g. unnecessarily using storage, and may exacerbate token
 exfiltration attacks.
 
-##### Requires new token storage
+##### Requires new persistent token storage
 
 This approach requires Private State Tokens to be persisted for later use. This
 store will need to be separate from the existing Private State Token store. Note
@@ -537,7 +543,7 @@ below.
 
 #### Doesn’t support nesting
 
-This proposal does not support cross-origin subframes or nested fenced frames
+This proposal does not currently support cross-origin subframes or nested fenced frames
 within the top-level fenced frame.
 
 #### Privacy considerations
