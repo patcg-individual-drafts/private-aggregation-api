@@ -217,13 +217,15 @@ A signal base value is one of the following:
 : "<dfn export><code>signals-fetch-time</code></dfn>"
 :: The time it took for the signals fetch to complete in ms(?)
 : "<dfn export><code>bid-reject-reason</code></dfn>"
-:: The reason a bid was rejected (TODO: new enum needed).
+:: The reason a bid was rejected.
 
 </dl>
 
 Issue: Remove exports when these definitions are used.
 
 Issue: Make sure these definitions match "determine the numeric value" algorithm
+
+Issue: New enum needed for bid reject reasons.
 
 Storage {#storage}
 ==================
@@ -282,7 +284,7 @@ The <dfn algorithm for="PrivateAggregation">report scheduling steps</dfn> given 
     1. Otherwise, [=iteration/break=]
 1. If |approvedContributions| is [=set/empty=], return.
 1. Let |report| be the result of [=PrivateAggregation/obtaining an aggregatable report=] given |reportingOrigin|, |api| and |approvedContributions|.
-1. If the user agent's [=aggregatable report cache=] [=set/size=] is larger than [=max stored reports=], return. (TODO: does this match implementation?)
+1. If the user agent's [=aggregatable report cache=] [=set/size=] is larger than [=max stored reports=], return.
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
 Issue: Do we need to ensure the reports aren't queued after being sent?
@@ -292,6 +294,8 @@ Issue: non-negative or positive value?
 Issue: Do we need to address user settings here at all?
 
 Issue: Batching
+
+Issue: Does the [=max stored reports=] part match the implementation?
 
 To <dfn algorithm for="PrivateAggregation">consume budget if permitted</dfn> given a {{long}} |value|, an [=origin=] <var ignore=''>origin</var> and an [=worklet type identifier=] |api| are a user agent-determined sequence of steps that returns a {{boolean}} indicating whether there is a sufficient 'contribution budget' left to send the requested contribution |value|. The algorithm should assume that the contribution will be sent if true is returned (and won't otherwise).
 
@@ -342,10 +346,12 @@ To <dfn>fill in the signal value</dfn> given a {{PASignalValue}} |value| and an 
 1. Let |returnValue| be the result of [=determining the numeric value=] of |value|'s {{PASignalValue/baseValue}}.
 1. If |value|'s {{PASignalValue/scale}} is set:
     1. Let |returnValue| be the result of multiplying |value|'s {{PASignalValue/scale}} with |returnValue|.
-1. Let |returnValue| be the integer result of rounding |returnValue| to the nearest integer. If two integers are equally close, the result should be the integer closer to negative infinity. (TODO: add refs here?)
+1. Let |returnValue| be the integer result of rounding |returnValue| to the nearest integer. If two integers are equally close, the result should be the integer closer to negative infinity.
 1. If |value|'s {{PASignalValue/offset}} is set:
     1. Let |returnValue| be the result of adding |returnValue| to |value|'s {{PASignalValue/offset}}.
 1. Clamp |returnValue| to the range [0, |maxAllowed|] and return the result.
+
+Issue: Maybe add refs to the rounding logic.
 
 To <dfn>determine the numeric value</dfn> of a [=signal base value=] <var ignore=''>signalBaseValue</var>, run the following steps:
 
