@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version d9bd89757, updated Thu Mar 23 10:06:53 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="dd2915b4fb3e6e713d2085d559f3e174a11b8083" name="document-revision">
+  <meta content="d9293f7822b27fdba05ef5812a8d04690062aa05" name="document-revision">
 <style>/* style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -589,7 +589,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-03-24">24 March 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-03-29">29 March 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -647,6 +647,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
      <ol class="toc">
       <li><a href="#scheduling-reports"><span class="secno">8.1</span> <span class="content">Scheduling reports</span></a>
       <li><a href="#sending-reports"><span class="secno">8.2</span> <span class="content">Sending reports</span></a>
+      <li><a href="#fledge-specific-algorithms"><span class="secno">8.3</span> <span class="content">FLEDGE-specific algorithms</span></a>
      </ol>
     <li>
      <a href="#w3c-conformance"><span class="secno"></span> <span class="content">Conformance</span></a>
@@ -676,7 +677,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
    <p>Browsers are now working to prevent cross-site user tracking, including by
 partitioning storage and removing third-party cookies. There are a range of APIs
 proposals to continue supporting legitimate use cases in a way that respects
-user privacy. Many of these APIs, including Shared Storage and FLEDGE, isolate
+user privacy. Many of these APIs, including <a href="https://wicg.github.io/shared-storage/">Shared Storage</a> and <a href="https://wicg.github.io/turtledove/">FLEDGE</a>, isolate
 potentially identifying cross-site data in special contexts, which ensures that
 the data cannot escape the user agent.</p>
    <p>Relative to cross-site data from an individual user, aggregate data about groups
@@ -718,7 +719,7 @@ which is dispatched back to the script’s origin.</p>
    <p>Each <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation">PrivateAggregation</a></code> has a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="contributions-cache">contributions cache</dfn>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list">list</a>.</p>
    <p class="note" role="note"><span class="marker">Note:</span> the steps to process the contributions cache are defined separately for
 each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/worklets.html#workletglobalscope" id="ref-for-workletglobalscope">WorkletGlobalScope</a></code>.</p>
-   <p class="issue" id="issue-92e6f03d"><a class="self-link" href="#issue-92e6f03d"></a> Should we spec enableDebugMode? It’s temporary anyway.</p>
+   <p class="issue" id="issue-d1727a05"><a class="self-link" href="#issue-d1727a05"></a> Need to spec enableDebugMode.</p>
    <p class="issue" id="issue-b4669f13"><a class="self-link" href="#issue-b4669f13"></a> Need to spec Permissions Policy integration.</p>
    <div class="algorithm" data-algorithm="sendHistogramReport(PAHistogramContribution contribution)" data-algorithm-for="PrivateAggregation"> The <dfn class="dfn-paneled idl-code" data-dfn-for="PrivateAggregation" data-dfn-type="method" data-export data-lt="sendHistogramReport(contribution)" id="dom-privateaggregation-sendhistogramreport"><code>sendHistogramReport(PAHistogramContribution contribution)</code></dfn> method steps are: </div>
    <ol>
@@ -726,21 +727,19 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
      <p>Throw error if <var>contribution</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value">value</a></code> is negative.</p>
     <li data-md>
      <p>Throw error if <var>contribution</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket">bucket</a></code> is not in the range [0, 2<sup>128</sup>−1].</p>
-   </ol>
-   <p class="issue" id="issue-92bb7b88"><a class="self-link" href="#issue-92bb7b88"></a> Check that value can actually be zero in the spec pipeline. Also actually throw an error properly
-Issue: Also handle bucket being out of bounds.</p>
-   <ol>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append">Append</a> <var>contribution</var> to the <a data-link-type="dfn" href="#contributions-cache" id="ref-for-contributions-cache">contributions cache</a>.</p>
    </ol>
+   <p class="issue" id="issue-0f38e041"><a class="self-link" href="#issue-0f38e041"></a> Check that value can actually be zero in the spec pipeline.</p>
+   <p class="issue" id="issue-cd2783d9"><a class="self-link" href="#issue-cd2783d9"></a> Properly throw an error here.</p>
    <h2 class="heading settled" data-level="3" id="shared-storage"><span class="secno">3. </span><span class="content">Exposing to Shared Storage</span><a class="self-link" href="#shared-storage"></a></h2>
 <pre class="idl highlight def"><c- b>partial</c-> <c- b>interface</c-> <a class="idl-code" data-link-type="interface" href="https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope" id="ref-for-sharedstorageworkletglobalscope"><c- g>SharedStorageWorkletGlobalScope</c-></a> {
   <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#privateaggregation" id="ref-for-privateaggregation①"><c- n>PrivateAggregation</c-></a> <dfn class="idl-code" data-dfn-for="SharedStorageWorkletGlobalScope" data-dfn-type="attribute" data-export data-readonly data-type="PrivateAggregation" id="dom-sharedstorageworkletglobalscope-privateaggregation"><code><c- g>privateAggregation</c-></code><a class="self-link" href="#dom-sharedstorageworkletglobalscope-privateaggregation"></a></dfn>;
 };
 </pre>
-   <p>Immediately after an operation completes, <a data-link-type="dfn" href="#process-the-shared-storage-contributions-cache" id="ref-for-process-the-shared-storage-contributions-cache">process the shared storage contributions cache</a> with the worklet’s <a data-link-type="dfn" href="#contributions-cache" id="ref-for-contributions-cache①">contributions cache</a> and the worklet’s global scope.</p>
+   <p>Immediately after an operation completes, <a data-link-type="dfn" href="#process-the-shared-storage-contributions-cache" id="ref-for-process-the-shared-storage-contributions-cache">process the Shared Storage contributions cache</a> with the worklet’s <a data-link-type="dfn" href="#contributions-cache" id="ref-for-contributions-cache①">contributions cache</a> and the worklet’s global scope.</p>
    <p class="issue" id="issue-dc5ffa48"><a class="self-link" href="#issue-dc5ffa48"></a> How to handle batching different operation invocations properly. This doesn’t work for simultaneous operations.</p>
-   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="process-the-shared-storage-contributions-cache">process the shared storage contributions cache</dfn> given a <a data-link-type="dfn" href="#contributions-cache" id="ref-for-contributions-cache②">contributions cache</a> <var>contributionsCache</var> and a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope" id="ref-for-sharedstorageworkletglobalscope①">SharedStorageWorkletGlobalScope</a></code> <var>scope</var>, run the <a data-link-type="dfn" href="#privateaggregation-report-scheduling-steps" id="ref-for-privateaggregation-report-scheduling-steps">report scheduling steps</a> with <var>scope</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object" id="ref-for-relevant-settings-object">relevant settings object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin">origin</a>, "<code><a data-link-type="dfn" href="#worklet-type-identifier-shared-storage" id="ref-for-worklet-type-identifier-shared-storage">shared-storage</a></code>" and <var>contributionsCache</var>.</p>
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="process-the-shared-storage-contributions-cache">process the Shared Storage contributions cache</dfn> given a <a data-link-type="dfn" href="#contributions-cache" id="ref-for-contributions-cache②">contributions cache</a> <var>contributionsCache</var> and a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope" id="ref-for-sharedstorageworkletglobalscope①">SharedStorageWorkletGlobalScope</a></code> <var>scope</var>, run the <a data-link-type="dfn" href="#privateaggregation-report-scheduling-steps" id="ref-for-privateaggregation-report-scheduling-steps">report scheduling steps</a> with <var>scope</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object" id="ref-for-relevant-settings-object">relevant settings object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin">origin</a>, "<code><a data-link-type="dfn" href="#worklet-type-identifier-shared-storage" id="ref-for-worklet-type-identifier-shared-storage">shared-storage</a></code>" and <var>contributionsCache</var>.</p>
    <h2 class="heading settled" data-level="4" id="fledge"><span class="secno">4. </span><span class="content">Exposing to FLEDGE</span><a class="self-link" href="#fledge"></a></h2>
 <pre class="idl highlight def"><c- b>partial</c-> <c- b>interface</c-> <a class="idl-code" data-link-type="interface" href="https://wicg.github.io/turtledove/#fledgeworkletglobalscope" id="ref-for-fledgeworkletglobalscope"><c- g>FledgeWorkletGlobalScope</c-></a> {
   <c- b>readonly</c-> <c- b>attribute</c-> <a data-link-type="idl-name" href="#privateaggregation" id="ref-for-privateaggregation②"><c- n>PrivateAggregation</c-></a> <dfn class="idl-code" data-dfn-for="FledgeWorkletGlobalScope" data-dfn-type="attribute" data-export data-readonly data-type="PrivateAggregation" id="dom-fledgeworkletglobalscope-privateaggregation"><code><c- g>privateAggregation</c-></code><a class="self-link" href="#dom-fledgeworkletglobalscope-privateaggregation"></a></dfn>;
@@ -766,21 +765,14 @@ Issue: Also handle bucket being out of bounds.</p>
 </pre>
    <p class="issue" id="issue-6c6263d3"><a class="self-link" href="#issue-6c6263d3"></a> Do we want to align naming with implementation?</p>
    <p>Immediately after an auction completes, <a data-link-type="dfn" href="#process-the-fledge-contributions-cache" id="ref-for-process-the-fledge-contributions-cache">process the FLEDGE contributions cache</a> with the worklet’s <a data-link-type="dfn" href="#contributions-cache" id="ref-for-contributions-cache③">contributions cache</a> and the worklet’s global scope.</p>
-   <p class="issue" id="issue-bb4f5428"><a class="self-link" href="#issue-bb4f5428"></a> Does FLEDGE have one global scope per auction or multiple?</p>
+   <p class="issue" id="issue-76fbc2f6"><a class="self-link" href="#issue-76fbc2f6"></a> Does FLEDGE have one global scope per auction or multiple? If multiple, will need to change scope.</p>
    <p class="issue" id="issue-4f862fc9"><a class="self-link" href="#issue-4f862fc9"></a> How to handle fenced frame-triggered contributions and other event-triggered contributions.</p>
    <div class="algorithm" data-algorithm="reportContributionForEvent(DOMString event, PAExtendedHistogramContribution contribution)" data-algorithm-for="PrivateAggregation"> The <dfn class="dfn-paneled idl-code" data-dfn-for="PrivateAggregation" data-dfn-type="method" data-export data-lt="reportContributionForEvent(event, contribution)" id="dom-privateaggregation-reportcontributionforevent"><code>reportContributionForEvent(DOMString event, PAExtendedHistogramContribution contribution)</code></dfn> method steps are: </div>
    <ol>
     <li data-md>
      <p>Run the <a data-link-type="dfn" href="#privateaggregation-validate-an-extended-histogram-contribution" id="ref-for-privateaggregation-validate-an-extended-histogram-contribution">validate an extended histogram contribution</a> steps on <var>contribution</var>.</p>
-    <li data-md>
-     <p>These should just check that if bucket is a PASignalValue, its offset is NOT
-a long and if a value is a PASignalValue, its offset is NOT a bigint.</p>
-    <li data-md>
-     <p>Put the contribution in some sort of queue.</p>
-    <li data-md>
-     <p>Elsewhere, on context destruction AND/OR event handling, process the queue.</p>
    </ol>
-   <p class="issue" id="issue-510bee71"><a class="self-link" href="#issue-510bee71"></a> where should this queue be given it has to outlive the fenced frame?</p>
+   <p class="issue" id="issue-e94ae90c"><a class="self-link" href="#issue-e94ae90c"></a> Fill in the rest. (Need to put the contribution in some sort of queue and process the queue at some point. Need to decide where the queue should live given it has to outlive the auction.)</p>
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="process-the-fledge-contributions-cache">process the FLEDGE contributions cache</dfn> given a <a data-link-type="dfn" href="#contributions-cache" id="ref-for-contributions-cache④">contributions cache</a> <var>contributionsCache</var> and a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/turtledove/#fledgeworkletglobalscope" id="ref-for-fledgeworkletglobalscope①">FledgeWorkletGlobalScope</a></code> <var>scope</var>, run the following steps:</p>
    <ol>
     <li data-md>
@@ -794,113 +786,6 @@ a long and if a value is a PASignalValue, its offset is NOT a bigint.</p>
     <li data-md>
      <p>Run the <a data-link-type="dfn" href="#privateaggregation-report-scheduling-steps" id="ref-for-privateaggregation-report-scheduling-steps①">report scheduling steps</a> with <var>scope</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object" id="ref-for-relevant-settings-object①">relevant settings object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin①">origin</a>, "<code><a data-link-type="dfn" href="#worklet-type-identifier-fledge" id="ref-for-worklet-type-identifier-fledge">fledge</a></code>" and <var>filledInContributions</var>.</p>
    </ol>
-   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fill-in-the-contribution">fill in the contribution</dfn> given a <var>contribution</var>, run the following steps:</p>
-   <ol>
-    <li data-md>
-     <p>If <var>contribution</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution①">PAHistogramContribution</a></code>, return <var>contribution</var>.</p>
-    <li data-md>
-     <p>Otherwise, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert">assert</a> <var>contribution</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-paextendedhistogramcontribution" id="ref-for-dictdef-paextendedhistogramcontribution①">PAExtendedHistogramContribution</a></code>.</p>
-    <li data-md>
-     <p>Let <var>bucket</var> be <var>contribution</var>’s <code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-bucket" id="ref-for-dom-paextendedhistogramcontribution-bucket">bucket</a></code>.</p>
-    <li data-md>
-     <p>If <var>bucket</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue②">PASignalValue</a></code>, let <var>bucket</var> be the result of <a data-link-type="dfn" href="#fill-in-the-signal-value" id="ref-for-fill-in-the-signal-value">filling in the signal value</a> given <var>bucket</var> and 65535.</p>
-    <li data-md>
-     <p>Let <var>value</var> be <var>contribution</var>’s <code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-value" id="ref-for-dom-paextendedhistogramcontribution-value">value</a></code>.</p>
-    <li data-md>
-     <p>If <var>value</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue③">PASignalValue</a></code>, let <var>value</var> be the result of <a data-link-type="dfn" href="#fill-in-the-signal-value" id="ref-for-fill-in-the-signal-value①">filling in the signal value</a> given <var>value</var> and 2<sup>128</sup>−1.</p>
-    <li data-md>
-     <p>Return a new <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution②">PAHistogramContribution</a></code> with the items:</p>
-     <dl>
-      <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket①">bucket</a></code>
-      <dd data-md>
-       <p><var>bucket</var></p>
-      <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value①">value</a></code>
-      <dd data-md>
-       <p><var>value</var></p>
-     </dl>
-   </ol>
-   <p class="issue" id="issue-5b10211a"><a class="self-link" href="#issue-5b10211a"></a> Probably move to algorithms? Or at least some of it.</p>
-   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fill-in-the-signal-value">fill in the signal value</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue④">PASignalValue</a></code> <var>value</var> and an integer <var>maxAllowed</var>, run the following steps:</p>
-   <ol>
-    <li data-md>
-     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①">Assert</a> <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-basevalue" id="ref-for-dom-pasignalvalue-basevalue">baseValue</a></code> is a valid <a data-link-type="dfn" href="#signal-base-value" id="ref-for-signal-base-value">signal base value</a>.</p>
-    <li data-md>
-     <p>Let <var>returnValue</var> be the result of <a data-link-type="dfn" href="#determine-the-numeric-value" id="ref-for-determine-the-numeric-value">determining the numeric value</a> of <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-basevalue" id="ref-for-dom-pasignalvalue-basevalue①">baseValue</a></code>.</p>
-    <li data-md>
-     <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-scale" id="ref-for-dom-pasignalvalue-scale">scale</a></code> is set:</p>
-     <ol>
-      <li data-md>
-       <p>Let <var>returnValue</var> be the result of multiplying <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-scale" id="ref-for-dom-pasignalvalue-scale①">scale</a></code> with <var>returnValue</var>.</p>
-     </ol>
-    <li data-md>
-     <p>Let <var>returnValue</var> be the integer result of rounding <var>returnValue</var> to the nearest integer. If two integers are equally close, the result should be the integer closer to negative infinity. (TODO: add refs here?)</p>
-    <li data-md>
-     <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset">offset</a></code> is set:</p>
-     <ol>
-      <li data-md>
-       <p>Let <var>returnValue</var> be the result of adding <var>returnValue</var> to <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset①">offset</a></code>.</p>
-     </ol>
-    <li data-md>
-     <p>Clamp <var>returnValue</var> to the range [0, <var>maxAllowed</var>] and return the result.</p>
-   </ol>
-   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="determine-the-numeric-value">determine the numeric value</dfn> of a <a data-link-type="dfn" href="#signal-base-value" id="ref-for-signal-base-value①">signal base value</a> <var>signalBaseValue</var>, run the following steps:</p>
-   <ol>
-    <li data-md>
-     <p>If <var>signalBaseValue</var> is "<code><a data-link-type="dfn" href="#signal-base-value-winning-bid" id="ref-for-signal-base-value-winning-bid">winning-bid</a></code>":</p>
-     <ol>
-      <li data-md>
-       <p>If there was a winning bid, return its bid value.</p>
-      <li data-md>
-       <p>Otherwise, return 0.</p>
-     </ol>
-    <li data-md>
-     <p>If <var>signalBaseValue</var> is "<code><a data-link-type="dfn" href="#signal-base-value-highest-scoring-other-bid" id="ref-for-signal-base-value-highest-scoring-other-bid">highest-scoring-other-bid</a></code>":</p>
-     <ol>
-      <li data-md>
-       <p>If there was a bid that did not win, return the bid value of the highest <em>scoring</em> bid that did not win. (TODO: check behavior if there’s no winner.)</p>
-      <li data-md>
-       <p>Otherwise, return 0.</p>
-     </ol>
-    <li data-md>
-     <p>If <var>signalBaseValue</var> is "<code><a data-link-type="dfn" href="#signal-base-value-script-run-time" id="ref-for-signal-base-value-script-run-time">script-run-time</a></code>":</p>
-     <ol>
-      <li data-md>
-       <p>Return the time the script took to run in milliseconds. (TODO: Which script??)</p>
-     </ol>
-    <li data-md>
-     <p>If <var>signalBaseValue</var> is "<code><a data-link-type="dfn" href="#signal-base-value-signals-fetch-time" id="ref-for-signal-base-value-signals-fetch-time">signals-fetch-time</a></code>":</p>
-     <ol>
-      <li data-md>
-       <p>If there was a trusted bidding signals network fetch that successfully completed, return the time it took for that request to complete in milliseconds. (TODO: clarify which request.)</p>
-      <li data-md>
-       <p>Otherwise, return 0.</p>
-     </ol>
-    <li data-md>
-     <p>If <var>signalBaseValue</var> is "<code><a data-link-type="dfn" href="#signal-base-value-bid-reject-reason" id="ref-for-signal-base-value-bid-reject-reason">bid-reject-reason</a></code>":</p>
-     <ol>
-      <li data-md>
-       <p>TODO: need to scope to a bid. The bid associated with this call? How do we do that nicely?</p>
-      <li data-md>
-       <p>TODO: consider moving this part to its own algorithm</p>
-      <li data-md>
-       <p>If the bid did not succeed purely because it didn’t meet the required k-anonymity threshold, return 0.</p>
-      <li data-md>
-       <p>If the bid was invalid, return 1.</p>
-      <li data-md>
-       <p>If the bid was below the auction floor, return 2. (TODO: What does this mean?)</p>
-      <li data-md>
-       <p>Etc.</p>
-     </ol>
-    <li data-md>
-     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert②">Assert</a>: false.</p>
-   </ol>
-   <p class="issue" id="issue-58befe42"><a class="self-link" href="#issue-58befe42"></a> Do we need any sort of contextual argument (e.g. representing the auction)?</p>
-   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="validate an extended histogram contribution" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-validate-an-extended-histogram-contribution">validate an extended histogram contribution</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-paextendedhistogramcontribution" id="ref-for-dictdef-paextendedhistogramcontribution②">PAExtendedHistogramContribution</a></code> <var>contribution</var>:</p>
-   <ol>
-    <li data-md>
-     <p>TODO (probably need to check offsets are valid and the right type etc. Also that base values are one of a set)</p>
-   </ol>
-   <p class="issue" id="issue-d370ec86"><a class="self-link" href="#issue-d370ec86"></a> Need to document limits on offset, etc.</p>
    <h2 class="heading settled" data-level="5" id="structures"><span class="secno">5. </span><span class="content">Structures</span><a class="self-link" href="#structures"></a></h2>
    <h3 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="5.1" data-lt="Aggregatable report" data-noexport id="aggregatable-report"><span class="secno">5.1. </span><span class="content">Aggregatable report</span><a class="self-link" href="#aggregatable-report" id="ref-for-aggregatable-report"></a></h3>
    <p>An aggregatable report is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#struct" id="ref-for-struct">struct</a> with the following items:</p>
@@ -913,7 +798,7 @@ a long and if a value is a PASignalValue, its offset is NOT a bigint.</p>
      <p>A point in time</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="aggregatable report" data-dfn-type="dfn" data-noexport id="aggregatable-report-contributions">contributions</dfn>
     <dd data-md>
-     <p>An <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set">ordered set</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution③">PAHistogramContribution</a></code></p>
+     <p>An <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set">ordered set</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution①">PAHistogramContribution</a></code></p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="aggregatable report" data-dfn-type="dfn" data-noexport id="aggregatable-report-api">api</dfn>
     <dd data-md>
      <p>A <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier">worklet type identifier</a></p>
@@ -933,26 +818,28 @@ a long and if a value is a PASignalValue, its offset is NOT a bigint.</p>
      <p>The global scope was a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope" id="ref-for-sharedstorageworkletglobalscope②">SharedStorageWorkletGlobalScope</a></code>.</p>
    </dl>
    <p class="issue" id="issue-50f5428b"><a class="self-link" href="#issue-50f5428b"></a> consider renaming worklet type identifier</p>
-   <h3 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="5.3" data-lt="Signal base value" data-noexport id="signal-base-value"><span class="secno">5.3. </span><span class="content">Signal base value</span><a class="self-link" href="#signal-base-value" id="ref-for-signal-base-value②"></a></h3>
+   <h3 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="5.3" data-lt="Signal base value" data-noexport id="signal-base-value"><span class="secno">5.3. </span><span class="content">Signal base value</span><a class="self-link" href="#signal-base-value" id="ref-for-signal-base-value"></a></h3>
     A signal base value is one of the following: 
    <dl>
-    <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="signal base value" data-dfn-type="dfn" data-noexport id="signal-base-value-winning-bid"><code>winning-bid</code></dfn>"
+    <dt data-md>"<dfn data-dfn-for="signal base value" data-dfn-type="dfn" data-export id="signal-base-value-winning-bid"><code>winning-bid</code><a class="self-link" href="#signal-base-value-winning-bid"></a></dfn>"
     <dd data-md>
      <p>The bid value of the winning bid.</p>
-    <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="signal base value" data-dfn-type="dfn" data-noexport id="signal-base-value-highest-scoring-other-bid"><code>highest-scoring-other-bid</code></dfn>"
+    <dt data-md>"<dfn data-dfn-for="signal base value" data-dfn-type="dfn" data-export id="signal-base-value-highest-scoring-other-bid"><code>highest-scoring-other-bid</code><a class="self-link" href="#signal-base-value-highest-scoring-other-bid"></a></dfn>"
     <dd data-md>
      <p>The bid value of the highest scoring bid that did not win.</p>
-    <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="signal base value" data-dfn-type="dfn" data-noexport id="signal-base-value-script-run-time"><code>script-run-time</code></dfn>"
+    <dt data-md>"<dfn data-dfn-for="signal base value" data-dfn-type="dfn" data-export id="signal-base-value-script-run-time"><code>script-run-time</code><a class="self-link" href="#signal-base-value-script-run-time"></a></dfn>"
     <dd data-md>
      <p>The running time of the script in ms(?).</p>
-    <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="signal base value" data-dfn-type="dfn" data-noexport id="signal-base-value-signals-fetch-time"><code>signals-fetch-time</code></dfn>"
+    <dt data-md>"<dfn data-dfn-for="signal base value" data-dfn-type="dfn" data-export id="signal-base-value-signals-fetch-time"><code>signals-fetch-time</code><a class="self-link" href="#signal-base-value-signals-fetch-time"></a></dfn>"
     <dd data-md>
      <p>The time it took for the signals fetch to complete in ms(?)</p>
-    <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="signal base value" data-dfn-type="dfn" data-noexport id="signal-base-value-bid-reject-reason"><code>bid-reject-reason</code></dfn>"
+    <dt data-md>"<dfn data-dfn-for="signal base value" data-dfn-type="dfn" data-export id="signal-base-value-bid-reject-reason"><code>bid-reject-reason</code><a class="self-link" href="#signal-base-value-bid-reject-reason"></a></dfn>"
     <dd data-md>
-     <p>The reason a bid was rejected (TODO: new enum needed).</p>
+     <p>The reason a bid was rejected.</p>
    </dl>
+   <p class="issue" id="issue-50e08c14"><a class="self-link" href="#issue-50e08c14"></a> Remove exports when these definitions are used.</p>
    <p class="issue" id="issue-7e205185"><a class="self-link" href="#issue-7e205185"></a> Make sure these definitions match "determine the numeric value" algorithm</p>
+   <p class="issue" id="issue-9532b98e"><a class="self-link" href="#issue-9532b98e"></a> New enum needed for bid reject reasons.</p>
    <h2 class="heading settled" data-level="6" id="storage"><span class="secno">6. </span><span class="content">Storage</span><a class="self-link" href="#storage"></a></h2>
    <p>A user agent holds an <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="aggregatable-report-cache">aggregatable report cache</dfn>, which is an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set①">ordered set</a> of <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report②">aggregatable reports</a>.</p>
    <h2 class="heading settled" data-level="7" id="vendor-specific-values"><span class="secno">7. </span><span class="content">Vendor-specific values</span><a class="self-link" href="#vendor-specific-values"></a></h2>
@@ -963,7 +850,7 @@ a long and if a value is a PASignalValue, its offset is NOT a bigint.</p>
    <p>To <dfn class="dfn-paneled algorithm" data-algorithm="obtain a reporting endpoint" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-obtain-a-reporting-endpoint">obtain a reporting endpoint</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin②">Origin</a> <var>reportingOrigin</var> and <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier①">worklet type identifier</a> <var>api</var>:</p>
    <ol>
     <li data-md>
-     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert③">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin">potentially trustworthy origin</a>.</p>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin">potentially trustworthy origin</a>.</p>
     <li data-md>
      <p>Let <var>path</var> be the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string-concatenate" id="ref-for-string-concatenate">concatenation</a> of «"<code>.well-known/private-aggregation/report-</code>", <var>api</var>».</p>
     <li data-md>
@@ -971,10 +858,10 @@ a long and if a value is a PASignalValue, its offset is NOT a bigint.</p>
     <li data-md>
      <p>Return the result of running the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-parser" id="ref-for-concept-url-parser①">URL parser</a> on <var>path</var> with <var>base</var>.</p>
    </ol>
-   <p>To <dfn class="dfn-paneled" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-obtain-an-aggregatable-report">obtain an aggregatable report</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin③">Origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier②">worklet type identifier</a> <var>api</var> and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set②">ordered set</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution④">PAHistogramContribution</a></code> <var>contributions</var>:</p>
+   <p>To <dfn class="dfn-paneled" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-obtain-an-aggregatable-report">obtain an aggregatable report</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin③">Origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier②">worklet type identifier</a> <var>api</var> and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set②">ordered set</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution②">PAHistogramContribution</a></code> <var>contributions</var>:</p>
    <ol>
     <li data-md>
-     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert④">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin①">potentially trustworthy origin</a>.</p>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin①">potentially trustworthy origin</a>.</p>
     <li data-md>
      <p>Let <var>report</var> be a new <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report①">aggregatable report</a> with the items:</p>
      <dl>
@@ -996,18 +883,17 @@ a long and if a value is a PASignalValue, its offset is NOT a bigint.</p>
      </dl>
    </ol>
    <h3 class="heading settled" data-level="8.1" id="scheduling-reports"><span class="secno">8.1. </span><span class="content">Scheduling reports</span><a class="self-link" href="#scheduling-reports"></a></h3>
-   <p class="issue" id="issue-a39b5350"><a class="self-link" href="#issue-a39b5350"></a> Fill out</p>
-   <p>The <dfn class="dfn-paneled algorithm" data-algorithm="report scheduling steps" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-report-scheduling-steps">report scheduling steps</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin④">Origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier③">worklet type identifier</a> <var>api</var> and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set③">ordered set</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑤">PAHistogramContribution</a></code> <var>contributions</var> are as follows:</p>
+   <p>The <dfn class="dfn-paneled algorithm" data-algorithm="report scheduling steps" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-report-scheduling-steps">report scheduling steps</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin④">Origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier③">worklet type identifier</a> <var>api</var> and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set③">ordered set</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution③">PAHistogramContribution</a></code> <var>contributions</var> are as follows:</p>
    <ol>
     <li data-md>
-     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑤">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin②">potentially trustworthy origin</a>.</p>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert②">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin②">potentially trustworthy origin</a>.</p>
     <li data-md>
      <p>Let <var>approvedContributions</var> be a new empty <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set④">ordered set</a>.</p>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate①">For each</a> <var>contribution</var> of <var>contributions</var>:</p>
      <ol>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑥">Assert</a>: <var>contribution</var>’s <var>value</var> is non-negative.</p>
+       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert③">Assert</a>: <var>contribution</var>’s <var>value</var> is non-negative.</p>
       <li data-md>
        <p>Let <var>sufficient_budget</var> be the result of running <a data-link-type="dfn" href="#privateaggregation-consume-budget-if-permitted" id="ref-for-privateaggregation-consume-budget-if-permitted">consume budget if permitted</a> on <var>value</var>, <var>reportingOrigin</var> and <var>api</var>.</p>
       <li data-md>
@@ -1020,23 +906,75 @@ a long and if a value is a PASignalValue, its offset is NOT a bigint.</p>
     <li data-md>
      <p>Let <var>report</var> be the result of <a data-link-type="dfn" href="#privateaggregation-obtain-an-aggregatable-report" id="ref-for-privateaggregation-obtain-an-aggregatable-report">obtaining an aggregatable report</a> given <var>reportingOrigin</var>, <var>api</var> and <var>approvedContributions</var>.</p>
     <li data-md>
-     <p>If the user agent’s <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache">aggregatable report cache</a> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size">size</a> is larger than <a data-link-type="dfn" href="#max-stored-reports" id="ref-for-max-stored-reports">max stored reports</a>, return. (TODO: does this match implementation?)</p>
+     <p>If the user agent’s <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache">aggregatable report cache</a> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size">size</a> is larger than <a data-link-type="dfn" href="#max-stored-reports" id="ref-for-max-stored-reports">max stored reports</a>, return.</p>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append①">Append</a> <var>report</var> to the user agent’s <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache①">aggregatable report cache</a>.</p>
    </ol>
    <p class="issue" id="issue-b92a47e8"><a class="self-link" href="#issue-b92a47e8"></a> Do we need to ensure the reports aren’t queued after being sent?</p>
-   <p class="issue" id="issue-6f54c043"><a class="self-link" href="#issue-6f54c043"></a> <var>api</var> param</p>
-   <p class="issue" id="issue-cce8e53a"><a class="self-link" href="#issue-cce8e53a"></a> wording of how to assign <var>sufficient_budget</var></p>
    <p class="issue" id="issue-4e3d86bc"><a class="self-link" href="#issue-4e3d86bc"></a> non-negative or positive value?</p>
    <p class="issue" id="issue-a82d4aa0"><a class="self-link" href="#issue-a82d4aa0"></a> Do we need to address user settings here at all?</p>
    <p class="issue" id="issue-1ed24345"><a class="self-link" href="#issue-1ed24345"></a> Batching</p>
+   <p class="issue" id="issue-3262963e"><a class="self-link" href="#issue-3262963e"></a> Does the <a data-link-type="dfn" href="#max-stored-reports" id="ref-for-max-stored-reports①">max stored reports</a> part match the implementation?</p>
    <p>To <dfn class="dfn-paneled algorithm" data-algorithm="consume budget if permitted" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-consume-budget-if-permitted">consume budget if permitted</dfn> given a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long③">long</a></code> <var>value</var>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑤">origin</a> <var>origin</var> and an <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier④">worklet type identifier</a> <var>api</var> are a user agent-determined sequence of steps that returns a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-boolean" id="ref-for-idl-boolean">boolean</a></code> indicating whether there is a sufficient 'contribution budget' left to send the requested contribution <var>value</var>. The algorithm should assume that the contribution will be sent if true is returned (and won’t otherwise).</p>
    <p class="issue" id="issue-aea683b6"><a class="self-link" href="#issue-aea683b6"></a> Do we want to specify how budgeting works? ARA does, but leaves the exact values up to the implementer.</p>
    <p class="issue" id="issue-45815b88"><a class="self-link" href="#issue-45815b88"></a> Don’t we need to take into account the time "now" as well?</p>
-   <p class="issue" id="issue-afde777d"><a class="self-link" href="#issue-afde777d"></a> Need to define the API enum or replace with a string or something.</p>
    <h3 class="heading settled" data-level="8.2" id="sending-reports"><span class="secno">8.2. </span><span class="content">Sending reports</span><a class="self-link" href="#sending-reports"></a></h3>
-   <p class="issue" id="issue-ab2c4421"><a class="self-link" href="#issue-ab2c4421"></a> See Report delivery in ARA spec. We may want to align, but not sure it’s worth it
-while debug modes are around.</p>
+   <p class="issue" id="issue-9b34a752"><a class="self-link" href="#issue-9b34a752"></a> Fill in. Compare to Report delivery in ARA spec.</p>
+   <h3 class="heading settled" data-level="8.3" id="fledge-specific-algorithms"><span class="secno">8.3. </span><span class="content">FLEDGE-specific algorithms</span><a class="self-link" href="#fledge-specific-algorithms"></a></h3>
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fill-in-the-contribution">fill in the contribution</dfn> given a <var>contribution</var>, run the following steps:</p>
+   <ol>
+    <li data-md>
+     <p>If <var>contribution</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution④">PAHistogramContribution</a></code>, return <var>contribution</var>.</p>
+    <li data-md>
+     <p>Otherwise, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert④">assert</a> <var>contribution</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-paextendedhistogramcontribution" id="ref-for-dictdef-paextendedhistogramcontribution①">PAExtendedHistogramContribution</a></code>.</p>
+    <li data-md>
+     <p>Let <var>bucket</var> be <var>contribution</var>’s <code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-bucket" id="ref-for-dom-paextendedhistogramcontribution-bucket">bucket</a></code>.</p>
+    <li data-md>
+     <p>If <var>bucket</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue②">PASignalValue</a></code>, let <var>bucket</var> be the result of <a data-link-type="dfn" href="#fill-in-the-signal-value" id="ref-for-fill-in-the-signal-value">filling in the signal value</a> given <var>bucket</var> and 65535.</p>
+    <li data-md>
+     <p>Let <var>value</var> be <var>contribution</var>’s <code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-value" id="ref-for-dom-paextendedhistogramcontribution-value">value</a></code>.</p>
+    <li data-md>
+     <p>If <var>value</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue③">PASignalValue</a></code>, let <var>value</var> be the result of <a data-link-type="dfn" href="#fill-in-the-signal-value" id="ref-for-fill-in-the-signal-value①">filling in the signal value</a> given <var>value</var> and 2<sup>128</sup>−1.</p>
+    <li data-md>
+     <p>Return a new <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑤">PAHistogramContribution</a></code> with the items:</p>
+     <dl>
+      <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket①">bucket</a></code>
+      <dd data-md>
+       <p><var>bucket</var></p>
+      <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value①">value</a></code>
+      <dd data-md>
+       <p><var>value</var></p>
+     </dl>
+   </ol>
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fill-in-the-signal-value">fill in the signal value</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue④">PASignalValue</a></code> <var>value</var> and an integer <var>maxAllowed</var>, run the following steps:</p>
+   <ol>
+    <li data-md>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑤">Assert</a> <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-basevalue" id="ref-for-dom-pasignalvalue-basevalue">baseValue</a></code> is a valid <a data-link-type="dfn" href="#signal-base-value" id="ref-for-signal-base-value②">signal base value</a>.</p>
+    <li data-md>
+     <p>Let <var>returnValue</var> be the result of <a data-link-type="dfn" href="#determine-the-numeric-value" id="ref-for-determine-the-numeric-value">determining the numeric value</a> of <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-basevalue" id="ref-for-dom-pasignalvalue-basevalue①">baseValue</a></code>.</p>
+    <li data-md>
+     <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-scale" id="ref-for-dom-pasignalvalue-scale">scale</a></code> is set:</p>
+     <ol>
+      <li data-md>
+       <p>Let <var>returnValue</var> be the result of multiplying <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-scale" id="ref-for-dom-pasignalvalue-scale①">scale</a></code> with <var>returnValue</var>.</p>
+     </ol>
+    <li data-md>
+     <p>Let <var>returnValue</var> be the integer result of rounding <var>returnValue</var> to the nearest integer. If two integers are equally close, the result should be the integer closer to negative infinity.</p>
+    <li data-md>
+     <p>If <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset">offset</a></code> is set:</p>
+     <ol>
+      <li data-md>
+       <p>Let <var>returnValue</var> be the result of adding <var>returnValue</var> to <var>value</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset①">offset</a></code>.</p>
+     </ol>
+    <li data-md>
+     <p>Clamp <var>returnValue</var> to the range [0, <var>maxAllowed</var>] and return the result.</p>
+   </ol>
+   <p class="issue" id="issue-b7f7c8b2"><a class="self-link" href="#issue-b7f7c8b2"></a> Maybe add refs to the rounding logic.</p>
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="determine-the-numeric-value">determine the numeric value</dfn> of a <a data-link-type="dfn" href="#signal-base-value" id="ref-for-signal-base-value①">signal base value</a> <var>signalBaseValue</var>, run the following steps:</p>
+   <p class="issue" id="issue-cb6e966f"><a class="self-link" href="#issue-cb6e966f"></a> Fill in.</p>
+   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="validate an extended histogram contribution" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-validate-an-extended-histogram-contribution">validate an extended histogram contribution</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-paextendedhistogramcontribution" id="ref-for-dictdef-paextendedhistogramcontribution②">PAExtendedHistogramContribution</a></code> <var>contribution</var>:</p>
+   <p class="issue" id="issue-351b79d4"><a class="self-link" href="#issue-351b79d4"></a> Fill in. Will need to check offsets are valid and in the right range for the type etc. Also that base values are one of a set.</p>
+   <p class="issue" id="issue-d370ec86"><a class="self-link" href="#issue-d370ec86"></a> Need to document limits on offset, etc.</p>
   </main>
   <div data-fill-with="conformance">
    <h2 class="no-ref no-num heading settled" id="w3c-conformance"><span class="content">Conformance</span><a class="self-link" href="#w3c-conformance"></a></h2>
@@ -1097,9 +1035,9 @@ while debug modes are around.</p>
    <li><a href="#privateaggregation-consume-budget-if-permitted">consume budget if permitted</a><span>, in § 8.1</span>
    <li><a href="#aggregatable-report-contributions">contributions</a><span>, in § 5.1</span>
    <li><a href="#contributions-cache">contributions cache</a><span>, in § 2.1</span>
-   <li><a href="#determine-the-numeric-value">determine the numeric value</a><span>, in § 4</span>
-   <li><a href="#fill-in-the-contribution">fill in the contribution</a><span>, in § 4</span>
-   <li><a href="#fill-in-the-signal-value">fill in the signal value</a><span>, in § 4</span>
+   <li><a href="#determine-the-numeric-value">determine the numeric value</a><span>, in § 8.3</span>
+   <li><a href="#fill-in-the-contribution">fill in the contribution</a><span>, in § 8.3</span>
+   <li><a href="#fill-in-the-signal-value">fill in the signal value</a><span>, in § 8.3</span>
    <li><a href="#worklet-type-identifier-fledge">fledge</a><span>, in § 5.2</span>
    <li><a href="#signal-base-value-highest-scoring-other-bid">highest-scoring-other-bid</a><span>, in § 5.3</span>
    <li><a href="#max-stored-reports">Max stored reports</a><span>, in § 7</span>
@@ -1118,7 +1056,7 @@ while debug modes are around.</p>
      <li><a href="#dom-sharedstorageworkletglobalscope-privateaggregation">attribute for SharedStorageWorkletGlobalScope</a><span>, in § 3</span>
     </ul>
    <li><a href="#process-the-fledge-contributions-cache">process the FLEDGE contributions cache</a><span>, in § 4</span>
-   <li><a href="#process-the-shared-storage-contributions-cache">process the shared storage contributions cache</a><span>, in § 3</span>
+   <li><a href="#process-the-shared-storage-contributions-cache">process the Shared Storage contributions cache</a><span>, in § 3</span>
    <li><a href="#dom-privateaggregation-reportcontributionforevent">reportContributionForEvent(event, contribution)</a><span>, in § 4</span>
    <li><a href="#aggregatable-report-report-id">report ID</a><span>, in § 5.1</span>
    <li><a href="#aggregatable-report-reporting-endpoint">reporting endpoint</a><span>, in § 5.1</span>
@@ -1129,7 +1067,7 @@ while debug modes are around.</p>
    <li><a href="#worklet-type-identifier-shared-storage">shared-storage</a><span>, in § 5.2</span>
    <li><a href="#signal-base-value">Signal base value</a><span>, in § 5.2</span>
    <li><a href="#signal-base-value-signals-fetch-time">signals-fetch-time</a><span>, in § 5.3</span>
-   <li><a href="#privateaggregation-validate-an-extended-histogram-contribution">validate an extended histogram contribution</a><span>, in § 4</span>
+   <li><a href="#privateaggregation-validate-an-extended-histogram-contribution">validate an extended histogram contribution</a><span>, in § 8.3</span>
    <li>
     value
     <ul>
@@ -1197,9 +1135,9 @@ while debug modes are around.</p>
   <aside aria-labelledby="infopaneltitle-for-7618b9a6d44febb7e784c8f39faac140" class="dfn-panel" data-for="7618b9a6d44febb7e784c8f39faac140" id="infopanel-for-7618b9a6d44febb7e784c8f39faac140">
    <span id="infopaneltitle-for-7618b9a6d44febb7e784c8f39faac140" style="display:none">Info about the 'assert' external reference.</span><a href="https://infra.spec.whatwg.org/#assert">https://infra.spec.whatwg.org/#assert</a><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-assert">4. Exposing to FLEDGE</a> <a href="#ref-for-assert①">(2)</a> <a href="#ref-for-assert②">(3)</a>
-    <li><a href="#ref-for-assert③">8. Algorithms</a> <a href="#ref-for-assert④">(2)</a>
-    <li><a href="#ref-for-assert⑤">8.1. Scheduling reports</a> <a href="#ref-for-assert⑥">(2)</a>
+    <li><a href="#ref-for-assert">8. Algorithms</a> <a href="#ref-for-assert①">(2)</a>
+    <li><a href="#ref-for-assert②">8.1. Scheduling reports</a> <a href="#ref-for-assert③">(2)</a>
+    <li><a href="#ref-for-assert④">8.3. FLEDGE-specific algorithms</a> <a href="#ref-for-assert⑤">(2)</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-2889fa868b02a31759864aaf77f851d6" class="dfn-panel" data-for="2889fa868b02a31759864aaf77f851d6" id="infopanel-for-2889fa868b02a31759864aaf77f851d6">
@@ -1438,35 +1376,34 @@ while debug modes are around.</p>
 </pre>
   <h2 class="no-num no-ref heading settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
-   <div class="issue"> Should we spec enableDebugMode? It’s temporary anyway. <a class="issue-return" href="#issue-92e6f03d" title="Jump to section">↵</a></div>
+   <div class="issue"> Need to spec enableDebugMode. <a class="issue-return" href="#issue-d1727a05" title="Jump to section">↵</a></div>
    <div class="issue"> Need to spec Permissions Policy integration. <a class="issue-return" href="#issue-b4669f13" title="Jump to section">↵</a></div>
-   <div class="issue"> Check that value can actually be zero in the spec pipeline. Also actually throw an error properly
-Issue: Also handle bucket being out of bounds. <a class="issue-return" href="#issue-92bb7b88" title="Jump to section">↵</a></div>
+   <div class="issue"> Check that value can actually be zero in the spec pipeline. <a class="issue-return" href="#issue-0f38e041" title="Jump to section">↵</a></div>
+   <div class="issue"> Properly throw an error here. <a class="issue-return" href="#issue-cd2783d9" title="Jump to section">↵</a></div>
    <div class="issue"> How to handle batching different operation invocations properly. This doesn’t work for simultaneous operations. <a class="issue-return" href="#issue-dc5ffa48" title="Jump to section">↵</a></div>
    <div class="issue"> Do we want to align naming with implementation? <a class="issue-return" href="#issue-6c6263d3" title="Jump to section">↵</a></div>
-   <div class="issue"> Does FLEDGE have one global scope per auction or multiple? <a class="issue-return" href="#issue-bb4f5428" title="Jump to section">↵</a></div>
+   <div class="issue"> Does FLEDGE have one global scope per auction or multiple? If multiple, will need to change scope. <a class="issue-return" href="#issue-76fbc2f6" title="Jump to section">↵</a></div>
    <div class="issue"> How to handle fenced frame-triggered contributions and other event-triggered contributions. <a class="issue-return" href="#issue-4f862fc9" title="Jump to section">↵</a></div>
-   <div class="issue"> where should this queue be given it has to outlive the fenced frame? <a class="issue-return" href="#issue-510bee71" title="Jump to section">↵</a></div>
-   <div class="issue"> Probably move to algorithms? Or at least some of it. <a class="issue-return" href="#issue-5b10211a" title="Jump to section">↵</a></div>
-   <div class="issue"> Do we need any sort of contextual argument (e.g. representing the auction)? <a class="issue-return" href="#issue-58befe42" title="Jump to section">↵</a></div>
-   <div class="issue"> Need to document limits on offset, etc. <a class="issue-return" href="#issue-d370ec86" title="Jump to section">↵</a></div>
+   <div class="issue"> Fill in the rest. (Need to put the contribution in some sort of queue and process the queue at some point. Need to decide where the queue should live given it has to outlive the auction.) <a class="issue-return" href="#issue-e94ae90c" title="Jump to section">↵</a></div>
    <div class="issue"> Handle operation types, aggregation coordinators, maybe retries/offline, report verification <a class="issue-return" href="#issue-d4626287" title="Jump to section">↵</a></div>
    <div class="issue"> consider renaming worklet type identifier <a class="issue-return" href="#issue-50f5428b" title="Jump to section">↵</a></div>
+   <div class="issue"> Remove exports when these definitions are used. <a class="issue-return" href="#issue-50e08c14" title="Jump to section">↵</a></div>
    <div class="issue"> Make sure these definitions match "determine the numeric value" algorithm <a class="issue-return" href="#issue-7e205185" title="Jump to section">↵</a></div>
+   <div class="issue"> New enum needed for bid reject reasons. <a class="issue-return" href="#issue-9532b98e" title="Jump to section">↵</a></div>
    <div class="issue"> Should we use the term "implementation-defined" instead? <a class="issue-return" href="#issue-a7b6f3bb" title="Jump to section">↵</a></div>
    <div class="issue"> More <a class="issue-return" href="#issue-d3da97e2" title="Jump to section">↵</a></div>
-   <div class="issue"> Fill out <a class="issue-return" href="#issue-a39b5350" title="Jump to section">↵</a></div>
    <div class="issue"> Do we need to ensure the reports aren’t queued after being sent? <a class="issue-return" href="#issue-b92a47e8" title="Jump to section">↵</a></div>
-   <div class="issue"> <var>api</var> param <a class="issue-return" href="#issue-6f54c043" title="Jump to section">↵</a></div>
-   <div class="issue"> wording of how to assign <var>sufficient_budget</var> <a class="issue-return" href="#issue-cce8e53a" title="Jump to section">↵</a></div>
    <div class="issue"> non-negative or positive value? <a class="issue-return" href="#issue-4e3d86bc" title="Jump to section">↵</a></div>
    <div class="issue"> Do we need to address user settings here at all? <a class="issue-return" href="#issue-a82d4aa0" title="Jump to section">↵</a></div>
    <div class="issue"> Batching <a class="issue-return" href="#issue-1ed24345" title="Jump to section">↵</a></div>
+   <div class="issue"> Does the <a data-link-type="dfn" href="#max-stored-reports">max stored reports</a> part match the implementation? <a class="issue-return" href="#issue-3262963e" title="Jump to section">↵</a></div>
    <div class="issue"> Do we want to specify how budgeting works? ARA does, but leaves the exact values up to the implementer. <a class="issue-return" href="#issue-aea683b6" title="Jump to section">↵</a></div>
    <div class="issue"> Don’t we need to take into account the time "now" as well? <a class="issue-return" href="#issue-45815b88" title="Jump to section">↵</a></div>
-   <div class="issue"> Need to define the API enum or replace with a string or something. <a class="issue-return" href="#issue-afde777d" title="Jump to section">↵</a></div>
-   <div class="issue"> See Report delivery in ARA spec. We may want to align, but not sure it’s worth it
-while debug modes are around. <a class="issue-return" href="#issue-ab2c4421" title="Jump to section">↵</a></div>
+   <div class="issue"> Fill in. Compare to Report delivery in ARA spec. <a class="issue-return" href="#issue-9b34a752" title="Jump to section">↵</a></div>
+   <div class="issue"> Maybe add refs to the rounding logic. <a class="issue-return" href="#issue-b7f7c8b2" title="Jump to section">↵</a></div>
+   <div class="issue"> Fill in. <a class="issue-return" href="#issue-cb6e966f" title="Jump to section">↵</a></div>
+   <div class="issue"> Fill in. Will need to check offsets are valid and in the right range for the type etc. Also that base values are one of a set. <a class="issue-return" href="#issue-351b79d4" title="Jump to section">↵</a></div>
+   <div class="issue"> Need to document limits on offset, etc. <a class="issue-return" href="#issue-d370ec86" title="Jump to section">↵</a></div>
   </div>
   <aside aria-labelledby="infopaneltitle-for-privateaggregation" class="dfn-panel" data-for="privateaggregation" id="infopanel-for-privateaggregation">
    <span id="infopaneltitle-for-privateaggregation" style="display:none">Info about the 'PrivateAggregation' definition.</span><b><a href="#privateaggregation">#privateaggregation</a></b><b>Referenced in:</b>
@@ -1480,24 +1417,24 @@ while debug modes are around. <a class="issue-return" href="#issue-ab2c4421" tit
    <span id="infopaneltitle-for-dictdef-pahistogramcontribution" style="display:none">Info about the 'PAHistogramContribution' definition.</span><b><a href="#dictdef-pahistogramcontribution">#dictdef-pahistogramcontribution</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dictdef-pahistogramcontribution">2.1. Worklet interface</a>
-    <li><a href="#ref-for-dictdef-pahistogramcontribution①">4. Exposing to FLEDGE</a> <a href="#ref-for-dictdef-pahistogramcontribution②">(2)</a>
-    <li><a href="#ref-for-dictdef-pahistogramcontribution③">5.1. Aggregatable report</a>
-    <li><a href="#ref-for-dictdef-pahistogramcontribution④">8. Algorithms</a>
-    <li><a href="#ref-for-dictdef-pahistogramcontribution⑤">8.1. Scheduling reports</a>
+    <li><a href="#ref-for-dictdef-pahistogramcontribution①">5.1. Aggregatable report</a>
+    <li><a href="#ref-for-dictdef-pahistogramcontribution②">8. Algorithms</a>
+    <li><a href="#ref-for-dictdef-pahistogramcontribution③">8.1. Scheduling reports</a>
+    <li><a href="#ref-for-dictdef-pahistogramcontribution④">8.3. FLEDGE-specific algorithms</a> <a href="#ref-for-dictdef-pahistogramcontribution⑤">(2)</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-dom-pahistogramcontribution-bucket" class="dfn-panel" data-for="dom-pahistogramcontribution-bucket" id="infopanel-for-dom-pahistogramcontribution-bucket">
    <span id="infopaneltitle-for-dom-pahistogramcontribution-bucket" style="display:none">Info about the 'bucket' definition.</span><b><a href="#dom-pahistogramcontribution-bucket">#dom-pahistogramcontribution-bucket</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-pahistogramcontribution-bucket">2.1. Worklet interface</a>
-    <li><a href="#ref-for-dom-pahistogramcontribution-bucket①">4. Exposing to FLEDGE</a>
+    <li><a href="#ref-for-dom-pahistogramcontribution-bucket①">8.3. FLEDGE-specific algorithms</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-dom-pahistogramcontribution-value" class="dfn-panel" data-for="dom-pahistogramcontribution-value" id="infopanel-for-dom-pahistogramcontribution-value">
    <span id="infopaneltitle-for-dom-pahistogramcontribution-value" style="display:none">Info about the 'value' definition.</span><b><a href="#dom-pahistogramcontribution-value">#dom-pahistogramcontribution-value</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-dom-pahistogramcontribution-value">2.1. Worklet interface</a>
-    <li><a href="#ref-for-dom-pahistogramcontribution-value①">4. Exposing to FLEDGE</a>
+    <li><a href="#ref-for-dom-pahistogramcontribution-value①">8.3. FLEDGE-specific algorithms</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-contributions-cache" class="dfn-panel" data-for="contributions-cache" id="infopanel-for-contributions-cache">
@@ -1515,7 +1452,7 @@ while debug modes are around. <a class="issue-return" href="#issue-ab2c4421" tit
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-process-the-shared-storage-contributions-cache" class="dfn-panel" data-for="process-the-shared-storage-contributions-cache" id="infopanel-for-process-the-shared-storage-contributions-cache">
-   <span id="infopaneltitle-for-process-the-shared-storage-contributions-cache" style="display:none">Info about the 'process the shared storage contributions cache' definition.</span><b><a href="#process-the-shared-storage-contributions-cache">#process-the-shared-storage-contributions-cache</a></b><b>Referenced in:</b>
+   <span id="infopaneltitle-for-process-the-shared-storage-contributions-cache" style="display:none">Info about the 'process the Shared Storage contributions cache' definition.</span><b><a href="#process-the-shared-storage-contributions-cache">#process-the-shared-storage-contributions-cache</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-process-the-shared-storage-contributions-cache">3. Exposing to Shared Storage</a>
    </ul>
@@ -1523,43 +1460,45 @@ while debug modes are around. <a class="issue-return" href="#issue-ab2c4421" tit
   <aside aria-labelledby="infopaneltitle-for-dictdef-pasignalvalue" class="dfn-panel" data-for="dictdef-pasignalvalue" id="infopanel-for-dictdef-pasignalvalue">
    <span id="infopaneltitle-for-dictdef-pasignalvalue" style="display:none">Info about the 'PASignalValue' definition.</span><b><a href="#dictdef-pasignalvalue">#dictdef-pasignalvalue</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dictdef-pasignalvalue">4. Exposing to FLEDGE</a> <a href="#ref-for-dictdef-pasignalvalue①">(2)</a> <a href="#ref-for-dictdef-pasignalvalue②">(3)</a> <a href="#ref-for-dictdef-pasignalvalue③">(4)</a> <a href="#ref-for-dictdef-pasignalvalue④">(5)</a>
+    <li><a href="#ref-for-dictdef-pasignalvalue">4. Exposing to FLEDGE</a> <a href="#ref-for-dictdef-pasignalvalue①">(2)</a>
+    <li><a href="#ref-for-dictdef-pasignalvalue②">8.3. FLEDGE-specific algorithms</a> <a href="#ref-for-dictdef-pasignalvalue③">(2)</a> <a href="#ref-for-dictdef-pasignalvalue④">(3)</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-dom-pasignalvalue-basevalue" class="dfn-panel" data-for="dom-pasignalvalue-basevalue" id="infopanel-for-dom-pasignalvalue-basevalue">
    <span id="infopaneltitle-for-dom-pasignalvalue-basevalue" style="display:none">Info about the 'baseValue' definition.</span><b><a href="#dom-pasignalvalue-basevalue">#dom-pasignalvalue-basevalue</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-pasignalvalue-basevalue">4. Exposing to FLEDGE</a> <a href="#ref-for-dom-pasignalvalue-basevalue①">(2)</a>
+    <li><a href="#ref-for-dom-pasignalvalue-basevalue">8.3. FLEDGE-specific algorithms</a> <a href="#ref-for-dom-pasignalvalue-basevalue①">(2)</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-dom-pasignalvalue-scale" class="dfn-panel" data-for="dom-pasignalvalue-scale" id="infopanel-for-dom-pasignalvalue-scale">
    <span id="infopaneltitle-for-dom-pasignalvalue-scale" style="display:none">Info about the 'scale' definition.</span><b><a href="#dom-pasignalvalue-scale">#dom-pasignalvalue-scale</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-pasignalvalue-scale">4. Exposing to FLEDGE</a> <a href="#ref-for-dom-pasignalvalue-scale①">(2)</a>
+    <li><a href="#ref-for-dom-pasignalvalue-scale">8.3. FLEDGE-specific algorithms</a> <a href="#ref-for-dom-pasignalvalue-scale①">(2)</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-dom-pasignalvalue-offset" class="dfn-panel" data-for="dom-pasignalvalue-offset" id="infopanel-for-dom-pasignalvalue-offset">
    <span id="infopaneltitle-for-dom-pasignalvalue-offset" style="display:none">Info about the 'offset' definition.</span><b><a href="#dom-pasignalvalue-offset">#dom-pasignalvalue-offset</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-pasignalvalue-offset">4. Exposing to FLEDGE</a> <a href="#ref-for-dom-pasignalvalue-offset①">(2)</a>
+    <li><a href="#ref-for-dom-pasignalvalue-offset">8.3. FLEDGE-specific algorithms</a> <a href="#ref-for-dom-pasignalvalue-offset①">(2)</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-dictdef-paextendedhistogramcontribution" class="dfn-panel" data-for="dictdef-paextendedhistogramcontribution" id="infopanel-for-dictdef-paextendedhistogramcontribution">
    <span id="infopaneltitle-for-dictdef-paextendedhistogramcontribution" style="display:none">Info about the 'PAExtendedHistogramContribution' definition.</span><b><a href="#dictdef-paextendedhistogramcontribution">#dictdef-paextendedhistogramcontribution</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dictdef-paextendedhistogramcontribution">4. Exposing to FLEDGE</a> <a href="#ref-for-dictdef-paextendedhistogramcontribution①">(2)</a> <a href="#ref-for-dictdef-paextendedhistogramcontribution②">(3)</a>
+    <li><a href="#ref-for-dictdef-paextendedhistogramcontribution">4. Exposing to FLEDGE</a>
+    <li><a href="#ref-for-dictdef-paextendedhistogramcontribution①">8.3. FLEDGE-specific algorithms</a> <a href="#ref-for-dictdef-paextendedhistogramcontribution②">(2)</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-dom-paextendedhistogramcontribution-bucket" class="dfn-panel" data-for="dom-paextendedhistogramcontribution-bucket" id="infopanel-for-dom-paextendedhistogramcontribution-bucket">
    <span id="infopaneltitle-for-dom-paextendedhistogramcontribution-bucket" style="display:none">Info about the 'bucket' definition.</span><b><a href="#dom-paextendedhistogramcontribution-bucket">#dom-paextendedhistogramcontribution-bucket</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-paextendedhistogramcontribution-bucket">4. Exposing to FLEDGE</a>
+    <li><a href="#ref-for-dom-paextendedhistogramcontribution-bucket">8.3. FLEDGE-specific algorithms</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-dom-paextendedhistogramcontribution-value" class="dfn-panel" data-for="dom-paextendedhistogramcontribution-value" id="infopanel-for-dom-paextendedhistogramcontribution-value">
    <span id="infopaneltitle-for-dom-paextendedhistogramcontribution-value" style="display:none">Info about the 'value' definition.</span><b><a href="#dom-paextendedhistogramcontribution-value">#dom-paextendedhistogramcontribution-value</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dom-paextendedhistogramcontribution-value">4. Exposing to FLEDGE</a>
+    <li><a href="#ref-for-dom-paextendedhistogramcontribution-value">8.3. FLEDGE-specific algorithms</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-dom-privateaggregation-reportcontributionforevent" class="dfn-panel" data-for="dom-privateaggregation-reportcontributionforevent" id="infopanel-for-dom-privateaggregation-reportcontributionforevent">
@@ -1572,30 +1511,6 @@ while debug modes are around. <a class="issue-return" href="#issue-ab2c4421" tit
    <span id="infopaneltitle-for-process-the-fledge-contributions-cache" style="display:none">Info about the 'process the FLEDGE contributions cache' definition.</span><b><a href="#process-the-fledge-contributions-cache">#process-the-fledge-contributions-cache</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-process-the-fledge-contributions-cache">4. Exposing to FLEDGE</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-fill-in-the-contribution" class="dfn-panel" data-for="fill-in-the-contribution" id="infopanel-for-fill-in-the-contribution">
-   <span id="infopaneltitle-for-fill-in-the-contribution" style="display:none">Info about the 'fill in the contribution' definition.</span><b><a href="#fill-in-the-contribution">#fill-in-the-contribution</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-fill-in-the-contribution">4. Exposing to FLEDGE</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-fill-in-the-signal-value" class="dfn-panel" data-for="fill-in-the-signal-value" id="infopanel-for-fill-in-the-signal-value">
-   <span id="infopaneltitle-for-fill-in-the-signal-value" style="display:none">Info about the 'fill in the signal value' definition.</span><b><a href="#fill-in-the-signal-value">#fill-in-the-signal-value</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-fill-in-the-signal-value">4. Exposing to FLEDGE</a> <a href="#ref-for-fill-in-the-signal-value①">(2)</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-determine-the-numeric-value" class="dfn-panel" data-for="determine-the-numeric-value" id="infopanel-for-determine-the-numeric-value">
-   <span id="infopaneltitle-for-determine-the-numeric-value" style="display:none">Info about the 'determine the numeric value' definition.</span><b><a href="#determine-the-numeric-value">#determine-the-numeric-value</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-determine-the-numeric-value">4. Exposing to FLEDGE</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-privateaggregation-validate-an-extended-histogram-contribution" class="dfn-panel" data-for="privateaggregation-validate-an-extended-histogram-contribution" id="infopanel-for-privateaggregation-validate-an-extended-histogram-contribution">
-   <span id="infopaneltitle-for-privateaggregation-validate-an-extended-histogram-contribution" style="display:none">Info about the 'validate an extended histogram contribution' definition.</span><b><a href="#privateaggregation-validate-an-extended-histogram-contribution">#privateaggregation-validate-an-extended-histogram-contribution</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-privateaggregation-validate-an-extended-histogram-contribution">4. Exposing to FLEDGE</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-aggregatable-report" class="dfn-panel" data-for="aggregatable-report" id="infopanel-for-aggregatable-report">
@@ -1660,38 +1575,8 @@ while debug modes are around. <a class="issue-return" href="#issue-ab2c4421" tit
   <aside aria-labelledby="infopaneltitle-for-signal-base-value" class="dfn-panel" data-for="signal-base-value" id="infopanel-for-signal-base-value">
    <span id="infopaneltitle-for-signal-base-value" style="display:none">Info about the '5.3. Signal base value' definition.</span><b><a href="#signal-base-value">#signal-base-value</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-signal-base-value">4. Exposing to FLEDGE</a> <a href="#ref-for-signal-base-value①">(2)</a>
     <li><a href="#ref-for-signal-base-value">5.3. Signal base value</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-signal-base-value-winning-bid" class="dfn-panel" data-for="signal-base-value-winning-bid" id="infopanel-for-signal-base-value-winning-bid">
-   <span id="infopaneltitle-for-signal-base-value-winning-bid" style="display:none">Info about the 'winning-bid' definition.</span><b><a href="#signal-base-value-winning-bid">#signal-base-value-winning-bid</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-signal-base-value-winning-bid">4. Exposing to FLEDGE</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-signal-base-value-highest-scoring-other-bid" class="dfn-panel" data-for="signal-base-value-highest-scoring-other-bid" id="infopanel-for-signal-base-value-highest-scoring-other-bid">
-   <span id="infopaneltitle-for-signal-base-value-highest-scoring-other-bid" style="display:none">Info about the 'highest-scoring-other-bid' definition.</span><b><a href="#signal-base-value-highest-scoring-other-bid">#signal-base-value-highest-scoring-other-bid</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-signal-base-value-highest-scoring-other-bid">4. Exposing to FLEDGE</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-signal-base-value-script-run-time" class="dfn-panel" data-for="signal-base-value-script-run-time" id="infopanel-for-signal-base-value-script-run-time">
-   <span id="infopaneltitle-for-signal-base-value-script-run-time" style="display:none">Info about the 'script-run-time' definition.</span><b><a href="#signal-base-value-script-run-time">#signal-base-value-script-run-time</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-signal-base-value-script-run-time">4. Exposing to FLEDGE</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-signal-base-value-signals-fetch-time" class="dfn-panel" data-for="signal-base-value-signals-fetch-time" id="infopanel-for-signal-base-value-signals-fetch-time">
-   <span id="infopaneltitle-for-signal-base-value-signals-fetch-time" style="display:none">Info about the 'signals-fetch-time' definition.</span><b><a href="#signal-base-value-signals-fetch-time">#signal-base-value-signals-fetch-time</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-signal-base-value-signals-fetch-time">4. Exposing to FLEDGE</a>
-   </ul>
-  </aside>
-  <aside aria-labelledby="infopaneltitle-for-signal-base-value-bid-reject-reason" class="dfn-panel" data-for="signal-base-value-bid-reject-reason" id="infopanel-for-signal-base-value-bid-reject-reason">
-   <span id="infopaneltitle-for-signal-base-value-bid-reject-reason" style="display:none">Info about the 'bid-reject-reason' definition.</span><b><a href="#signal-base-value-bid-reject-reason">#signal-base-value-bid-reject-reason</a></b><b>Referenced in:</b>
-   <ul>
-    <li><a href="#ref-for-signal-base-value-bid-reject-reason">4. Exposing to FLEDGE</a>
+    <li><a href="#ref-for-signal-base-value">8.3. FLEDGE-specific algorithms</a> <a href="#ref-for-signal-base-value①">(2)</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-aggregatable-report-cache" class="dfn-panel" data-for="aggregatable-report-cache" id="infopanel-for-aggregatable-report-cache">
@@ -1703,7 +1588,7 @@ while debug modes are around. <a class="issue-return" href="#issue-ab2c4421" tit
   <aside aria-labelledby="infopaneltitle-for-max-stored-reports" class="dfn-panel" data-for="max-stored-reports" id="infopanel-for-max-stored-reports">
    <span id="infopaneltitle-for-max-stored-reports" style="display:none">Info about the 'Max stored reports' definition.</span><b><a href="#max-stored-reports">#max-stored-reports</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-max-stored-reports">8.1. Scheduling reports</a>
+    <li><a href="#ref-for-max-stored-reports">8.1. Scheduling reports</a> <a href="#ref-for-max-stored-reports①">(2)</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-privateaggregation-obtain-a-reporting-endpoint" class="dfn-panel" data-for="privateaggregation-obtain-a-reporting-endpoint" id="infopanel-for-privateaggregation-obtain-a-reporting-endpoint">
@@ -1729,6 +1614,30 @@ while debug modes are around. <a class="issue-return" href="#issue-ab2c4421" tit
    <span id="infopaneltitle-for-privateaggregation-consume-budget-if-permitted" style="display:none">Info about the 'consume budget if permitted' definition.</span><b><a href="#privateaggregation-consume-budget-if-permitted">#privateaggregation-consume-budget-if-permitted</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-privateaggregation-consume-budget-if-permitted">8.1. Scheduling reports</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-fill-in-the-contribution" class="dfn-panel" data-for="fill-in-the-contribution" id="infopanel-for-fill-in-the-contribution">
+   <span id="infopaneltitle-for-fill-in-the-contribution" style="display:none">Info about the 'fill in the contribution' definition.</span><b><a href="#fill-in-the-contribution">#fill-in-the-contribution</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-fill-in-the-contribution">4. Exposing to FLEDGE</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-fill-in-the-signal-value" class="dfn-panel" data-for="fill-in-the-signal-value" id="infopanel-for-fill-in-the-signal-value">
+   <span id="infopaneltitle-for-fill-in-the-signal-value" style="display:none">Info about the 'fill in the signal value' definition.</span><b><a href="#fill-in-the-signal-value">#fill-in-the-signal-value</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-fill-in-the-signal-value">8.3. FLEDGE-specific algorithms</a> <a href="#ref-for-fill-in-the-signal-value①">(2)</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-determine-the-numeric-value" class="dfn-panel" data-for="determine-the-numeric-value" id="infopanel-for-determine-the-numeric-value">
+   <span id="infopaneltitle-for-determine-the-numeric-value" style="display:none">Info about the 'determine the numeric value' definition.</span><b><a href="#determine-the-numeric-value">#determine-the-numeric-value</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-determine-the-numeric-value">8.3. FLEDGE-specific algorithms</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-privateaggregation-validate-an-extended-histogram-contribution" class="dfn-panel" data-for="privateaggregation-validate-an-extended-histogram-contribution" id="infopanel-for-privateaggregation-validate-an-extended-histogram-contribution">
+   <span id="infopaneltitle-for-privateaggregation-validate-an-extended-histogram-contribution" style="display:none">Info about the 'validate an extended histogram contribution' definition.</span><b><a href="#privateaggregation-validate-an-extended-histogram-contribution">#privateaggregation-validate-an-extended-histogram-contribution</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-privateaggregation-validate-an-extended-histogram-contribution">4. Exposing to FLEDGE</a>
    </ul>
   </aside>
 <script>/* script-dfn-panel */
