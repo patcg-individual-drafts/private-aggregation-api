@@ -161,14 +161,8 @@ The <dfn method for="PrivateAggregation">reportContributionForEvent(DOMString ev
 </div>
 
 1. Run the [=PrivateAggregation/validate an extended histogram contribution=] steps on |contribution|.
-  1. These should just check that if bucket is a PASignalValue, its offset is NOT
-    a long and if a value is a PASignalValue, its offset is NOT a bigint.
 
-1. Put the contribution in some sort of queue.
-
-1. Elsewhere, on context destruction AND/OR event handling, process the queue.
-
-Issue: where should this queue be given it has to outlive the fenced frame?
+Issue: Fill in the rest. (Need to put the contribution in some sort of queue and process the queue at some point. Need to decide where the queue should live given it has to outlive the auction.)
 
 To <dfn>process the FLEDGE contributions cache</dfn> given a [=contributions cache=] |contributionsCache| and a {{FledgeWorkletGlobalScope}} |scope|, run the following steps:
 1. Let |filledInContributions| be a new empty [=list=].
@@ -214,18 +208,20 @@ Issue: consider renaming worklet type identifier
 <h3 dfn-type=dfn>Signal base value</h3>
 A signal base value is one of the following:
 <dl dfn-for="signal base value">
-: "<dfn><code>winning-bid</code></dfn>"
+: "<dfn export><code>winning-bid</code></dfn>"
 :: The bid value of the winning bid.
-: "<dfn><code>highest-scoring-other-bid</code></dfn>"
+: "<dfn export><code>highest-scoring-other-bid</code></dfn>"
 :: The bid value of the highest scoring bid that did not win.
-: "<dfn><code>script-run-time</code></dfn>"
+: "<dfn export><code>script-run-time</code></dfn>"
 :: The running time of the script in ms(?).
-: "<dfn><code>signals-fetch-time</code></dfn>"
+: "<dfn export><code>signals-fetch-time</code></dfn>"
 :: The time it took for the signals fetch to complete in ms(?)
-: "<dfn><code>bid-reject-reason</code></dfn>"
+: "<dfn export><code>bid-reject-reason</code></dfn>"
 :: The reason a bid was rejected (TODO: new enum needed).
 
 </dl>
+
+Issue: Remove exports when these definitions are used.
 
 Issue: Make sure these definitions match "determine the numeric value" algorithm
 
@@ -351,42 +347,9 @@ To <dfn>fill in the signal value</dfn> given a {{PASignalValue}} |value| and an 
     1. Let |returnValue| be the result of adding |returnValue| to |value|'s {{PASignalValue/offset}}.
 1. Clamp |returnValue| to the range [0, |maxAllowed|] and return the result.
 
-<!-- <h3 dfn-type=dfn>Signal base value</h3>
-A signal base value is one of the following:
-<dl dfn-for="signal base value">
-: "<dfn><code>winning-bid</code></dfn>"
-:: The score of the winning bid.
-: "<dfn><code>highest-scoring-other-bid</code></dfn>"
-:: The score of the highest scoring bid that did not win.
-: "<dfn><code>script-run-time</code></dfn>"
-:: The running time of the script in ms(?).
-: "<dfn><code>signals-fetch-time</code></dfn>"
-:: The time it took for the signals fetch to complete in ms(?)
-: "<dfn><code>bid-reject-reason</code></dfn>"
-:: The reason a bid was rejected (TODO: new enum needed). -->
+To <dfn>determine the numeric value</dfn> of a [=signal base value=] <var ignore=''>signalBaseValue</var>, run the following steps:
 
-To <dfn>determine the numeric value</dfn> of a [=signal base value=] |signalBaseValue|, run the following steps:
-1. If |signalBaseValue| is "<code>[=signal base value/winning-bid=]</code>":
-    1. If there was a winning bid, return its bid value.
-    1. Otherwise, return 0.
-1. If |signalBaseValue| is "<code>[=signal base value/highest-scoring-other-bid=]</code>":
-    1. If there was a bid that did not win, return the bid value of the highest <em>scoring</em> bid that did not win. (TODO: check behavior if there's no winner.)
-    1. Otherwise, return 0.
-1. If |signalBaseValue| is "<code>[=signal base value/script-run-time=]</code>":
-    1. Return the time the script took to run in milliseconds. (TODO: Which script??)
-1. If |signalBaseValue| is "<code>[=signal base value/signals-fetch-time=]</code>":
-    1. If there was a trusted bidding signals network fetch that successfully completed, return the time it took for that request to complete in milliseconds. (TODO: clarify which request.)
-    1. Otherwise, return 0.
-1. If |signalBaseValue| is "<code>[=signal base value/bid-reject-reason=]</code>":
-    1. TODO: need to scope to a bid. The bid associated with this call? How do we do that nicely?
-    1. TODO: consider moving this part to its own algorithm
-    1. If the bid did not succeed purely because it didn't meet the required k-anonymity threshold, return 0.
-    1. If the bid was invalid, return 1.
-    1. If the bid was below the auction floor, return 2. (TODO: What does this mean?)
-    1. Etc.
-1. [=Assert=]: false.
-
-Issue: Do we need any sort of contextual argument (e.g. representing the auction)?
+Issue: Fill in.
 
 <!-- [Exposed=FledgeWorkletGlobalScope]
 dictionary PASignalValue {
@@ -408,6 +371,6 @@ Immediately after the {{WorkletGlobalScope}} object is [=terminate a worklet glo
 
 To <dfn algorithm for="PrivateAggregation">validate an extended histogram contribution</dfn> given a {{PAExtendedHistogramContribution}} |contribution|:
 
-Issue: Fill in. Will need to check offsets are valid and the right type etc. Also that base values are one of a set.
+Issue: Fill in. Will need to check offsets are valid and in the right range for the type etc. Also that base values are one of a set.
 
 Issue: Need to document limits on offset, etc.
