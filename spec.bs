@@ -33,7 +33,7 @@ Motivation {#motivation}
 Browsers are now working to prevent cross-site user tracking, including by
 partitioning storage and removing third-party cookies. There are a range of APIs
 proposals to continue supporting legitimate use cases in a way that respects
-user privacy. Many of these APIs, including Shared Storage and FLEDGE, isolate
+user privacy. Many of these APIs, including <a href="https://wicg.github.io/shared-storage/">Shared Storage</a> and <a href="https://wicg.github.io/turtledove/">FLEDGE</a>, isolate
 potentially identifying cross-site data in special contexts, which ensures that
 the data cannot escape the user agent.
 
@@ -89,7 +89,7 @@ Each {{PrivateAggregation}} has a <dfn>contributions cache</dfn>, a [=list=].
 Note: the steps to process the contributions cache are defined separately for
 each {{WorkletGlobalScope}}.
 
-Issue: Should we spec enableDebugMode? It's temporary anyway.
+Issue: Need to spec enableDebugMode.
 
 Issue: Need to spec Permissions Policy integration.
 
@@ -99,11 +99,12 @@ The <dfn method for="PrivateAggregation">sendHistogramReport(PAHistogramContribu
 
 1. Throw error if |contribution|'s {{PAHistogramContribution/value}} is negative.
 1. Throw error if |contribution|'s {{PAHistogramContribution/bucket}} is not in the range [0, 2<sup>128</sup>−1].
-
-Issue: Check that value can actually be zero in the spec pipeline. Also actually throw an error properly
-Issue: Also handle bucket being out of bounds.
-
 1. [=list/Append=] |contribution| to the [=contributions cache=].
+
+Issue: Check that value can actually be zero in the spec pipeline.
+
+Issue: Properly throw an error here.
+
 
 Exposing to Shared Storage {#shared-storage}
 ============================================
@@ -114,11 +115,11 @@ partial interface SharedStorageWorkletGlobalScope {
 };
 </xmp>
 
-Immediately after an operation completes, [=process the shared storage contributions cache=] with the worklet's [=contributions cache=] and the worklet's global scope.
+Immediately after an operation completes, [=process the Shared Storage contributions cache=] with the worklet's [=contributions cache=] and the worklet's global scope.
 
 Issue: How to handle batching different operation invocations properly. This doesn't work for simultaneous operations.
 
-To <dfn>process the shared storage contributions cache</dfn> given a [=contributions cache=] |contributionsCache| and a {{SharedStorageWorkletGlobalScope}} |scope|, run the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], "<code>[=worklet type identifier/shared-storage=]</code>" and |contributionsCache|.
+To <dfn>process the Shared Storage contributions cache</dfn> given a [=contributions cache=] |contributionsCache| and a {{SharedStorageWorkletGlobalScope}} |scope|, run the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], "<code>[=worklet type identifier/shared-storage=]</code>" and |contributionsCache|.
 
 Exposing to FLEDGE {#fledge}
 ============================
@@ -151,7 +152,7 @@ Issue: Do we want to align naming with implementation?
 
 Immediately after an auction completes, [=process the FLEDGE contributions cache=] with the worklet's [=contributions cache=] and the worklet's global scope.
 
-Issue: Does FLEDGE have one global scope per auction or multiple?
+Issue: Does FLEDGE have one global scope per auction or multiple? If multiple, will need to change scope.
 
 Issue: How to handle fenced frame-triggered contributions and other event-triggered contributions.
 
@@ -174,91 +175,6 @@ To <dfn>process the FLEDGE contributions cache</dfn> given a [=contributions cac
 1. [=list/iterate|For each=] |contribution| of |contributionsCache|:
     1. [=list/Append=] the result of [=filling in the contribution=] |contribution| to |filledInContributions|.
 1. Run the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], "<code>[=worklet type identifier/fledge=]</code>" and |filledInContributions|.
-
-To <dfn>fill in the contribution</dfn> given a |contribution|, run the following steps:
-1. If |contribution| is a {{PAHistogramContribution}}, return |contribution|.
-1. Otherwise, [=assert=] |contribution| is a {{PAExtendedHistogramContribution}}.
-1. Let |bucket| be |contribution|'s {{PAExtendedHistogramContribution/bucket}}.
-1. If |bucket| is a {{PASignalValue}}, let |bucket| be the result of [=filling in the signal value=] given |bucket| and 65535.
-1. Let |value| be |contribution|'s {{PAExtendedHistogramContribution/value}}.
-1. If |value| is a {{PASignalValue}}, let |value| be the result of [=filling in the signal value=] given |value| and 2<sup>128</sup>−1.
-1. Return a new {{PAHistogramContribution}} with the items:
-    : {{PAHistogramContribution/bucket}}
-    :: |bucket|
-    : {{PAHistogramContribution/value}}
-    :: |value|
-
-Issue: Probably move to algorithms? Or at least some of it.
-
-To <dfn>fill in the signal value</dfn> given a {{PASignalValue}} |value| and an integer |maxAllowed|, run the following steps:
-1. [=Assert=] |value|'s {{PASignalValue/baseValue}} is a valid [=signal base value=].
-1. Let |returnValue| be the result of [=determining the numeric value=] of |value|'s {{PASignalValue/baseValue}}.
-1. If |value|'s {{PASignalValue/scale}} is set:
-    1. Let |returnValue| be the result of multiplying |value|'s {{PASignalValue/scale}} with |returnValue|.
-1. Let |returnValue| be the integer result of rounding |returnValue| to the nearest integer. If two integers are equally close, the result should be the integer closer to negative infinity. (TODO: add refs here?)
-1. If |value|'s {{PASignalValue/offset}} is set:
-    1. Let |returnValue| be the result of adding |returnValue| to |value|'s {{PASignalValue/offset}}.
-1. Clamp |returnValue| to the range [0, |maxAllowed|] and return the result.
-
-<!-- <h3 dfn-type=dfn>Signal base value</h3>
-A signal base value is one of the following:
-<dl dfn-for="signal base value">
-: "<dfn><code>winning-bid</code></dfn>"
-:: The score of the winning bid.
-: "<dfn><code>highest-scoring-other-bid</code></dfn>"
-:: The score of the highest scoring bid that did not win.
-: "<dfn><code>script-run-time</code></dfn>"
-:: The running time of the script in ms(?).
-: "<dfn><code>signals-fetch-time</code></dfn>"
-:: The time it took for the signals fetch to complete in ms(?)
-: "<dfn><code>bid-reject-reason</code></dfn>"
-:: The reason a bid was rejected (TODO: new enum needed). -->
-
-To <dfn>determine the numeric value</dfn> of a [=signal base value=] |signalBaseValue|, run the following steps:
-1. If |signalBaseValue| is "<code>[=signal base value/winning-bid=]</code>":
-    1. If there was a winning bid, return its bid value.
-    1. Otherwise, return 0.
-1. If |signalBaseValue| is "<code>[=signal base value/highest-scoring-other-bid=]</code>":
-    1. If there was a bid that did not win, return the bid value of the highest <em>scoring</em> bid that did not win. (TODO: check behavior if there's no winner.)
-    1. Otherwise, return 0.
-1. If |signalBaseValue| is "<code>[=signal base value/script-run-time=]</code>":
-    1. Return the time the script took to run in milliseconds. (TODO: Which script??)
-1. If |signalBaseValue| is "<code>[=signal base value/signals-fetch-time=]</code>":
-    1. If there was a trusted bidding signals network fetch that successfully completed, return the time it took for that request to complete in milliseconds. (TODO: clarify which request.)
-    1. Otherwise, return 0.
-1. If |signalBaseValue| is "<code>[=signal base value/bid-reject-reason=]</code>":
-    1. TODO: need to scope to a bid. The bid associated with this call? How do we do that nicely?
-    1. TODO: consider moving this part to its own algorithm
-    1. If the bid did not succeed purely because it didn't meet the required k-anonymity threshold, return 0.
-    1. If the bid was invalid, return 1.
-    1. If the bid was below the auction floor, return 2. (TODO: What does this mean?)
-    1. Etc.
-1. [=Assert=]: false.
-
-Issue: Do we need any sort of contextual argument (e.g. representing the auction)?
-
-<!-- [Exposed=FledgeWorkletGlobalScope]
-dictionary PASignalValue {
-  required DOMString baseValue;
-  double scale;
-  (bigint or long) offset;
-}; -->
-
-<!--
-To <dfn>process the contributions cache</dfn> given an [=ordered set=] |contributionsCache|, run the [=PrivateAggregation/report scheduling steps=] with the associated {{WorkletGlobalScope}}'s [=relevant settings object=]'s [=origin=], the the associated {{WorkletGlobalScope}}'s [=PrivateAggregation/api identifier=] and |contributionsCache|.
-
-To <dfn>process the contributions cache</dfn> given a {{WorkletGlobalScope}} |scope| and an [=ordered set=] |contributionsCache|, run the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], the |scope's| [=PrivateAggregation/api identifier=] and the [=contributions cache=].
-
-
-Immediately after the {{WorkletGlobalScope}} object is [=terminate a worklet global scope|terminated=], run the [=PrivateAggregation/report scheduling steps=] with the {{WorkletGlobalScope}}'s [=relevant settings object=]'s [=origin=], the {{WorkletGlobalScope}} [=PrivateAggregation/api identifier=] and the [=contributions cache=].
- -->
-
-
-
-To <dfn algorithm for="PrivateAggregation">validate an extended histogram contribution</dfn> given a {{PAExtendedHistogramContribution}} |contribution|:
-1. TODO (probably need to check offsets are valid and the right type etc. Also that base values are one of a set)
-
-Issue: Need to document limits on offset, etc.
 
 
 Structures {#structures}
@@ -359,9 +275,6 @@ To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
 
-Issue: Fill out
-
-
 The <dfn algorithm for="PrivateAggregation">report scheduling steps</dfn> given an [=Origin=] |reportingOrigin|, a [=worklet type identifier=] |api| and a [=ordered set=] of {{PAHistogramContribution}} |contributions| are as follows:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |approvedContributions| be a new empty [=ordered set=].
@@ -377,10 +290,6 @@ The <dfn algorithm for="PrivateAggregation">report scheduling steps</dfn> given 
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
 Issue: Do we need to ensure the reports aren't queued after being sent?
-
-Issue: |api| param
-
-Issue: wording of how to assign |sufficient_budget|
 
 Issue: non-negative or positive value?
 
@@ -410,10 +319,95 @@ So we could do this and then specify that implementers should use an algo with s
 
 Issue: Don't we need to take into account the time "now" as well?
 
-Issue: Need to define the API enum or replace with a string or something.
-
 Sending reports {#sending-reports}
 ----------------------------------
 
-Issue: See Report delivery in ARA spec. We may want to align, but not sure it's worth it
-while debug modes are around.
+Issue: Fill in. Compare to Report delivery in ARA spec.
+
+FLEDGE-specific algorithms {#fledge-specific-algorithms}
+--------------------------------------------------------
+
+
+To <dfn>fill in the contribution</dfn> given a |contribution|, run the following steps:
+1. If |contribution| is a {{PAHistogramContribution}}, return |contribution|.
+1. Otherwise, [=assert=] |contribution| is a {{PAExtendedHistogramContribution}}.
+1. Let |bucket| be |contribution|'s {{PAExtendedHistogramContribution/bucket}}.
+1. If |bucket| is a {{PASignalValue}}, let |bucket| be the result of [=filling in the signal value=] given |bucket| and 65535.
+1. Let |value| be |contribution|'s {{PAExtendedHistogramContribution/value}}.
+1. If |value| is a {{PASignalValue}}, let |value| be the result of [=filling in the signal value=] given |value| and 2<sup>128</sup>−1.
+1. Return a new {{PAHistogramContribution}} with the items:
+    : {{PAHistogramContribution/bucket}}
+    :: |bucket|
+    : {{PAHistogramContribution/value}}
+    :: |value|
+
+To <dfn>fill in the signal value</dfn> given a {{PASignalValue}} |value| and an integer |maxAllowed|, run the following steps:
+1. [=Assert=] |value|'s {{PASignalValue/baseValue}} is a valid [=signal base value=].
+1. Let |returnValue| be the result of [=determining the numeric value=] of |value|'s {{PASignalValue/baseValue}}.
+1. If |value|'s {{PASignalValue/scale}} is set:
+    1. Let |returnValue| be the result of multiplying |value|'s {{PASignalValue/scale}} with |returnValue|.
+1. Let |returnValue| be the integer result of rounding |returnValue| to the nearest integer. If two integers are equally close, the result should be the integer closer to negative infinity. (TODO: add refs here?)
+1. If |value|'s {{PASignalValue/offset}} is set:
+    1. Let |returnValue| be the result of adding |returnValue| to |value|'s {{PASignalValue/offset}}.
+1. Clamp |returnValue| to the range [0, |maxAllowed|] and return the result.
+
+<!-- <h3 dfn-type=dfn>Signal base value</h3>
+A signal base value is one of the following:
+<dl dfn-for="signal base value">
+: "<dfn><code>winning-bid</code></dfn>"
+:: The score of the winning bid.
+: "<dfn><code>highest-scoring-other-bid</code></dfn>"
+:: The score of the highest scoring bid that did not win.
+: "<dfn><code>script-run-time</code></dfn>"
+:: The running time of the script in ms(?).
+: "<dfn><code>signals-fetch-time</code></dfn>"
+:: The time it took for the signals fetch to complete in ms(?)
+: "<dfn><code>bid-reject-reason</code></dfn>"
+:: The reason a bid was rejected (TODO: new enum needed). -->
+
+To <dfn>determine the numeric value</dfn> of a [=signal base value=] |signalBaseValue|, run the following steps:
+1. If |signalBaseValue| is "<code>[=signal base value/winning-bid=]</code>":
+    1. If there was a winning bid, return its bid value.
+    1. Otherwise, return 0.
+1. If |signalBaseValue| is "<code>[=signal base value/highest-scoring-other-bid=]</code>":
+    1. If there was a bid that did not win, return the bid value of the highest <em>scoring</em> bid that did not win. (TODO: check behavior if there's no winner.)
+    1. Otherwise, return 0.
+1. If |signalBaseValue| is "<code>[=signal base value/script-run-time=]</code>":
+    1. Return the time the script took to run in milliseconds. (TODO: Which script??)
+1. If |signalBaseValue| is "<code>[=signal base value/signals-fetch-time=]</code>":
+    1. If there was a trusted bidding signals network fetch that successfully completed, return the time it took for that request to complete in milliseconds. (TODO: clarify which request.)
+    1. Otherwise, return 0.
+1. If |signalBaseValue| is "<code>[=signal base value/bid-reject-reason=]</code>":
+    1. TODO: need to scope to a bid. The bid associated with this call? How do we do that nicely?
+    1. TODO: consider moving this part to its own algorithm
+    1. If the bid did not succeed purely because it didn't meet the required k-anonymity threshold, return 0.
+    1. If the bid was invalid, return 1.
+    1. If the bid was below the auction floor, return 2. (TODO: What does this mean?)
+    1. Etc.
+1. [=Assert=]: false.
+
+Issue: Do we need any sort of contextual argument (e.g. representing the auction)?
+
+<!-- [Exposed=FledgeWorkletGlobalScope]
+dictionary PASignalValue {
+  required DOMString baseValue;
+  double scale;
+  (bigint or long) offset;
+}; -->
+
+<!--
+To <dfn>process the contributions cache</dfn> given an [=ordered set=] |contributionsCache|, run the [=PrivateAggregation/report scheduling steps=] with the associated {{WorkletGlobalScope}}'s [=relevant settings object=]'s [=origin=], the the associated {{WorkletGlobalScope}}'s [=PrivateAggregation/api identifier=] and |contributionsCache|.
+
+To <dfn>process the contributions cache</dfn> given a {{WorkletGlobalScope}} |scope| and an [=ordered set=] |contributionsCache|, run the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], the |scope's| [=PrivateAggregation/api identifier=] and the [=contributions cache=].
+
+
+Immediately after the {{WorkletGlobalScope}} object is [=terminate a worklet global scope|terminated=], run the [=PrivateAggregation/report scheduling steps=] with the {{WorkletGlobalScope}}'s [=relevant settings object=]'s [=origin=], the {{WorkletGlobalScope}} [=PrivateAggregation/api identifier=] and the [=contributions cache=].
+ -->
+
+
+
+To <dfn algorithm for="PrivateAggregation">validate an extended histogram contribution</dfn> given a {{PAExtendedHistogramContribution}} |contribution|:
+
+Issue: Fill in. Will need to check offsets are valid and the right type etc. Also that base values are one of a set.
+
+Issue: Need to document limits on offset, etc.
