@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version d9bd89757, updated Thu Mar 23 10:06:53 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="d9293f7822b27fdba05ef5812a8d04690062aa05" name="document-revision">
+  <meta content="15488467ec985a5025a546243a2b21c40a5ce7f8" name="document-revision">
 <style>/* style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -589,7 +589,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-03-29">29 March 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-03-31">31 March 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -719,7 +719,7 @@ which is dispatched back to the script’s origin.</p>
    <p>Each <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation">PrivateAggregation</a></code> has a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="contributions-cache">contributions cache</dfn>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list">list</a>.</p>
    <p class="note" role="note"><span class="marker">Note:</span> the steps to process the contributions cache are defined separately for
 each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/worklets.html#workletglobalscope" id="ref-for-workletglobalscope">WorkletGlobalScope</a></code>.</p>
-   <p class="issue" id="issue-d1727a05"><a class="self-link" href="#issue-d1727a05"></a> Need to spec enableDebugMode.</p>
+   <p class="issue" id="issue-965ede89"><a class="self-link" href="#issue-965ede89"></a> Do we need to spec enableDebugMode?</p>
    <p class="issue" id="issue-b4669f13"><a class="self-link" href="#issue-b4669f13"></a> Need to spec Permissions Policy integration.</p>
    <div class="algorithm" data-algorithm="sendHistogramReport(PAHistogramContribution contribution)" data-algorithm-for="PrivateAggregation"> The <dfn class="dfn-paneled idl-code" data-dfn-for="PrivateAggregation" data-dfn-type="method" data-export data-lt="sendHistogramReport(contribution)" id="dom-privateaggregation-sendhistogramreport"><code>sendHistogramReport(PAHistogramContribution contribution)</code></dfn> method steps are: </div>
    <ol>
@@ -795,7 +795,10 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
      <p>A (suitable?) URL</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="aggregatable report" data-dfn-type="dfn" data-noexport id="aggregatable-report-original-report-time">original report time</dfn>
     <dd data-md>
-     <p>A point in time</p>
+     <p>A <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment">moment</a></p>
+    <dt data-md><dfn class="dfn-paneled" data-dfn-for="aggregatable report" data-dfn-type="dfn" data-noexport id="aggregatable-report-report-time">report time</dfn>
+    <dd data-md>
+     <p>A <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment①">moment</a></p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="aggregatable report" data-dfn-type="dfn" data-noexport id="aggregatable-report-contributions">contributions</dfn>
     <dd data-md>
      <p>An <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set">ordered set</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution①">PAHistogramContribution</a></code></p>
@@ -863,6 +866,8 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin①">potentially trustworthy origin</a>.</p>
     <li data-md>
+     <p>Let <var>reportTime</var> be the result of running <a data-link-type="dfn" href="#privateaggregation-obtain-a-report-delivery-time" id="ref-for-privateaggregation-obtain-a-report-delivery-time">obtain a report delivery time</a>.</p>
+    <li data-md>
      <p>Let <var>report</var> be a new <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report①">aggregatable report</a> with the items:</p>
      <dl>
       <dt data-md><a data-link-type="dfn" href="#aggregatable-report-reporting-endpoint" id="ref-for-aggregatable-report-reporting-endpoint">reporting endpoint</a>
@@ -870,7 +875,10 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
        <p>The result of <a data-link-type="dfn" href="#privateaggregation-obtain-a-reporting-endpoint" id="ref-for-privateaggregation-obtain-a-reporting-endpoint">obtaining a reporting endpoint</a> given <var>reportingOrigin</var> and <var>api</var>.</p>
       <dt data-md><a data-link-type="dfn" href="#aggregatable-report-original-report-time" id="ref-for-aggregatable-report-original-report-time">original report time</a>
       <dd data-md>
-       <p>The current time</p>
+       <p><var>reportTime</var></p>
+      <dt data-md><a data-link-type="dfn" href="#aggregatable-report-report-time" id="ref-for-aggregatable-report-report-time">report time</a>
+      <dd data-md>
+       <p><var>reportTime</var></p>
       <dt data-md><a data-link-type="dfn" href="#aggregatable-report-contributions" id="ref-for-aggregatable-report-contributions">contributions</a>
       <dd data-md>
        <p><var>contributions</var></p>
@@ -883,6 +891,8 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
      </dl>
    </ol>
    <h3 class="heading settled" data-level="8.1" id="scheduling-reports"><span class="secno">8.1. </span><span class="content">Scheduling reports</span><a class="self-link" href="#scheduling-reports"></a></h3>
+   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="obtain a report delivery time" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-obtain-a-report-delivery-time">obtain a report delivery time</dfn>, run the following steps:</p>
+   <p class="issue" id="issue-2230f606"><a class="self-link" href="#issue-2230f606"></a> Fill in</p>
    <p>The <dfn class="dfn-paneled algorithm" data-algorithm="report scheduling steps" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-report-scheduling-steps">report scheduling steps</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin④">Origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier③">worklet type identifier</a> <var>api</var> and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set③">ordered set</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution③">PAHistogramContribution</a></code> <var>contributions</var> are as follows:</p>
    <ol>
     <li data-md>
@@ -1042,6 +1052,7 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
    <li><a href="#signal-base-value-highest-scoring-other-bid">highest-scoring-other-bid</a><span>, in § 5.3</span>
    <li><a href="#max-stored-reports">Max stored reports</a><span>, in § 7</span>
    <li><a href="#privateaggregation-obtain-an-aggregatable-report">obtain an aggregatable report</a><span>, in § 8</span>
+   <li><a href="#privateaggregation-obtain-a-report-delivery-time">obtain a report delivery time</a><span>, in § 8.1</span>
    <li><a href="#privateaggregation-obtain-a-reporting-endpoint">obtain a reporting endpoint</a><span>, in § 8</span>
    <li><a href="#dom-pasignalvalue-offset">offset</a><span>, in § 4</span>
    <li><a href="#aggregatable-report-original-report-time">original report time</a><span>, in § 5.1</span>
@@ -1061,6 +1072,7 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
    <li><a href="#aggregatable-report-report-id">report ID</a><span>, in § 5.1</span>
    <li><a href="#aggregatable-report-reporting-endpoint">reporting endpoint</a><span>, in § 5.1</span>
    <li><a href="#privateaggregation-report-scheduling-steps">report scheduling steps</a><span>, in § 8.1</span>
+   <li><a href="#aggregatable-report-report-time">report time</a><span>, in § 5.1</span>
    <li><a href="#dom-pasignalvalue-scale">scale</a><span>, in § 4</span>
    <li><a href="#signal-base-value-script-run-time">script-run-time</a><span>, in § 5.3</span>
    <li><a href="#dom-privateaggregation-sendhistogramreport">sendHistogramReport(contribution)</a><span>, in § 2.1</span>
@@ -1089,6 +1101,12 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
    <ul>
     <li><a href="#ref-for-sharedstorageworkletglobalscope">3. Exposing to Shared Storage</a> <a href="#ref-for-sharedstorageworkletglobalscope①">(2)</a>
     <li><a href="#ref-for-sharedstorageworkletglobalscope②">5.2. Worklet type identifier</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-a33f352de1a9eb5d29cfa3005d40d072" class="dfn-panel" data-for="a33f352de1a9eb5d29cfa3005d40d072" id="infopanel-for-a33f352de1a9eb5d29cfa3005d40d072">
+   <span id="infopaneltitle-for-a33f352de1a9eb5d29cfa3005d40d072" style="display:none">Info about the 'moment' external reference.</span><a href="https://w3c.github.io/hr-time/#dfn-moment">https://w3c.github.io/hr-time/#dfn-moment</a><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-dfn-moment">5.1. Aggregatable report</a> <a href="#ref-for-dfn-moment①">(2)</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-f1c3158ad16b10a1e2f5e18807f043d3" class="dfn-panel" data-for="f1c3158ad16b10a1e2f5e18807f043d3" id="infopanel-for-f1c3158ad16b10a1e2f5e18807f043d3">
@@ -1268,6 +1286,11 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
      <li><span class="dfn-paneled" id="0e450e8a64820ae6c0c9f0db36914314">SharedStorageWorkletGlobalScope</span>
     </ul>
    <li>
+    <a data-link-type="biblio">[HR-TIME-3]</a> defines the following terms:
+    <ul>
+     <li><span class="dfn-paneled" id="a33f352de1a9eb5d29cfa3005d40d072">moment</span>
+    </ul>
+   <li>
     <a data-link-type="biblio">[HTML]</a> defines the following terms:
     <ul>
      <li><span class="dfn-paneled" id="f1c3158ad16b10a1e2f5e18807f043d3">WorkletGlobalScope</span>
@@ -1320,6 +1343,8 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
   <h2 class="no-num no-ref heading settled" id="references"><span class="content">References</span><a class="self-link" href="#references"></a></h2>
   <h3 class="no-num no-ref heading settled" id="normative"><span class="content">Normative References</span><a class="self-link" href="#normative"></a></h3>
   <dl>
+   <dt id="biblio-hr-time-3">[HR-TIME-3]
+   <dd>Yoav Weiss. <a href="https://w3c.github.io/hr-time/"><cite>High Resolution Time</cite></a>. URL: <a href="https://w3c.github.io/hr-time/">https://w3c.github.io/hr-time/</a>
    <dt id="biblio-html">[HTML]
    <dd>Anne van Kesteren; et al. <a href="https://html.spec.whatwg.org/multipage/"><cite>HTML Standard</cite></a>. Living Standard. URL: <a href="https://html.spec.whatwg.org/multipage/">https://html.spec.whatwg.org/multipage/</a>
    <dt id="biblio-infra">[INFRA]
@@ -1376,7 +1401,7 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
 </pre>
   <h2 class="no-num no-ref heading settled" id="issues-index"><span class="content">Issues Index</span><a class="self-link" href="#issues-index"></a></h2>
   <div style="counter-reset:issue">
-   <div class="issue"> Need to spec enableDebugMode. <a class="issue-return" href="#issue-d1727a05" title="Jump to section">↵</a></div>
+   <div class="issue"> Do we need to spec enableDebugMode? <a class="issue-return" href="#issue-965ede89" title="Jump to section">↵</a></div>
    <div class="issue"> Need to spec Permissions Policy integration. <a class="issue-return" href="#issue-b4669f13" title="Jump to section">↵</a></div>
    <div class="issue"> Check that value can actually be zero in the spec pipeline. <a class="issue-return" href="#issue-0f38e041" title="Jump to section">↵</a></div>
    <div class="issue"> Properly throw an error here. <a class="issue-return" href="#issue-cd2783d9" title="Jump to section">↵</a></div>
@@ -1392,6 +1417,7 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
    <div class="issue"> New enum needed for bid reject reasons. <a class="issue-return" href="#issue-9532b98e" title="Jump to section">↵</a></div>
    <div class="issue"> Should we use the term "implementation-defined" instead? <a class="issue-return" href="#issue-a7b6f3bb" title="Jump to section">↵</a></div>
    <div class="issue"> More <a class="issue-return" href="#issue-d3da97e2" title="Jump to section">↵</a></div>
+   <div class="issue"> Fill in <a class="issue-return" href="#issue-2230f606" title="Jump to section">↵</a></div>
    <div class="issue"> Do we need to ensure the reports aren’t queued after being sent? <a class="issue-return" href="#issue-b92a47e8" title="Jump to section">↵</a></div>
    <div class="issue"> non-negative or positive value? <a class="issue-return" href="#issue-4e3d86bc" title="Jump to section">↵</a></div>
    <div class="issue"> Do we need to address user settings here at all? <a class="issue-return" href="#issue-a82d4aa0" title="Jump to section">↵</a></div>
@@ -1533,6 +1559,12 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
     <li><a href="#ref-for-aggregatable-report-original-report-time">8. Algorithms</a>
    </ul>
   </aside>
+  <aside aria-labelledby="infopaneltitle-for-aggregatable-report-report-time" class="dfn-panel" data-for="aggregatable-report-report-time" id="infopanel-for-aggregatable-report-report-time">
+   <span id="infopaneltitle-for-aggregatable-report-report-time" style="display:none">Info about the 'report time' definition.</span><b><a href="#aggregatable-report-report-time">#aggregatable-report-report-time</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-aggregatable-report-report-time">8. Algorithms</a>
+   </ul>
+  </aside>
   <aside aria-labelledby="infopaneltitle-for-aggregatable-report-contributions" class="dfn-panel" data-for="aggregatable-report-contributions" id="infopanel-for-aggregatable-report-contributions">
    <span id="infopaneltitle-for-aggregatable-report-contributions" style="display:none">Info about the 'contributions' definition.</span><b><a href="#aggregatable-report-contributions">#aggregatable-report-contributions</a></b><b>Referenced in:</b>
    <ul>
@@ -1601,6 +1633,12 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
    <span id="infopaneltitle-for-privateaggregation-obtain-an-aggregatable-report" style="display:none">Info about the 'obtain an aggregatable report' definition.</span><b><a href="#privateaggregation-obtain-an-aggregatable-report">#privateaggregation-obtain-an-aggregatable-report</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-privateaggregation-obtain-an-aggregatable-report">8.1. Scheduling reports</a>
+   </ul>
+  </aside>
+  <aside aria-labelledby="infopaneltitle-for-privateaggregation-obtain-a-report-delivery-time" class="dfn-panel" data-for="privateaggregation-obtain-a-report-delivery-time" id="infopanel-for-privateaggregation-obtain-a-report-delivery-time">
+   <span id="infopaneltitle-for-privateaggregation-obtain-a-report-delivery-time" style="display:none">Info about the 'obtain a report delivery time' definition.</span><b><a href="#privateaggregation-obtain-a-report-delivery-time">#privateaggregation-obtain-a-report-delivery-time</a></b><b>Referenced in:</b>
+   <ul>
+    <li><a href="#ref-for-privateaggregation-obtain-a-report-delivery-time">8. Algorithms</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-privateaggregation-report-scheduling-steps" class="dfn-panel" data-for="privateaggregation-report-scheduling-steps" id="infopanel-for-privateaggregation-report-scheduling-steps">
