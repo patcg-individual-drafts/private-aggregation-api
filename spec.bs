@@ -20,6 +20,8 @@ urlPrefix: https://wicg.github.io/turtledove/; type: interface
     text: FledgeWorkletGlobalScope
 urlPrefix: https://wicg.github.io/shared-storage/; type: interface
     text: SharedStorageWorkletGlobalScope
+spec: hr-time; type: dfn; urlPrefix: https://w3c.github.io/hr-time/
+    text: moment; url: #dfn-moment
 </pre>
 
 Introduction {#intro}
@@ -89,7 +91,7 @@ Each {{PrivateAggregation}} has a <dfn>contributions cache</dfn>, a [=list=].
 Note: the steps to process the contributions cache are defined separately for
 each {{WorkletGlobalScope}}.
 
-Issue: Need to spec enableDebugMode.
+Issue: Do we need to spec enableDebugMode?
 
 Issue: Need to spec Permissions Policy integration.
 
@@ -181,7 +183,9 @@ An aggregatable report is a [=struct=] with the following items:
 : <dfn>reporting endpoint</dfn>
 :: A (suitable?) URL
 : <dfn>original report time</dfn>
-:: A point in time
+:: A [=moment=]
+: <dfn>report time</dfn>
+:: A [=moment=]
 : <dfn>contributions</dfn>
 :: An [=ordered set=] of {{PAHistogramContribution}}
 : <dfn>api</dfn>
@@ -258,11 +262,14 @@ To <dfn algorithm for="PrivateAggregation">obtain a reporting endpoint</dfn> giv
 
 To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=Origin=] |reportingOrigin|, a [=worklet type identifier=] |api| and a [=ordered set=] of {{PAHistogramContribution}} |contributions|:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
+1. Let |reportTime| be the result of running [=PrivateAggregation/obtain a report delivery time=].
 1. Let |report| be a new [=aggregatable report=] with the items:
     : [=aggregatable report/reporting endpoint=]
     :: The result of [=PrivateAggregation/obtaining a reporting endpoint=] given |reportingOrigin| and |api|.
     : [=aggregatable report/original report time=]
-    :: The current time
+    :: |reportTime|
+    : [=aggregatable report/report time=]
+    :: |reportTime|
     : [=aggregatable report/contributions=]
     :: |contributions|
     : [=aggregatable report/api=]
@@ -272,6 +279,10 @@ To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=
 
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
+
+To <dfn algorithm for="PrivateAggregation">obtain a report delivery time</dfn>, run the following steps:
+
+Issue: Fill in
 
 The <dfn algorithm for="PrivateAggregation">report scheduling steps</dfn> given an [=Origin=] |reportingOrigin|, a [=worklet type identifier=] |api| and a [=ordered set=] of {{PAHistogramContribution}} |contributions| are as follows:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
