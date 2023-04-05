@@ -187,7 +187,7 @@ An aggregatable report is a [=struct=] with the following items:
 : <dfn>report time</dfn>
 :: A [=moment=]
 : <dfn>contributions</dfn>
-:: An [=ordered set=] of {{PAHistogramContribution}}s
+:: A [=list=] of {{PAHistogramContribution}}s
 : <dfn>api</dfn>
 :: A [=worklet type identifier=]
 : <dfn>report ID</dfn>
@@ -234,7 +234,7 @@ Issue: New enum needed for bid reject reasons.
 Storage {#storage}
 ==================
 
-A user agent holds an <dfn>aggregatable report cache</dfn>, which is an [=ordered set=] of [=aggregatable reports=].
+A user agent holds an <dfn>aggregatable report cache</dfn>, which is a [=list=] of [=aggregatable reports=].
 
 Vendor-specific values {#vendor-specific-values}
 ================================================
@@ -254,7 +254,7 @@ Algorithms {#algorithms}
 1. [=Assert=]: |scope|'s [=worklet global scope type=] is {{SharedStorageWorkletGlobalScope}}.
 1. Return "<code>[=worklet type identifier/shared-storage=]</code>". -->
 
-To <dfn export algorithm for="PrivateAggregation">obtain a reporting endpoint</dfn> given an [=Origin=] |reportingOrigin| and [=worklet type identifier=] |api|:
+To <dfn export algorithm for="PrivateAggregation">obtain a reporting endpoint</dfn> given an [=origin=] |reportingOrigin| and [=worklet type identifier=] |api|:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |path| be the [=string/concatenation=] of «"<code>.well-known/private-aggregation/report-</code>", |api|».
 1. Let |base| be the result on running the [=URL parser=] on the [=serialization of an origin|serialization=] of |reportingOrigin|.
@@ -382,9 +382,9 @@ dictionary PASignalValue {
 }; -->
 
 <!--
-To <dfn>process the contributions cache</dfn> given an [=ordered set=] |contributionsCache|, run the [=PrivateAggregation/report scheduling steps=] with the associated {{WorkletGlobalScope}}'s [=relevant settings object=]'s [=origin=], the the associated {{WorkletGlobalScope}}'s [=PrivateAggregation/api identifier=] and |contributionsCache|.
+To <dfn>process the contributions cache</dfn> given a [=list=] |contributionsCache|, run the [=PrivateAggregation/report scheduling steps=] with the associated {{WorkletGlobalScope}}'s [=relevant settings object=]'s [=origin=], the the associated {{WorkletGlobalScope}}'s [=PrivateAggregation/api identifier=] and |contributionsCache|.
 
-To <dfn>process the contributions cache</dfn> given a {{WorkletGlobalScope}} |scope| and an [=ordered set=] |contributionsCache|, run the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], the |scope's| [=PrivateAggregation/api identifier=] and the [=contributions cache=].
+To <dfn>process the contributions cache</dfn> given a {{WorkletGlobalScope}} |scope| and a [=list=] |contributionsCache|, run the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], the |scope's| [=PrivateAggregation/api identifier=] and the [=contributions cache=].
 
 
 Immediately after the {{WorkletGlobalScope}} object is [=terminate a worklet global scope|terminated=], run the [=PrivateAggregation/report scheduling steps=] with the {{WorkletGlobalScope}}'s [=relevant settings object=]'s [=origin=], the {{WorkletGlobalScope}} [=PrivateAggregation/api identifier=] and the [=contributions cache=].
