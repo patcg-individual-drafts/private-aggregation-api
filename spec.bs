@@ -33,7 +33,7 @@ Motivation {#motivation}
 ------------------------
 
 Browsers are now working to prevent cross-site user tracking, including by
-partitioning storage and removing third-party cookies. There are a range of APIs
+partitioning storage and removing third-party cookies. There are a range of API
 proposals to continue supporting legitimate use cases in a way that respects
 user privacy. Many of these APIs, including <a href="https://wicg.github.io/shared-storage/">Shared Storage</a> and <a href="https://wicg.github.io/turtledove/">FLEDGE</a>, isolate
 potentially identifying cross-site data in special contexts, which ensures that
@@ -88,7 +88,7 @@ dictionary PAHistogramContribution {
 
 Each {{PrivateAggregation}} has a <dfn>contributions cache</dfn>, a [=list=].
 
-Note: the steps to process the contributions cache are defined separately for
+Note: The steps to process the [=contributions cache=] are defined separately for
 each {{WorkletGlobalScope}}.
 
 Issue: Do we need to spec enableDebugMode?
@@ -167,9 +167,9 @@ The <dfn method for="PrivateAggregation">reportContributionForEvent(DOMString ev
 Issue: Fill in the rest. (Need to put the contribution in some sort of queue and process the queue at some point. Need to decide where the queue should live given it has to outlive the auction.)
 
 To <dfn>process the FLEDGE contributions cache</dfn> given a [=contributions cache=] |contributionsCache| and a {{FledgeWorkletGlobalScope}} |scope|, run the following steps:
-1. Let |filledInContributions| be a new empty [=list=].
+1. Let |filledInContributions| be a new [=list/is empty|empty=] [=list=].
 1. [=list/iterate|For each=] |contribution| of |contributionsCache|:
-    1. [=list/Append=] the result of [=filling in the contribution=] |contribution| to |filledInContributions|.
+    1. [=list/Append=] the result of [=filling in the contribution=] with |contribution| to |filledInContributions|.
 1. Run the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], "<code>[=worklet type identifier/fledge=]</code>" and |filledInContributions|.
 
 
@@ -180,18 +180,18 @@ Structures {#structures}
 
 An aggregatable report is a [=struct=] with the following items:
 <dl dfn-for="aggregatable report">
-: <dfn>reporting endpoint</dfn>
-:: A (suitable?) URL
+: <dfn>reporting origin</dfn>
+:: An [=origin=]
 : <dfn>original report time</dfn>
 :: A [=moment=]
 : <dfn>report time</dfn>
 :: A [=moment=]
 : <dfn>contributions</dfn>
-:: An [=ordered set=] of {{PAHistogramContribution}}
+:: An [=ordered set=] of {{PAHistogramContribution}}s
 : <dfn>api</dfn>
 :: A [=worklet type identifier=]
 : <dfn>report ID</dfn>
-:: A string
+:: A [=string=]
 
 </dl>
 
@@ -207,7 +207,7 @@ A worklet type identifier is one of the following:
 
 </dl>
 
-Issue: consider renaming worklet type identifier
+Issue: Consider renaming worklet type identifier.
 
 <h3 dfn-type=dfn>Signal base value</h3>
 A signal base value is one of the following:
@@ -254,24 +254,31 @@ Algorithms {#algorithms}
 1. [=Assert=]: |scope|'s [=worklet global scope type=] is {{SharedStorageWorkletGlobalScope}}.
 1. Return "<code>[=worklet type identifier/shared-storage=]</code>". -->
 
-To <dfn algorithm for="PrivateAggregation">obtain a reporting endpoint</dfn> given an [=Origin=] |reportingOrigin| and [=worklet type identifier=] |api|:
+To <dfn export algorithm for="PrivateAggregation">obtain a reporting endpoint</dfn> given an [=Origin=] |reportingOrigin| and [=worklet type identifier=] |api|:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |path| be the [=string/concatenation=] of «"<code>.well-known/private-aggregation/report-</code>", |api|».
 1. Let |base| be the result on running the [=URL parser=] on the [=serialization of an origin|serialization=] of |reportingOrigin|.
 1. Return the result of running the [=URL parser=] on |path| with |base|.
 
-To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=Origin=] |reportingOrigin|, a [=worklet type identifier=] |api| and a [=ordered set=] of {{PAHistogramContribution}} |contributions|:
+Issue: Remove export when this definition is used.
+
+To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=origin=] |reportingOrigin|, a [=worklet type identifier=] |api| and a [=list=] of {{PAHistogramContribution}} |contributions|:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |reportTime| be the result of running [=PrivateAggregation/obtain a report delivery time=].
+1. Let |truncatedContributions| be a new [=list/is empty|empty=] list.
+1. If |contributions| has a [=list/size=] greater than 50:
+    1. [=set/For each=] |n| of [=the range=] 1 to 50, exclusive:
+        1. [=set/Append=] |contributions|[|n|] to |truncatedContributions|.
+1. Otherwise, set |truncatedContributions| to |contributions|.
 1. Let |report| be a new [=aggregatable report=] with the items:
-    : [=aggregatable report/reporting endpoint=]
-    :: The result of [=PrivateAggregation/obtaining a reporting endpoint=] given |reportingOrigin| and |api|.
+    : [=aggregatable report/reporting origin=]
+    :: |reportingOrigin|
     : [=aggregatable report/original report time=]
     :: |reportTime|
     : [=aggregatable report/report time=]
     :: |reportTime|
     : [=aggregatable report/contributions=]
-    :: |contributions|
+    :: |truncatedContributions|
     : [=aggregatable report/api=]
     :: |api|
     : [=aggregatable report/report ID=]
@@ -284,17 +291,16 @@ To <dfn algorithm for="PrivateAggregation">obtain a report delivery time</dfn>, 
 
 Issue: Fill in
 
-The <dfn algorithm for="PrivateAggregation">report scheduling steps</dfn> given an [=Origin=] |reportingOrigin|, a [=worklet type identifier=] |api| and a [=ordered set=] of {{PAHistogramContribution}} |contributions| are as follows:
+The <dfn algorithm for="PrivateAggregation">report scheduling steps</dfn> given an [=origin=] |reportingOrigin|, a [=worklet type identifier=] |api| and a [=list=] of {{PAHistogramContribution}} |contributions| are as follows:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
-1. Let |approvedContributions| be a new empty [=ordered set=].
+1. Let |contributionSum| be 0.
 1. [=set/iterate|For each=] |contribution| of |contributions|:
     <!-- 1. [=Assert=]: |contribution| is a {{PAHistogramContribution}}. -->
     1. [=Assert=]: |contribution|'s |value| is non-negative.
-    1. Let |sufficient_budget| be the result of running [=PrivateAggregation/consume budget if permitted=] on |value|, |reportingOrigin| and |api|.
-    1. If |sufficient_budget|, [=set/append=] |contribution| to |approvedContributions|.
-    1. Otherwise, [=iteration/break=]
-1. If |approvedContributions| is [=set/empty=], return.
-1. Let |report| be the result of [=PrivateAggregation/obtaining an aggregatable report=] given |reportingOrigin|, |api| and |approvedContributions|.
+    1. Add |value| to |contributionSum|.
+1. Let |sufficientBudget| be the result of running [=PrivateAggregation/consume budget if permitted=] on |contributionSum|, |reportingOrigin| and |api|.
+1. If not |sufficientBudget|, return.
+1. Let |report| be the result of [=PrivateAggregation/obtaining an aggregatable report=] given |reportingOrigin|, |api| and |contributions|.
 1. If the user agent's [=aggregatable report cache=] [=set/size=] is larger than [=max stored reports=], return.
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
@@ -308,7 +314,7 @@ Issue: Batching
 
 Issue: Does the [=max stored reports=] part match the implementation?
 
-To <dfn algorithm for="PrivateAggregation">consume budget if permitted</dfn> given a {{long}} |value|, an [=origin=] <var ignore=''>origin</var> and an [=worklet type identifier=] |api| are a user agent-determined sequence of steps that returns a {{boolean}} indicating whether there is a sufficient 'contribution budget' left to send the requested contribution |value|. The algorithm should assume that the contribution will be sent if true is returned (and won't otherwise).
+To <dfn algorithm for="PrivateAggregation">consume budget if permitted</dfn> given a {{long}} |value|, an [=origin=] <var ignore=''>origin</var> and an [=worklet type identifier=] |api| are a user agent-determined sequence of steps that returns a {{boolean}} indicating whether there is a sufficient 'contribution budget' left to send the requested contribution |value|. This budget should be bound to usage over time, e.g. the contribution sum over the last 24 hours. The algorithm should assume that the contribution will be sent if true is returned (and won't otherwise).
 
 Issue: Do we want to specify how budgeting works? ARA does, but leaves the exact values up to the implementer.
 
@@ -333,7 +339,7 @@ Issue: Don't we need to take into account the time "now" as well?
 Sending reports {#sending-reports}
 ----------------------------------
 
-Issue: Fill in. Compare to Report delivery in ARA spec.
+Issue: Fill in. Compare to Report delivery in ARA spec. Include a section on serializing reports.
 
 FLEDGE-specific algorithms {#fledge-specific-algorithms}
 --------------------------------------------------------
