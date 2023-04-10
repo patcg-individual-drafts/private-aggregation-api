@@ -290,6 +290,7 @@ Issue: Fill in
 
 The <dfn algorithm for="PrivateAggregation">report scheduling steps</dfn> given an [=origin=] |reportingOrigin|, a [=worklet type identifier=] |api| and a [=list=] of {{PAHistogramContribution}} |contributions| are as follows:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
+1. If the user agent's [=aggregatable report cache=] [=set/size=] is larger than [=max stored reports=], return.
 1. Let |truncatedContributions| be a new [=list/is empty|empty=] [=list=].
 1. If |contributions| has a [=list/size=] greater than [=max report contributions=]:
     1. [=set/For each=] |n| of [=the range=] 0 to [=max report contributions=], exclusive:
@@ -301,9 +302,8 @@ The <dfn algorithm for="PrivateAggregation">report scheduling steps</dfn> given 
     1. [=Assert=]: |contribution|'s |value| is non-negative.
     1. Add |value| to |contributionSum|.
 1. Let |sufficientBudget| be the result of running [=PrivateAggregation/consume budget if permitted=] on |contributionSum|, |reportingOrigin| and |api|.
-1. If not |sufficientBudget|, return.
+1. If |sufficientBudget| is false, return.
 1. Let |report| be the result of [=PrivateAggregation/obtaining an aggregatable report=] given |reportingOrigin|, |api| and |truncatedContributions|.
-1. If the user agent's [=aggregatable report cache=] [=set/size=] is larger than [=max stored reports=], return.
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
 Issue: Do we need to ensure the reports aren't queued after being sent?
