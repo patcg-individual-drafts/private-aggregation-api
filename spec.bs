@@ -25,8 +25,19 @@ urlPrefix: https://wicg.github.io/shared-storage/; type: interface
     text: SharedStorageWorklet
     text: SharedStorageWorkletGlobalScope
 spec: hr-time; type: dfn; urlPrefix: https://w3c.github.io/hr-time/
+    text: current unsafe time; url: #wall-clock-unsafe-current-time
+    text: current wall time; url: #dfn-current-wall-time
+    text: duration; url: #dfn-duration
+    text: duration from; url: #dfn-duration-from
     text: moment; url: #dfn-moment
+    text: unix epoch; url: #dfn-unix-epoch
+    text: wall clock; url: #dfn-wall-clock
 </pre>
+
+<pre class=link-defaults>
+spec:infra; type:dfn; text:user agent
+</pre>
+
 
 Introduction {#intro}
 =====================
@@ -47,7 +58,7 @@ Relative to cross-site data from an individual user, aggregate data about groups
 of users can be less sensitive and yet would be sufficient for a wide range of
 use cases. An aggregation service has been proposed to allow reporting noisy,
 aggregated cross-site data. This service was originally proposed for use by the
-Attribution Reporting API, but allowing more general aggregation would support
+<a href="https://wicg.github.io/attribution-reporting-api/">Attribution Reporting API</a>, but allowing more general aggregation would support
 additional use cases. In particular, the FLEDGE and Shared Storage proposals
 expect this functionality to become available.
 
@@ -124,7 +135,7 @@ Immediately after an operation completes, [=process the Shared Storage contribut
 
 Issue: How to handle batching different operation invocations properly. This doesn't work for simultaneous operations. Also disallow usage outside an operation.
 
-To <dfn>process the Shared Storage contributions cache</dfn> given a [=list=] |contributionsCache| and a {{SharedStorageWorkletGlobalScope}} |scope|, perform the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], "<code>[=context type/shared-storage=]</code>" and |contributionsCache|.
+To <dfn>process the Shared Storage contributions cache</dfn> given a [=list=] |contributionsCache| and a {{SharedStorageWorkletGlobalScope}} |scope|, perform the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=], "<code>[=context type/shared-storage=]</code>" and |contributionsCache|.
 
 Exposing to FLEDGE {#fledge}
 ============================
@@ -175,7 +186,7 @@ To <dfn>process the FLEDGE contributions cache</dfn> given a [=list=] |contribut
 1. Let |filledInContributions| be a new [=list/is empty|empty=] [=list=].
 1. [=list/iterate|For each=] |contribution| of |contributionsCache|:
     1. [=list/Append=] the result of [=filling in the contribution=] given |contribution| to |filledInContributions|.
-1. Perform the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], "<code>[=context type/fledge=]</code>" and |filledInContributions|.
+1. Perform the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=], "<code>[=context type/fledge=]</code>" and |filledInContributions|.
 
 
 Structures {#structures}
@@ -200,6 +211,8 @@ An aggregatable report is a [=struct=] with the following items:
 :: A [=context type=]
 : <dfn>report ID</dfn>
 :: A [=string=]
+: <dfn>queued</dfn>
+:: A [=boolean=]
 
 </dl>
 
@@ -248,34 +261,55 @@ A user agent holds an <dfn>aggregatable report cache</dfn>, which is a [=list=] 
 [=Implementation-defined=] values {#implementation-defined-values}
 ==================================================================
 
-<dfn>Max stored reports</dfn> is a positive integer that controls how many unsent reports can be queued waiting.
+<dfn>Maximum stored reports</dfn> is a positive integer that controls how many unsent reports can be queued waiting.
 
-<dfn>Max report contributions</dfn> is a positive integer that controls how many contributions can be present in a single report.
+<dfn>Maximum report contributions</dfn> is a positive integer that controls how many contributions can be present in a single report.
+
+<dfn>Minimum report delay</dfn> is a non-negative [=duration=] that controls the minimum delay to deliver an [=aggregatable report=]
+
+<dfn>Randomized report delay</dfn> is a positive [=duration=] that controls the random delay to deliver an [=aggregatable report=]. This delay is additional to the minimum delay.
 
 Issue: More
 
 Algorithms {#algorithms}
 ====================
 
-<!-- A {{WorkletGlobalScope}} |scope|'s <dfn algorithm for="PrivateAggregation">api identifier</dfn> is the result of:
-1. If |scope|'s [=worklet global scope type=] is {{FledgeWorkletGlobalScope}}, then return "<code>[=context type/fledge=]</code>".
-1. [=Assert=]: |scope|'s [=worklet global scope type=] is {{SharedStorageWorkletGlobalScope}}.
-1. Return "<code>[=context type/shared-storage=]</code>". -->
+To <dfn>serialize an integer</dfn>, represent it as a [=string=] of the shortest possible decimal number.
 
-To <dfn export algorithm for="PrivateAggregation">obtain a reporting endpoint</dfn> given an [=origin=] |reportingOrigin| and [=context type=] |api|, perform the following steps. They return a [=URL=].
+Issue: This would ideally be replaced by a more descriptive algorithm in Infra. See infra/201
+
+Scheduling reports {#scheduling-reports}
+----------------------------------------
+
+To perform the <dfn algorithm for="PrivateAggregation">report scheduling steps</dfn> with an [=environment settings object=] |context|, a [=context type=] |api| and a [=list=] of {{PAHistogramContribution}}s |contributions|:
+1. Let |reportingOrigin| be |context|'s [=environment settings object/origin=].
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
-1. Let |path| be the [=string/concatenation=] of «"<code>.well-known/private-aggregation/report-</code>", |api|».
-1. Let |base| be the result on running the [=URL parser=] on the [=serialization of an origin|serialization=] of |reportingOrigin|.
-1. [=Assert=]: |base| is not failure.
-1. Let |result| be the result of running the [=URL parser=] on |path| with |base|.
-1. [=Assert=]: |result| is not failure.
-1. Return |result|.
+1. If the user agent's [=aggregatable report cache=] [=set/size=] is larger than [=maximum stored reports=], return.
+1. Let |truncatedContributions| be a new [=list/is empty|empty=] [=list=].
+1. If |contributions| has a [=list/size=] greater than [=maximum report contributions=]:
+    1. [=set/For each=] |n| of [=the exclusive range|the range=] 0 to [=maximum report contributions=], exclusive:
+        1. [=set/Append=] |contributions|[|n|] to |truncatedContributions|.
+1. Otherwise, set |truncatedContributions| to |contributions|.
+1. Let |contributionSum| be 0.
+1. [=set/iterate|For each=] |contribution| of |truncatedContributions|:
+    1. [=Assert=]: |contribution|["|value|"] is non-negative.
+    1. Add |value| to |contributionSum|.
+1. Let |sufficientBudget| be the result of [=PrivateAggregation/consuming budget if permitted=] given |contributionSum|, |reportingOrigin|, |api| and |context|'s [=current wall time=].
+1. If |sufficientBudget| is false, return.
+1. Let |report| be the result of [=PrivateAggregation/obtaining an aggregatable report=] given |reportingOrigin|, |api|, |truncatedContributions| and |context|'s [=current wall time=].
+1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
-Issue: Remove export when this definition is used.
+Issue: Do we need to ensure the reports aren't queued after being sent?
 
-To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=origin=] |reportingOrigin|, a [=context type=] |api| and a [=list=] of {{PAHistogramContribution}} |contributions|, perform the following steps. They return an [=aggregatable report=].
+Issue: Do we need to address user settings here at all?
+
+Issue: Does the [=maximum stored reports=] part match the implementation?
+
+To <dfn algorithm for="PrivateAggregation">consume budget if permitted</dfn> given a {{long}} |value|, an [=origin=] <var ignore=''>origin</var>, a [=context type=] |api| and a [=moment=] |currentTime|, perform [=implementation-defined=] steps. They return a [=boolean=], which indicates whether there is sufficient 'contribution budget' left to send the requested contribution |value|. This budget should be bound to usage over time, e.g. the contribution sum over the last 24 hours. The algorithm should assume that the contribution will be sent if and only if true is returned.
+
+To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=origin=] |reportingOrigin|, a [=context type=] |api|, a [=list=] of {{PAHistogramContribution}} |contributions| and a [=moment=] |currentTime|, perform the following steps. They return an [=aggregatable report=].
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
-1. Let |reportTime| be the result of running [=PrivateAggregation/obtain a report delivery time=].
+1. Let |reportTime| be the result of running [=PrivateAggregation/obtain a report delivery time=] given |currentTime|.
 1. Let |report| be a new [=aggregatable report=] with the items:
     : [=aggregatable report/reporting origin=]
     :: |reportingOrigin|
@@ -289,46 +323,179 @@ To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=
     :: |api|
     : [=aggregatable report/report ID=]
     :: The result of [=generating a random UUID=].
+    : [=aggregatable report/queued=]
+    :: false
 
-Scheduling reports {#scheduling-reports}
-----------------------------------------
+Issue: Go through and be consistent about namespacing of algorithms.
 
-To <dfn algorithm for="PrivateAggregation">obtain a report delivery time</dfn>, perform the following steps. They return a [=moment=].
-
-Issue: Fill in
-
-To perform the <dfn algorithm for="PrivateAggregation">report scheduling steps</dfn> with an [=origin=] |reportingOrigin|, a [=context type=] |api| and a [=list=] of {{PAHistogramContribution}} |contributions|:
-1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
-1. If the user agent's [=aggregatable report cache=] [=set/size=] is larger than [=max stored reports=], return.
-1. Let |truncatedContributions| be a new [=list/is empty|empty=] [=list=].
-1. If |contributions| has a [=list/size=] greater than [=max report contributions=]:
-    1. [=set/For each=] |n| of [=the exclusive range|the range=] 0 to [=max report contributions=], exclusive:
-        1. [=set/Append=] |contributions|[|n|] to |truncatedContributions|.
-1. Otherwise, set |truncatedContributions| to |contributions|.
-1. Let |contributionSum| be 0.
-1. [=set/iterate|For each=] |contribution| of |truncatedContributions|:
-    <!-- 1. [=Assert=]: |contribution| is a {{PAHistogramContribution}}. -->
-    1. [=Assert=]: |contribution|["|value|"] is non-negative.
-    1. Add |value| to |contributionSum|.
-1. Let |sufficientBudget| be the result of [=PrivateAggregation/consuming budget if permitted=] given |contributionSum|, |reportingOrigin| and |api|.
-1. If |sufficientBudget| is false, return.
-1. Let |report| be the result of [=PrivateAggregation/obtaining an aggregatable report=] given |reportingOrigin|, |api| and |truncatedContributions|.
-1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
-
-Issue: Do we need to ensure the reports aren't queued after being sent?
-
-Issue: Do we need to address user settings here at all?
-
-Issue: Does the [=max stored reports=] part match the implementation?
-
-To <dfn algorithm for="PrivateAggregation">consume budget if permitted</dfn> given a {{long}} |value|, an [=origin=] <var ignore=''>origin</var> and an [=context type=] |api|, perform [=implementation-defined=] steps. They return a [=boolean=], which indicates whether there is sufficient 'contribution budget' left to send the requested contribution |value|. This budget should be bound to usage over time, e.g. the contribution sum over the last 24 hours. The algorithm should assume that the contribution will be sent if and only if true is returned.
-
-Issue: Don't we need to take into account the time "now" as well?
+To <dfn algorithm for="PrivateAggregation">obtain a report delivery time</dfn> given a [=moment=] |currentTime|, perform the following steps. They return a [=moment=].
+1. Let |r| be a random double between 0 (inclusive) and 1 (exclusive) with uniform probability.
+1. Return |currentTime| + [=minimum report delay=] + |r| * [=randomized report delay=].
 
 Sending reports {#sending-reports}
 ----------------------------------
 
-Issue: Fill in. Compare to Report delivery in ARA spec. Include a section on serializing reports.
+Note: This section is largely copied from the <a href="https://wicg.github.io/attribution-reporting-api/">Attribution Reporting API spec</a>, adapting as necessary.
+
+Issue: Add logic for resetting [=aggregatable report/queued=] on start up or network on or whatever
+
+Issue: Do we have to use the [=queue a task=] algorithm here?
+
+The user agent must periodically [=attempt to queue reports for sending=] with its [=aggregatable report cache=].
+
+To <dfn>attempt to queue reports for sending</dfn> given a [=list=] of [=aggregatable reports=] |reports|:
+1. [=list/iterate|For each=] |report| of |reports|, run these steps [=in parallel=]:
+    1. Run these steps, but [=abort when=] the [=user agent=] shuts down:
+        1. If |report|'s [=aggregatable report/queued=] value is true, return.
+        1. Set |report|'s [=aggregatable report/queued=] value to true.
+        1. If |report|'s [=aggregatable report/report time=] is less than the [=wall clock=]'s [=current unsafe time=], set |report|'s [=aggregatable report/report time=] to [=wall clock=]'s [=current unsafe time=] plus an [=implementation-defined=] random non-negative [=duration=].
+
+            Note: On startup, it is possible the user agent will need to send many reports whose report times passed while the browser was closed. Adding random delay prevents temporal joining of reports.
+        1. Wait until the [=wall clock=]'s [=current unsafe time=] is equal to |report|'s [=aggregatable report/report time=].
+        1. Optionally, wait a further [=implementation-defined=] non-negative [=duration=].
+
+            Note: This is intended to allow user agents to optimize device resource usage.
+        1. Run [=attempt to deliver a report=] with |report|.
+    1. [=If aborted=], set |report|'s [=aggregatable report/queued=] value to false.
+
+        Note: It might be more practical to perform these steps when the [=user agent=] next starts up.
+
+To <dfn>attempt to deliver a report</dfn> given an [=aggregatable report=] |report|:
+1. Let |url| be the result of [=obtaining a reporting endpoint=] given |report|'s [=aggregatable report/reporting origin=] and |report|'s [=aggregatable report/api=].
+1. Let |data| be the result of [=serializing an aggregatable report=] given |report|.
+1. If |data| is an error, [=list/remove=] |report| from the [=aggregatable report cache=]. (TODO: do we need to queue this task?)
+1. Let |request| be the result of [=creating a report request=] given |url| and |data|.
+1. [=Queue a task=] to [=fetch=] |request| with [=fetch/processResponse=] being the following steps that take a [=response=] |response|:
+    1. Let |shouldRetry| be false.
+    1. If |response|'s [=response/status=] is not 200, optionally set |shouldRetry| to true.
+    1. If |shouldRetry| is true, set |report|'s [=aggregatable report/queued=] value to false.
+    1. Otherwise, [=list/remove=] |report| from the [=aggregatable report cache=].
+
+To <dfn>obtain a reporting endpoint</dfn> given an [=origin=] |reportingOrigin| and [=context type=] |api|, perform the following steps. They return a [=URL=].
+1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
+1. Let |path| be the [=string/concatenation=] of «"<code>.well-known/private-aggregation/report-</code>", |api|».
+1. Let |base| be the result on running the [=URL parser=] on the [=serialization of an origin|serialization=] of |reportingOrigin|.
+1. [=Assert=]: |base| is not failure.
+1. Let |result| be the result of running the [=URL parser=] on |path| with |base|.
+1. [=Assert=]: |result| is not failure.
+1. Return |result|.
+
+To <dfn>create a report request</dfn> given a [=URL=] |url| and a [=byte sequence=] |body|:
+1. Let |request| be a new [=request=] with the following properties:
+    :   [=request/method=]
+    ::  "`POST`"
+    :   [=request/URL=]
+    ::  |url|
+    :   [=request/header list=]
+    ::  «("`Content-Type`", "`application/json`")»
+    :   [=request/unsafe-request flag=]
+    ::  set
+    :   [=request/body=]
+    ::  |body|
+    :   [=request/client=]
+    ::  `null`
+    :   [=request/window=]
+    ::  "`no-window`"
+    :   [=request/service-workers mode=]
+    ::  "`none`"
+    :   [=request/initiator=]
+    ::  ""
+    :   [=request/referrer=]
+    :: "`no-referrer`"
+    :   [=request/mode=]
+    ::  "`cors`"
+    :   [=request/credentials mode=]
+    ::  "`omit`"
+    :   [=request/cache mode=]
+    ::  "`no-store`"
+1. Return |request|.
+
+Serializing reports {#serializing-reports}
+------------------------------------------
+
+Note: This section is largely copied from the <a href="https://wicg.github.io/attribution-reporting-api/">Attribution Reporting API spec</a>, adapting as necessary.
+
+To <dfn>serialize an aggregatable report</dfn> given an [=aggregatable report=] |report|, perform the following steps. They return a [=byte sequence=] or an error.
+1. Let |aggregationServicePayloads| be the result of [=obtaining the aggregation service payloads=] given |report|.
+1. If |aggregationServicePayloads| is an error, return |aggregationServicePayloads|.
+1. Let |data| be an [=ordered map=] of the following key/value pairs:
+
+    : "`aggregation_service_payloads`"
+    :: |aggregationServicePayloads|
+    : "`shared_info`"
+    :: The result of [=obtaining a report's shared info=] given |report|.
+
+1. Return the [=byte sequence=] resulting from executing [=serialize an infra value to JSON bytes=] on |data|.
+
+To <dfn>obtain the aggregation service payloads</dfn> given an [=aggregatable report=] |report|, perform the following steps. They return a [=list=] of [=maps=] or an error.
+1. Let (|pkR|, |keyId|) be the result of [=obtaining the public key for encryption=].
+1. If |pkR| is an error, return |pkR|.
+1. Let |encryptedPayload| be the result of [=obtaining the encrypted payload=] given |report| and |pkR|.
+1. If |encryptedPayload| is an error, return |encryptedPayload|.
+1. Let |aggregationServicePayloads| be a new [=list/is empty|empty=] [=list=].
+1. Let |aggregationServicePayload| be an [=ordered map=] of the following key/value pairs:
+
+    : "`key_id`"
+    :: |keyId|
+    : "`payload`"
+    :: |encryptedPayload|, [=forgiving-base64 encode|base64 encoded=]
+1. [=list/Append=] |aggregationServicePayload| to |aggregationServicePayloads|.
+1. Return |aggregationServicePayloads|.
+
+To <dfn>obtain the public key for encryption</dfn>, asynchronously perform an [=implementation-defined=] sequence of steps. They return a [=tuple=] consisting of a public key and a [=string=] (which should uniquely identify the public key), or an error in the event that the [=user agent=] failed to obtain the public key. (TODO: why asynchronously.)
+
+Note: The user agent might enforce regular key rotation. If there are multiple keys, the user agent might independently pick a key uniformly at random for every encryption operation.
+
+To <dfn>obtain the encrypted payload</dfn> given an [=aggregatable report=] |report|, perform the following steps. They return a [=byte sequence=] or an error.
+1. Let |plaintext| be the result of [=obtaining the plaintext payload=] given |report|.
+1. Let |sharedInfo| be the result of [=obtaining a report's shared info=] given |report|.
+1. Let |info| be the result of [=UTF-8 encoding=] the [=string/concatenation=] of «"`aggregation_service`", |sharedInfo|».
+1. Let (|kem_id|, |kdf_id|, |aead_id|) be (0x0020, 0x0001, 0x0003).
+
+    Note: These indicate the HPKE algorithm identifiers, specifying the KEM function as DHKEM(X25519, HKDF-SHA256), the KDF function as HKDF-SHA256	and the AEAD function as ChaCha20Poly1305.
+1. Let |hpkeContext| be the result of setting up an [[RFC9180|HPKE]] [[RFC9180#name-encryption-to-a-public-key|sender's context]] with |pkR|, |info|, |kem_id|, |kdf_id| and |aead_id|.
+1. Let |aad| be \`\` (an empty [=byte sequence=]).
+1. Let |encryptedPayload| be the result of [[RFC9180#name-encryption-and-decryption|encrypting]] |plaintext| with |hpkeContext| and |aad|.
+
+To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=] |report|, perform the following steps. They return a [=byte sequence=].
+1. Let |payloadData| be a new [=list/is empty|empty=] [=list=].
+1. [=list/iterate|For each=] |contribution| of |report|'s [=aggregatable report/contributions=]:
+    1. Let |contributionData| be an [=ordered map=] of the following key/value pairs:
+
+        : "`bucket`"
+        :: The result of [=encoding an integer for the payload=] given |contribution|["{{PAHistogramContribution/bucket}}"] and 128.
+        : "`value`"
+        :: The result of [=encoding an integer for the payload=] given |contribution|["{{PAHistogramContribution/value}}"] and 32.
+
+    1. [=list/Append=] |contributionData| to |payloadData|.
+1. Let |payload| be an [=ordered map=] of the following key/value pairs:
+
+    : "`data`"
+    :: |payloadData|
+    : "`operation`"
+    :: "`histogram`"
+
+1. Return the [=byte sequence=] resulting from [[!RFC8949|CBOR encoding]] |payload|.
+
+To <dfn>encode an integer for the payload</dfn> given an integer |intToEncode| and an integer |bitLength|, return the representation of |intToEncode| as a big-endian [=byte sequence=] of length |bitLength| / 8, left padding with zeroes as necessary.
+
+To <dfn>obtain a report's shared info</dfn> given an [=aggregatable report=] |report|, perform the following steps. They return a [=string=].
+1. Let |scheduledReportTime| be the [=duration from=] the [=UNIX epoch=] to |report|'s [=aggregatable report/original report time=].
+1. Let |sharedInfo| be an [=ordered map=] of the following key/value pairs:
+
+    : "`api`"
+    :: |report|'s [=aggregatable report/api=]
+    : "`report_id`"
+    :: |report|'s [=aggregatable report/report ID=]
+    : "`reporting_origin`"
+    :: The [=serialization of an origin|serialization=] of |report|'s [=aggregatable report/reporting origin=]
+    : "`scheduled_report_time`"
+    :: The number of seconds in |scheduledReportTime|, rounded down to the nearest number of whole seconds and [=serialize an integer|serialized=]
+    : "`version`"
+    :: "`0.1`"
+
+1. Return the result of [=serializing an infra value to a json string=] given |sharedInfo|.
+
 
 FLEDGE-specific algorithms {#fledge-specific-algorithms}
 --------------------------------------------------------
@@ -360,20 +527,3 @@ Issue: Maybe add refs to the rounding logic.
 To <dfn>determine the numeric value</dfn> of a [=signal base value=] <var ignore=''>signalBaseValue</var>, perform the following steps. They return a {{double}}.
 
 Issue: Fill in.
-
-<!-- [Exposed=FledgeWorkletGlobalScope]
-dictionary PASignalValue {
-  required DOMString baseValue;
-  double scale;
-  (bigint or long) offset;
-}; -->
-
-<!--
-To <dfn>process the contributions cache</dfn> given a [=list=] |contributionsCache|, run the [=PrivateAggregation/report scheduling steps=] with the associated {{WorkletGlobalScope}}'s [=relevant settings object=]'s [=origin=], the the associated {{WorkletGlobalScope}}'s [=PrivateAggregation/api identifier=] and |contributionsCache|.
-
-To <dfn>process the contributions cache</dfn> given a {{WorkletGlobalScope}} |scope| and a [=list=] |contributionsCache|, run the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], the |scope's| [=PrivateAggregation/api identifier=] and the [=contributions cache=].
-
-
-Immediately after the {{WorkletGlobalScope}} object is [=terminate a worklet global scope|terminated=], run the [=PrivateAggregation/report scheduling steps=] with the {{WorkletGlobalScope}}'s [=relevant settings object=]'s [=origin=], the {{WorkletGlobalScope}} [=PrivateAggregation/api identifier=] and the [=contributions cache=].
- -->
-
