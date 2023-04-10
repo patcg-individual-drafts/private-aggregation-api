@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version d9bd89757, updated Thu Mar 23 10:06:53 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="1469f0a9ad255203bee29ec554c87e097391552d" name="document-revision">
+  <meta content="ae19a61b353f9632a9d508986279ad1482fec728" name="document-revision">
 <style>/* style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -899,9 +899,11 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert②">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin②">potentially trustworthy origin</a>.</p>
     <li data-md>
+     <p>If the user agent’s <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache">aggregatable report cache</a> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size">size</a> is larger than <a data-link-type="dfn" href="#max-stored-reports" id="ref-for-max-stored-reports">max stored reports</a>, return.</p>
+    <li data-md>
      <p>Let <var>truncatedContributions</var> be a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-is-empty" id="ref-for-list-is-empty①">empty</a> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑥">list</a>.</p>
     <li data-md>
-     <p>If <var>contributions</var> has a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size">size</a> greater than <a data-link-type="dfn" href="#max-report-contributions" id="ref-for-max-report-contributions">max report contributions</a>:</p>
+     <p>If <var>contributions</var> has a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size①">size</a> greater than <a data-link-type="dfn" href="#max-report-contributions" id="ref-for-max-report-contributions">max report contributions</a>:</p>
      <ol>
       <li data-md>
        <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate①">For each</a> <var>n</var> of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#the-range" id="ref-for-the-range">the range</a> 0 to <a data-link-type="dfn" href="#max-report-contributions" id="ref-for-max-report-contributions①">max report contributions</a>, exclusive:</p>
@@ -925,11 +927,9 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
     <li data-md>
      <p>Let <var>sufficientBudget</var> be the result of running <a data-link-type="dfn" href="#privateaggregation-consume-budget-if-permitted" id="ref-for-privateaggregation-consume-budget-if-permitted">consume budget if permitted</a> on <var>contributionSum</var>, <var>reportingOrigin</var> and <var>api</var>.</p>
     <li data-md>
-     <p>If not <var>sufficientBudget</var>, return.</p>
+     <p>If <var>sufficientBudget</var> is false, return.</p>
     <li data-md>
      <p>Let <var>report</var> be the result of <a data-link-type="dfn" href="#privateaggregation-obtain-an-aggregatable-report" id="ref-for-privateaggregation-obtain-an-aggregatable-report">obtaining an aggregatable report</a> given <var>reportingOrigin</var>, <var>api</var> and <var>truncatedContributions</var>.</p>
-    <li data-md>
-     <p>If the user agent’s <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache">aggregatable report cache</a> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size①">size</a> is larger than <a data-link-type="dfn" href="#max-stored-reports" id="ref-for-max-stored-reports">max stored reports</a>, return.</p>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append①">Append</a> <var>report</var> to the user agent’s <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache①">aggregatable report cache</a>.</p>
    </ol>
