@@ -243,6 +243,8 @@ Issue: Should we use the term "implementation-defined" instead?
 
 <dfn>Max stored reports</dfn> is a positive integer that controls how many unsent reports can be queued waiting.
 
+<dfn>Max report contributions</dfn> is a positive integer that controls how many contributions can be present in a single report.
+
 Issue: More
 
 Algorithms {#algorithms}
@@ -265,11 +267,6 @@ Issue: Remove export when this definition is used.
 To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=origin=] |reportingOrigin|, a [=worklet type identifier=] |api| and a [=list=] of {{PAHistogramContribution}} |contributions|:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |reportTime| be the result of running [=PrivateAggregation/obtain a report delivery time=].
-1. Let |truncatedContributions| be a new [=list/is empty|empty=] list.
-1. If |contributions| has a [=list/size=] greater than 50:
-    1. [=set/For each=] |n| of [=the range=] 1 to 50, exclusive:
-        1. [=set/Append=] |contributions|[|n|] to |truncatedContributions|.
-1. Otherwise, set |truncatedContributions| to |contributions|.
 1. Let |report| be a new [=aggregatable report=] with the items:
     : [=aggregatable report/reporting origin=]
     :: |reportingOrigin|
@@ -278,7 +275,7 @@ To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=
     : [=aggregatable report/report time=]
     :: |reportTime|
     : [=aggregatable report/contributions=]
-    :: |truncatedContributions|
+    :: |contributions|
     : [=aggregatable report/api=]
     :: |api|
     : [=aggregatable report/report ID=]
@@ -293,14 +290,19 @@ Issue: Fill in
 
 The <dfn algorithm for="PrivateAggregation">report scheduling steps</dfn> given an [=origin=] |reportingOrigin|, a [=worklet type identifier=] |api| and a [=list=] of {{PAHistogramContribution}} |contributions| are as follows:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
+1. Let |truncatedContributions| be a new [=list/is empty|empty=] [=list=].
+1. If |contributions| has a [=list/size=] greater than [=max report contributions=]:
+    1. [=set/For each=] |n| of [=the range=] 0 to [=max report contributions=], exclusive:
+        1. [=set/Append=] |contributions|[|n|] to |truncatedContributions|.
+1. Otherwise, set |truncatedContributions| to |contributions|.
 1. Let |contributionSum| be 0.
-1. [=set/iterate|For each=] |contribution| of |contributions|:
+1. [=set/iterate|For each=] |contribution| of |truncatedContributions|:
     <!-- 1. [=Assert=]: |contribution| is a {{PAHistogramContribution}}. -->
     1. [=Assert=]: |contribution|'s |value| is non-negative.
     1. Add |value| to |contributionSum|.
 1. Let |sufficientBudget| be the result of running [=PrivateAggregation/consume budget if permitted=] on |contributionSum|, |reportingOrigin| and |api|.
 1. If not |sufficientBudget|, return.
-1. Let |report| be the result of [=PrivateAggregation/obtaining an aggregatable report=] given |reportingOrigin|, |api| and |contributions|.
+1. Let |report| be the result of [=PrivateAggregation/obtaining an aggregatable report=] given |reportingOrigin|, |api| and |truncatedContributions|.
 1. If the user agent's [=aggregatable report cache=] [=set/size=] is larger than [=max stored reports=], return.
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
