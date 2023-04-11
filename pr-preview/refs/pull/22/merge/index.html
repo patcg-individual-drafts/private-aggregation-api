@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version d9bd89757, updated Thu Mar 23 10:06:53 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="ae19a61b353f9632a9d508986279ad1482fec728" name="document-revision">
+  <meta content="7ece6f49393bd29ee957866b43126b30e2bf88cb" name="document-revision">
 <style>/* style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -589,7 +589,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-04-10">10 April 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-04-11">11 April 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -715,7 +715,8 @@ which is dispatched back to the script’s origin.</p>
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long"><c- b>long</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="PAHistogramContribution" data-dfn-type="dict-member" data-export data-type="long " id="dom-pahistogramcontribution-value"><code><c- g>value</c-></code></dfn>;
 };
 </pre>
-   <p>Each <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation">PrivateAggregation</a></code> has a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="contributions-cache">contributions cache</dfn>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list">list</a>.</p>
+   <p>Each <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation">PrivateAggregation</a></code> has a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="contributions-cache">contributions cache</dfn>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list">list</a>.
+Each item must be either a <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution①">PAHistogramContribution</a></code> or a <code class="idl"><a data-link-type="idl" href="#dictdef-paextendedhistogramcontribution" id="ref-for-dictdef-paextendedhistogramcontribution">PAExtendedHistogramContribution</a></code>.</p>
    <p class="note" role="note"><span class="marker">Note:</span> The steps to process the <a data-link-type="dfn" href="#contributions-cache" id="ref-for-contributions-cache">contributions cache</a> are defined separately for
 each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/worklets.html#workletglobalscope" id="ref-for-workletglobalscope">WorkletGlobalScope</a></code>.</p>
    <p class="issue" id="issue-965ede89"><a class="self-link" href="#issue-965ede89"></a> Do we need to spec enableDebugMode?</p>
@@ -759,7 +760,7 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
 
 [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed" id="ref-for-Exposed④"><c- g>Exposed</c-></a>=<c- n>FledgeWorkletGlobalScope</c->]
 <c- b>partial</c-> <c- b>interface</c-> <a class="idl-code" data-link-type="interface" href="#privateaggregation" id="ref-for-privateaggregation③"><c- g>PrivateAggregation</c-></a> {
-  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined" id="ref-for-idl-undefined①"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-privateaggregation-reportcontributionforevent" id="ref-for-dom-privateaggregation-reportcontributionforevent"><c- g>reportContributionForEvent</c-></a>(<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString①"><c- b>DOMString</c-></a> <dfn class="idl-code" data-dfn-for="PrivateAggregation/reportContributionForEvent(event, contribution)" data-dfn-type="argument" data-export id="dom-privateaggregation-reportcontributionforevent-event-contribution-event"><code><c- g>event</c-></code><a class="self-link" href="#dom-privateaggregation-reportcontributionforevent-event-contribution-event"></a></dfn>, <a data-link-type="idl-name" href="#dictdef-paextendedhistogramcontribution" id="ref-for-dictdef-paextendedhistogramcontribution"><c- n>PAExtendedHistogramContribution</c-></a> <dfn class="idl-code" data-dfn-for="PrivateAggregation/reportContributionForEvent(event, contribution)" data-dfn-type="argument" data-export id="dom-privateaggregation-reportcontributionforevent-event-contribution-contribution"><code><c- g>contribution</c-></code><a class="self-link" href="#dom-privateaggregation-reportcontributionforevent-event-contribution-contribution"></a></dfn>);
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-undefined" id="ref-for-idl-undefined①"><c- b>undefined</c-></a> <a class="idl-code" data-link-type="method" href="#dom-privateaggregation-reportcontributionforevent" id="ref-for-dom-privateaggregation-reportcontributionforevent"><c- g>reportContributionForEvent</c-></a>(<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString①"><c- b>DOMString</c-></a> <dfn class="idl-code" data-dfn-for="PrivateAggregation/reportContributionForEvent(event, contribution)" data-dfn-type="argument" data-export id="dom-privateaggregation-reportcontributionforevent-event-contribution-event"><code><c- g>event</c-></code><a class="self-link" href="#dom-privateaggregation-reportcontributionforevent-event-contribution-event"></a></dfn>, <a data-link-type="idl-name" href="#dictdef-paextendedhistogramcontribution" id="ref-for-dictdef-paextendedhistogramcontribution①"><c- n>PAExtendedHistogramContribution</c-></a> <dfn class="idl-code" data-dfn-for="PrivateAggregation/reportContributionForEvent(event, contribution)" data-dfn-type="argument" data-export id="dom-privateaggregation-reportcontributionforevent-event-contribution-contribution"><code><c- g>contribution</c-></code><a class="self-link" href="#dom-privateaggregation-reportcontributionforevent-event-contribution-contribution"></a></dfn>);
 };
 </pre>
    <p class="issue" id="issue-6c6263d3"><a class="self-link" href="#issue-6c6263d3"></a> Do we want to align naming with implementation?</p>
@@ -800,7 +801,7 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
      <p>A <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment①">moment</a></p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="aggregatable report" data-dfn-type="dfn" data-noexport id="aggregatable-report-contributions">contributions</dfn>
     <dd data-md>
-     <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list②">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution①">PAHistogramContribution</a></code>s</p>
+     <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list②">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution②">PAHistogramContribution</a></code>s</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="aggregatable report" data-dfn-type="dfn" data-noexport id="aggregatable-report-api">api</dfn>
     <dd data-md>
      <p>A <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier">worklet type identifier</a></p>
@@ -862,7 +863,7 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
      <p>Return the result of running the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-parser" id="ref-for-concept-url-parser①">URL parser</a> on <var>path</var> with <var>base</var>.</p>
    </ol>
    <p class="issue" id="issue-05e61ee4"><a class="self-link" href="#issue-05e61ee4"></a> Remove export when this definition is used.</p>
-   <p>To <dfn class="dfn-paneled" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-obtain-an-aggregatable-report">obtain an aggregatable report</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin④">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier②">worklet type identifier</a> <var>api</var> and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list④">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution②">PAHistogramContribution</a></code> <var>contributions</var>:</p>
+   <p>To <dfn class="dfn-paneled" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-obtain-an-aggregatable-report">obtain an aggregatable report</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin④">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier②">worklet type identifier</a> <var>api</var> and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list④">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution③">PAHistogramContribution</a></code> <var>contributions</var>:</p>
    <ol>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin①">potentially trustworthy origin</a>.</p>
@@ -894,7 +895,7 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
    <h3 class="heading settled" data-level="8.1" id="scheduling-reports"><span class="secno">8.1. </span><span class="content">Scheduling reports</span><a class="self-link" href="#scheduling-reports"></a></h3>
    <p>To <dfn class="dfn-paneled algorithm" data-algorithm="obtain a report delivery time" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-obtain-a-report-delivery-time">obtain a report delivery time</dfn>, run the following steps:</p>
    <p class="issue" id="issue-2230f606"><a class="self-link" href="#issue-2230f606"></a> Fill in</p>
-   <p>The <dfn class="dfn-paneled algorithm" data-algorithm="report scheduling steps" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-report-scheduling-steps">report scheduling steps</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑤">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier③">worklet type identifier</a> <var>api</var> and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑤">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution③">PAHistogramContribution</a></code> <var>contributions</var> are as follows:</p>
+   <p>The <dfn class="dfn-paneled algorithm" data-algorithm="report scheduling steps" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-report-scheduling-steps">report scheduling steps</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑤">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#worklet-type-identifier" id="ref-for-worklet-type-identifier③">worklet type identifier</a> <var>api</var> and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑤">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution④">PAHistogramContribution</a></code> <var>contributions</var> are as follows:</p>
    <ol>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert②">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin②">potentially trustworthy origin</a>.</p>
@@ -947,9 +948,9 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fill-in-the-contribution">fill in the contribution</dfn> given a <var>contribution</var>, run the following steps:</p>
    <ol>
     <li data-md>
-     <p>If <var>contribution</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution④">PAHistogramContribution</a></code>, return <var>contribution</var>.</p>
+     <p>If <var>contribution</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑤">PAHistogramContribution</a></code>, return <var>contribution</var>.</p>
     <li data-md>
-     <p>Otherwise, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert④">assert</a> <var>contribution</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-paextendedhistogramcontribution" id="ref-for-dictdef-paextendedhistogramcontribution①">PAExtendedHistogramContribution</a></code>.</p>
+     <p>Otherwise, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert④">assert</a> <var>contribution</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-paextendedhistogramcontribution" id="ref-for-dictdef-paextendedhistogramcontribution②">PAExtendedHistogramContribution</a></code>.</p>
     <li data-md>
      <p>Let <var>bucket</var> be <var>contribution</var>’s <code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-bucket" id="ref-for-dom-paextendedhistogramcontribution-bucket">bucket</a></code>.</p>
     <li data-md>
@@ -959,7 +960,7 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
     <li data-md>
      <p>If <var>value</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue③">PASignalValue</a></code>, let <var>value</var> be the result of <a data-link-type="dfn" href="#fill-in-the-signal-value" id="ref-for-fill-in-the-signal-value①">filling in the signal value</a> given <var>value</var> and 2<sup>128</sup>−1.</p>
     <li data-md>
-     <p>Return a new <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑤">PAHistogramContribution</a></code> with the items:</p>
+     <p>Return a new <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑥">PAHistogramContribution</a></code> with the items:</p>
      <dl>
       <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket①">bucket</a></code>
       <dd data-md>
@@ -995,7 +996,7 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
    <p class="issue" id="issue-b7f7c8b2"><a class="self-link" href="#issue-b7f7c8b2"></a> Maybe add refs to the rounding logic.</p>
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="determine-the-numeric-value">determine the numeric value</dfn> of a <a data-link-type="dfn" href="#signal-base-value" id="ref-for-signal-base-value①">signal base value</a> <var>signalBaseValue</var>, run the following steps:</p>
    <p class="issue" id="issue-cb6e966f"><a class="self-link" href="#issue-cb6e966f"></a> Fill in.</p>
-   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="validate an extended histogram contribution" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-validate-an-extended-histogram-contribution">validate an extended histogram contribution</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-paextendedhistogramcontribution" id="ref-for-dictdef-paextendedhistogramcontribution②">PAExtendedHistogramContribution</a></code> <var>contribution</var>:</p>
+   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="validate an extended histogram contribution" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-validate-an-extended-histogram-contribution">validate an extended histogram contribution</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-paextendedhistogramcontribution" id="ref-for-dictdef-paextendedhistogramcontribution③">PAExtendedHistogramContribution</a></code> <var>contribution</var>:</p>
    <p class="issue" id="issue-351b79d4"><a class="self-link" href="#issue-351b79d4"></a> Fill in. Will need to check offsets are valid and in the right range for the type etc. Also that base values are one of a set.</p>
    <p class="issue" id="issue-d370ec86"><a class="self-link" href="#issue-d370ec86"></a> Need to document limits on offset, etc.</p>
   </main>
@@ -1454,11 +1455,11 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
   <aside aria-labelledby="infopaneltitle-for-dictdef-pahistogramcontribution" class="dfn-panel" data-for="dictdef-pahistogramcontribution" id="infopanel-for-dictdef-pahistogramcontribution">
    <span id="infopaneltitle-for-dictdef-pahistogramcontribution" style="display:none">Info about the 'PAHistogramContribution' definition.</span><b><a href="#dictdef-pahistogramcontribution">#dictdef-pahistogramcontribution</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dictdef-pahistogramcontribution">2.1. Worklet interface</a>
-    <li><a href="#ref-for-dictdef-pahistogramcontribution①">5.1. Aggregatable report</a>
-    <li><a href="#ref-for-dictdef-pahistogramcontribution②">8. Algorithms</a>
-    <li><a href="#ref-for-dictdef-pahistogramcontribution③">8.1. Scheduling reports</a>
-    <li><a href="#ref-for-dictdef-pahistogramcontribution④">8.3. FLEDGE-specific algorithms</a> <a href="#ref-for-dictdef-pahistogramcontribution⑤">(2)</a>
+    <li><a href="#ref-for-dictdef-pahistogramcontribution">2.1. Worklet interface</a> <a href="#ref-for-dictdef-pahistogramcontribution①">(2)</a>
+    <li><a href="#ref-for-dictdef-pahistogramcontribution②">5.1. Aggregatable report</a>
+    <li><a href="#ref-for-dictdef-pahistogramcontribution③">8. Algorithms</a>
+    <li><a href="#ref-for-dictdef-pahistogramcontribution④">8.1. Scheduling reports</a>
+    <li><a href="#ref-for-dictdef-pahistogramcontribution⑤">8.3. FLEDGE-specific algorithms</a> <a href="#ref-for-dictdef-pahistogramcontribution⑥">(2)</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-dom-pahistogramcontribution-bucket" class="dfn-panel" data-for="dom-pahistogramcontribution-bucket" id="infopanel-for-dom-pahistogramcontribution-bucket">
@@ -1523,8 +1524,9 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
   <aside aria-labelledby="infopaneltitle-for-dictdef-paextendedhistogramcontribution" class="dfn-panel" data-for="dictdef-paextendedhistogramcontribution" id="infopanel-for-dictdef-paextendedhistogramcontribution">
    <span id="infopaneltitle-for-dictdef-paextendedhistogramcontribution" style="display:none">Info about the 'PAExtendedHistogramContribution' definition.</span><b><a href="#dictdef-paextendedhistogramcontribution">#dictdef-paextendedhistogramcontribution</a></b><b>Referenced in:</b>
    <ul>
-    <li><a href="#ref-for-dictdef-paextendedhistogramcontribution">4. Exposing to FLEDGE</a>
-    <li><a href="#ref-for-dictdef-paextendedhistogramcontribution①">8.3. FLEDGE-specific algorithms</a> <a href="#ref-for-dictdef-paextendedhistogramcontribution②">(2)</a>
+    <li><a href="#ref-for-dictdef-paextendedhistogramcontribution">2.1. Worklet interface</a>
+    <li><a href="#ref-for-dictdef-paextendedhistogramcontribution①">4. Exposing to FLEDGE</a>
+    <li><a href="#ref-for-dictdef-paextendedhistogramcontribution②">8.3. FLEDGE-specific algorithms</a> <a href="#ref-for-dictdef-paextendedhistogramcontribution③">(2)</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-dom-paextendedhistogramcontribution-bucket" class="dfn-panel" data-for="dom-paextendedhistogramcontribution-bucket" id="infopanel-for-dom-paextendedhistogramcontribution-bucket">
