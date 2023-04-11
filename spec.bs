@@ -87,6 +87,8 @@ dictionary PAHistogramContribution {
 </xmp>
 
 Each {{PrivateAggregation}} has a <dfn>contributions cache</dfn>, a [=list=].
+Each item must be either a {{PAHistogramContribution}} or a
+{{PAExtendedHistogramContribution}}.
 
 Note: The steps to process the [=contributions cache=] are defined separately for
 each {{WorkletGlobalScope}}.
