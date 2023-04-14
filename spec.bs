@@ -321,7 +321,7 @@ Issue: Do we need to address user settings here at all?
 
 Issue: Does the [=max stored reports=] part match the implementation?
 
-To <dfn algorithm for="PrivateAggregation">consume budget if permitted</dfn> given a {{long}} |value|, an [=origin=] <var ignore=''>origin</var> and an [=context type=] |api|, perform [=implementation-defined=] steps. They return a boolean, which indicates whether there is sufficient 'contribution budget' left to send the requested contribution |value|. This budget should be bound to usage over time, e.g. the contribution sum over the last 24 hours. The algorithm should assume that the contribution will be sent if and only if true is returned.
+To <dfn algorithm for="PrivateAggregation">consume budget if permitted</dfn> given a {{long}} |value|, an [=origin=] <var ignore=''>origin</var> and an [=context type=] |api|, perform [=implementation-defined=] steps. They return a [=boolean=], which indicates whether there is sufficient 'contribution budget' left to send the requested contribution |value|. This budget should be bound to usage over time, e.g. the contribution sum over the last 24 hours. The algorithm should assume that the contribution will be sent if and only if true is returned.
 
 Issue: Don't we need to take into account the time "now" as well?
 
