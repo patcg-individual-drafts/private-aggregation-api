@@ -204,7 +204,7 @@ An aggregatable report is a [=struct=] with the following items:
 
 Issue: Handle operation types, aggregation coordinators, maybe retries/offline, report verification
 
-<h4 dfn-type=dfn>context type</h3>
+<h4 dfn-type=dfn>Context type</h3>
 A context type is one of the following:
 <dl dfn-for="context type">
 : "<dfn><code>fledge</code></dfn>"
