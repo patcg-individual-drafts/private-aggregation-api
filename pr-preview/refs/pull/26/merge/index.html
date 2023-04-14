@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version d9bd89757, updated Thu Mar 23 10:06:53 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="5fbc51fa5c5272c5d37c1584b1382280be3b5795" name="document-revision">
+  <meta content="1e2a8704d583ae2779bfa3ab0288797c1f98dd78" name="document-revision">
 <style>/* style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -640,7 +640,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
        <a href="#general-structures"><span class="secno">5.1</span> <span class="content">General</span></a>
        <ol class="toc">
         <li><a href="#aggregatable-report"><span class="secno">5.1.1</span> <span class="content">Aggregatable report</span></a>
-        <li><a href="#context-type"><span class="secno">5.1.2</span> <span class="content">context type</span></a>
+        <li><a href="#context-type"><span class="secno">5.1.2</span> <span class="content">Context type</span></a>
        </ol>
       <li>
        <a href="#fledge-specific-structures"><span class="secno">5.2</span> <span class="content">FLEDGE-specific</span></a>
@@ -817,7 +817,7 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
      <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string">string</a></p>
    </dl>
    <p class="issue" id="issue-d4626287"><a class="self-link" href="#issue-d4626287"></a> Handle operation types, aggregation coordinators, maybe retries/offline, report verification</p>
-   <h4 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="5.1.2" data-lt="context type" data-noexport id="context-type"><span class="secno">5.1.2. </span><span class="content">context type</span><a class="self-link" href="#context-type" id="ref-for-context-type⑤"></a></h4>
+   <h4 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="5.1.2" data-lt="Context type" data-noexport id="context-type"><span class="secno">5.1.2. </span><span class="content">Context type</span><a class="self-link" href="#context-type" id="ref-for-context-type⑤"></a></h4>
     A context type is one of the following: 
    <dl>
     <dt data-md>"<dfn class="dfn-paneled" data-dfn-for="context type" data-dfn-type="dfn" data-noexport id="context-type-fledge"><code>fledge</code></dfn>"
@@ -1041,7 +1041,7 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
      <li><a href="#dom-pahistogramcontribution-bucket">dict-member for PAHistogramContribution</a><span>, in § 2.1</span>
     </ul>
    <li><a href="#privateaggregation-consume-budget-if-permitted">consume budget if permitted</a><span>, in § 8.1</span>
-   <li><a href="#context-type">context type</a><span>, in § 5.1.1</span>
+   <li><a href="#context-type">Context type</a><span>, in § 5.1.1</span>
    <li><a href="#aggregatable-report-contributions">contributions</a><span>, in § 5.1.1</span>
    <li><a href="#contributions-cache">contributions cache</a><span>, in § 2.1</span>
    <li><a href="#determine-the-numeric-value">determine the numeric value</a><span>, in § 8.3</span>
@@ -1091,14 +1091,14 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
    <span id="infopaneltitle-for-4deb1c936885d62029e983c05b93bbda" style="display:none">Info about the 'FledgeWorkletGlobalScope' external reference.</span><a href="https://wicg.github.io/turtledove/#fledgeworkletglobalscope">https://wicg.github.io/turtledove/#fledgeworkletglobalscope</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-fledgeworkletglobalscope">4. Exposing to FLEDGE</a> <a href="#ref-for-fledgeworkletglobalscope①">(2)</a>
-    <li><a href="#ref-for-fledgeworkletglobalscope②">5.1.2. context type</a>
+    <li><a href="#ref-for-fledgeworkletglobalscope②">5.1.2. Context type</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-0e450e8a64820ae6c0c9f0db36914314" class="dfn-panel" data-for="0e450e8a64820ae6c0c9f0db36914314" id="infopanel-for-0e450e8a64820ae6c0c9f0db36914314">
    <span id="infopaneltitle-for-0e450e8a64820ae6c0c9f0db36914314" style="display:none">Info about the 'SharedStorageWorkletGlobalScope' external reference.</span><a href="https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope">https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope</a><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-sharedstorageworkletglobalscope">3. Exposing to Shared Storage</a> <a href="#ref-for-sharedstorageworkletglobalscope①">(2)</a>
-    <li><a href="#ref-for-sharedstorageworkletglobalscope②">5.1.2. context type</a>
+    <li><a href="#ref-for-sharedstorageworkletglobalscope②">5.1.2. Context type</a>
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-a33f352de1a9eb5d29cfa3005d40d072" class="dfn-panel" data-for="a33f352de1a9eb5d29cfa3005d40d072" id="infopanel-for-a33f352de1a9eb5d29cfa3005d40d072">
@@ -1622,10 +1622,10 @@ each <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.or
    </ul>
   </aside>
   <aside aria-labelledby="infopaneltitle-for-context-type" class="dfn-panel" data-for="context-type" id="infopanel-for-context-type">
-   <span id="infopaneltitle-for-context-type" style="display:none">Info about the '5.1.2. context type' definition.</span><b><a href="#context-type">#context-type</a></b><b>Referenced in:</b>
+   <span id="infopaneltitle-for-context-type" style="display:none">Info about the '5.1.2. Context type' definition.</span><b><a href="#context-type">#context-type</a></b><b>Referenced in:</b>
    <ul>
     <li><a href="#ref-for-context-type">5.1.1. Aggregatable report</a>
-    <li><a href="#ref-for-context-type">5.1.2. context type</a>
+    <li><a href="#ref-for-context-type">5.1.2. Context type</a>
     <li><a href="#ref-for-context-type①">8. Algorithms</a> <a href="#ref-for-context-type②">(2)</a>
     <li><a href="#ref-for-context-type③">8.1. Scheduling reports</a> <a href="#ref-for-context-type④">(2)</a>
    </ul>
