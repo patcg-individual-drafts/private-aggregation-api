@@ -101,13 +101,11 @@ Issue: Need to spec Permissions Policy integration.
 The <dfn method for="PrivateAggregation">sendHistogramReport(PAHistogramContribution contribution)</dfn> method steps are:
 </div>
 
-1. Throw error if |contribution|'s {{PAHistogramContribution/value}} is negative.
-1. Throw error if |contribution|'s {{PAHistogramContribution/bucket}} is not in the range [0, 2<sup>128</sup>−1].
+1. Throw {{RangeError}} if |contribution|["{{PAHistogramContribution/bucket}}"] is not in the range [0, 2<sup>128</sup>−1].
+1. Throw {{RangeError}} if |contribution|["{{PAHistogramContribution/value}}"] is negative.
 1. [=list/Append=] |contribution| to the [=contributions cache=].
 
 Issue: Check that value can actually be zero in the spec pipeline.
-
-Issue: Properly throw an error here.
 
 
 Exposing to Shared Storage {#shared-storage}
@@ -119,11 +117,11 @@ partial interface SharedStorageWorkletGlobalScope {
 };
 </xmp>
 
-Immediately after an operation completes, [=process the Shared Storage contributions cache=] with the worklet's [=contributions cache=] and the worklet's global scope.
+Immediately after an operation completes, [=process the Shared Storage contributions cache=] given the worklet's [=contributions cache=] and the worklet's global scope.
 
-Issue: How to handle batching different operation invocations properly. This doesn't work for simultaneous operations.
+Issue: How to handle batching different operation invocations properly. This doesn't work for simultaneous operations. Also disallow usage outside an operation.
 
-To <dfn>process the Shared Storage contributions cache</dfn> given a [=contributions cache=] |contributionsCache| and a {{SharedStorageWorkletGlobalScope}} |scope|, run the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], "<code>[=worklet type identifier/shared-storage=]</code>" and |contributionsCache|.
+To <dfn>process the Shared Storage contributions cache</dfn> given a [=list=] |contributionsCache| and a {{SharedStorageWorkletGlobalScope}} |scope|, perform the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], "<code>[=context type/shared-storage=]</code>" and |contributionsCache|.
 
 Exposing to FLEDGE {#fledge}
 ============================
@@ -154,31 +152,38 @@ partial interface PrivateAggregation {
 
 Issue: Do we want to align naming with implementation?
 
-Immediately after an auction completes, [=process the FLEDGE contributions cache=] with the worklet's [=contributions cache=] and the worklet's global scope.
+Immediately after an auction completes, [=process the FLEDGE contributions cache=] given the worklet's [=contributions cache=] and the worklet's global scope.
 
-Issue: Does FLEDGE have one global scope per auction or multiple? If multiple, will need to change scope.
+Issue: Does FLEDGE have one global scope per auction or multiple? If multiple, will need to change scope for batching.
 
 Issue: How to handle fenced frame-triggered contributions and other event-triggered contributions.
+
+Issue: Need to handle `auctionReportBuyers` and `auctionReportBuyerKeys` here or in the FLEDGE spec.
 
 <div algorithm>
 The <dfn method for="PrivateAggregation">reportContributionForEvent(DOMString event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
 </div>
 
-1. Run the [=PrivateAggregation/validate an extended histogram contribution=] steps on |contribution|.
+Issue: Fill in validation. Will need to check offsets are valid and in the right range for the type etc. Also that base values are one of a set.
+
+Issue: Need to document limits on offset, etc.
 
 Issue: Fill in the rest. (Need to put the contribution in some sort of queue and process the queue at some point. Need to decide where the queue should live given it has to outlive the auction.)
 
-To <dfn>process the FLEDGE contributions cache</dfn> given a [=contributions cache=] |contributionsCache| and a {{FledgeWorkletGlobalScope}} |scope|, run the following steps:
+To <dfn>process the FLEDGE contributions cache</dfn> given a [=list=] |contributionsCache| and a {{FledgeWorkletGlobalScope}} |scope|, perform the following steps:
 1. Let |filledInContributions| be a new [=list/is empty|empty=] [=list=].
 1. [=list/iterate|For each=] |contribution| of |contributionsCache|:
-    1. [=list/Append=] the result of [=filling in the contribution=] with |contribution| to |filledInContributions|.
-1. Run the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], "<code>[=worklet type identifier/fledge=]</code>" and |filledInContributions|.
+    1. [=list/Append=] the result of [=filling in the contribution=] given |contribution| to |filledInContributions|.
+1. Perform the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=]'s [=origin=], "<code>[=context type/fledge=]</code>" and |filledInContributions|.
 
 
 Structures {#structures}
 ========================
 
-<h3 dfn-type=dfn>Aggregatable report</h3>
+General {#general-structures}
+-----------------------------
+
+<h4 dfn-type=dfn>Aggregatable report</h3>
 
 An aggregatable report is a [=struct=] with the following items:
 <dl dfn-for="aggregatable report">
@@ -191,7 +196,7 @@ An aggregatable report is a [=struct=] with the following items:
 : <dfn>contributions</dfn>
 :: A [=list=] of {{PAHistogramContribution}}s
 : <dfn>api</dfn>
-:: A [=worklet type identifier=]
+:: A [=context type=]
 : <dfn>report ID</dfn>
 :: A [=string=]
 
@@ -199,9 +204,9 @@ An aggregatable report is a [=struct=] with the following items:
 
 Issue: Handle operation types, aggregation coordinators, maybe retries/offline, report verification
 
-<h3 dfn-type=dfn>Worklet type identifier</h3>
-A worklet type identifier is one of the following:
-<dl dfn-for="worklet type identifier">
+<h4 dfn-type=dfn>context type</h3>
+A context type is one of the following:
+<dl dfn-for="context type">
 : "<dfn><code>fledge</code></dfn>"
 :: The global scope was a {{FledgeWorkletGlobalScope}}.
 : "<dfn><code>shared-storage</code></dfn>"
@@ -209,9 +214,10 @@ A worklet type identifier is one of the following:
 
 </dl>
 
-Issue: Consider renaming worklet type identifier.
+FLEDGE-specific {#fledge-specific-structures}
+---------------------------------------------
 
-<h3 dfn-type=dfn>Signal base value</h3>
+<h4 dfn-type=dfn>Signal base value</h3>
 A signal base value is one of the following:
 <dl dfn-for="signal base value">
 : "<dfn export><code>winning-bid</code></dfn>"
@@ -238,10 +244,8 @@ Storage {#storage}
 
 A user agent holds an <dfn>aggregatable report cache</dfn>, which is a [=list=] of [=aggregatable reports=].
 
-Vendor-specific values {#vendor-specific-values}
-================================================
-
-Issue: Should we use the term "implementation-defined" instead?
+[=Implementation-defined=] values {#implementation-defined-values}
+==================================================================
 
 <dfn>Max stored reports</dfn> is a positive integer that controls how many unsent reports can be queued waiting.
 
@@ -254,19 +258,22 @@ Algorithms {#algorithms}
 
 
 <!-- A {{WorkletGlobalScope}} |scope|'s <dfn algorithm for="PrivateAggregation">api identifier</dfn> is the result of:
-1. If |scope|'s [=worklet global scope type=] is {{FledgeWorkletGlobalScope}}, then return "<code>[=worklet type identifier/fledge=]</code>".
+1. If |scope|'s [=worklet global scope type=] is {{FledgeWorkletGlobalScope}}, then return "<code>[=context type/fledge=]</code>".
 1. [=Assert=]: |scope|'s [=worklet global scope type=] is {{SharedStorageWorkletGlobalScope}}.
-1. Return "<code>[=worklet type identifier/shared-storage=]</code>". -->
+1. Return "<code>[=context type/shared-storage=]</code>". -->
 
-To <dfn export algorithm for="PrivateAggregation">obtain a reporting endpoint</dfn> given an [=origin=] |reportingOrigin| and [=worklet type identifier=] |api|:
+To <dfn export algorithm for="PrivateAggregation">obtain a reporting endpoint</dfn> given an [=origin=] |reportingOrigin| and [=context type=] |api|, perform the following steps. They return a [=URL=].
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |path| be the [=string/concatenation=] of «"<code>.well-known/private-aggregation/report-</code>", |api|».
 1. Let |base| be the result on running the [=URL parser=] on the [=serialization of an origin|serialization=] of |reportingOrigin|.
-1. Return the result of running the [=URL parser=] on |path| with |base|.
+1. [=Assert=]: |base| is not failure.
+1. Let |result| be the result of running the [=URL parser=] on |path| with |base|.
+1. [=Assert=]: |result| is not failure.
+1. Return |result|.
 
 Issue: Remove export when this definition is used.
 
-To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=origin=] |reportingOrigin|, a [=worklet type identifier=] |api| and a [=list=] of {{PAHistogramContribution}} |contributions|:
+To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=origin=] |reportingOrigin|, a [=context type=] |api| and a [=list=] of {{PAHistogramContribution}} |contributions|, perform the following steps. They return an [=aggregatable report=].
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |reportTime| be the result of running [=PrivateAggregation/obtain a report delivery time=].
 1. Let |report| be a new [=aggregatable report=] with the items:
@@ -286,57 +293,35 @@ To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
 
-To <dfn algorithm for="PrivateAggregation">obtain a report delivery time</dfn>, run the following steps:
+To <dfn algorithm for="PrivateAggregation">obtain a report delivery time</dfn>, perform the following steps. They return a [=moment=].
 
 Issue: Fill in
 
-The <dfn algorithm for="PrivateAggregation">report scheduling steps</dfn> given an [=origin=] |reportingOrigin|, a [=worklet type identifier=] |api| and a [=list=] of {{PAHistogramContribution}} |contributions| are as follows:
+To perform the <dfn algorithm for="PrivateAggregation">report scheduling steps</dfn> with an [=origin=] |reportingOrigin|, a [=context type=] |api| and a [=list=] of {{PAHistogramContribution}} |contributions|:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. If the user agent's [=aggregatable report cache=] [=set/size=] is larger than [=max stored reports=], return.
 1. Let |truncatedContributions| be a new [=list/is empty|empty=] [=list=].
 1. If |contributions| has a [=list/size=] greater than [=max report contributions=]:
-    1. [=set/For each=] |n| of [=the range=] 0 to [=max report contributions=], exclusive:
+    1. [=set/For each=] |n| of [=the exclusive range|the range=] 0 to [=max report contributions=], exclusive:
         1. [=set/Append=] |contributions|[|n|] to |truncatedContributions|.
 1. Otherwise, set |truncatedContributions| to |contributions|.
 1. Let |contributionSum| be 0.
 1. [=set/iterate|For each=] |contribution| of |truncatedContributions|:
     <!-- 1. [=Assert=]: |contribution| is a {{PAHistogramContribution}}. -->
-    1. [=Assert=]: |contribution|'s |value| is non-negative.
+    1. [=Assert=]: |contribution|["|value|"] is non-negative.
     1. Add |value| to |contributionSum|.
-1. Let |sufficientBudget| be the result of running [=PrivateAggregation/consume budget if permitted=] on |contributionSum|, |reportingOrigin| and |api|.
+1. Let |sufficientBudget| be the result of [=PrivateAggregation/consuming budget if permitted=] given |contributionSum|, |reportingOrigin| and |api|.
 1. If |sufficientBudget| is false, return.
 1. Let |report| be the result of [=PrivateAggregation/obtaining an aggregatable report=] given |reportingOrigin|, |api| and |truncatedContributions|.
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
 Issue: Do we need to ensure the reports aren't queued after being sent?
 
-Issue: non-negative or positive value?
-
 Issue: Do we need to address user settings here at all?
-
-Issue: Batching
 
 Issue: Does the [=max stored reports=] part match the implementation?
 
-To <dfn algorithm for="PrivateAggregation">consume budget if permitted</dfn> given a {{long}} |value|, an [=origin=] <var ignore=''>origin</var> and an [=worklet type identifier=] |api| are a user agent-determined sequence of steps that returns a {{boolean}} indicating whether there is a sufficient 'contribution budget' left to send the requested contribution |value|. This budget should be bound to usage over time, e.g. the contribution sum over the last 24 hours. The algorithm should assume that the contribution will be sent if true is returned (and won't otherwise).
-
-Issue: Do we want to specify how budgeting works? ARA does, but leaves the exact values up to the implementer.
-
-<!-- Example algo:
-1. Maintain a store somewhere of all previous reports or like the last 24 h or something
-1. Let |budget_already_used| be 0.
-1. For each entry in this store:
-    1. If time is more than 24 hours ago, delete it.
-    1. (Optionally, if the time is old enough, delete it.)
-        - We could make this just a general, if the time is earlier than the budget scope beginning (which is a user agent-determined time and a function of "now"). That feels a bit too tied to the implementation...
-    1. If different |origin| or different |api|, continue.
-    1. Increment |budget_already_used| by this entry's |value|.
-1. Set |is_allowed| to a boolean indicating whether |budget_already_used| + the requested contribution is less than or equal to the maximum daily allowed budget.
-1. If |is_allowed|
-    1. Add entry to the store
-1. Return |is_allowed|.
-
-So we could do this and then specify that implementers should use an algo with similar results to this? Or we could say the user agent may reject additional reports for algorithmic simplicity or something. -->
+To <dfn algorithm for="PrivateAggregation">consume budget if permitted</dfn> given a {{long}} |value|, an [=origin=] <var ignore=''>origin</var> and an [=context type=] |api|, perform [=implementation-defined=] steps. They return a boolean, which indicates whether there is sufficient 'contribution budget' left to send the requested contribution |value|. This budget should be bound to usage over time, e.g. the contribution sum over the last 24 hours. The algorithm should assume that the contribution will be sent if and only if true is returned.
 
 Issue: Don't we need to take into account the time "now" as well?
 
@@ -349,32 +334,30 @@ FLEDGE-specific algorithms {#fledge-specific-algorithms}
 --------------------------------------------------------
 
 
-To <dfn>fill in the contribution</dfn> given a |contribution|, run the following steps:
+To <dfn>fill in the contribution</dfn> given a |contribution|, perform the following steps. They return a {{PAHistogramContribution}}.
 1. If |contribution| is a {{PAHistogramContribution}}, return |contribution|.
-1. Otherwise, [=assert=] |contribution| is a {{PAExtendedHistogramContribution}}.
-1. Let |bucket| be |contribution|'s {{PAExtendedHistogramContribution/bucket}}.
-1. If |bucket| is a {{PASignalValue}}, let |bucket| be the result of [=filling in the signal value=] given |bucket| and 65535.
-1. Let |value| be |contribution|'s {{PAExtendedHistogramContribution/value}}.
-1. If |value| is a {{PASignalValue}}, let |value| be the result of [=filling in the signal value=] given |value| and 2<sup>128</sup>−1.
+1. Otherwise, [=assert=]: |contribution| is a {{PAExtendedHistogramContribution}}.
+1. Let |bucket| be |contribution|["{{PAExtendedHistogramContribution/bucket}}"].
+1. If |bucket| is a {{PASignalValue}}, set |bucket| to the result of [=filling in the signal value=] given |bucket| and 65535.
+1. Let |value| be |contribution|["{{PAExtendedHistogramContribution/value}}"].
+1. If |value| is a {{PASignalValue}}, set |value| to the result of [=filling in the signal value=] given |value| and 2<sup>128</sup>−1.
 1. Return a new {{PAHistogramContribution}} with the items:
     : {{PAHistogramContribution/bucket}}
     :: |bucket|
     : {{PAHistogramContribution/value}}
     :: |value|
 
-To <dfn>fill in the signal value</dfn> given a {{PASignalValue}} |value| and an integer |maxAllowed|, run the following steps:
-1. [=Assert=] |value|'s {{PASignalValue/baseValue}} is a valid [=signal base value=].
-1. Let |returnValue| be the result of [=determining the numeric value=] of |value|'s {{PASignalValue/baseValue}}.
-1. If |value|'s {{PASignalValue/scale}} is set:
-    1. Let |returnValue| be the result of multiplying |value|'s {{PASignalValue/scale}} with |returnValue|.
-1. Let |returnValue| be the integer result of rounding |returnValue| to the nearest integer. If two integers are equally close, the result should be the integer closer to negative infinity.
-1. If |value|'s {{PASignalValue/offset}} is set:
-    1. Let |returnValue| be the result of adding |returnValue| to |value|'s {{PASignalValue/offset}}.
+To <dfn>fill in the signal value</dfn> given a {{PASignalValue}} |value| and an integer |maxAllowed|, perform the following steps. They return an integer.
+1. [=Assert=] |value|["{{PASignalValue/baseValue}}"] is a valid [=signal base value=].
+1. Let |returnValue| be the result of [=determining the numeric value=] of |value|["{{PASignalValue/baseValue}}"].
+1. If |value|["{{PASignalValue/scale}}"] [=map/exists=], set |returnValue| to the result of multiplying |value|["{{PASignalValue/scale}}"] with |returnValue|.
+1. Set |returnValue| to the integer result of rounding |returnValue| to the nearest integer. If two integers are equally close, the result should be the integer closer to negative infinity.
+1. If |value|["{{PASignalValue/offset}}"] [=map/exists=], set |returnValue| to the result of adding |returnValue| to |value|["{{PASignalValue/offset}}"].
 1. Clamp |returnValue| to the range [0, |maxAllowed|] and return the result.
 
 Issue: Maybe add refs to the rounding logic.
 
-To <dfn>determine the numeric value</dfn> of a [=signal base value=] <var ignore=''>signalBaseValue</var>, run the following steps:
+To <dfn>determine the numeric value</dfn> of a [=signal base value=] <var ignore=''>signalBaseValue</var>, perform the following steps. They return a {{double}}.
 
 Issue: Fill in.
 
@@ -394,10 +377,3 @@ To <dfn>process the contributions cache</dfn> given a {{WorkletGlobalScope}} |sc
 Immediately after the {{WorkletGlobalScope}} object is [=terminate a worklet global scope|terminated=], run the [=PrivateAggregation/report scheduling steps=] with the {{WorkletGlobalScope}}'s [=relevant settings object=]'s [=origin=], the {{WorkletGlobalScope}} [=PrivateAggregation/api identifier=] and the [=contributions cache=].
  -->
 
-
-
-To <dfn algorithm for="PrivateAggregation">validate an extended histogram contribution</dfn> given a {{PAExtendedHistogramContribution}} |contribution|:
-
-Issue: Fill in. Will need to check offsets are valid and in the right range for the type etc. Also that base values are one of a set.
-
-Issue: Need to document limits on offset, etc.
