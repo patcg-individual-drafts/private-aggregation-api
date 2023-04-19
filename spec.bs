@@ -348,7 +348,7 @@ To <dfn>fill in the contribution</dfn> given a |contribution|, perform the follo
     :: |value|
 
 To <dfn>fill in the signal value</dfn> given a {{PASignalValue}} |value| and an integer |maxAllowed|, perform the following steps. They return an integer.
-1. [=Assert=] |value|["{{PASignalValue/baseValue}}"] is a valid [=signal base value=].
+1. [=Assert=]: |value|["{{PASignalValue/baseValue}}"] is a valid [=signal base value=].
 1. Let |returnValue| be the result of [=determining the numeric value=] of |value|["{{PASignalValue/baseValue}}"].
 1. If |value|["{{PASignalValue/scale}}"] [=map/exists=], set |returnValue| to the result of multiplying |value|["{{PASignalValue/scale}}"] with |returnValue|.
 1. Set |returnValue| to the integer result of rounding |returnValue| to the nearest integer. If two integers are equally close, the result should be the integer closer to negative infinity.
