@@ -18,7 +18,6 @@ Assume Explicit For: on
 <pre class="anchors">
 urlPrefix: https://wicg.github.io/turtledove/; type: interface
     text: InterestGroupBiddingScriptRunnerGlobalScope
-    text: InterestGroupScriptRunner
     text: InterestGroupScriptRunnerGlobalScope
     text: InterestGroupScoringScriptRunnerGlobalScope
     text: InterestGroupReportingScriptRunnerGlobalScope
@@ -79,7 +78,7 @@ Worklet interface {#worklet-interface}
 --------------------------------------
 
 <xmp class="idl">
-[Exposed=(InterestGroupScriptRunner,SharedStorageWorklet), SecureContext]
+[Exposed=(InterestGroupScriptRunnerGlobalScope,SharedStorageWorklet), SecureContext]
 interface PrivateAggregation {
   undefined sendHistogramReport(PAHistogramContribution contribution);
 };
@@ -146,7 +145,7 @@ dictionary PAExtendedHistogramContribution {
   required (PASignalValue or long) value;
 };
 
-[Exposed=InterestGroupScriptRunner, SecureContext]
+[Exposed=InterestGroupScriptRunnerGlobalScope, SecureContext]
 partial interface PrivateAggregation {
   undefined reportContributionForEvent(DOMString event, PAExtendedHistogramContribution contribution);
 };
@@ -210,7 +209,7 @@ Issue: Handle operation types, aggregation coordinators, maybe retries/offline, 
 A context type is one of the following:
 <dl dfn-for="context type">
 : "<dfn><code>fledge</code></dfn>"
-:: The global scope's [=global names=] [=list/contains=] {{InterestGroupScriptRunner}}.
+:: The global scope's [=global names=] [=list/contains=] {{InterestGroupScriptRunnerGlobalScope}}.
 : "<dfn><code>shared-storage</code></dfn>"
 :: The global scope's [=global names=] [=list/contains=] {{SharedStorageWorklet}}.
 
