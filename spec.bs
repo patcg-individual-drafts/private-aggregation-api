@@ -54,11 +54,11 @@ Motivation {#motivation}
 Browsers are now working to prevent cross-site user tracking, including by
 partitioning storage and removing third-party cookies. There are a range of API
 proposals to continue supporting legitimate use cases in a way that respects
-user privacy. Many of these APIs, including
-<a href="https://wicg.github.io/shared-storage/">Shared Storage</a> and
-<a href="https://wicg.github.io/turtledove/">FLEDGE</a>, isolate potentially
-identifying cross-site data in special contexts, which ensures that the data
-cannot escape the user agent.
+user privacy. Many of these APIs, including the
+<a href="https://wicg.github.io/shared-storage/">Shared Storage API</a> and the
+<a href="https://wicg.github.io/turtledove/">Protected Audience API</a>, isolate
+potentially identifying cross-site data in special contexts, which ensures that
+the data cannot escape the user agent.
 
 Relative to cross-site data from an individual user, aggregate data about groups
 of users can be less sensitive and yet would be sufficient for a wide range of
@@ -66,8 +66,8 @@ use cases. An aggregation service has been proposed to allow reporting noisy,
 aggregated cross-site data. This service was originally proposed for use by the
 <a href="https://wicg.github.io/attribution-reporting-api/">Attribution
 Reporting API</a>, but allowing more general aggregation would support
-additional use cases. In particular, the FLEDGE and Shared Storage proposals
-expect this functionality to become available.
+additional use cases. In particular, the Protected Audience and Shared Storage
+proposals expect this functionality to become available.
 
 Overview {#overview}
 --------------------
@@ -135,8 +135,8 @@ are:
 Issue: Check that value can actually be zero in the spec pipeline.
 
 
-Exposing to Shared Storage {#shared-storage}
-============================================
+Exposing to the Shared Storage API {#shared-storage}
+====================================================
 
 <xmp class="idl">
 partial interface SharedStorageWorkletGlobalScope {
@@ -159,8 +159,8 @@ the [=PrivateAggregation/report creation and scheduling steps=] with |scope|'s
 "<code>[=context type/shared-storage=]</code>" and |contributionsCache|.
 
 
-Exposing to FLEDGE {#fledge}
-============================
+Exposing to the Protected Audience API {#protected-audience}
+============================================================
 
 <xmp class="idl">
 partial interface InterestGroupScriptRunnerGlobalScope {
@@ -187,18 +187,18 @@ partial interface PrivateAggregation {
 
 Issue: Do we want to align naming with implementation?
 
-Immediately after an auction completes, [=process the FLEDGE contributions
-cache=] given the worklet's [=contributions cache=] and the worklet's global
-scope.
+Immediately after an auction completes, [=process the Protected Audience
+contributions cache=] given the worklet's [=contributions cache=] and the
+worklet's global scope.
 
-Issue: Does FLEDGE have one global scope per auction or multiple? If multiple,
-    will need to change scope for batching.
+Issue: Does Protected Audience API have one global scope per auction or
+    multiple? If multiple, will need to change scope for batching.
 
 Issue: How to handle fenced frame-triggered contributions and other
     event-triggered contributions.
 
 Issue: Need to handle `auctionReportBuyers` and `auctionReportBuyerKeys` here or
-    in the FLEDGE spec.
+    in the Protected Audience API spec.
 
 <div algorithm>
 The <dfn method for="PrivateAggregation">reportContributionForEvent(DOMString
@@ -214,9 +214,9 @@ Issue: Fill in the rest. (Need to put the contribution in some sort of queue and
     process the queue at some point. Need to decide where the queue should live
     given it has to outlive the auction.)
 
-To <dfn>process the FLEDGE contributions cache</dfn> given a [=list=]
-|contributionsCache| and a {{InterestGroupScriptRunnerGlobalScope}} |scope|,
-perform the following steps:
+To <dfn>process the Protected Audience contributions cache</dfn> given a
+[=list=] |contributionsCache| and a {{InterestGroupScriptRunnerGlobalScope}}
+|scope|, perform the following steps:
 1. Let |filledInContributions| be a new [=list/is empty|empty=] [=list=].
 1. [=list/iterate|For each=] |contribution| of |contributionsCache|:
     1. [=list/Append=] the result of [=filling in the contribution=] given
@@ -267,10 +267,13 @@ A context type is one of the following:
 :: The global scope's [=global names=] [=list/contains=]
     {{SharedStorageWorklet}}.
 
+Issue: Need to update "<code>[=context type/fledge=]</code>" to reflect API name
+    change.
+
 </dl>
 
-FLEDGE-specific {#fledge-specific-structures}
----------------------------------------------
+Protected Audience API-specific {#protected-audience-api-specific-structures}
+-----------------------------------------------------------------------------
 
 <h4 dfn-type=dfn>Signal base value</h3>
 A signal base value is one of the following:
@@ -630,8 +633,8 @@ To <dfn>obtain a report's shared info</dfn> given an [=aggregatable report=]
     |sharedInfo|.
 
 
-FLEDGE-specific algorithms {#fledge-specific-algorithms}
---------------------------------------------------------
+Protected Audience API-specific {#protected-audience-api-specific-algorithms}
+-----------------------------------------------------------------------------
 
 To <dfn>fill in the contribution</dfn> given a |contribution|, perform the
 following steps. They return a {{PAHistogramContribution}}.
