@@ -17,8 +17,12 @@ Assume Explicit For: on
 
 <pre class="anchors">
 urlPrefix: https://wicg.github.io/turtledove/; type: interface
-    text: FledgeWorkletGlobalScope
+    text: InterestGroupBiddingScriptRunnerGlobalScope
+    text: InterestGroupScriptRunnerGlobalScope
+    text: InterestGroupScoringScriptRunnerGlobalScope
+    text: InterestGroupReportingScriptRunnerGlobalScope
 urlPrefix: https://wicg.github.io/shared-storage/; type: interface
+    text: SharedStorageWorklet
     text: SharedStorageWorkletGlobalScope
 spec: hr-time; type: dfn; urlPrefix: https://w3c.github.io/hr-time/
     text: moment; url: #dfn-moment
@@ -74,12 +78,11 @@ Worklet interface {#worklet-interface}
 --------------------------------------
 
 <xmp class="idl">
-[Exposed=(FledgeWorkletGlobalScope,SharedStorageWorkletGlobalScope)]
+[Exposed=(InterestGroupScriptRunnerGlobalScope,SharedStorageWorklet), SecureContext]
 interface PrivateAggregation {
   undefined sendHistogramReport(PAHistogramContribution contribution);
 };
 
-[Exposed=(FledgeWorkletGlobalScope,SharedStorageWorkletGlobalScope)]
 dictionary PAHistogramContribution {
   required bigint bucket;
   required long value;
@@ -91,7 +94,7 @@ Each item must be either a {{PAHistogramContribution}} or a
 {{PAExtendedHistogramContribution}}.
 
 Note: The steps to process the [=contributions cache=] are defined separately for
-each {{WorkletGlobalScope}}.
+each [=context type=].
 
 Issue: Do we need to spec enableDebugMode?
 
@@ -127,24 +130,22 @@ Exposing to FLEDGE {#fledge}
 ============================
 
 <xmp class="idl">
-partial interface FledgeWorkletGlobalScope {
+partial interface InterestGroupScriptRunnerGlobalScope {
   readonly attribute PrivateAggregation privateAggregation;
 };
 
-[Exposed=FledgeWorkletGlobalScope]
 dictionary PASignalValue {
   required DOMString baseValue;
   double scale;
   (bigint or long) offset;
 };
 
-[Exposed=FledgeWorkletGlobalScope]
 dictionary PAExtendedHistogramContribution {
   required (PASignalValue or bigint) bucket;
   required (PASignalValue or long) value;
 };
 
-[Exposed=FledgeWorkletGlobalScope]
+[Exposed=InterestGroupScriptRunnerGlobalScope, SecureContext]
 partial interface PrivateAggregation {
   undefined reportContributionForEvent(DOMString event, PAExtendedHistogramContribution contribution);
 };
@@ -170,7 +171,7 @@ Issue: Need to document limits on offset, etc.
 
 Issue: Fill in the rest. (Need to put the contribution in some sort of queue and process the queue at some point. Need to decide where the queue should live given it has to outlive the auction.)
 
-To <dfn>process the FLEDGE contributions cache</dfn> given a [=list=] |contributionsCache| and a {{FledgeWorkletGlobalScope}} |scope|, perform the following steps:
+To <dfn>process the FLEDGE contributions cache</dfn> given a [=list=] |contributionsCache| and a {{InterestGroupScriptRunnerGlobalScope}} |scope|, perform the following steps:
 1. Let |filledInContributions| be a new [=list/is empty|empty=] [=list=].
 1. [=list/iterate|For each=] |contribution| of |contributionsCache|:
     1. [=list/Append=] the result of [=filling in the contribution=] given |contribution| to |filledInContributions|.
@@ -208,9 +209,9 @@ Issue: Handle operation types, aggregation coordinators, maybe retries/offline, 
 A context type is one of the following:
 <dl dfn-for="context type">
 : "<dfn><code>fledge</code></dfn>"
-:: The global scope was a {{FledgeWorkletGlobalScope}}.
+:: The global scope's [=global names=] [=list/contains=] {{InterestGroupScriptRunnerGlobalScope}}.
 : "<dfn><code>shared-storage</code></dfn>"
-:: The global scope was a {{SharedStorageWorkletGlobalScope}}.
+:: The global scope's [=global names=] [=list/contains=] {{SharedStorageWorklet}}.
 
 </dl>
 
@@ -255,7 +256,6 @@ Issue: More
 
 Algorithms {#algorithms}
 ====================
-
 
 <!-- A {{WorkletGlobalScope}} |scope|'s <dfn algorithm for="PrivateAggregation">api identifier</dfn> is the result of:
 1. If |scope|'s [=worklet global scope type=] is {{FledgeWorkletGlobalScope}}, then return "<code>[=context type/fledge=]</code>".
