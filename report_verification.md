@@ -97,7 +97,7 @@ This would be achieved by adding a new optional parameter to the Shared Storage
 `run()` and `selectURL()` APIs, e.g.:
 
 ```js
-sharedStorage.run('someOperation', {'contextId': 'example_string'});
+sharedStorage.run('someOperation', {'privateAggregationConfig': {'contextId': 'example_string'}});
 ```
 
 Note that this design does not support report verification for Shared Storage
