@@ -135,7 +135,7 @@ Immediately after an operation completes, [=process the Shared Storage contribut
 
 Issue: How to handle batching different operation invocations properly. This doesn't work for simultaneous operations. Also disallow usage outside an operation.
 
-To <dfn>process the Shared Storage contributions cache</dfn> given a [=list=] |contributionsCache| and a {{SharedStorageWorkletGlobalScope}} |scope|, perform the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=], "<code>[=context type/shared-storage=]</code>" and |contributionsCache|.
+To <dfn>process the Shared Storage contributions cache</dfn> given a [=list=] |contributionsCache| and a {{SharedStorageWorkletGlobalScope}} |scope|, perform the [=PrivateAggregation/report creation and scheduling steps=] with |scope|'s [=relevant settings object=], "<code>[=context type/shared-storage=]</code>" and |contributionsCache|.
 
 Exposing to FLEDGE {#fledge}
 ============================
@@ -186,7 +186,7 @@ To <dfn>process the FLEDGE contributions cache</dfn> given a [=list=] |contribut
 1. Let |filledInContributions| be a new [=list/is empty|empty=] [=list=].
 1. [=list/iterate|For each=] |contribution| of |contributionsCache|:
     1. [=list/Append=] the result of [=filling in the contribution=] given |contribution| to |filledInContributions|.
-1. Perform the [=PrivateAggregation/report scheduling steps=] with |scope|'s [=relevant settings object=], "<code>[=context type/fledge=]</code>" and |filledInContributions|.
+1. Perform the [=PrivateAggregation/report creation and scheduling steps=] with |scope|'s [=relevant settings object=], "<code>[=context type/fledge=]</code>" and |filledInContributions|.
 
 
 Structures {#structures}
@@ -261,8 +261,6 @@ A user agent holds an <dfn>aggregatable report cache</dfn>, which is a [=list=] 
 [=Implementation-defined=] values {#implementation-defined-values}
 ==================================================================
 
-<dfn>Maximum stored reports</dfn> is a positive integer that controls how many unsent reports can be queued waiting.
-
 <dfn>Maximum report contributions</dfn> is a positive integer that controls how many contributions can be present in a single report.
 
 <dfn>Minimum report delay</dfn> is a non-negative [=duration=] that controls the minimum delay to deliver an [=aggregatable report=]
@@ -281,10 +279,9 @@ Issue: This would ideally be replaced by a more descriptive algorithm in Infra. 
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
 
-To perform the <dfn algorithm for="PrivateAggregation">report scheduling steps</dfn> with an [=environment settings object=] |context|, a [=context type=] |api| and a [=list=] of {{PAHistogramContribution}}s |contributions|:
+To perform the <dfn algorithm for="PrivateAggregation">report creation and scheduling steps</dfn> with an [=environment settings object=] |context|, a [=context type=] |api| and a [=list=] of {{PAHistogramContribution}}s |contributions|:
 1. Let |reportingOrigin| be |context|'s [=environment settings object/origin=].
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
-1. If the user agent's [=aggregatable report cache=] [=set/size=] is larger than [=maximum stored reports=], return.
 1. Let |truncatedContributions| be a new [=list/is empty|empty=] [=list=].
 1. If |contributions| has a [=list/size=] greater than [=maximum report contributions=]:
     1. [=set/For each=] |n| of [=the exclusive range|the range=] 0 to [=maximum report contributions=], exclusive:
@@ -303,9 +300,7 @@ Issue: Do we need to ensure the reports aren't queued after being sent?
 
 Issue: Do we need to address user settings here at all?
 
-Issue: Does the [=maximum stored reports=] part match the implementation?
-
-To <dfn algorithm for="PrivateAggregation">consume budget if permitted</dfn> given a {{long}} |value|, an [=origin=] <var ignore=''>origin</var>, a [=context type=] |api| and a [=moment=] |currentTime|, perform [=implementation-defined=] steps. They return a [=boolean=], which indicates whether there is sufficient 'contribution budget' left to send the requested contribution |value|. This budget should be bound to usage over time, e.g. the contribution sum over the last 24 hours. The algorithm should assume that the contribution will be sent if and only if true is returned.
+To <dfn algorithm for="PrivateAggregation">consume budget if permitted</dfn> given a {{long}} |value|, an [=origin=] <var ignore=''>origin</var>, a [=context type=] |api| and a [=moment=] |currentTime|, perform [=implementation-defined=] steps. They return a [=boolean=], which indicates whether there is sufficient 'contribution budget' left to send the requested contribution |value|. This budget should be bound to usage over time, e.g. the contribution sum over the last 24 hours. The algorithm should assume that the contribution will be sent if and only if true is returned, i.e. it should consume the budget in that case.
 
 To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=origin=] |reportingOrigin|, a [=context type=] |api|, a [=list=] of {{PAHistogramContribution}} |contributions| and a [=moment=] |currentTime|, perform the following steps. They return an [=aggregatable report=].
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
