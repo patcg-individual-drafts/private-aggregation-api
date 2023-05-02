@@ -344,10 +344,11 @@ To <dfn>attempt to queue reports for sending</dfn> given a [=list=] of [=aggrega
     1. Run these steps, but [=abort when=] the [=user agent=] shuts down:
         1. If |report|'s [=aggregatable report/queued=] value is true, return.
         1. Set |report|'s [=aggregatable report/queued=] value to true.
-        1. If |report|'s [=aggregatable report/report time=] is less than the [=wall clock=]'s [=current unsafe time=], set |report|'s [=aggregatable report/report time=] to [=wall clock=]'s [=current unsafe time=] plus an [=implementation-defined=] random non-negative [=duration=].
+        1. Let |currentWallTime| be the [=current wall time=].
+        1. If |report|'s [=aggregatable report/report time=] is before |currentWallTime|, set |report|'s [=aggregatable report/report time=] to |currentWallTime| plus an [=implementation-defined=] random non-negative [=duration=].
 
             Note: On startup, it is possible the user agent will need to send many reports whose report times passed while the browser was closed. Adding random delay prevents temporal joining of reports.
-        1. Wait until the [=wall clock=]'s [=current unsafe time=] is equal to or after |report|'s [=aggregatable report/report time=].
+        1. Wait until the [=current wall time=] is equal to or after |report|'s [=aggregatable report/report time=].
         1. Optionally, wait a further [=implementation-defined=] non-negative [=duration=].
 
             Note: This is intended to allow user agents to optimize device resource usage.
