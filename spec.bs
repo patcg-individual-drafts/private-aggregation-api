@@ -361,7 +361,7 @@ To <dfn>attempt to deliver a report</dfn> given an [=aggregatable report=] |repo
 1. Let |data| be the result of [=serializing an aggregatable report=] given |report|.
 1. If |data| is an error, [=list/remove=] |report| from the [=aggregatable report cache=]. (TODO: do we need to queue this task?)
 1. Let |request| be the result of [=creating a report request=] given |url| and |data|.
-1. [=Queue a task=] to [=fetch=] |request| with [=fetch/processResponse=] being the following steps that take a [=response=] |response|:
+1. [=Queue a task=] to [=fetch=] |request| with [=fetch/processResponse=] being the following steps:
     1. Let |shouldRetry| be an [=implementation-defined=] [=boolean=]. The value should be false if no error occurred.
     1. If |shouldRetry| is true, set |report|'s [=aggregatable report/queued=] value to false.
     1. Otherwise, [=list/remove=] |report| from the [=aggregatable report cache=].
