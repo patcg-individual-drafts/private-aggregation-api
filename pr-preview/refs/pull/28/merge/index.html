@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version 3383f409d, updated Fri Apr 28 15:49:22 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="4ec1dd795718381c9041c5134abac760afc0570d" name="document-revision">
+  <meta content="18ecfcfe49506e0f3392143c8c8b4402fb08cb6d" name="document-revision">
 <style>/* style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -969,10 +969,12 @@ each <a data-link-type="dfn" href="#context-type" id="ref-for-context-type">cont
         <li data-md>
          <p>Set <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-queued" id="ref-for-aggregatable-report-queued③">queued</a> value to true.</p>
         <li data-md>
-         <p>If <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-report-time" id="ref-for-aggregatable-report-report-time①">report time</a> is less than the <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-wall-clock" id="ref-for-dfn-wall-clock">wall clock</a>'s <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#wall-clock-unsafe-current-time" id="ref-for-wall-clock-unsafe-current-time">current unsafe time</a>, set <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-report-time" id="ref-for-aggregatable-report-report-time②">report time</a> to <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-wall-clock" id="ref-for-dfn-wall-clock①">wall clock</a>'s <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#wall-clock-unsafe-current-time" id="ref-for-wall-clock-unsafe-current-time①">current unsafe time</a> plus an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined②">implementation-defined</a> random non-negative <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-duration" id="ref-for-dfn-duration②">duration</a>.</p>
+         <p>Let <var>currentWallTime</var> be the <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-current-wall-time" id="ref-for-dfn-current-wall-time②">current wall time</a>.</p>
+        <li data-md>
+         <p>If <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-report-time" id="ref-for-aggregatable-report-report-time①">report time</a> is before <var>currentWallTime</var>, set <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-report-time" id="ref-for-aggregatable-report-report-time②">report time</a> to <var>currentWallTime</var> plus an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined②">implementation-defined</a> random non-negative <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-duration" id="ref-for-dfn-duration②">duration</a>.</p>
          <p class="note" role="note"><span class="marker">Note:</span> On startup, it is possible the user agent will need to send many reports whose report times passed while the browser was closed. Adding random delay prevents temporal joining of reports.</p>
         <li data-md>
-         <p>Wait until the <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-wall-clock" id="ref-for-dfn-wall-clock②">wall clock</a>'s <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#wall-clock-unsafe-current-time" id="ref-for-wall-clock-unsafe-current-time②">current unsafe time</a> is equal to or after <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-report-time" id="ref-for-aggregatable-report-report-time③">report time</a>.</p>
+         <p>Wait until the <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-current-wall-time" id="ref-for-dfn-current-wall-time③">current wall time</a> is equal to or after <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-report-time" id="ref-for-aggregatable-report-report-time③">report time</a>.</p>
         <li data-md>
          <p>Optionally, wait a further <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined③">implementation-defined</a> non-negative <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-duration" id="ref-for-dfn-duration③">duration</a>.</p>
          <p class="note" role="note"><span class="marker">Note:</span> This is intended to allow user agents to optimize device resource usage.</p>
@@ -1382,13 +1384,11 @@ each <a data-link-type="dfn" href="#context-type" id="ref-for-context-type">cont
    <li>
     <a data-link-type="biblio">[HR-TIME-3]</a> defines the following terms:
     <ul>
-     <li><span class="dfn-paneled" id="9caa43f7">current unsafe time</span>
      <li><span class="dfn-paneled" id="a09bfce2">current wall time</span>
      <li><span class="dfn-paneled" id="4b2c8c72">duration</span>
      <li><span class="dfn-paneled" id="c9a0df83">duration from</span>
      <li><span class="dfn-paneled" id="1e2edd5b">moment</span>
      <li><span class="dfn-paneled" id="be5dbc8c">unix epoch</span>
-     <li><span class="dfn-paneled" id="05de5ae3">wall clock</span>
     </ul>
    <li>
     <a data-link-type="biblio">[HTML]</a> defines the following terms:
@@ -1728,13 +1728,11 @@ window.dfnpanelData['6d1db60d'] = {"dfnID": "6d1db60d", "url": "https://fetch.sp
 window.dfnpanelData['6f7f62df'] = {"dfnID": "6f7f62df", "url": "https://fetch.spec.whatwg.org/#unsafe-request-flag", "dfnText": "unsafe-request flag", "refSections": [{"refs": [{"id": "ref-for-unsafe-request-flag"}], "title": "8.2. Sending reports"}], "external": true};
 window.dfnpanelData['dc1cd39b'] = {"dfnID": "dc1cd39b", "url": "https://fetch.spec.whatwg.org/#concept-request-url", "dfnText": "url", "refSections": [{"refs": [{"id": "ref-for-concept-request-url"}], "title": "8.2. Sending reports"}], "external": true};
 window.dfnpanelData['1ab127d6'] = {"dfnID": "1ab127d6", "url": "https://fetch.spec.whatwg.org/#concept-request-window", "dfnText": "window", "refSections": [{"refs": [{"id": "ref-for-concept-request-window"}], "title": "8.2. Sending reports"}], "external": true};
-window.dfnpanelData['9caa43f7'] = {"dfnID": "9caa43f7", "url": "https://w3c.github.io/hr-time/#wall-clock-unsafe-current-time", "dfnText": "current unsafe time", "refSections": [{"refs": [{"id": "ref-for-wall-clock-unsafe-current-time"}, {"id": "ref-for-wall-clock-unsafe-current-time\u2460"}, {"id": "ref-for-wall-clock-unsafe-current-time\u2461"}], "title": "8.2. Sending reports"}], "external": true};
-window.dfnpanelData['a09bfce2'] = {"dfnID": "a09bfce2", "url": "https://w3c.github.io/hr-time/#dfn-current-wall-time", "dfnText": "current wall time", "refSections": [{"refs": [{"id": "ref-for-dfn-current-wall-time"}, {"id": "ref-for-dfn-current-wall-time\u2460"}], "title": "8.1. Scheduling reports"}], "external": true};
+window.dfnpanelData['a09bfce2'] = {"dfnID": "a09bfce2", "url": "https://w3c.github.io/hr-time/#dfn-current-wall-time", "dfnText": "current wall time", "refSections": [{"refs": [{"id": "ref-for-dfn-current-wall-time"}, {"id": "ref-for-dfn-current-wall-time\u2460"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-dfn-current-wall-time\u2461"}, {"id": "ref-for-dfn-current-wall-time\u2462"}], "title": "8.2. Sending reports"}], "external": true};
 window.dfnpanelData['4b2c8c72'] = {"dfnID": "4b2c8c72", "url": "https://w3c.github.io/hr-time/#dfn-duration", "dfnText": "duration", "refSections": [{"refs": [{"id": "ref-for-dfn-duration"}, {"id": "ref-for-dfn-duration\u2460"}], "title": "7. Implementation-defined values"}, {"refs": [{"id": "ref-for-dfn-duration\u2461"}, {"id": "ref-for-dfn-duration\u2462"}], "title": "8.2. Sending reports"}], "external": true};
 window.dfnpanelData['c9a0df83'] = {"dfnID": "c9a0df83", "url": "https://w3c.github.io/hr-time/#dfn-duration-from", "dfnText": "duration from", "refSections": [{"refs": [{"id": "ref-for-dfn-duration-from"}], "title": "8.3. Serializing reports"}], "external": true};
 window.dfnpanelData['1e2edd5b'] = {"dfnID": "1e2edd5b", "url": "https://w3c.github.io/hr-time/#dfn-moment", "dfnText": "moment", "refSections": [{"refs": [{"id": "ref-for-dfn-moment"}, {"id": "ref-for-dfn-moment\u2460"}], "title": "5.1.1. Aggregatable report"}, {"refs": [{"id": "ref-for-dfn-moment\u2461"}, {"id": "ref-for-dfn-moment\u2462"}, {"id": "ref-for-dfn-moment\u2463"}, {"id": "ref-for-dfn-moment\u2464"}], "title": "8.1. Scheduling reports"}], "external": true};
 window.dfnpanelData['be5dbc8c'] = {"dfnID": "be5dbc8c", "url": "https://w3c.github.io/hr-time/#dfn-unix-epoch", "dfnText": "unix epoch", "refSections": [{"refs": [{"id": "ref-for-dfn-unix-epoch"}], "title": "8.3. Serializing reports"}], "external": true};
-window.dfnpanelData['05de5ae3'] = {"dfnID": "05de5ae3", "url": "https://w3c.github.io/hr-time/#dfn-wall-clock", "dfnText": "wall clock", "refSections": [{"refs": [{"id": "ref-for-dfn-wall-clock"}, {"id": "ref-for-dfn-wall-clock\u2460"}, {"id": "ref-for-dfn-wall-clock\u2461"}], "title": "8.2. Sending reports"}], "external": true};
 window.dfnpanelData['3e12e042'] = {"dfnID": "3e12e042", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#environment-settings-object", "dfnText": "environment settings object", "refSections": [{"refs": [{"id": "ref-for-environment-settings-object"}], "title": "8.1. Scheduling reports"}], "external": true};
 window.dfnpanelData['a72449dd'] = {"dfnID": "a72449dd", "url": "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel", "dfnText": "in parallel", "refSections": [{"refs": [{"id": "ref-for-in-parallel"}], "title": "8.2. Sending reports"}], "external": true};
 window.dfnpanelData['086e3aff'] = {"dfnID": "086e3aff", "url": "https://html.spec.whatwg.org/multipage/browsers.html#concept-origin", "dfnText": "origin", "refSections": [{"refs": [{"id": "ref-for-concept-origin"}], "title": "5.1.1. Aggregatable report"}, {"refs": [{"id": "ref-for-concept-origin\u2460"}, {"id": "ref-for-concept-origin\u2461"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-concept-origin\u2462"}], "title": "8.2. Sending reports"}], "external": true};
