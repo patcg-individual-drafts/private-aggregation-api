@@ -290,7 +290,7 @@ To perform the <dfn algorithm for="PrivateAggregation">report creation and sched
 1. Let |contributionSum| be 0.
 1. [=set/iterate|For each=] |contribution| of |truncatedContributions|:
     1. [=Assert=]: |contribution|["|value|"] is non-negative.
-    1. Add |value| to |contributionSum|.
+    1. Add |contribution|["|value|"] to |contributionSum|.
 1. Let |sufficientBudget| be the result of [=PrivateAggregation/consuming budget if permitted=] given |contributionSum|, |reportingOrigin|, |api| and |context|'s [=current wall time=].
 1. If |sufficientBudget| is false, return.
 1. Let |report| be the result of [=PrivateAggregation/obtaining an aggregatable report=] given |reportingOrigin|, |api|, |truncatedContributions| and |context|'s [=current wall time=].
@@ -302,7 +302,7 @@ Issue: Do we need to address user settings here at all?
 
 To <dfn algorithm for="PrivateAggregation">consume budget if permitted</dfn> given a {{long}} |value|, an [=origin=] <var ignore=''>origin</var>, a [=context type=] |api| and a [=moment=] |currentTime|, perform [=implementation-defined=] steps. They return a [=boolean=], which indicates whether there is sufficient 'contribution budget' left to send the requested contribution |value|. This budget should be bound to usage over time, e.g. the contribution sum over the last 24 hours. The algorithm should assume that the contribution will be sent if and only if true is returned, i.e. it should consume the budget in that case.
 
-To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=origin=] |reportingOrigin|, a [=context type=] |api|, a [=list=] of {{PAHistogramContribution}} |contributions| and a [=moment=] |currentTime|, perform the following steps. They return an [=aggregatable report=].
+To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=origin=] |reportingOrigin|, a [=context type=] |api|, a [=list=] of {{PAHistogramContribution}}s |contributions| and a [=moment=] |currentTime|, perform the following steps. They return an [=aggregatable report=].
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |reportTime| be the result of running [=PrivateAggregation/obtain a report delivery time=] given |currentTime|.
 1. Let |report| be a new [=aggregatable report=] with the items:
@@ -320,6 +320,7 @@ To <dfn for="PrivateAggregation">obtain an aggregatable report</dfn> given an [=
     :: The result of [=generating a random UUID=].
     : [=aggregatable report/queued=]
     :: false
+1. Return |report|.
 
 Issue: Go through and be consistent about namespacing of algorithms.
 
@@ -346,7 +347,7 @@ To <dfn>attempt to queue reports for sending</dfn> given a [=list=] of [=aggrega
         1. If |report|'s [=aggregatable report/report time=] is less than the [=wall clock=]'s [=current unsafe time=], set |report|'s [=aggregatable report/report time=] to [=wall clock=]'s [=current unsafe time=] plus an [=implementation-defined=] random non-negative [=duration=].
 
             Note: On startup, it is possible the user agent will need to send many reports whose report times passed while the browser was closed. Adding random delay prevents temporal joining of reports.
-        1. Wait until the [=wall clock=]'s [=current unsafe time=] is equal to |report|'s [=aggregatable report/report time=].
+        1. Wait until the [=wall clock=]'s [=current unsafe time=] is equal to or after |report|'s [=aggregatable report/report time=].
         1. Optionally, wait a further [=implementation-defined=] non-negative [=duration=].
 
             Note: This is intended to allow user agents to optimize device resource usage.
@@ -361,8 +362,7 @@ To <dfn>attempt to deliver a report</dfn> given an [=aggregatable report=] |repo
 1. If |data| is an error, [=list/remove=] |report| from the [=aggregatable report cache=]. (TODO: do we need to queue this task?)
 1. Let |request| be the result of [=creating a report request=] given |url| and |data|.
 1. [=Queue a task=] to [=fetch=] |request| with [=fetch/processResponse=] being the following steps that take a [=response=] |response|:
-    1. Let |shouldRetry| be false.
-    1. If |response|'s [=response/status=] is not 200, optionally set |shouldRetry| to true.
+    1. Let |shouldRetry| be an [=implementation-defined=] [=boolean=]. The value should be false if no error occurred.
     1. If |shouldRetry| is true, set |report|'s [=aggregatable report/queued=] value to false.
     1. Otherwise, [=list/remove=] |report| from the [=aggregatable report cache=].
 
