@@ -25,7 +25,6 @@ urlPrefix: https://wicg.github.io/shared-storage/; type: interface
     text: SharedStorageWorklet
     text: SharedStorageWorkletGlobalScope
 spec: hr-time; type: dfn; urlPrefix: https://w3c.github.io/hr-time/
-    text: current unsafe time; url: #wall-clock-unsafe-current-time
     text: current wall time; url: #dfn-current-wall-time
     text: duration; url: #dfn-duration
     text: duration from; url: #dfn-duration-from
@@ -135,7 +134,7 @@ Immediately after an operation completes, [=process the Shared Storage contribut
 
 Issue: How to handle batching different operation invocations properly. This doesn't work for simultaneous operations. Also disallow usage outside an operation.
 
-To <dfn>process the Shared Storage contributions cache</dfn> given a [=list=] |contributionsCache| and a {{SharedStorageWorkletGlobalScope}} |scope|, perform the [=PrivateAggregation/report creation and scheduling steps=] with |scope|'s [=relevant settings object=], "<code>[=context type/shared-storage=]</code>" and |contributionsCache|.
+To <dfn>process the Shared Storage contributions cache</dfn> given a [=list=] |contributionsCache| and a {{SharedStorageWorkletGlobalScope}} |scope|, perform the [=PrivateAggregation/report creation and scheduling steps=] with |scope|'s [=relevant settings object=]'s [=environment settings object/origin=], "<code>[=context type/shared-storage=]</code>" and |contributionsCache|.
 
 Exposing to FLEDGE {#fledge}
 ============================
@@ -186,7 +185,7 @@ To <dfn>process the FLEDGE contributions cache</dfn> given a [=list=] |contribut
 1. Let |filledInContributions| be a new [=list/is empty|empty=] [=list=].
 1. [=list/iterate|For each=] |contribution| of |contributionsCache|:
     1. [=list/Append=] the result of [=filling in the contribution=] given |contribution| to |filledInContributions|.
-1. Perform the [=PrivateAggregation/report creation and scheduling steps=] with |scope|'s [=relevant settings object=], "<code>[=context type/fledge=]</code>" and |filledInContributions|.
+1. Perform the [=PrivateAggregation/report creation and scheduling steps=] with |scope|'s [=relevant settings object=]'s [=environment settings object/origin=], "<code>[=context type/fledge=]</code>" and |filledInContributions|.
 
 
 Structures {#structures}
@@ -279,8 +278,7 @@ Issue: This would ideally be replaced by a more descriptive algorithm in Infra. 
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
 
-To perform the <dfn algorithm for="PrivateAggregation">report creation and scheduling steps</dfn> with an [=environment settings object=] |context|, a [=context type=] |api| and a [=list=] of {{PAHistogramContribution}}s |contributions|:
-1. Let |reportingOrigin| be |context|'s [=environment settings object/origin=].
+To perform the <dfn algorithm for="PrivateAggregation">report creation and scheduling steps</dfn> with an [=origin=] |reportingOrigin|, a [=context type=] |api| and a [=list=] of {{PAHistogramContribution}}s |contributions|:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |truncatedContributions| be a new [=list/is empty|empty=] [=list=].
 1. If |contributions| has a [=list/size=] greater than [=maximum report contributions=]:
@@ -291,9 +289,9 @@ To perform the <dfn algorithm for="PrivateAggregation">report creation and sched
 1. [=set/iterate|For each=] |contribution| of |truncatedContributions|:
     1. [=Assert=]: |contribution|["|value|"] is non-negative.
     1. Add |contribution|["|value|"] to |contributionSum|.
-1. Let |sufficientBudget| be the result of [=PrivateAggregation/consuming budget if permitted=] given |contributionSum|, |reportingOrigin|, |api| and |context|'s [=current wall time=].
+1. Let |sufficientBudget| be the result of [=PrivateAggregation/consuming budget if permitted=] given |contributionSum|, |reportingOrigin|, |api| and the [=current wall time=].
 1. If |sufficientBudget| is false, return.
-1. Let |report| be the result of [=PrivateAggregation/obtaining an aggregatable report=] given |reportingOrigin|, |api|, |truncatedContributions| and |context|'s [=current wall time=].
+1. Let |report| be the result of [=PrivateAggregation/obtaining an aggregatable report=] given |reportingOrigin|, |api|, |truncatedContributions| and the [=current wall time=].
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
 Issue: Do we need to ensure the reports aren't queued after being sent?
