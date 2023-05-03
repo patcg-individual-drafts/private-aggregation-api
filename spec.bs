@@ -289,9 +289,10 @@ To perform the <dfn algorithm for="PrivateAggregation">report creation and sched
 1. [=set/iterate|For each=] |contribution| of |truncatedContributions|:
     1. [=Assert=]: |contribution|["|value|"] is non-negative.
     1. Add |contribution|["|value|"] to |contributionSum|.
-1. Let |sufficientBudget| be the result of [=PrivateAggregation/consuming budget if permitted=] given |contributionSum|, |reportingOrigin|, |api| and the [=current wall time=].
+1. Let |currentWallTime| be the [=current wall time=].
+1. Let |sufficientBudget| be the result of [=PrivateAggregation/consuming budget if permitted=] given |contributionSum|, |reportingOrigin|, |api| and |currentWallTime|.
 1. If |sufficientBudget| is false, return.
-1. Let |report| be the result of [=PrivateAggregation/obtaining an aggregatable report=] given |reportingOrigin|, |api|, |truncatedContributions| and the [=current wall time=].
+1. Let |report| be the result of [=PrivateAggregation/obtaining an aggregatable report=] given |reportingOrigin|, |api|, |truncatedContributions| and |currentWallTime|.
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
 Issue: Do we need to ensure the reports aren't queued after being sent?
