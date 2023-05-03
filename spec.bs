@@ -267,10 +267,10 @@ A context type is one of the following:
 :: The global scope's [=global names=] [=list/contains=]
     {{SharedStorageWorklet}}.
 
+</dl>
+
 Issue: Need to update "<code>[=context type/fledge=]</code>" to reflect API name
     change.
-
-</dl>
 
 Protected Audience API-specific {#protected-audience-api-specific-structures}
 -----------------------------------------------------------------------------
