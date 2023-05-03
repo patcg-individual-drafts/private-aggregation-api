@@ -114,7 +114,7 @@ Each item must be either a {{PAHistogramContribution}} or a
 {{PAExtendedHistogramContribution}}.
 
 Note: The steps to process the [=contributions cache=] are defined separately
-for each [=context type=].
+    for each [=context type=].
 
 Issue: Do we need to spec enableDebugMode?
 
