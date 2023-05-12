@@ -361,6 +361,8 @@ we should truncate them to the limit.
 If necessary, we could instead split the contributions back into multiple
 reports, each respecting the limit.
 
+Strawman limit: 20 contributions per report.
+
 #### Padding
 
 The size of the encrypted payload may reveal information about the number of
