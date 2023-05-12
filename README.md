@@ -350,8 +350,13 @@ operation should be batched together.
 
 For calls within a Protected Audience worklet, calls using the same reporting
 origin within the same auction should be batched together. This should happen
-even between different interest groups or Protected Audience function calls. One
-consideration in the short term is that these calls may have different
+even between different interest groups or Protected Audience function calls.
+However, reports triggered via `window.fence.reportEvent()` (see
+[here](https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md#reporting-bidding-data-associated-with-an-event-in-a-frame)
+for more detail), should only be batched per-event. This avoids excessive delay
+if this event is triggered substantially later.
+
+One consideration in the short term is that these calls may have different
 associated [debug modes or keys](#temporary-debugging-mechanism). In this case,
 only calls sharing those details should be batched together.
 
