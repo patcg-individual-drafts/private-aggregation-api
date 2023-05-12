@@ -389,13 +389,6 @@ examples of metadata that could be included, along with some potential risks:
   - A version string used to allow future incompatible changes to the API. This
     should usually correspond to the browser version and should not change
     often.
-- Privacy budget key
-  - Used by the aggregation service to limit the number of queries per report;
-    does not provide any additional leak as it is a hash of other data available
-    in the clear. See [attribution report
-    format](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#aggregatable-reports)
-    and [contribution bounding and
-    budgeting](#contribution-bounding-and-budgeting) for more detail.
 - Encrypted payload sizes
   - If we do not carefully add padding or enforce that all reports are of the
     same natural size, this may expose some information about the contents of
@@ -448,13 +441,15 @@ origin, resetting every week. Exceeding these limits will cause future
 contributions to silently drop.
 
 Second, the server-side processing will limit the number of queries that can be
-performed on reports containing the same 'privacy budget key' and scheduled
-to be sent within the same time period to a small number (e.g. a single query).
+performed on reports containing the same 'shared ID' to a small number (e.g. a
+single query). See
+[here](https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATION_SERVICE_TEE.md#disjoint-batches)
+for more detail.
 This also limits the number of queries that can contain the same report. The
-privacy budget key is a string (e.g. a hash) included by the user agent within
-each report representing the partition (but excluding the time period). Note
-that this string is readable by the reporting endpoint, so the details may need
-to be tweaked depending on the chosen partition.
+shared ID is a hash representing the partition. It is computed by the aggregation
+service using data available in each aggregatable report. Note that the hash's
+input data will need to differ from the Attribution Reporting API (e.g. to
+exclude fields like the destination site that don't exist in this API).
 
 With the above restrictions, the processing servers only need to sample the
 noise for each query from a fixed distribution. In principle, this fixed noise
