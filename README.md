@@ -10,7 +10,7 @@ Author: Alex Turner (alexmt@chromium.org)
 
 - [Introduction](#introduction)
 - [Examples](#examples)
-  - [TURTLEDOVE/FLEDGE reporting](#turtledovefledge-reporting)
+  - [Protected Audience reporting](#protected-audience-reporting)
   - [Measuring user demographics with cross-site information](#measuring-user-demographics-with-cross-site-information)
 - [Goals](#goals)
   - [Non-goals](#non-goals)
@@ -47,8 +47,8 @@ Browsers are now working to prevent cross-site user tracking, including by
 cookies](https://blog.chromium.org/2020/01/building-more-private-web-path-towards.html).
 There are a range of API proposals to continue supporting legitimate use cases
 in a way that respects user privacy. Many of these proposals, including [Shared
-Storage](https://github.com/pythagoraskitty/shared-storage) and
-[TURTLEDOVE](https://github.com/WICG/turtledove), plan to isolate potentially
+Storage](https://github.com/WICG/shared-storage) and [Protected
+Audience](https://github.com/WICG/turtledove), plan to isolate potentially
 identifying cross-site data in special contexts, which ensures that the data
 cannot escape the user agent.
 
@@ -60,8 +60,8 @@ has been proposed to allow reporting noisy, aggregated cross-site data. This
 service was originally proposed for use by the [Attribution Reporting
 API](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md),
 but allowing more general aggregation would support additional use cases. In
-particular, the [FLEDGE](https://github.com/WICG/turtledove/blob/main/FLEDGE.md)
-and [Shared storage](https://github.com/pythagoraskitty/shared-storage)
+particular, the [Protected Audience](https://github.com/WICG/turtledove)
+and [Shared Storage](https://github.com/WICG/shared-storage)
 proposals expect this functionality to become available.
 
 So, to complement the Attribution Reporting API, we propose a general-purpose
@@ -86,10 +86,11 @@ the reporting origin.
 
 ## Examples
 
-### TURTLEDOVE/FLEDGE reporting
+### Protected Audience reporting
 
-[FLEDGE](https://github.com/WICG/turtledove/blob/main/FLEDGE.md#5-event-level-reporting-for-now),
-a prototype API part of the "TURTLEDOVE" effort, plans to run on-device ad
+The [Protected
+Audience](https://github.com/WICG/turtledove/blob/main/FLEDGE.md#5-event-level-reporting-for-now),
+API plans to run on-device ad
 auctions using cross-site data as an input. This Private Aggregation API will
 allow measurement of the auction results from within the isolated execution
 environments.
@@ -246,13 +247,14 @@ The report, including the payload, will mirror the [structure proposed for the A
 API](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#aggregatable-reports).
 However, a few details will change. For example, fields with no equivalent
 on this API (e.g. `attribution_destination` and `source_registration_time`)
-won't be present. Additionally, the `api` field will contain either `"fledge"`
-or `"shared-storage"` to reflect which API's context requested the report. 
+won't be present. Additionally, the `api` field will contain either
+`"protected-audience"`
+or `"shared-storage"` to reflect which API's context requested the report.
 
 The following is an example report showing the JSON format
 ```jsonc
 {
-  "shared_info": "{\"api\":\"fledge\",\"report_id\":\"[UUID]\",\"reporting_origin\":\"https://reporter.example\",\"scheduled_report_time\":\"[timestamp in seconds]\",\"version\":\"[api version]\"}",
+  "shared_info": "{\"api\":\"protected-audience\",\"report_id\":\"[UUID]\",\"reporting_origin\":\"https://reporter.example\",\"scheduled_report_time\":\"[timestamp in seconds]\",\"version\":\"[api version]\"}",
 
   "aggregation_service_payloads": [
     {
@@ -271,9 +273,9 @@ The following is an example report showing the JSON format
 
 As described earlier, these reports will be sent to the reporting origin after a
 delay. The URL path used for sending the reports will be
-`/.well-known/private-aggregation/report-fledge` and
+`/.well-known/private-aggregation/report-protected-audience` and
 `/.well-known/private-aggregation/report-shared-storage` for reports triggered
-within a FLEDGE or Shared Storage context, respectively.
+within a Protected Audience or Shared Storage context, respectively.
 
 ### Temporary debugging mechanism
 
@@ -298,8 +300,8 @@ will be disabled if third-party cookies are disabled/deprecated.
 #### Enabling
 
 The following javascript call will then enable debug mode for all future reports
-requested in that context (e.g. shared storage operation or FLEDGE function
-call):
+requested in that context (e.g. Shared Storage operation or Protected Audience
+function call):
 ```
 privateAggregation.enableDebugMode();
 ```
@@ -322,8 +324,8 @@ calls will be ignored.
 When debug mode is enabled, an additional, duplicate debug report will be sent
 immediately (i.e. without the random delay) to a separate debug endpoint. This
 endpoint will use a path like
-`/.well-known/debug/private-aggregation/report-fledge` (and the equivalent for
-Shared Storage).
+`/.well-known/debug/private-aggregation/report-protected-audience` (and the
+equivalent for Shared Storage).
 
 The debug reports should be almost identical to the normal reports, including
 the additional debug fields. However, the payload ciphertext will differ due to
@@ -336,7 +338,8 @@ key.
 In the case of multiple calls to `sendHistogramReport()`, we can reduce report
 volume by sending a single report with multiple contributions instead of
 multiple reports. For this to be possible, the different calls must involve the
-same reporting origin and the same API (i.e. FLEDGE or Shared Storage).
+same reporting origin and the same API (i.e. Protected Audience or Shared
+Storage).
 Additionally, the calls must be made at a similar time as the reporting time
 will necessarily be shared.
 
@@ -345,12 +348,12 @@ will necessarily be shared.
 For calls within a Shared Storage worklet, calls within the same Shared Storage
 operation should be batched together.
 
-For calls within a FLEDGE worklet, calls using the same reporting origin within
-the same auction should be batched together. This should happen even between
-different interest groups or FLEDGE function calls. One consideration in the
-short term is that these calls may have different associated [debug modes or
-keys](#temporary-debugging-mechanism). In this case, only calls sharing those
-details should be batched together.
+For calls within a Protected Audience worklet, calls using the same reporting
+origin within the same auction should be batched together. This should happen
+even between different interest groups or Protected Audience function calls. One
+consideration in the short term is that these calls may have different
+associated [debug modes or keys](#temporary-debugging-mechanism). In this case,
+only calls sharing those details should be batched together.
 
 #### Contributions limit
 
@@ -387,7 +390,7 @@ examples of metadata that could be included, along with some potential risks:
     subdomains, e.g. to separate use cases.
 - Which API triggered the report
   - The `api` field and the endpoint path indicates which API triggered the
-    report (e.g. FLEDGE or Shared Storage).
+    report (e.g. Protected Audience or Shared Storage).
 - The API version
   - A version string used to allow future incompatible changes to the API. This
     should usually correspond to the browser version and should not change
@@ -537,9 +540,9 @@ reporting origin, no matter which top-level sites are involved. For the earlier
 within `reportResult()` and the interest group owner within
 `reportWin()`/`reportLoss()`.
 
-We initially plan to have two separate budgets: one for calls within shared
-storage worklets and one for FLEDGE worklets. However, see [shared contribution
-budget](#shared-contribution-budget) below.
+We initially plan to have two separate budgets: one for calls within Shared
+Storage worklets and one for Protected Audience worklets. However, see [shared
+contribution budget](#shared-contribution-budget) below.
 
 ## Future Iterations
 
@@ -557,7 +560,8 @@ Framework](https://datatracker.ietf.org/doc/draft-gpew-priv-ppm/).
 
 ### Shared contribution budget
 
-Separating contribution budgets for shared storage worklets and FLEDGE worklets
+Separating contribution budgets for Shared Storage worklets and Protected
+Audience worklets
 provides additional flexibility; for example, some partition choices may not be
 compatible (e.g. a per-interest group budget). However, we could consider
 merging the two budgets in the future.
