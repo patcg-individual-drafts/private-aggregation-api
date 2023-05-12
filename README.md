@@ -109,6 +109,7 @@ function reportResult(auctionConfig, browserSignals) {
   // The user agent sends the report to the reporting endpoint of the script's
   // origin (that is, the caller of `runAdAuction()`) after a delay.
   privateAggregation.sendHistogramReport({
+    // Note: the bucket must be a BigInt and the value an integer Number.
     bucket: convertBuyerToBucketId(browserSignals.interestGroupOwner),
     value: convertBidToReportingValue(browserSignals.bid)
   });
@@ -153,7 +154,7 @@ storage operation is triggered once for each user:
 
 ```javascript
 await sharedStorage.worklet.addModule("measure-demo.js");
-await sharedStorage.runOperation("send-demo-report");
+await sharedStorage.run("send-demo-report");
 ```
 
 Shared storage worklet script (i.e. `measure-demo.js`):
@@ -181,7 +182,7 @@ class SendDemoReportOperation {
     // Could add more sendHistogramReport() calls to measure other demographics.
   }
 }
-registerOperation("send-demo-report", SendDemoReportOperation);
+register("send-demo-report", SendDemoReportOperation);
 ```
 
 ## Goals
@@ -241,12 +242,12 @@ distinct, respectively.
 
 ## Reports
 
-The report will mirror the [structure proposed for the Attribution Reporting
+The report, including the payload, will mirror the [structure proposed for the Attribution Reporting
 API](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#aggregatable-reports).
 However, a few details will change. For example, fields with no equivalent
 on this API (e.g. `attribution_destination` and `source_registration_time`)
 won't be present. Additionally, the `api` field will contain either `"fledge"`
-or `"shared-storage"` to reflect which API's context requested the report.
+or `"shared-storage"` to reflect which API's context requested the report. 
 
 The following is an example report showing the JSON format
 ```jsonc
