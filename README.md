@@ -89,15 +89,15 @@ the reporting origin.
 ### Protected Audience reporting
 
 The [Protected
-Audience](https://github.com/WICG/turtledove/blob/main/FLEDGE.md#5-event-level-reporting-for-now),
+Audience](https://github.com/WICG/turtledove/blob/main/FLEDGE.md#5-event-level-reporting-for-now)
 API plans to run on-device ad
-auctions using cross-site data as an input. This Private Aggregation API will
+auctions using cross-site data as an input. The Private Aggregation API will
 allow measurement of the auction results from within the isolated execution
 environments.
 
 For example, a key measurement use case is to report the price of the auctions'
 winning bids. This tells the seller how much they should be paid and who should
-pay them. To support this, each seller's JavaScript would define a
+pay them. To support this, each seller's JavaScript could define a
 `reportResult()` function. For example:
 
 ```javascript
