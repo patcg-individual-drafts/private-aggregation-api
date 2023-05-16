@@ -440,10 +440,15 @@ First, each user agent will limit the contribution that it could make to the
 output of a query. In the case of a histogram operation, the user agent could
 bound the L<sub>1</sub> norm of the _values_, i.e. the sum of all the
 contributions across all buckets. The user agent could consider other bounds,
-e.g. the L<sub>2</sub> norm. It remains an open question what the appropriate
+e.g. the L<sub>2</sub> norm. We initially plan to use an L<sub>1</sub> bound of
+2<sup>16</sup> = 65 536; this aligns with the [Attribution Reporting API with
+Aggregatable Reports
+explainer](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#privacy-budgeting).
+
+The user agent would also need to determine what the appropriate
 'partition' is for this budgeting, see [partition choice](#partition-choice)
 below. For example, there could be a separate L<sub>1</sub> 'budget' for each
-origin, resetting every week. Exceeding these limits will cause future
+origin, resetting periodically. Exceeding these limits will cause future
 contributions to silently drop.
 
 Second, the server-side processing will limit the number of queries that can be
@@ -484,8 +489,7 @@ scale. The examples below explore this in more detail.
 #### Examples
 
 These examples use the L<sub>1</sub> bound of 2<sup>16</sup> = 65 536 as
-proposed by the [Attribution Reporting API with Aggregatable Reports
-explainer](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#privacy-budgeting).
+proposed above.
 
 Let's consider a basic measurement case: a binary histogram of counts. For
 example, using bucket 0 to indicate a user is a member of some group and bucket
@@ -532,9 +536,14 @@ from dedicated adversaries, but is essential for utility. Other options for
 recovering from an exhausted budget may be possible but need further
 exploration, e.g. allowing a site to clear its data to reset its budget.
 
-We initially plan to enforce a per-origin budget that resets daily; that is, we
-will bound the contributions that any origin can make to a histogram each day.
-This origin will match the origin of the execution environment, i.e. the
+We plan to enforce a per-[site](https://web.dev/same-site-same-origin/#site)
+budget that resets every 10 minutes; that is, we will bound the contributions
+that any site can make to a histogram over any 10 minute window. As a backstop
+to limit worst-case leakage, we plan a separate, looser per-site bound that
+resets daily, limiting the daily L<sub>1</sub> norm to 2<sup>20</sup>
+= 1 048 576.
+
+This site will match the site of the execution environment, i.e. the site of the
 reporting origin, no matter which top-level sites are involved. For the earlier
 [example](#examples), this would correspond to the `runAdAuction()` caller
 within `reportResult()` and the interest group owner within
