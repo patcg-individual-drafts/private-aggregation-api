@@ -74,10 +74,10 @@ processed by the aggregation service. During processing, this service will add
 noise and impose limits on how many queries can be performed.
 
 This API introduces a `contributeToHistogram()` function; see
-[examples](#examples) below. This call saves a histogram contribution for
-putting into a report. Later, the browser constructs an aggregatable report,
-which contains an encrypted payload with the specified contribution(s)for later
-computation via the aggregation service.
+[examples](#examples) below. This call registers a histogram contribution for
+reporting. Later, the browser constructs an aggregatable report, which contains
+an encrypted payload with the specified contribution(s) for later computation
+via the aggregation service.
 The API queues the constructed report to be sent to the reporting endpoint of
 the script's origin (in other words, the reporting origin) after a delay. The
 report format and endpoint paths are detailed [below](#reports).
