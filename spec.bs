@@ -100,7 +100,7 @@ Worklet interface {#worklet-interface}
 [Exposed=(InterestGroupScriptRunnerGlobalScope,SharedStorageWorklet),
  SecureContext]
 interface PrivateAggregation {
-  undefined sendHistogramReport(PAHistogramContribution contribution);
+  undefined contributeToHistogram(PAHistogramContribution contribution);
 };
 
 dictionary PAHistogramContribution {
@@ -122,7 +122,7 @@ Issue: Need to spec Permissions Policy integration.
 
 <div algorithm>
 The <dfn method for="PrivateAggregation">
-sendHistogramReport(PAHistogramContribution contribution)</dfn> method steps
+contributeToHistogram(PAHistogramContribution contribution)</dfn> method steps
 are:
 </div>
 
@@ -180,7 +180,7 @@ dictionary PAExtendedHistogramContribution {
 
 [Exposed=InterestGroupScriptRunnerGlobalScope, SecureContext]
 partial interface PrivateAggregation {
-  undefined reportContributionForEvent(
+  undefined contributeToHistogramOnEvent(
       DOMString event, PAExtendedHistogramContribution contribution);
 };
 </xmp>
@@ -201,7 +201,7 @@ Issue: Need to handle `auctionReportBuyers` and `auctionReportBuyerKeys` here or
     in the Protected Audience API spec.
 
 <div algorithm>
-The <dfn method for="PrivateAggregation">reportContributionForEvent(DOMString
+The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(DOMString
 event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
 </div>
 

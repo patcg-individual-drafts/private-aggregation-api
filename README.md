@@ -73,9 +73,11 @@ cross-site data in these reports would be encrypted to ensure it can only be
 processed by the aggregation service. During processing, this service will add
 noise and impose limits on how many queries can be performed.
 
-This API introduces a `sendHistogramReport()` function; see
-[examples](#examples) below. This call constructs an aggregatable report, which
-contains an encrypted payload for later computation via the aggregation service.
+This API introduces a `contributeToHistogram()` function; see
+[examples](#examples) below. This call registers a histogram contribution for
+reporting. Later, the browser constructs an aggregatable report, which contains
+an encrypted payload with the specified contribution(s) for later computation
+via the aggregation service.
 The API queues the constructed report to be sent to the reporting endpoint of
 the script's origin (in other words, the reporting origin) after a delay. The
 report format and endpoint paths are detailed [below](#reports).
@@ -109,7 +111,7 @@ function reportResult(auctionConfig, browserSignals) {
 
   // The user agent sends the report to the reporting endpoint of the script's
   // origin (that is, the caller of `runAdAuction()`) after a delay.
-  privateAggregation.sendHistogramReport({
+  privateAggregation.contributeToHistogram({
     // Note: the bucket must be a BigInt and the value an integer Number.
     bucket: convertBuyerToBucketId(browserSignals.interestGroupOwner),
     value: convertBidToReportingValue(browserSignals.bid)
@@ -128,7 +130,7 @@ function reportWin(auctionSignals, perBuyerSignals, sellerSignals, browserSignal
   function convertSellerToBucketId(seller_origin) { … }
   function convertBidToReportingValue(winning_bid_price) { … }
 
-  privateAggregation.sendHistogramReport({
+  privateAggregation.contributeToHistogram({
     bucket: convertSellerToBucketId(browserSignals.seller),
     value: convertBidToReportingValue(browserSignals.bid),
   });
@@ -175,12 +177,12 @@ class SendDemoReportOperation {
 
     // The report will be sent to `demo.example`'s reporting endpoint after a
     // delay.
-    privateAggregation.sendHistogramReport({
+    privateAggregation.contributeToHistogram({
       bucket: convertAgeToBucketId(demo["age"]);
       value: 128,  // A predetermined fixed value, see scaling values below.
     });
 
-    // Could add more sendHistogramReport() calls to measure other demographics.
+    // Could add more contributeToHistogram() calls to measure other demographics.
   }
 }
 register("send-demo-report", SendDemoReportOperation);
@@ -238,8 +240,8 @@ aggregating machine learning update vectors or extending the histogram operation
 to support values that are vectors of integers rather than only scalars.
 
 The operation would be indicated by using the appropriate JavaScript call, e.g.
-`sendHistogramReport()` and `sendCountDistinctReport()` for histograms and count
-distinct, respectively.
+`contributeToHistogram()` and `contributToDistinctCount()` for histograms and
+count distinct, respectively.
 
 ## Reports
 
@@ -335,7 +337,7 @@ key.
 
 ### Reducing volume by batching
 
-In the case of multiple calls to `sendHistogramReport()`, we can reduce report
+In the case of multiple calls to `contributeToHistogram()`, we can reduce report
 volume by sending a single report with multiple contributions instead of
 multiple reports. For this to be possible, the different calls must involve the
 same reporting origin and the same API (i.e. Protected Audience or Shared
