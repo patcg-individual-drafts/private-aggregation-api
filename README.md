@@ -326,7 +326,7 @@ calls will be ignored.
 When debug mode is enabled, an additional, duplicate debug report will be sent
 immediately (i.e. without the random delay) to a separate debug endpoint. This
 endpoint will use a path like
-`/.well-known/debug/private-aggregation/report-protected-audience` (and the
+`/.well-known/private-aggregation/debug/report-protected-audience` (and the
 equivalent for Shared Storage).
 
 The debug reports should be almost identical to the normal reports, including
