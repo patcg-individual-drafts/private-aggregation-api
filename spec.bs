@@ -103,21 +103,24 @@ Worklet interface {#worklet-interface}
  SecureContext]
 interface PrivateAggregation {
   undefined contributeToHistogram(PAHistogramContribution contribution);
+  undefined enableDebugMode(optional PADebugModeOptions options);
 };
 
 dictionary PAHistogramContribution {
   required bigint bucket;
   required long value;
 };
-</xmp>
 
-Issue: Do we need to spec enableDebugMode?
+dictionary PADebugModeOptions {
+  required bigint debugKey;
+};
+</xmp>
 
 Issue: Need to spec Permissions Policy integration.
 
 Each {{PrivateAggregation}} object has a field named <dfn
-for="PrivateAggregation">get batching scope steps</dfn> (default null) that is
-either null or an algorithm returning a [=batching scope=].
+for="PrivateAggregation">scope determination details</dfn> that is a [=scope
+determination details=] or null (default null).
 
 Note: See [Exposing to global scopes](#exposing) below.
 
@@ -131,10 +134,10 @@ are:
     is not in the range [0, 2<sup>128</sup>−1].
 1. Throw {{RangeError}} if |contribution|["{{PAHistogramContribution/value}}"]
     is negative.
-1. Let |batchingScopeSteps| be the {{PrivateAggregation}} object's
-    [=PrivateAggregation/get batching scope steps=].
-1. If |batchingScopeSteps| is null, throw a new {{DOMException}} with name
-    "`NotAllowedError`".
+1. Let |scopeDeterminationDetails| be the {{PrivateAggregation}} object's
+    [=PrivateAggregation/scope determination details=].
+1. If |scopeDeterminationDetails| is null, throw a new {{DOMException}} with
+    name "`NotAllowedError`".
 
     Note: This indicates the API is not yet available, for example, because the
         initial execution of the script after loading is not complete.
@@ -146,7 +149,11 @@ are:
     : [=contribution cache entry/contribution=]
     :: |contribution|
     : [=contribution cache entry/batching scope=]
-    :: The result of running |batchingScopeSteps|
+    :: The result of running |scopeDeterminationDetails|' [=scope determination
+        details/get batching scope steps=].
+    : [=contribution cache entry/debug info=]
+    :: The result of running |scopeDeterminationDetails|' [=scope determination
+        details/get debug scope steps=].
 
 1. [=Append an entry to the contribution cache|Append=] |entry| to the
     [=contribution cache=].
@@ -155,16 +162,44 @@ Issue: Check that value can actually be zero in the spec pipeline.
 
 Issue(44): Consider accepting an array of contributions.
 
+<div algorithm>
+The <dfn method for="PrivateAggregation">
+enableDebugMode(optional PADebugModeOptions options)</dfn> method steps are:
+</div>
+
+1. Let |scopeDeterminationDetails| be the {{PrivateAggregation}} object's
+    [=PrivateAggregation/scope determination details=].
+1. If |scopeDeterminationDetails| is null, throw a new {{DOMException}} with
+    name "`NotAllowedError`".
+1. Let |debugScope| be the result of running |scopeDeterminationDetails|'
+    [=scope determination details/get debug scope steps=].
+1. Throw {{DataError}} if [=debug scope map=][|debugScope|] [=map/exists=].
+    Note: This would occur if `enableDebugMode()` has already been run for this
+        [=debug scope=].
+
+1. Let |debugKey| be null.
+1. If |options| was given:
+    1. Throw {{DataError}} if |options|["{{PADebugModeOptions/debugKey}}] is not
+        in the range [0, 2<sup>64</sup>−1].
+    1. Set |debugKey| to |options|["{{PADebugModeOptions/debugKey}}].
+1. Let |debugDetails| be a new [=debug details=] with the items:
+    : [=debug details/enabled=]
+    :: true
+    : [=debug details/key=]
+    :: |debugKey|
+
+1. [=map/Set=] [=debug scope map=][|debugScope|] to |debugDetails|.
+
 Exposing to global scopes {#exposing}
 =====================================
 
 To expose this API to a global scope, a readonly attribute `privateAggregation`
 of type {{PrivateAggregation}} should be exposed on the global scope.
 
-Additionally, each global scope should set the [=PrivateAggregation/get batching
-scope steps=] for the {{PrivateAggregation}} object it exposes to a non-null
-value. The global scope should wait to set the field until the API is intended
-to be available.
+Additionally, each global scope should set the [=PrivateAggregation/scope
+determination details=] for the {{PrivateAggregation}} object it exposes to a
+non-null value. The global scope should wait to set the field until the API is
+intended to be available.
 
 <div class="example" id="shared-storage-only-within-operations">
     Shared Storage only allows Private Aggregation when an operation is being
@@ -179,20 +214,30 @@ to be available.
 
     privateAggregation.contributeToHistogram(...)  // This would cause an error.
     </pre>
-    So, Shared Storage sets [=PrivateAggregation/get batching scope steps=]
-    after the initial execution of the module script is complete.
+    So, Shared Storage sets the [=PrivateAggregation/scope determination
+    details=] after the initial execution of the module script is complete.
 </div>
 
-For any batching scope returned by the [=PrivateAggregation/get batching scope
-steps=], the [=process contributions for a batching scope=] steps should later
-be performed given that same batching scope, the global scope's [=relevant
-settings object=]'s [=environment settings object/origin=] and some [=context
-type=].
+For any [=batching scope=] returned by the [=scope determination details/get
+batching scope steps=], the [=process contributions for a batching scope=] steps
+should later be performed given that same batching scope, the global scope's
+[=relevant settings object=]'s [=environment settings object/origin=] and some
+[=context type=].
 
 Note: This last requirement means that global scopes with different origins
     cannot share the same batching scope, see Same-origin policy discussion.
 
     Issue: Link Same-origin policy section.
+
+For any [=debug scope=] returned by the [=scope determination details/get
+debug scope steps=], the [=mark a debug scope complete=] steps should later be
+performed given that same debug scope.
+
+Note: A later algorithm [=asserts=] that, for any [=contribution cache entry=]
+    in the [=contribution cache=], the [=mark a debug scope complete=] steps
+    were performed given the entry's [=contribution cache entry/debug info=]
+    before the [=process contributions for a batching scope=] steps are
+    performed given the entry's [=contribution cache entry/batching scope=].
 
 Structures {#structures}
 ========================
@@ -208,6 +253,30 @@ report=].
 Issue: Unique internal value is not an exported definition. See
     <a href="https://github.com/whatwg/infra/issues/583">infra/583</a>.
 
+<h4 dfn-type=dfn>Debug scope</h4>
+A debug scope is a <a spec=HTML>unique internal value</a> that identifies which
+{{PAHistogramContribution}}s should be sent in the same [=aggregatable report=].
+
+<h4 dfn-type=dfn>Scope determination details</h4>
+A scope determination details is a [=struct=] with the following items:
+<dl dfn-for="scope determination details">
+: <dfn>get batching scope steps</dfn>
+:: An algorithm returning a [=batching scope=]
+: <dfn>get debug scope steps</dfn>
+:: An algorithm returning a [=debug scope=]
+
+</dl>
+
+<h4 dfn-type=dfn>Debug details</h4>
+A debug details is a [=struct=] with the following items:
+<dl dfn-for="debug details">
+: <dfn>enabled</dfn> (default false)
+:: A [=boolean=]
+: <dfn>key</dfn> (default null)
+:: Null or an unsigned 64-bit integer. The key must be null if enabled is false.
+
+</dl>
+
 <h4 dfn-type=dfn>Contribution cache entry</h4>
 A contribution cache entry is a [=struct=] with the following items:
 <dl dfn-for="contribution cache entry">
@@ -215,6 +284,8 @@ A contribution cache entry is a [=struct=] with the following items:
 :: A {{PAHistogramContribution}}
 : <dfn>batching scope</dfn>
 :: A [=batching scope=]
+: <dfn>debug info</dfn>
+:: A [=debug scope=] or a [=debug details=]
 
 </dl>
 
@@ -234,6 +305,8 @@ An aggregatable report is a [=struct=] with the following items:
 :: A [=context type=]
 : <dfn>report ID</dfn>
 :: A [=string=]
+: <dfn>debug details</dfn>
+:: A [=debug details=]
 : <dfn>queued</dfn>
 :: A [=boolean=]
 
@@ -248,7 +321,10 @@ A context type is a [=string=] indicating what kind of global scope the
 Storage {#storage}
 ==================
 
-A user agent holds an <dfn>contribution cache</dfn>, which is a [=list=] of
+A user agent holds a <dfn>debug scope map</dfn>, which is an [=ordered map=]
+from [=debug scopes=] to [=debug details=].
+
+A user agent holds a <dfn>contribution cache</dfn>, which is a [=list=] of
 [=contribution cache entries=].
 
 A user agent holds an <dfn>aggregatable report cache</dfn>, which is a [=list=]
@@ -297,28 +373,59 @@ To <dfn algorithm export>append an entry to the contribution cache</dfn> given a
 [=contribution cache entry=] |entry|:
 1. [=list/Append=] |entry| to the [=contribution cache=].
 
+To <dfn algorithm export>mark a debug scope complete</dfn> given a [=debug
+scope=] |debugScope|:
+
+1. Let |debugDetails| be a new [=debug details=] with the following items:
+    : [=debug details/enabled=]
+    :: false
+    : [=debug details/key=]
+    :: null
+
+1. If [=debug scope map=][|debugScope|] [=map/exists=]:
+    1. Set |debugDetails| to  [=debug scope map=][|debugScope|].
+    1. [=map/Remove=] [=debug scope map=][|debugScope|].
+    1. If |debugDetails|'s [=debug details/key=] is not null, [=assert=]
+        |debugDetails|'s [=debug details/enabled=] is true.
+1. [=list/iterate|For each=] |entry| of the [=contribution cache=]:
+    1. If |entry|'s [=contribution cache entry/debug info=] is |debugScope|,
+        set |entry|'s [=contribution cache entry/debug info=] to |debugDetails|.
+
 To <dfn algorithm export>process contributions for a batching scope</dfn> given
 a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
 [=context type=] |contextType|:
 1. Let |batchEntries| be a new [=list/is empty|empty=] [=list=].
 1. [=list/iterate|For each=] |entry| of the [=contribution cache=]:
     1. If |entry|'s [=contribution cache entry/batching scope=] is
-        |batchingScope|, [=list/append=] |entry| to |batchEntries|.
+        |batchingScope|:
+        1. [=Assert=] |entry|'s [=contribution cache entry/debug info=] is a
+            [=debug details=].
+            Note: This asserts that the [=mark a debug scope complete=] steps
+                were run before the [=process contributions for a batching
+                scope=] steps.
+
+        1. [=list/Append=] |entry| to |batchEntries|.
 1. If |batchEntries| is [=list/empty=], return.
-1. Let |batchContributions| be a new [=list/is empty|empty=] [=list=].
+1. Let |batchedContributions| be a new [=map/is empty|empty=] [=ordered map=].
 1. [=list/iterate|For each=] |entry| of |batchEntries|:
     1. [=list/Remove=] |entry| from the [=contribution cache=].
+    1. Let |debugDetails| be |entry's| [=contribution cache entry/debug info=].
+    1. If |batchedContributions|[|debugDetails|] does not [=map/exist=]:
+        1. [=map/Set=] |batchedContributions|[|debugDetails|] to a new [=list/is
+            empty|empty=] [=list=].
     1. [=list/Append=] |entry|'s [=contribution cache entry/contribution=] to
-        |batchContributions|.
-1. Perform the [=report creation and scheduling steps=] with |reportingOrigin|,
-    |contextType| and |batchContributions|.
+        |batchedContributions|[|debugDetails|].
+1. [=map/iterate|For each=] |key| → |value| of |batchedContributions|:
+    1. Perform the [=report creation and scheduling steps=] with
+        |reportingOrigin|, |contextType|, |value| and |key|.
 
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
 
 To perform the <dfn algorithm>report creation and scheduling steps</dfn> with an
-[=origin=] |reportingOrigin|, a [=context type=] |api| and a [=list=] of
-{{PAHistogramContribution}}s |contributions|:
+[=origin=] |reportingOrigin|, a [=context type=] |api|, a [=list=] of
+{{PAHistogramContribution}}s |contributions| and a [=debug details=]
+|debugDetails|:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |truncatedContributions| be a new [=list/is empty|empty=] [=list=].
 1. If |contributions| has a [=list/size=] greater than [=maximum report
@@ -336,7 +443,8 @@ To perform the <dfn algorithm>report creation and scheduling steps</dfn> with an
     given |contributionSum|, |reportingOrigin|, |api| and |currentWallTime|.
 1. If |sufficientBudget| is false, return.
 1. Let |report| be the result of [=obtaining an aggregatable report=] given
-    |reportingOrigin|, |api|, |truncatedContributions| and |currentWallTime|.
+    |reportingOrigin|, |api|, |truncatedContributions|, |debugDetails| and
+    |currentWallTime|.
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
 Issue: Do we need to ensure the reports aren't queued after being sent?
@@ -354,8 +462,9 @@ returned, i.e. it should consume the budget in that case.
 
 To <dfn>obtain an aggregatable report</dfn> given an [=origin=]
 |reportingOrigin|, a [=context type=] |api|, a [=list=] of
-{{PAHistogramContribution}}s |contributions| and a [=moment=] |currentTime|,
-perform the following steps. They return an [=aggregatable report=].
+{{PAHistogramContribution}}s |contributions|, a [=debug details=]
+|debugDetails|, and a [=moment=] |currentTime|, perform the following steps.
+They return an [=aggregatable report=].
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |reportTime| be the result of running [=obtain a report delivery time=]
     given |currentTime|.
@@ -372,6 +481,8 @@ perform the following steps. They return an [=aggregatable report=].
     :: |api|
     : [=aggregatable report/report ID=]
     :: The result of [=generating a random UUID=].
+    : [=aggregatable report/debug details=]
+    :: |debugDetails|
     : [=aggregatable report/queued=]
     :: false
 1. Return |report|.
@@ -512,6 +623,10 @@ error.
     :: |aggregationServicePayloads|
     : "`shared_info`"
     :: The result of [=obtaining a report's shared info=] given |report|.
+1. Let |debugKey| be |report|'s [=aggregatable report/debug details=]'s [=debug
+    details/key=].
+1. If |debugKey| is not null:
+    1. [=map/Set=] |data|["`debug_key`"] to |debugKey|.
 1. Return the [=byte sequence=] resulting from executing [=serialize an infra
     value to JSON bytes=] on |data|.
 
@@ -521,8 +636,10 @@ report=] |report|, perform the following steps. They return a [=list=] of
 1. Let (|pkR|, |keyId|) be the result of [=obtaining the public key for
     encryption=].
 1. If |pkR| is an error, return |pkR|.
+1. Let |plaintextPayload| be the result of [=obtaining the plaintext payload=]
+    given |report|.
 1. Let |encryptedPayload| be the result of [=obtaining the encrypted payload=]
-    given |report| and |pkR|.
+    given |plaintextPayload| and |pkR|.
 1. If |encryptedPayload| is an error, return |encryptedPayload|.
 1. Let |aggregationServicePayloads| be a new [=list/is empty|empty=] [=list=].
 1. Let |aggregationServicePayload| be an [=ordered map=] of the following
@@ -531,6 +648,10 @@ report=] |report|, perform the following steps. They return a [=list=] of
     :: |keyId|
     : "`payload`"
     :: |encryptedPayload|, [=forgiving-base64 encode|base64 encoded=]
+1. If |report|'s [=aggregatable report/debug details=]'s [=debug details/
+    enabled=] field is true:
+    1. [=map/Set=] |aggregationServicePayload|[`debug_cleartext_payload`] to
+        |plaintextPayload|, [=forgiving-base64 encode|base64 encoded=].
 1. [=list/Append=] |aggregationServicePayload| to |aggregationServicePayloads|.
 1. Return |aggregationServicePayloads|.
 
@@ -543,28 +664,6 @@ public key. (TODO: why asynchronously.)
 Note: The user agent is encouraged to enforce regular key rotation. If there are
     multiple keys, the user agent can independently pick a key uniformly at
     random for every encryption operation.
-
-To <dfn>obtain the encrypted payload</dfn> given an [=aggregatable report=]
-|report|, perform the following steps. They return a [=byte sequence=] or an
-error.
-1. Let |plaintext| be the result of [=obtaining the plaintext payload=] given
-    |report|.
-1. Let |sharedInfo| be the result of [=obtaining a report's shared info=] given
-    |report|.
-1. Let |info| be the result of [=UTF-8 encoding=] the [=string/concatenation=]
-    of «"`aggregation_service`", |sharedInfo|».
-1. Let (|kem_id|, |kdf_id|, |aead_id|) be (0x0020, 0x0001, 0x0003).
-
-    Note: These indicate the HPKE algorithm identifiers, specifying the KEM
-        function as DHKEM(X25519, HKDF-SHA256), the KDF function as HKDF-SHA256
-        and the AEAD function as ChaCha20Poly1305.
-1. Let |hpkeContext| be the result of setting up an [[RFC9180|HPKE]]
-    [[RFC9180#name-encryption-to-a-public-key|sender's context]] with |pkR|,
-    |info|, |kem_id|, |kdf_id| and |aead_id|.
-1. Let |aad| be \`\` (an empty [=byte sequence=]).
-1. Let |encryptedPayload| be the result of
-    [[RFC9180#name-encryption-and-decryption|encrypting]] |plaintext| with
-    |hpkeContext| and |aad|.
 
 To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=]
     |report|, perform the following steps. They return a [=byte sequence=].
@@ -587,6 +686,27 @@ To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=]
     :: "`histogram`"
 1. Return the [=byte sequence=] resulting from [[!RFC8949|CBOR encoding]]
     |payload|.
+
+To <dfn>obtain the encrypted payload</dfn> given a [=byte sequence=]
+|plaintextPayload|, perform the following steps. They return a [=byte sequence=]
+or an error.
+
+1. Let |sharedInfo| be the result of [=obtaining a report's shared info=] given
+    |report|.
+1. Let |info| be the result of [=UTF-8 encoding=] the [=string/concatenation=]
+    of «"`aggregation_service`", |sharedInfo|».
+1. Let (|kem_id|, |kdf_id|, |aead_id|) be (0x0020, 0x0001, 0x0003).
+
+    Note: These indicate the HPKE algorithm identifiers, specifying the KEM
+        function as DHKEM(X25519, HKDF-SHA256), the KDF function as HKDF-SHA256
+        and the AEAD function as ChaCha20Poly1305.
+1. Let |hpkeContext| be the result of setting up an [[RFC9180|HPKE]]
+    [[RFC9180#name-encryption-to-a-public-key|sender's context]] with |pkR|,
+    |info|, |kem_id|, |kdf_id| and |aead_id|.
+1. Let |aad| be \`\` (an empty [=byte sequence=]).
+1. Let |encryptedPayload| be the result of
+    [[RFC9180#name-encryption-and-decryption|encrypting]] |plaintextPayload|
+    with |hpkeContext| and |aad|.
 
 To <dfn>encode an integer for the payload</dfn> given an integer |intToEncode|
 and an integer |bitLength|, return the representation of |intToEncode| as a
@@ -630,14 +750,17 @@ after "Let |operation| be |operationMap|[|name|]." (renumbering later steps as
 appropriate):
 <div algorithm="shared-storage-run-monkey-patch-1">
 2. Let <var ignore>batchingScope</var> be a new [=batching scope=].
+1. Let <var ignore>debugScope</var> be a new [=debug scope=].
 
 </div>
 Second, at the end of the same nested scope, add the following step:
 <div algorithm="shared-storage-run-monkey-patch-2">
-5. When the above [=call=] returns, [=process contributions for a batching
-    scope=] given <var ignore>batchingScope</var>,
-    <var ignore>outsideSettings</var>' [=environment settings object/origin=]
-    and "<code>shared-storage</code>".
+6. When the above [=call=] returns, perform the following steps:
+    1. [=Mark a debug scope complete=] given <var ignore>debugScope</var>.
+    1. [=Process contributions for a batching scope=] given
+        <var ignore>batchingScope</var>, <var ignore>outsideSettings</var>'
+        [=environment settings object/origin=] and
+        "<code>shared-storage</code>".
 
 </div>
 
@@ -647,11 +770,13 @@ after "Let |operation| be |operationMap|[|name|]." (renumbering later steps as
 appropriate):
 <div algorithm="shared-storage-selecturl-monkey-patch-1">
 2. Let <var ignore>batchingScope</var> be a new [=batching scope=].
+1. Let <var ignore>debugScope</var> be a new [=debug scope=].
 
 </div>
-Second, at the end of the same nested scope, add the following step:
+Second, at the end of the same nested scope, add the following steps:
 <div algorithm="shared-storage-selecturl-monkey-patch-2">
-8. [=Process contributions for a batching scope=] given
+9. [=Mark a debug scope complete=] given <var ignore>debugScope</var>.
+1. [=Process contributions for a batching scope=] given
     <var ignore>batchingScope</var>, <var ignore>outsideSettings</var>'
     [=environment settings object/origin=] and "<code>shared-storage</code>".
 
@@ -670,15 +795,20 @@ as appropriate:
     1. Let |globalScopes| be |this|'s [=Worklet/global scopes=].
     1. [=Assert=]: |globalScopes|' [=list/size=] equals 1.
     1. Set |globalScopes|[0]'s {{SharedStorageWorkletGlobalScope/
-        privateAggregation}}'s [=PrivateAggregation/get batching scope steps=]
-        to the following algorithm:
-        1. Return the [=batching scope=] that is scheduled to be passed to
-            [=process contributions for a batching scope=] when the currently
-            executing call returns.
+        privateAggregation}}'s [=PrivateAggregation/scope determination
+        details=] a new [=scope determination details=] with the items:
+        : [=scope determination details/get batching scope steps=]
+        :: An algorithm that returns the [=batching scope=] that is scheduled to
+            be passed to [=process contributions for a batching scope=] when the
+            call currently executing in |scope| returns.
+        : [=scope determination details/get debug scope steps=]
+        :: An algorithm that returns the [=debug scope=] that is scheduled to be
+            passed to [=mark a debug scope complete=] when the call currently
+            executing in |scope| returns.
 
-            Note: Multiple operation invocations can be in-progress at the same
-            time, each with a different batching scope. However, only one can be
-            currently executing.
+        Note: Multiple operation invocations can be in-progress at the same
+        time, each with a different batching scope. However, only one can be
+        currently executing.
 
 </div>
 
@@ -752,16 +882,28 @@ Issue: How to handle fenced frame-triggered contributions and other
 Issue: Need to handle `auctionReportBuyers` and `auctionReportBuyerKeys` here or
     in the Protected Audience API spec.
 
-The <a spec="turtledove">evaluate a script</a> steps are modified to add the
-following steps after step 11 ("If <var ignore>evaluationStatus</var> is an
-[=ECMAScript/abrupt completion=]..."), renumbering later steps as appropriate:
-<div algorithm="protected-audience-evaluate-a-script-monkey-patch">
-12. Set <var ignore>global</var>'s {{InterestGroupScriptRunnerGlobalScope/
-    privateAggregation}}'s [=PrivateAggregation/get batching scope steps=] to
-    the following algorithm:
-    1. Return the [=batching scope=] associated with the auction and the
-        <var ignore>scope</var>'s [=relevant settings object=]'s [=environment
-        settings object/origin=].
+The <a spec="turtledove">evaluate a script</a> steps are modified in two ways.
+First, the following steps are added after step 11 ("If
+<var ignore>evaluationStatus</var> is an [=ECMAScript/abrupt completion=]..."),
+renumbering later steps as appropriate:
+<div algorithm="protected-audience-evaluate-a-script-monkey-patch-1">
+12. Let |debugScope| be a new [=debug scope=].
+1. Set <var ignore>global</var>'s {{InterestGroupScriptRunnerGlobalScope/
+    privateAggregation}}'s [=PrivateAggregation/scope determination details=] to
+    a new [=scope determination details=] with the items:
+    : [=scope determination details/get batching scope steps=]
+    :: An algorithm that returns the [=batching scope=] associated with the
+        auction and the <var ignore>scope</var>'s [=relevant settings object=]'s
+        [=environment settings object/origin=].
+    : [=scope determination details/get debug scope steps=]
+    :: An algorithm that returns |debugScope|.
+
+</div>
+Second, in the nested scope of the last step, we insert a new step just after
+the step labelled "Clean up after script", renumbering the later step as
+appropriate:
+<div algorithm="protected-audience-evaluate-a-script-monkey-patch-2">
+2. [=Mark a debug scope complete=] given <var ignore>debugScope</var>.
 
 </div>
 
