@@ -109,7 +109,9 @@ None
 ### 2.13. How does this specification distinguish between behavior in first-party and third-party contexts?
 
 This API is only exposed in isolated contexts that may have access to cross-site
-data. There are mechanisms proposed for controlling access to those isolated contexts, e.g. see Protected Audience’s response here.
+data. There are mechanisms proposed for controlling access to those isolated
+contexts, e.g. see Protected Audience’s response
+[here](https://github.com/w3ctag/design-reviews/issues/723).
 
 ### 2.14. How do the features in this specification work in the context of a browser’s Private Browsing or Incognito mode?
 
