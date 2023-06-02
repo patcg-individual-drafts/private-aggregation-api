@@ -133,6 +133,8 @@ are:
     [=PrivateAggregation/get batching scope steps=].
 1. If |batchingScopeSteps| is null, throw a new {{DOMException}} with name
     "`NotAllowedError`".
+    Note: This indicates the API is not yet available.
+
 1. Let |entry| be a new [=contribution cache entry=] with the items:
     : [=contribution cache entry/contribution=]
     :: |contribution|
@@ -144,7 +146,6 @@ are:
 Issue: Check that value can actually be zero in the spec pipeline.
 
 Issue(44): Consider accepting an array of contributions.
-
 
 Exposing to global scopes {#exposing}
 =====================================
@@ -604,8 +605,6 @@ When an operation invocation completes, [=mark a batching scope complete=] given
 the associated [=batching scope=], the global scope's [=relevant settings
 object=]'s [=environment settings object/origin=] and
 "<code>shared-storage</code>".
-
-Issue: How do we handle overrides without causing bikeshed errors?
 
 Protected Audience API monkeypatches {#protected-audience-api-monkeypatches}
 ============================================================================
