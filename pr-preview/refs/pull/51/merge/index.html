@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version 5fcd28d6d, updated Tue May 30 13:12:11 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="83a39d6e1775b90998253a6bcebbcc2daa13f49a" name="document-revision">
+  <meta content="54dfec12cf7f00619563296791567366e6746fbc" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -649,7 +649,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-06-01">1 June 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-06-02">2 June 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -814,7 +814,8 @@ is negative.</p>
      <p>Let <var>batchingScopeSteps</var> be the <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation①">PrivateAggregation</a></code> object’s <a data-link-type="dfn" href="#privateaggregation-get-batching-scope-steps" id="ref-for-privateaggregation-get-batching-scope-steps">get batching scope steps</a>.</p>
     <li data-md>
      <p>If <var>batchingScopeSteps</var> is null, throw a new <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException">DOMException</a></code> with name
-"<code>NotAllowedError</code>".</p>
+"<code>NotAllowedError</code>".
+Note: This indicates the API is not yet available.</p>
     <li data-md>
      <p>Let <var>entry</var> be a new <a data-link-type="dfn" href="#contribution-cache-entry" id="ref-for-contribution-cache-entry">contribution cache entry</a> with the items:</p>
      <dl>
@@ -1341,7 +1342,6 @@ with a different batching scope. However, only one can be currently executing.</
 the associated <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope⑤">batching scope</a>, the global scope’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object" id="ref-for-relevant-settings-object①">relevant settings
 object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin" id="ref-for-concept-settings-object-origin①">origin</a> and
 "<code>shared-storage</code>".</p>
-   <p class="issue" id="issue-e085b6dc"><a class="self-link" href="#issue-e085b6dc"></a> How do we handle overrides without causing bikeshed errors?</p>
    <h2 class="heading settled" data-level="9" id="protected-audience-api-monkeypatches"><span class="secno">9. </span><span class="content">Protected Audience API monkeypatches</span><a class="self-link" href="#protected-audience-api-monkeypatches"></a></h2>
    <p class="issue" id="issue-eecd6fa0"><a class="self-link" href="#issue-eecd6fa0"></a> This should be moved to the Protected Audience spec, along with any
     other Protected Audience-specific details. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/43">[Issue #43]</a></p>
@@ -1786,7 +1786,6 @@ the result of adding <var>returnValue</var> to <var>value</var>["<code class="id
     network on or whatever <a class="issue-return" href="#issue-236d01b4" title="Jump to section">↵</a></div>
    <div class="issue"> Do we have to use the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">queue a task</a> algorithm here? <a class="issue-return" href="#issue-2485156c" title="Jump to section">↵</a></div>
    <div class="issue"> This should be moved to the Shared Storage spec. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/43">[Issue #43]</a> <a class="issue-return" href="#issue-03919572" title="Jump to section">↵</a></div>
-   <div class="issue"> How do we handle overrides without causing bikeshed errors? <a class="issue-return" href="#issue-e085b6dc" title="Jump to section">↵</a></div>
    <div class="issue"> This should be moved to the Protected Audience spec, along with any
     other Protected Audience-specific details. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/43">[Issue #43]</a> <a class="issue-return" href="#issue-eecd6fa0" title="Jump to section">↵</a></div>
    <div class="issue"> Do we want to align naming with implementation? <a class="issue-return" href="#issue-6c6263d3" title="Jump to section">↵</a></div>
