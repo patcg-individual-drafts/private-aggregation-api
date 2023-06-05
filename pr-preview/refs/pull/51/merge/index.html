@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version 5fcd28d6d, updated Tue May 30 13:12:11 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="5aa09c5f3cf123ad96e59844be9b0ad00681c96f" name="document-revision">
+  <meta content="fb98be5868a9c78e112d5a9f11d6b83136eb6df6" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -837,13 +837,26 @@ Note: This indicates the API is not yet available, for example, because the
 global scope.</p>
    <p>Additionally, each global scope should set the <a data-link-type="dfn" href="#privateaggregation-get-batching-scope-steps" id="ref-for-privateaggregation-get-batching-scope-steps①">get batching
 scope steps</a> for the <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation③">PrivateAggregation</a></code> object it exposes to a non-null
-value. The global scope may wait to set the field to indicate that the API is
-not yet available, for example, during the initial execution of a script after
-loading. For any batching scope returned by the <a data-link-type="dfn" href="#privateaggregation-get-batching-scope-steps" id="ref-for-privateaggregation-get-batching-scope-steps②">get
-batching scope steps</a>, the <a data-link-type="dfn" href="#mark-a-batching-scope-complete" id="ref-for-mark-a-batching-scope-complete">mark a batching scope complete</a> steps should
-later be performed given that same batching scope, the global scope’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object" id="ref-for-relevant-settings-object">relevant
-settings object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin" id="ref-for-concept-settings-object-origin">origin</a> and some <a data-link-type="dfn" href="#context-type" id="ref-for-context-type">context
-type</a>.</p>
+value. The global scope should wait to set the field until the API is intended
+to be available.</p>
+   <div class="example" id="shared-storage-only-within-operations">
+    <a class="self-link" href="#shared-storage-only-within-operations"></a> Shared Storage only allows Private Aggregation when an operation is being
+    invoked, not in the top-level context: 
+<pre class="highlight"><c- a>class</c-> ExampleOperation <c- p>{</c->
+  <c- k>async</c-> run<c- p>(</c->data<c- p>)</c-> <c- p>{</c->
+    privateAggregation<c- p>.</c->contributeToHistogram<c- p>(...)</c->  <c- c1>// This is allowed.</c->
+  <c- p>}</c->
+<c- p>}</c->
+register<c- p>(</c-><c- t>'example-operation'</c-><c- p>,</c-> ExampleOperation<c- p>);</c->
+
+privateAggregation<c- p>.</c->contributeToHistogram<c- p>(...)</c->  <c- c1>// This would cause an error.</c->
+</pre>
+    <p>So, Shared Storage sets <a data-link-type="dfn" href="#privateaggregation-get-batching-scope-steps" id="ref-for-privateaggregation-get-batching-scope-steps②">get batching scope steps</a> after the initial execution of the module script is complete.</p>
+   </div>
+   <p>For any batching scope returned by the <a data-link-type="dfn" href="#privateaggregation-get-batching-scope-steps" id="ref-for-privateaggregation-get-batching-scope-steps③">get batching scope
+steps</a>, the <a data-link-type="dfn" href="#mark-a-batching-scope-complete" id="ref-for-mark-a-batching-scope-complete">mark a batching scope complete</a> steps should later be performed
+given that same batching scope, the global scope’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object" id="ref-for-relevant-settings-object">relevant settings
+object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin" id="ref-for-concept-settings-object-origin">origin</a> and some <a data-link-type="dfn" href="#context-type" id="ref-for-context-type">context type</a>.</p>
    <p class="note" role="note"><span class="marker">Note:</span> This last requirement means that global scopes with different origins
     cannot share the same batching scope.</p>
    <h2 class="heading settled" data-level="4" id="structures"><span class="secno">4. </span><span class="content">Structures</span><a class="self-link" href="#structures"></a></h2>
@@ -1331,7 +1344,7 @@ nearest number of whole seconds and <a data-link-type="dfn" href="#serialize-an-
 </pre>
    <p>At the start of each invocation of a Shared Storage operation (i.e. a call to <code>run()</code> or to <code>selectURL()</code>), create a new <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope③">batching scope</a> and associate it
 with that invocation.</p>
-   <p>When a <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation⑥">PrivateAggregation</a></code> object is exposed on a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope" id="ref-for-sharedstorageworkletglobalscope①">SharedStorageWorkletGlobalScope</a></code>, its <a data-link-type="dfn" href="#privateaggregation-get-batching-scope-steps" id="ref-for-privateaggregation-get-batching-scope-steps③">get batching scope
+   <p>When a <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation⑥">PrivateAggregation</a></code> object is exposed on a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope" id="ref-for-sharedstorageworkletglobalscope①">SharedStorageWorkletGlobalScope</a></code>, its <a data-link-type="dfn" href="#privateaggregation-get-batching-scope-steps" id="ref-for-privateaggregation-get-batching-scope-steps④">get batching scope
 steps</a> should be left default until the <code>addModule()</code> execution is complete. At
 that point, it should be set to the following algorithm:</p>
    <ol>
@@ -1372,7 +1385,7 @@ object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipag
    <p class="issue" id="issue-6c6263d3"><a class="self-link" href="#issue-6c6263d3"></a> Do we want to align naming with implementation?</p>
    <p>At the start of each Protected Audience auction (i.e. a call to <code>runAdAuction()</code>), create a new <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope⑥">batching scope</a> for each unique origin
 participating in the auction (including both bidders and the seller).</p>
-   <p>When a <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation⑨">PrivateAggregation</a></code> object is exposed on a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/turtledove/#interestgroupscriptrunnerglobalscope" id="ref-for-interestgroupscriptrunnerglobalscope①">InterestGroupScriptRunnerGlobalScope</a></code>, its <a data-link-type="dfn" href="#privateaggregation-get-batching-scope-steps" id="ref-for-privateaggregation-get-batching-scope-steps④">get batching
+   <p>When a <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation⑨">PrivateAggregation</a></code> object is exposed on a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/turtledove/#interestgroupscriptrunnerglobalscope" id="ref-for-interestgroupscriptrunnerglobalscope①">InterestGroupScriptRunnerGlobalScope</a></code>, its <a data-link-type="dfn" href="#privateaggregation-get-batching-scope-steps" id="ref-for-privateaggregation-get-batching-scope-steps⑤">get batching
 scope steps</a> should be left default until the <code>addModule()</code> execution is
 complete. At that point, it should be set to the following algorithm:</p>
    <ol>
@@ -2191,7 +2204,7 @@ window.dfnpanelData['privateaggregation'] = {"dfnID": "privateaggregation", "url
 window.dfnpanelData['dictdef-pahistogramcontribution'] = {"dfnID": "dictdef-pahistogramcontribution", "url": "#dictdef-pahistogramcontribution", "dfnText": "PAHistogramContribution", "refSections": [{"refs": [{"id": "ref-for-dictdef-pahistogramcontribution"}], "title": "2.1. Worklet interface"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2460"}], "title": "4.1.1. Batching scope"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2461"}], "title": "4.1.2. Contribution cache entry"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2462"}], "title": "4.1.3. Aggregatable report"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2463"}, {"id": "ref-for-dictdef-pahistogramcontribution\u2464"}], "title": "7.1. Scheduling reports"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2465"}, {"id": "ref-for-dictdef-pahistogramcontribution\u2466"}, {"id": "ref-for-dictdef-pahistogramcontribution\u2467"}], "title": "9.2. Protected Audience API-specific algorithms"}], "external": false};
 window.dfnpanelData['dom-pahistogramcontribution-bucket'] = {"dfnID": "dom-pahistogramcontribution-bucket", "url": "#dom-pahistogramcontribution-bucket", "dfnText": "bucket", "refSections": [{"refs": [{"id": "ref-for-dom-pahistogramcontribution-bucket"}], "title": "2.1. Worklet interface"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-bucket\u2460"}], "title": "7.3. Serializing reports"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-bucket\u2461"}], "title": "9.2. Protected Audience API-specific algorithms"}], "external": false};
 window.dfnpanelData['dom-pahistogramcontribution-value'] = {"dfnID": "dom-pahistogramcontribution-value", "url": "#dom-pahistogramcontribution-value", "dfnText": "value", "refSections": [{"refs": [{"id": "ref-for-dom-pahistogramcontribution-value"}], "title": "2.1. Worklet interface"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-value\u2460"}], "title": "7.3. Serializing reports"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-value\u2461"}], "title": "9.2. Protected Audience API-specific algorithms"}], "external": false};
-window.dfnpanelData['privateaggregation-get-batching-scope-steps'] = {"dfnID": "privateaggregation-get-batching-scope-steps", "url": "#privateaggregation-get-batching-scope-steps", "dfnText": "get batching scope steps", "refSections": [{"refs": [{"id": "ref-for-privateaggregation-get-batching-scope-steps"}], "title": "2.1. Worklet interface"}, {"refs": [{"id": "ref-for-privateaggregation-get-batching-scope-steps\u2460"}, {"id": "ref-for-privateaggregation-get-batching-scope-steps\u2461"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-privateaggregation-get-batching-scope-steps\u2462"}], "title": "8. Shared Storage API monkeypatches"}, {"refs": [{"id": "ref-for-privateaggregation-get-batching-scope-steps\u2463"}], "title": "9. Protected Audience API monkeypatches"}], "external": false};
+window.dfnpanelData['privateaggregation-get-batching-scope-steps'] = {"dfnID": "privateaggregation-get-batching-scope-steps", "url": "#privateaggregation-get-batching-scope-steps", "dfnText": "get batching scope steps", "refSections": [{"refs": [{"id": "ref-for-privateaggregation-get-batching-scope-steps"}], "title": "2.1. Worklet interface"}, {"refs": [{"id": "ref-for-privateaggregation-get-batching-scope-steps\u2460"}, {"id": "ref-for-privateaggregation-get-batching-scope-steps\u2461"}, {"id": "ref-for-privateaggregation-get-batching-scope-steps\u2462"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-privateaggregation-get-batching-scope-steps\u2463"}], "title": "8. Shared Storage API monkeypatches"}, {"refs": [{"id": "ref-for-privateaggregation-get-batching-scope-steps\u2464"}], "title": "9. Protected Audience API monkeypatches"}], "external": false};
 window.dfnpanelData['dom-privateaggregation-contributetohistogram'] = {"dfnID": "dom-privateaggregation-contributetohistogram", "url": "#dom-privateaggregation-contributetohistogram", "dfnText": "\ncontributeToHistogram(PAHistogramContribution contribution)", "refSections": [{"refs": [{"id": "ref-for-dom-privateaggregation-contributetohistogram"}], "title": "2.1. Worklet interface"}], "external": false};
 window.dfnpanelData['batching-scope'] = {"dfnID": "batching-scope", "url": "#batching-scope", "dfnText": "4.1.1. Batching scope", "refSections": [{"refs": [{"id": "ref-for-batching-scope"}], "title": "2.1. Worklet interface"}, {"refs": [{"id": "ref-for-batching-scope"}], "title": "4.1.1. Batching scope"}, {"refs": [{"id": "ref-for-batching-scope\u2460"}], "title": "4.1.2. Contribution cache entry"}, {"refs": [{"id": "ref-for-batching-scope\u2461"}], "title": "7. Algorithms"}, {"refs": [{"id": "ref-for-batching-scope\u2462"}, {"id": "ref-for-batching-scope\u2463"}, {"id": "ref-for-batching-scope\u2464"}], "title": "8. Shared Storage API monkeypatches"}, {"refs": [{"id": "ref-for-batching-scope\u2465"}, {"id": "ref-for-batching-scope\u2466"}, {"id": "ref-for-batching-scope\u2467"}], "title": "9. Protected Audience API monkeypatches"}], "external": false};
 window.dfnpanelData['contribution-cache-entry'] = {"dfnID": "contribution-cache-entry", "url": "#contribution-cache-entry", "dfnText": "4.1.2. Contribution cache entry", "refSections": [{"refs": [{"id": "ref-for-contribution-cache-entry"}], "title": "2.1. Worklet interface"}, {"refs": [{"id": "ref-for-contribution-cache-entry"}], "title": "4.1.2. Contribution cache entry"}, {"refs": [{"id": "ref-for-contribution-cache-entry\u2460"}], "title": "5. Storage"}, {"refs": [{"id": "ref-for-contribution-cache-entry\u2461"}], "title": "7. Algorithms"}], "external": false};
