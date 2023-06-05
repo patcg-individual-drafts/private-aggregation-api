@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version 5fcd28d6d, updated Tue May 30 13:12:11 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="54dfec12cf7f00619563296791567366e6746fbc" name="document-revision">
+  <meta content="5aa09c5f3cf123ad96e59844be9b0ad00681c96f" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -649,7 +649,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-06-02">2 June 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-06-05">5 June 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -815,7 +815,8 @@ is negative.</p>
     <li data-md>
      <p>If <var>batchingScopeSteps</var> is null, throw a new <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException">DOMException</a></code> with name
 "<code>NotAllowedError</code>".
-Note: This indicates the API is not yet available.</p>
+Note: This indicates the API is not yet available, for example, because the
+    the initial execution of the script after loading is not complete.</p>
     <li data-md>
      <p>Let <var>entry</var> be a new <a data-link-type="dfn" href="#contribution-cache-entry" id="ref-for-contribution-cache-entry">contribution cache entry</a> with the items:</p>
      <dl>
@@ -837,7 +838,9 @@ global scope.</p>
    <p>Additionally, each global scope should set the <a data-link-type="dfn" href="#privateaggregation-get-batching-scope-steps" id="ref-for-privateaggregation-get-batching-scope-steps①">get batching
 scope steps</a> for the <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation③">PrivateAggregation</a></code> object it exposes to a non-null
 value. The global scope may wait to set the field to indicate that the API is
-not yet available. For any batching scope returned by the <a data-link-type="dfn" href="#privateaggregation-get-batching-scope-steps" id="ref-for-privateaggregation-get-batching-scope-steps②"> get batching scope steps</a>, the <a data-link-type="dfn" href="#mark-a-batching-scope-complete" id="ref-for-mark-a-batching-scope-complete">mark a batching scope complete</a> steps should
+not yet available, for example, during the initial execution of a script after
+loading. For any batching scope returned by the <a data-link-type="dfn" href="#privateaggregation-get-batching-scope-steps" id="ref-for-privateaggregation-get-batching-scope-steps②">get
+batching scope steps</a>, the <a data-link-type="dfn" href="#mark-a-batching-scope-complete" id="ref-for-mark-a-batching-scope-complete">mark a batching scope complete</a> steps should
 later be performed given that same batching scope, the global scope’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object" id="ref-for-relevant-settings-object">relevant
 settings object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin" id="ref-for-concept-settings-object-origin">origin</a> and some <a data-link-type="dfn" href="#context-type" id="ref-for-context-type">context
 type</a>.</p>
