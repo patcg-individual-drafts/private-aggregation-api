@@ -157,13 +157,30 @@ global scope.
 
 Additionally, each global scope should set the [=PrivateAggregation/get batching
 scope steps=] for the {{PrivateAggregation}} object it exposes to a non-null
-value. The global scope may wait to set the field to indicate that the API is
-not yet available, for example, during the initial execution of a script after
-loading. For any batching scope returned by the [=PrivateAggregation/get
-batching scope steps=], the [=mark a batching scope complete=] steps should
-later be performed given that same batching scope, the global scope's [=relevant
-settings object=]'s [=environment settings object/origin=] and some [=context
-type=].
+value. The global scope should wait to set the field until the API is intended
+to be available.
+
+<div class="example" id="shared-storage-only-within-operations">
+    Shared Storage only allows Private Aggregation when an operation is being
+    invoked, not in the top-level context:
+    <pre highlight="js">
+    class ExampleOperation {
+      async run(data) {
+        privateAggregation.contributeToHistogram(...)  // This is allowed.
+      }
+    }
+    register('example-operation', ExampleOperation);
+
+    privateAggregation.contributeToHistogram(...)  // This would cause an error.
+    </pre>
+    So, Shared Storage sets [=PrivateAggregation/get batching scope steps=]
+    after the initial execution of the module script is complete.
+</div>
+
+For any batching scope returned by the [=PrivateAggregation/get batching scope
+steps=], the [=mark a batching scope complete=] steps should later be performed
+given that same batching scope, the global scope's [=relevant settings
+object=]'s [=environment settings object/origin=] and some [=context type=].
 
 Note: This last requirement means that global scopes with different origins
     cannot share the same batching scope.
