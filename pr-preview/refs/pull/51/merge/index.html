@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version 5fcd28d6d, updated Tue May 30 13:12:11 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="18987f959cdf6803619d864b4940b93c6717b984" name="document-revision">
+  <meta content="9c8846fffb1bd9df9a2352f970476e41328f8221" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -867,7 +867,7 @@ object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipag
     A batching scope is a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#unique-internal-value" id="ref-for-unique-internal-value">unique internal value</a> that identifies
 which <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution①">PAHistogramContribution</a></code>s should be sent in the same <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report">aggregatable
 report</a>. 
-   <p class="issue" id="issue-24767e0c"><a class="self-link" href="#issue-24767e0c"></a> Unique internal value is not an exported definition. See infra/583.</p>
+   <p class="issue" id="issue-24767e0c"><a class="self-link" href="#issue-24767e0c"></a> Unique internal value is not an exported definition. See <a href="https://github.com/whatwg/infra/issues/583">infra/583</a>.</p>
    <h4 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="4.1.2" data-lt="Contribution cache entry" data-noexport id="contribution-cache-entry"><span class="secno">4.1.2. </span><span class="content">Contribution cache entry</span><a class="self-link" href="#contribution-cache-entry" id="ref-for-contribution-cache-entry③"></a></h4>
     A contribution cache entry is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#struct" id="ref-for-struct">struct</a> with the following items: 
    <dl>
@@ -922,8 +922,8 @@ the minimum delay.</p>
    <h2 class="heading settled" data-level="7" id="algorithms"><span class="secno">7. </span><span class="content">Algorithms</span><a class="self-link" href="#algorithms"></a></h2>
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="serialize-an-integer">serialize an integer</dfn>, represent it as a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②">string</a> of the shortest
 possible decimal number.</p>
-   <p class="issue" id="issue-ccb90c6c"><a class="self-link" href="#issue-ccb90c6c"></a> This would ideally be replaced by a more descriptive algorithm in Infra.
-    See infra/201</p>
+   <p class="issue" id="issue-6b252736"><a class="self-link" href="#issue-6b252736"></a> This would ideally be replaced by a more descriptive algorithm in Infra.
+    See <a href="https://github.com/whatwg/infra/issues/201">infra/201</a>.</p>
    <p>To <dfn class="dfn-paneled algorithm" data-algorithm="append an entry to the contribution cache" data-dfn-type="dfn" data-export id="append-an-entry-to-the-contribution-cache">append an entry to the contribution cache</dfn> given a <a data-link-type="dfn" href="#contribution-cache-entry" id="ref-for-contribution-cache-entry②">contribution cache entry</a> <var>entry</var>:</p>
    <ol>
     <li data-md>
@@ -1795,12 +1795,12 @@ the result of adding <var>returnValue</var> to <var>value</var>["<code class="id
     this case). <a class="issue-return" href="#issue-1c64074f" title="Jump to section">↵</a></div>
    <div class="issue"> Check that value can actually be zero in the spec pipeline. <a class="issue-return" href="#issue-0f38e041" title="Jump to section">↵</a></div>
    <div class="issue"> Consider accepting an array of contributions. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/44">[Issue #44]</a> <a class="issue-return" href="#issue-e90e23c5" title="Jump to section">↵</a></div>
-   <div class="issue"> Unique internal value is not an exported definition. See infra/583. <a class="issue-return" href="#issue-24767e0c" title="Jump to section">↵</a></div>
+   <div class="issue"> Unique internal value is not an exported definition. See <a href="https://github.com/whatwg/infra/issues/583">infra/583</a>. <a class="issue-return" href="#issue-24767e0c" title="Jump to section">↵</a></div>
    <div class="issue"> Handle operation types, aggregation coordinators, maybe retries/offline,
     report verification <a class="issue-return" href="#issue-d4626287" title="Jump to section">↵</a></div>
    <div class="issue"> More <a class="issue-return" href="#issue-d3da97e2" title="Jump to section">↵</a></div>
    <div class="issue"> This would ideally be replaced by a more descriptive algorithm in Infra.
-    See infra/201 <a class="issue-return" href="#issue-ccb90c6c" title="Jump to section">↵</a></div>
+    See <a href="https://github.com/whatwg/infra/issues/201">infra/201</a>. <a class="issue-return" href="#issue-6b252736" title="Jump to section">↵</a></div>
    <div class="issue"> Highlight exported algorithms more? <a class="issue-return" href="#issue-c1652be4" title="Jump to section">↵</a></div>
    <div class="issue"> Do we need to ensure the reports aren’t queued after being sent? <a class="issue-return" href="#issue-b92a47e8" title="Jump to section">↵</a></div>
    <div class="issue"> Do we need to address user settings here at all? <a class="issue-return" href="#issue-a82d4aa0" title="Jump to section">↵</a></div>
