@@ -855,10 +855,10 @@ Issue: Fill in.
 Privacy considerations {#privacy-considerations}
 ================================================
 
-<em>This section is non-normative.</em>
-
 Cross-site information disclosure {#cross-site-information-disclosure}
 ----------------------------------------------------------------------
+
+<em>This section is non-normative.</em>
 
 This API lets isolated contexts with access to cross-site data (i.e. <a
 href="https://wicg.github.io/shared-storage/">Shared Storage</a> worklets/<a
@@ -868,8 +868,8 @@ send aggregatable reports over the network.
 Aggregatable reports contain encrypted high entropy cross-site information, in
 the form of key-value pairs (i.e. contributions to a histogram). The information
 embedded in the contributions is arbitrary but can include things like browsing
-history and other cross-site activity. The API aims to provide some protection
-for this information from being passed from one site to another.
+history and other cross-site activity. The API aims to protect this information
+from being passed from one site to another.
 
 ### Restricted contribution processing ### {#restricted-contribution-processing}
 
@@ -878,7 +878,7 @@ encrypted so that they can only be processed by a trusted aggregation service.
 This trusted aggregation service sums the values across the reports for each key
 and adds noise to each of these values to produce ‘summary reports’.
 
-The output of that processing will be an aggregate, noised histogram. The
+The output of that processing will be an aggregated, noised histogram. The
 service ensures that any report can not be processed multiple times. Further,
 information exposure is limited by contribution budgets on the client. In
 principle, this framework can support specifying a noise parameter which
@@ -916,8 +916,8 @@ Clearing site data {#clearing-site-data}
 
 The [=aggregatable report cache=] as well as any contribution history data
 stored for the [=PrivateAggregation/consume budget if permitted=] algorithm
-contain data about a user’s web activity. As such, the user agent is strongly
-encouraged to expose controls that allow the user to delete data from them.
+contain data about a user’s web activity. As such, the user agent must expose
+controls that allow the user to delete data from them.
 
 Reporting delay concerns {#reporting-delay-concerns}
 ----------------------------------------------------
@@ -925,6 +925,8 @@ Reporting delay concerns {#reporting-delay-concerns}
 Note: This section is largely copied from the
     <a href="https://wicg.github.io/attribution-reporting-api/">Attribution
     Reporting API spec</a>, adapting as necessary.
+
+<em>This section is non-normative.</em>
 
 Delaying sending reports after API invocation can enable side-channel leakage in
 some situations.
