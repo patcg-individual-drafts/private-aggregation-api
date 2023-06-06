@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version 5fcd28d6d, updated Tue May 30 13:12:11 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="6879d334c6c76e401011aed34abdf50e58d311e7" name="document-revision">
+  <meta content="7a536d9f1690ff4d39038663451d610f6c807070" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -649,7 +649,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-06-05">5 June 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-06-06">6 June 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1419,21 +1419,21 @@ the result of adding <var>returnValue</var> to <var>value</var>["<code class="id
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="determine-the-numeric-value">determine the numeric value</dfn> of a <a data-link-type="dfn" href="#signal-base-value" id="ref-for-signal-base-value①">signal base value</a> <var>signalBaseValue</var>, perform the following steps. They return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-double" id="ref-for-idl-double①">double</a></code>.</p>
    <p class="issue" id="issue-cb6e966f"><a class="self-link" href="#issue-cb6e966f"></a> Fill in.</p>
    <h2 class="heading settled" data-level="9" id="privacy-considerations"><span class="secno">9. </span><span class="content">Privacy considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
-   <p><em>This section is non-normative.</em></p>
    <h3 class="heading settled" data-level="9.1" id="cross-site-information-disclosure"><span class="secno">9.1. </span><span class="content">Cross-site information disclosure</span><a class="self-link" href="#cross-site-information-disclosure"></a></h3>
+   <p><em>This section is non-normative.</em></p>
    <p>This API lets isolated contexts with access to cross-site data (i.e. <a href="https://wicg.github.io/shared-storage/">Shared Storage</a> worklets/<a href="https://wicg.github.io/turtledove/">Protected Audience</a> script runners)
 send aggregatable reports over the network.</p>
    <p>Aggregatable reports contain encrypted high entropy cross-site information, in
 the form of key-value pairs (i.e. contributions to a histogram). The information
 embedded in the contributions is arbitrary but can include things like browsing
-history and other cross-site activity. The API aims to provide some protection
-for this information from being passed from one site to another.</p>
+history and other cross-site activity. The API aims to protect this information
+from being passed from one site to another.</p>
    <h4 class="heading settled" data-level="9.1.1" id="restricted-contribution-processing"><span class="secno">9.1.1. </span><span class="content">Restricted contribution processing</span><a class="self-link" href="#restricted-contribution-processing"></a></h4>
    <p>The histogram contributions are not exposed directly. Instead, they are
 encrypted so that they can only be processed by a trusted aggregation service.
 This trusted aggregation service sums the values across the reports for each key
 and adds noise to each of these values to produce ‘summary reports’.</p>
-   <p>The output of that processing will be an aggregate, noised histogram. The
+   <p>The output of that processing will be an aggregated, noised histogram. The
 service ensures that any report can not be processed multiple times. Further,
 information exposure is limited by contribution budgets on the client. In
 principle, this framework can support specifying a noise parameter which
@@ -1462,11 +1462,12 @@ choices in the tradeoffs between information exposure and utility.</p>
    <h3 class="heading settled" data-level="9.2" id="clearing-site-data"><span class="secno">9.2. </span><span class="content">Clearing site data</span><a class="self-link" href="#clearing-site-data"></a></h3>
    <p>The <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache④">aggregatable report cache</a> as well as any contribution history data
 stored for the <a data-link-type="dfn" href="#privateaggregation-consume-budget-if-permitted" id="ref-for-privateaggregation-consume-budget-if-permitted①">consume budget if permitted</a> algorithm
-contain data about a user’s web activity. As such, the user agent is strongly
-encouraged to expose controls that allow the user to delete data from them.</p>
+contain data about a user’s web activity. As such, the user agent must expose
+controls that allow the user to delete data from them.</p>
    <h3 class="heading settled" data-level="9.3" id="reporting-delay-concerns"><span class="secno">9.3. </span><span class="content">Reporting delay concerns</span><a class="self-link" href="#reporting-delay-concerns"></a></h3>
    <p class="note" role="note"><span class="marker">Note:</span> This section is largely copied from the <a href="https://wicg.github.io/attribution-reporting-api/">Attribution
     Reporting API spec</a>, adapting as necessary.</p>
+   <p><em>This section is non-normative.</em></p>
    <p>Delaying sending reports after API invocation can enable side-channel leakage in
 some situations.</p>
    <h4 class="heading settled" data-level="9.3.1" id="cross-network-reporting-origin-leakage"><span class="secno">9.3.1. </span><span class="content">Cross-network reporting origin leakage</span><a class="self-link" href="#cross-network-reporting-origin-leakage"></a></h4>
