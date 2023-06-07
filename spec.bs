@@ -255,6 +255,13 @@ A user agent holds an <dfn>contribution cache</dfn>, which is a [=list=] of
 A user agent holds an <dfn>aggregatable report cache</dfn>, which is a [=list=]
 of [=aggregatable reports=].
 
+Clearing storage {#clearing-storage}
+----------------------------------------
+
+The user agent must expose controls that allow the user to delete data from
+the [=aggregatable report cache=] as well as any contribution history data
+stored for the [=PrivateAggregation/consume budget if permitted=] algorithm.
+
 [=Implementation-defined=] values {#implementation-defined-values}
 ==================================================================
 
@@ -855,10 +862,10 @@ Issue: Fill in.
 Privacy considerations {#privacy-considerations}
 ================================================
 
+<em>This section is non-normative.</em>
+
 Cross-site information disclosure {#cross-site-information-disclosure}
 ----------------------------------------------------------------------
-
-<em>This section is non-normative.</em>
 
 This API lets isolated contexts with access to cross-site data (i.e. <a
 href="https://wicg.github.io/shared-storage/">Shared Storage</a> worklets/<a
@@ -916,8 +923,8 @@ Clearing site data {#clearing-site-data}
 
 The [=aggregatable report cache=] as well as any contribution history data
 stored for the [=PrivateAggregation/consume budget if permitted=] algorithm
-contain data about a user’s web activity. As such, the user agent must expose
-controls that allow the user to delete data from them.
+contain data about a user’s web activity. As such, user controls to delete this
+data are required, see [clearing storage](#clearing-storage).
 
 Reporting delay concerns {#reporting-delay-concerns}
 ----------------------------------------------------
@@ -925,8 +932,6 @@ Reporting delay concerns {#reporting-delay-concerns}
 Note: This section is largely copied from the
     <a href="https://wicg.github.io/attribution-reporting-api/">Attribution
     Reporting API spec</a>, adapting as necessary.
-
-<em>This section is non-normative.</em>
 
 Delaying sending reports after API invocation can enable side-channel leakage in
 some situations.
