@@ -36,6 +36,8 @@ spec: hr-time; type: dfn; urlPrefix: https://w3c.github.io/hr-time/
     text: moment; url: #dfn-moment
     text: unix epoch; url: #dfn-unix-epoch
     text: wall clock; url: #dfn-wall-clock
+spec: html; type: dfn; urlPrefix: https://tc39.es/ecma262/
+    text: call; url: sec-call
 </pre>
 
 <pre class=link-defaults>
@@ -612,24 +614,72 @@ partial interface SharedStorageWorkletGlobalScope {
 };
 </xmp>
 
-At the start of each invocation of a Shared Storage operation (i.e. a call to
-`run()` or to `selectURL()`), create a new [=batching scope=] and associate it
-with that invocation.
+The {{WindowSharedStorage}}'s {{WindowSharedStorage/run()}} method steps are
+modified in two ways. First, add the following step in the nested scope just
+after "Let |operation| be |operationMap|[|name|]." (renumbering later steps as
+appropriate):
+<div algorithm="shared-storage-run-monkeypatch-1">
+2. Let <var ignore>batchingScope</var> be a new [=batching scope=].
 
-When a {{PrivateAggregation}} object is exposed on a
-{{SharedStorageWorkletGlobalScope}}, its [=PrivateAggregation/get batching scope
-steps=] should be left default until the `addModule()` execution is complete. At
-that point, it should be set to the following algorithm:
-1. Return the [=batching scope=] associated with the currently executing
-    operation invocation in |scope|.
+</div>
+Second, at the end of the same nested scope, add the following step:
+<div algorithm="shared-storage-run-monkeypatch-2">
+5. When the above [=call=] returns, [=mark a batching scope complete=] given
+    <var ignore>batchingScope</var>, <var ignore>outsideSettings</var>'
+    [=environment settings object/origin=] and "<code>shared-storage</code>".
 
-Note: Multiple operation invocations can be in-progress at the same time, each
-with a different batching scope. However, only one can be currently executing.
+</div>
 
-When an operation invocation completes, [=mark a batching scope complete=] given
-the associated [=batching scope=], the global scope's [=relevant settings
-object=]'s [=environment settings object/origin=] and
-"<code>shared-storage</code>".
+The {{WindowSharedStorage}}'s {{WindowSharedStorage/selectURL()}} method steps
+are modified in two ways. First, add the following step in the nested scope just
+after "Let |operation| be |operationMap|[|name|]." (renumbering later steps as
+appropriate):
+<div algorithm="shared-storage-selecturl-monkeypatch-1">
+2. Let <var ignore>batchingScope</var> be a new [=batching scope=].
+
+</div>
+Second, at the end of the same nested scope, add the following step:
+<div algorithm="shared-storage-selecturl-monkeypatch-2">
+8. [=Mark a batching scope complete=] given <var ignore>batchingScope</var>,
+    <var ignore>outsideSettings</var>' [=environment settings object/origin=]
+    and "<code>shared-storage</code>".
+
+</div>
+
+Issue: Once <a href="https://github.com/wicg/shared-storage/issues/88">
+    shared-storage/88</a> is resolved, align the above monkeypatches with how
+    `keepAlive` is handled at operation completion.
+
+The {{Worklet/addModule()}} steps are modified to add a new step just before
+the final step ("Return <var ignore>promise</var>."), renumbering the last step
+as appropriate:
+<div algorithm="shared-storage-addmodule-monkeypatch">
+7. If |this| is a {{SharedStorageWorklet}}, [=upon fulfillment=] of |promise| or
+    [=upon rejection=] of |promise|, run the following steps:
+    1. Let |globalScopes| be |this|'s [=Worklet/global scopes=].
+    1. [=Assert=]: |globalScopes|' [=list/size=] equals 1.
+    1. Set |globalScopes|[0]'s {{SharedStorageWorkletGlobalScope/
+        privateAggregation}}'s [=PrivateAggregation/get batching scope steps=]
+        to the following algorithm:
+        1. Return the [=batching scope=] that is scheduled to be passed to
+            [=mark a batching scope complete=] when the currently executing
+            call returns.
+
+            Note: Multiple operation invocations can be in-progress at the same
+            time, each with a different batching scope. However, only one can be
+            currently executing.
+
+</div>
+
+Issue: Once <a href="https://github.com/wicg/shared-storage/issues/89">
+    shared-storage/89</a> is resolved, align the above monkeypatch with how
+    access to `sharedStorage` is prevented in
+    {{SharedStorageWorkletGlobalScope}}s until {{Worklet/addModule()}}'s initial
+    execution is complete.
+
+Note: This extends Shared Storage's existing {{Worklet/addModule()}}
+    <a href="https://wicg.github.io/shared-storage/#worklet-monkey-patch">
+    monkeypatch</a>.
 
 Protected Audience API monkeypatches {#protected-audience-api-monkeypatches}
 ============================================================================
@@ -662,32 +712,53 @@ partial interface PrivateAggregation {
 
 Issue: Do we want to align naming with implementation?
 
-At the start of each Protected Audience auction (i.e. a call to
-`runAdAuction()`), create a new [=batching scope=] for each unique origin
-participating in the auction (including both bidders and the seller).
+The {{Navigator/runAdAuction()}} method steps are modified to add the following
+steps after step 6 ("Let <var ignore>p</var> be [=a new promise=]"), renumbering
+later steps as appropriate:
+<div algorithm="protected-audience-runadauction-monkeypatch">
+7. Let |batchingScopeMap| be a new [=map/is empty|empty=] [=map=].
+1. [=list/iterate|For each=] |bidderOrigin| of |auctionConfig|'s
+    <a spec="turtledove" for="auction config">interest group buyers</a>:
+    1. [=map/Set=] |batchingScopeMap|[|bidderOrigin|] to a new [=batching
+        scope=].
+1. Let |sellerOrigin| be |auctionConfig|'s
+    <a spec="turtledove" for="auction config">seller</a>.
+1. [=map/Set=] |batchingScopeMap|[|sellerOrigin|] to a new [=batching scope=].
+1. [=Upon fulfillment=] of |p| or [=upon rejection=] of |p|, run the following
+    steps:
+    1. TODO: Take onEvent contributions from its cache, run [=fill in the
+        contribution=] and then [=append an entry to the contribution cache=].
+    1. [=list/iterate|For each=] |origin| → |batchingScope| of
+        |batchingScopeMap|:
+        1. [=Mark a batching scope complete=] given |batchingScope|, |origin|
+            and "<code>protected-audience</code>".
 
-When a {{PrivateAggregation}} object is exposed on a
-{{InterestGroupScriptRunnerGlobalScope}}, its [=PrivateAggregation/get batching
-scope steps=] should be left default until the `addModule()` execution is
-complete. At that point, it should be set to the following algorithm:
-1. Return the [=batching scope=] associated with the auction and the |scope|'s
-    [=relevant settings object=]'s [=environment settings object/origin=].
-
-When an auction completes, perform the following steps:
-1. TODO: Take onEvent contributions from its cache, run [=fill in the
-    contribution=] and then [=append an entry to the contribution cache=].
-1. Let |allOrigins| be a [=list=] of all the unique [=origins=] that
-    participated in the auction (including both bidders and the seller).
-1. [=list/iterate|For each=] |origin| of |allOrigins|:
-    1. [=Mark a batching scope complete=] given the [=batching scope=]
-        associated with the auction and |origin|, |origin| and
-        "<code>protected-audience</code>".
+</div>
 
 Issue: How to handle fenced frame-triggered contributions and other
     event-triggered contributions.
 
 Issue: Need to handle `auctionReportBuyers` and `auctionReportBuyerKeys` here or
     in the Protected Audience API spec.
+
+The <a spec="turtledove">evaluate a script</a> steps are modified to add the
+following steps after step 11 ("If <var ignore>evaluationStatus</var> is an
+[=ECMAScript/abrupt completion=]..."), renumbering later steps as appropriate:
+<div algorithm="protected-audience-evaluate-a-script-monkeypatch">
+12. Set <var ignore>global</var>'s {{InterestGroupScriptRunnerGlobalScope/
+    privateAggregation}}'s [=PrivateAggregation/get batching scope steps=] to
+    the following algorithm:
+    1. Return the [=batching scope=] associated with the auction and the
+        <var ignore>scope</var>'s [=relevant settings object=]'s [=environment
+        settings object/origin=].
+
+</div>
+
+Issue: Once <a href="https://github.com/wicg/turtledove/issues/615">
+    protected-audience/615</a> is resolved, align the above monkeypatch with how
+    access to other functions is prevented in
+    {{InterestGroupScriptRunnerGlobalScope}}s until the script's initial
+    execution is complete.
 
 <div algorithm>
 The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(DOMString
