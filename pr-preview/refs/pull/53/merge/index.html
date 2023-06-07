@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version 5fcd28d6d, updated Tue May 30 13:12:11 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="7a536d9f1690ff4d39038663451d610f6c807070" name="document-revision">
+  <meta content="c933d093c9e736d0f930afce9d64cdf98af3d77c" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -649,7 +649,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-06-06">6 June 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-06-07">7 June 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -714,7 +714,11 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
         <li><a href="#signal-base-value"><span class="secno">5.2.1</span> <span class="content">Signal base value</span></a>
        </ol>
      </ol>
-    <li><a href="#storage"><span class="secno">6</span> <span class="content">Storage</span></a>
+    <li>
+     <a href="#storage"><span class="secno">6</span> <span class="content">Storage</span></a>
+     <ol class="toc">
+      <li><a href="#clearing-storage"><span class="secno">6.1</span> <span class="content">Clearing storage</span></a>
+     </ol>
     <li><a href="#implementation-defined-values"><span class="secno">7</span> <span class="content"><span>Implementation-defined</span> values</span></a>
     <li>
      <a href="#algorithms"><span class="secno">8</span> <span class="content">Algorithms</span></a>
@@ -967,6 +971,10 @@ event, PAExtendedHistogramContribution contribution)</code></dfn> method steps a
    <p class="issue" id="issue-9532b98e"><a class="self-link" href="#issue-9532b98e"></a> New enum needed for bid reject reasons.</p>
    <h2 class="heading settled" data-level="6" id="storage"><span class="secno">6. </span><span class="content">Storage</span><a class="self-link" href="#storage"></a></h2>
    <p>A user agent holds an <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="aggregatable-report-cache">aggregatable report cache</dfn>, which is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑤">list</a> of <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report①②">aggregatable reports</a>.</p>
+   <h3 class="heading settled" data-level="6.1" id="clearing-storage"><span class="secno">6.1. </span><span class="content">Clearing storage</span><a class="self-link" href="#clearing-storage"></a></h3>
+   <p>The user agent must expose controls that allow the user to delete data from
+the <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache">aggregatable report cache</a> as well as any contribution history data
+stored for the <a data-link-type="dfn" href="#privateaggregation-consume-budget-if-permitted" id="ref-for-privateaggregation-consume-budget-if-permitted">consume budget if permitted</a> algorithm.</p>
    <h2 class="heading settled" data-level="7" id="implementation-defined-values"><span class="secno">7. </span><span class="content"><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined">Implementation-defined</a> values</span><a class="self-link" href="#implementation-defined-values"></a></h2>
    <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="maximum-report-contributions">Maximum report contributions</dfn> is a positive integer that controls how
 many contributions can be present in a single report.</p>
@@ -1016,7 +1024,7 @@ report contributions</a>, exclusive:</p>
     <li data-md>
      <p>Let <var>currentWallTime</var> be the <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-current-wall-time" id="ref-for-dfn-current-wall-time">current wall time</a>.</p>
     <li data-md>
-     <p>Let <var>sufficientBudget</var> be the result of <a data-link-type="dfn" href="#privateaggregation-consume-budget-if-permitted" id="ref-for-privateaggregation-consume-budget-if-permitted">consuming budget
+     <p>Let <var>sufficientBudget</var> be the result of <a data-link-type="dfn" href="#privateaggregation-consume-budget-if-permitted" id="ref-for-privateaggregation-consume-budget-if-permitted①">consuming budget
 if permitted</a> given <var>contributionSum</var>, <var>reportingOrigin</var>, <var>api</var> and <var>currentWallTime</var>.</p>
     <li data-md>
      <p>If <var>sufficientBudget</var> is false, return.</p>
@@ -1024,7 +1032,7 @@ if permitted</a> given <var>contributionSum</var>, <var>reportingOrigin</var>, <
      <p>Let <var>report</var> be the result of <a data-link-type="dfn" href="#privateaggregation-obtain-an-aggregatable-report" id="ref-for-privateaggregation-obtain-an-aggregatable-report">obtaining an aggregatable
 report</a> given <var>reportingOrigin</var>, <var>api</var>, <var>truncatedContributions</var> and <var>currentWallTime</var>.</p>
     <li data-md>
-     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append①">Append</a> <var>report</var> to the user agent’s <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache">aggregatable report cache</a>.</p>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append①">Append</a> <var>report</var> to the user agent’s <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache①">aggregatable report cache</a>.</p>
    </ol>
    <p class="issue" id="issue-b92a47e8"><a class="self-link" href="#issue-b92a47e8"></a> Do we need to ensure the reports aren’t queued after being sent?</p>
    <p class="issue" id="issue-a82d4aa0"><a class="self-link" href="#issue-a82d4aa0"></a> Do we need to address user settings here at all?</p>
@@ -1087,7 +1095,7 @@ delay</a>.</p>
     network on or whatever</p>
    <p class="issue" id="issue-2485156c"><a class="self-link" href="#issue-2485156c"></a> Do we have to use the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task">queue a task</a> algorithm here?</p>
    <p>The user agent must periodically <a data-link-type="dfn" href="#attempt-to-queue-reports-for-sending" id="ref-for-attempt-to-queue-reports-for-sending">attempt to queue reports for sending</a> with
-its <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache①">aggregatable report cache</a>.</p>
+its <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache②">aggregatable report cache</a>.</p>
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="attempt-to-queue-reports-for-sending">attempt to queue reports for sending</dfn> given a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑨">list</a> of <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report⑤">aggregatable reports</a> <var>reports</var>:</p>
    <ol>
     <li data-md>
@@ -1133,7 +1141,7 @@ false.</p>
     <li data-md>
      <p>Let <var>data</var> be the result of <a data-link-type="dfn" href="#serialize-an-aggregatable-report" id="ref-for-serialize-an-aggregatable-report">serializing an aggregatable report</a> given <var>report</var>.</p>
     <li data-md>
-     <p>If <var>data</var> is an error, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-remove" id="ref-for-list-remove">remove</a> <var>report</var> from the <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache②">aggregatable
+     <p>If <var>data</var> is an error, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-remove" id="ref-for-list-remove">remove</a> <var>report</var> from the <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache③">aggregatable
 report cache</a>. (TODO: do we need to queue this task?)</p>
     <li data-md>
      <p>Let <var>request</var> be the result of <a data-link-type="dfn" href="#create-a-report-request" id="ref-for-create-a-report-request">creating a report request</a> given <var>url</var> and <var>data</var>.</p>
@@ -1147,7 +1155,7 @@ should be false if no error occurred.</p>
       <li data-md>
        <p>If <var>shouldRetry</var> is true, set <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-queued" id="ref-for-aggregatable-report-queued⑤">queued</a> value to false.</p>
       <li data-md>
-       <p>Otherwise, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-remove" id="ref-for-list-remove①">remove</a> <var>report</var> from the <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache③">aggregatable report
+       <p>Otherwise, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-remove" id="ref-for-list-remove①">remove</a> <var>report</var> from the <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache④">aggregatable report
 cache</a>.</p>
      </ol>
    </ol>
@@ -1419,8 +1427,8 @@ the result of adding <var>returnValue</var> to <var>value</var>["<code class="id
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="determine-the-numeric-value">determine the numeric value</dfn> of a <a data-link-type="dfn" href="#signal-base-value" id="ref-for-signal-base-value①">signal base value</a> <var>signalBaseValue</var>, perform the following steps. They return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-double" id="ref-for-idl-double①">double</a></code>.</p>
    <p class="issue" id="issue-cb6e966f"><a class="self-link" href="#issue-cb6e966f"></a> Fill in.</p>
    <h2 class="heading settled" data-level="9" id="privacy-considerations"><span class="secno">9. </span><span class="content">Privacy considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
-   <h3 class="heading settled" data-level="9.1" id="cross-site-information-disclosure"><span class="secno">9.1. </span><span class="content">Cross-site information disclosure</span><a class="self-link" href="#cross-site-information-disclosure"></a></h3>
    <p><em>This section is non-normative.</em></p>
+   <h3 class="heading settled" data-level="9.1" id="cross-site-information-disclosure"><span class="secno">9.1. </span><span class="content">Cross-site information disclosure</span><a class="self-link" href="#cross-site-information-disclosure"></a></h3>
    <p>This API lets isolated contexts with access to cross-site data (i.e. <a href="https://wicg.github.io/shared-storage/">Shared Storage</a> worklets/<a href="https://wicg.github.io/turtledove/">Protected Audience</a> script runners)
 send aggregatable reports over the network.</p>
    <p>Aggregatable reports contain encrypted high entropy cross-site information, in
@@ -1460,14 +1468,13 @@ exposed, we also aim to support a wide range of use cases. The privacy
 parameters are left <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑥">implementation-defined</a> to allow different and evolving
 choices in the tradeoffs between information exposure and utility.</p>
    <h3 class="heading settled" data-level="9.2" id="clearing-site-data"><span class="secno">9.2. </span><span class="content">Clearing site data</span><a class="self-link" href="#clearing-site-data"></a></h3>
-   <p>The <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache④">aggregatable report cache</a> as well as any contribution history data
-stored for the <a data-link-type="dfn" href="#privateaggregation-consume-budget-if-permitted" id="ref-for-privateaggregation-consume-budget-if-permitted①">consume budget if permitted</a> algorithm
-contain data about a user’s web activity. As such, the user agent must expose
-controls that allow the user to delete data from them.</p>
+   <p>The <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache⑤">aggregatable report cache</a> as well as any contribution history data
+stored for the <a data-link-type="dfn" href="#privateaggregation-consume-budget-if-permitted" id="ref-for-privateaggregation-consume-budget-if-permitted②">consume budget if permitted</a> algorithm
+contain data about a user’s web activity. As such, user controls to delete this
+data are required, see <a href="#clearing-storage">clearing storage</a>.</p>
    <h3 class="heading settled" data-level="9.3" id="reporting-delay-concerns"><span class="secno">9.3. </span><span class="content">Reporting delay concerns</span><a class="self-link" href="#reporting-delay-concerns"></a></h3>
    <p class="note" role="note"><span class="marker">Note:</span> This section is largely copied from the <a href="https://wicg.github.io/attribution-reporting-api/">Attribution
     Reporting API spec</a>, adapting as necessary.</p>
-   <p><em>This section is non-normative.</em></p>
    <p>Delaying sending reports after API invocation can enable side-channel leakage in
 some situations.</p>
    <h4 class="heading settled" data-level="9.3.1" id="cross-network-reporting-origin-leakage"><span class="secno">9.3.1. </span><span class="content">Cross-network reporting origin leakage</span><a class="self-link" href="#cross-network-reporting-origin-leakage"></a></h4>
@@ -1539,10 +1546,10 @@ their online-offline presence from the reporting origin.</p>
    <h2 class="heading settled" data-level="10" id="security-considerations"><span class="secno">10. </span><span class="content">Security considerations</span><a class="self-link" href="#security-considerations"></a></h2>
    <p><em>This section is non-normative.</em></p>
    <h3 class="heading settled" data-level="10.1" id="same-origin-policy"><span class="secno">10.1. </span><span class="content">Same-origin policy</span><a class="self-link" href="#same-origin-policy"></a></h3>
-   <p>Writes to the <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache⑤">aggregatable report cache</a> and <a data-link-type="dfn" href="#contributions-cache" id="ref-for-contributions-cache④">contribution cache</a> are
+   <p>Writes to the <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache⑥">aggregatable report cache</a> and <a data-link-type="dfn" href="#contributions-cache" id="ref-for-contributions-cache④">contribution cache</a> are
 separated by the reporting <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑤">origin</a> and the data included in any report with a
 given reporting <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑥">origin</a> are generated with only data from that <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑦">origin</a>.</p>
-   <p>One notable exception is the <a data-link-type="dfn" href="#privateaggregation-consume-budget-if-permitted" id="ref-for-privateaggregation-consume-budget-if-permitted②">consume budget if permitted</a> algorithm which is <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑦">implementation-defined</a> and can consider contribution
+   <p>One notable exception is the <a data-link-type="dfn" href="#privateaggregation-consume-budget-if-permitted" id="ref-for-privateaggregation-consume-budget-if-permitted③">consume budget if permitted</a> algorithm which is <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑦">implementation-defined</a> and can consider contribution
 history from other <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑧">origins</a>. For example, the algorithm could consider all
 history from a particular <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#site" id="ref-for-site">site</a>. This would be an explicit relaxation of the
 same-origin policy as multiple origins would be able to influence the API’s
@@ -1553,7 +1560,7 @@ origins to be unable to access the API. This trades off security for privacy, in
 that the limits are there to reduce the efficacy of many origins colluding
 together to violate privacy. However, this security risk is lessened if the set
 of origins limited are all <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#same-site" id="ref-for-same-site">same site</a>. <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent③">User agents</a> should consider these
-tradeoffs when choosing the <a data-link-type="dfn" href="#privateaggregation-consume-budget-if-permitted" id="ref-for-privateaggregation-consume-budget-if-permitted③">consume budget if permitted</a> algorithm.</p>
+tradeoffs when choosing the <a data-link-type="dfn" href="#privateaggregation-consume-budget-if-permitted" id="ref-for-privateaggregation-consume-budget-if-permitted④">consume budget if permitted</a> algorithm.</p>
    <h3 class="heading settled" data-level="10.2" id="protecting-the-histogram-contributions"><span class="secno">10.2. </span><span class="content">Protecting the histogram contributions</span><a class="self-link" href="#protecting-the-histogram-contributions"></a></h3>
    <p>As discussed <a href="#restricted-contribution-processing">above</a>, the processing of
 histogram contributions is limited to protect privacy. This limitation relies on
@@ -2301,13 +2308,13 @@ window.dfnpanelData['context-type'] = {"dfnID": "context-type", "url": "#context
 window.dfnpanelData['context-type-fledge'] = {"dfnID": "context-type-fledge", "url": "#context-type-fledge", "dfnText": "fledge", "refSections": [{"refs": [{"id": "ref-for-context-type-fledge"}], "title": "4. Exposing to the Protected Audience API"}, {"refs": [{"id": "ref-for-context-type-fledge\u2460"}], "title": "5.1.2. Context type"}], "external": false};
 window.dfnpanelData['context-type-shared-storage'] = {"dfnID": "context-type-shared-storage", "url": "#context-type-shared-storage", "dfnText": "shared-storage", "refSections": [{"refs": [{"id": "ref-for-context-type-shared-storage"}], "title": "3. Exposing to the Shared Storage API"}], "external": false};
 window.dfnpanelData['signal-base-value'] = {"dfnID": "signal-base-value", "url": "#signal-base-value", "dfnText": "5.2.1. Signal base value", "refSections": [{"refs": [{"id": "ref-for-signal-base-value"}], "title": "5.2.1. Signal base value"}, {"refs": [{"id": "ref-for-signal-base-value"}, {"id": "ref-for-signal-base-value\u2460"}], "title": "8.4. Protected Audience API-specific"}], "external": false};
-window.dfnpanelData['aggregatable-report-cache'] = {"dfnID": "aggregatable-report-cache", "url": "#aggregatable-report-cache", "dfnText": "aggregatable report cache", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-cache"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-cache\u2460"}, {"id": "ref-for-aggregatable-report-cache\u2461"}, {"id": "ref-for-aggregatable-report-cache\u2462"}], "title": "8.2. Sending reports"}, {"refs": [{"id": "ref-for-aggregatable-report-cache\u2463"}], "title": "9.2. Clearing site data"}, {"refs": [{"id": "ref-for-aggregatable-report-cache\u2464"}], "title": "10.1. Same-origin policy"}], "external": false};
+window.dfnpanelData['aggregatable-report-cache'] = {"dfnID": "aggregatable-report-cache", "url": "#aggregatable-report-cache", "dfnText": "aggregatable report cache", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-cache"}], "title": "6.1. Clearing storage"}, {"refs": [{"id": "ref-for-aggregatable-report-cache\u2460"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-cache\u2461"}, {"id": "ref-for-aggregatable-report-cache\u2462"}, {"id": "ref-for-aggregatable-report-cache\u2463"}], "title": "8.2. Sending reports"}, {"refs": [{"id": "ref-for-aggregatable-report-cache\u2464"}], "title": "9.2. Clearing site data"}, {"refs": [{"id": "ref-for-aggregatable-report-cache\u2465"}], "title": "10.1. Same-origin policy"}], "external": false};
 window.dfnpanelData['maximum-report-contributions'] = {"dfnID": "maximum-report-contributions", "url": "#maximum-report-contributions", "dfnText": "Maximum report contributions", "refSections": [{"refs": [{"id": "ref-for-maximum-report-contributions"}, {"id": "ref-for-maximum-report-contributions\u2460"}], "title": "8.1. Scheduling reports"}], "external": false};
 window.dfnpanelData['minimum-report-delay'] = {"dfnID": "minimum-report-delay", "url": "#minimum-report-delay", "dfnText": "Minimum report delay", "refSections": [{"refs": [{"id": "ref-for-minimum-report-delay"}], "title": "8.1. Scheduling reports"}], "external": false};
 window.dfnpanelData['randomized-report-delay'] = {"dfnID": "randomized-report-delay", "url": "#randomized-report-delay", "dfnText": "Randomized report delay", "refSections": [{"refs": [{"id": "ref-for-randomized-report-delay"}], "title": "8.1. Scheduling reports"}], "external": false};
 window.dfnpanelData['serialize-an-integer'] = {"dfnID": "serialize-an-integer", "url": "#serialize-an-integer", "dfnText": "serialize an integer", "refSections": [{"refs": [{"id": "ref-for-serialize-an-integer"}], "title": "8.3. Serializing reports"}], "external": false};
 window.dfnpanelData['privateaggregation-report-creation-and-scheduling-steps'] = {"dfnID": "privateaggregation-report-creation-and-scheduling-steps", "url": "#privateaggregation-report-creation-and-scheduling-steps", "dfnText": "report creation and\nscheduling steps", "refSections": [{"refs": [{"id": "ref-for-privateaggregation-report-creation-and-scheduling-steps"}], "title": "3. Exposing to the Shared Storage API"}, {"refs": [{"id": "ref-for-privateaggregation-report-creation-and-scheduling-steps\u2460"}], "title": "4. Exposing to the Protected Audience API"}], "external": false};
-window.dfnpanelData['privateaggregation-consume-budget-if-permitted'] = {"dfnID": "privateaggregation-consume-budget-if-permitted", "url": "#privateaggregation-consume-budget-if-permitted", "dfnText": "consume budget if permitted", "refSections": [{"refs": [{"id": "ref-for-privateaggregation-consume-budget-if-permitted"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-privateaggregation-consume-budget-if-permitted\u2460"}], "title": "9.2. Clearing site data"}, {"refs": [{"id": "ref-for-privateaggregation-consume-budget-if-permitted\u2461"}, {"id": "ref-for-privateaggregation-consume-budget-if-permitted\u2462"}], "title": "10.1. Same-origin policy"}], "external": false};
+window.dfnpanelData['privateaggregation-consume-budget-if-permitted'] = {"dfnID": "privateaggregation-consume-budget-if-permitted", "url": "#privateaggregation-consume-budget-if-permitted", "dfnText": "consume budget if permitted", "refSections": [{"refs": [{"id": "ref-for-privateaggregation-consume-budget-if-permitted"}], "title": "6.1. Clearing storage"}, {"refs": [{"id": "ref-for-privateaggregation-consume-budget-if-permitted\u2460"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-privateaggregation-consume-budget-if-permitted\u2461"}], "title": "9.2. Clearing site data"}, {"refs": [{"id": "ref-for-privateaggregation-consume-budget-if-permitted\u2462"}, {"id": "ref-for-privateaggregation-consume-budget-if-permitted\u2463"}], "title": "10.1. Same-origin policy"}], "external": false};
 window.dfnpanelData['privateaggregation-obtain-an-aggregatable-report'] = {"dfnID": "privateaggregation-obtain-an-aggregatable-report", "url": "#privateaggregation-obtain-an-aggregatable-report", "dfnText": "obtain an aggregatable report", "refSections": [{"refs": [{"id": "ref-for-privateaggregation-obtain-an-aggregatable-report"}], "title": "8.1. Scheduling reports"}], "external": false};
 window.dfnpanelData['privateaggregation-obtain-a-report-delivery-time'] = {"dfnID": "privateaggregation-obtain-a-report-delivery-time", "url": "#privateaggregation-obtain-a-report-delivery-time", "dfnText": "obtain a report delivery time", "refSections": [{"refs": [{"id": "ref-for-privateaggregation-obtain-a-report-delivery-time"}], "title": "8.1. Scheduling reports"}], "external": false};
 window.dfnpanelData['attempt-to-queue-reports-for-sending'] = {"dfnID": "attempt-to-queue-reports-for-sending", "url": "#attempt-to-queue-reports-for-sending", "dfnText": "attempt to queue reports for sending", "refSections": [{"refs": [{"id": "ref-for-attempt-to-queue-reports-for-sending"}], "title": "8.2. Sending reports"}], "external": false};
