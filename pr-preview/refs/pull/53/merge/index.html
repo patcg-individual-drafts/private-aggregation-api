@@ -8,7 +8,7 @@
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version 5fcd28d6d, updated Tue May 30 13:12:11 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="c933d093c9e736d0f930afce9d64cdf98af3d77c" name="document-revision">
+  <meta content="8fb80a297dca835abe16ec3b52db8923ed6b8920" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -649,7 +649,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-06-07">7 June 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-06-08">8 June 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -932,8 +932,7 @@ event, PAExtendedHistogramContribution contribution)</code></dfn> method steps a
     <dd data-md>
      <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#boolean" id="ref-for-boolean">boolean</a></p>
    </dl>
-   <p class="issue" id="issue-d4626287"><a class="self-link" href="#issue-d4626287"></a> Handle operation types, aggregation coordinators, maybe retries/offline,
-    report verification</p>
+   <p class="issue" id="issue-4dba390c"><a class="self-link" href="#issue-4dba390c"></a> Handle context ID, maybe retries/offline</p>
    <h4 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="5.1.2" data-lt="Context type" data-noexport id="context-type"><span class="secno">5.1.2. </span><span class="content">Context type</span><a class="self-link" href="#context-type" id="ref-for-context-type⑥"></a></h4>
     A context type is one of the following: 
    <dl>
@@ -970,7 +969,7 @@ event, PAExtendedHistogramContribution contribution)</code></dfn> method steps a
    <p class="issue" id="issue-7e205185"><a class="self-link" href="#issue-7e205185"></a> Make sure these definitions match "determine the numeric value" algorithm</p>
    <p class="issue" id="issue-9532b98e"><a class="self-link" href="#issue-9532b98e"></a> New enum needed for bid reject reasons.</p>
    <h2 class="heading settled" data-level="6" id="storage"><span class="secno">6. </span><span class="content">Storage</span><a class="self-link" href="#storage"></a></h2>
-   <p>A user agent holds an <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="aggregatable-report-cache">aggregatable report cache</dfn>, which is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑤">list</a> of <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report①②">aggregatable reports</a>.</p>
+   <p>A user agent holds an <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="aggregatable-report-cache">aggregatable report cache</dfn>, which is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑤">list</a> of <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report①③">aggregatable reports</a>.</p>
    <h3 class="heading settled" data-level="6.1" id="clearing-storage"><span class="secno">6.1. </span><span class="content">Clearing storage</span><a class="self-link" href="#clearing-storage"></a></h3>
    <p>The user agent must expose controls that allow the user to delete data from
 the <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache">aggregatable report cache</a> as well as any contribution history data
@@ -1443,7 +1442,7 @@ This trusted aggregation service sums the values across the reports for each key
 and adds noise to each of these values to produce ‘summary reports’.</p>
    <p>The output of that processing will be an aggregated, noised histogram. The
 service ensures that any report can not be processed multiple times. Further,
-information exposure is limited by contribution budgets on the client. In
+information exposure is limited by contribution budgets on the user agent. In
 principle, this framework can support specifying a noise parameter which
 satisfies differential privacy.</p>
    <h4 class="heading settled" data-level="9.1.2" id="unencrypted-metadata"><span class="secno">9.1.2. </span><span class="content">Unencrypted metadata</span><a class="self-link" href="#unencrypted-metadata"></a></h4>
@@ -1473,8 +1472,6 @@ stored for the <a data-link-type="dfn" href="#privateaggregation-consume-budget-
 contain data about a user’s web activity. As such, user controls to delete this
 data are required, see <a href="#clearing-storage">clearing storage</a>.</p>
    <h3 class="heading settled" data-level="9.3" id="reporting-delay-concerns"><span class="secno">9.3. </span><span class="content">Reporting delay concerns</span><a class="self-link" href="#reporting-delay-concerns"></a></h3>
-   <p class="note" role="note"><span class="marker">Note:</span> This section is largely copied from the <a href="https://wicg.github.io/attribution-reporting-api/">Attribution
-    Reporting API spec</a>, adapting as necessary.</p>
    <p>Delaying sending reports after API invocation can enable side-channel leakage in
 some situations.</p>
    <h4 class="heading settled" data-level="9.3.1" id="cross-network-reporting-origin-leakage"><span class="secno">9.3.1. </span><span class="content">Cross-network reporting origin leakage</span><a class="self-link" href="#cross-network-reporting-origin-leakage"></a></h4>
@@ -1523,8 +1520,9 @@ network administrator, e.g. by monitoring IP addresses instead.</p>
    <p>The browser only tries to send reports while it is running and while it has
 internet connectivity (even without an explicit check for connectivity,
 naturally the report will fail to be sent if there is none), so receiving or not
-receiving an aggregatable report at the expected time leaks information about
-the user’s presence. Additionally, because the report request inherently
+receiving a (<a data-link-type="dfn" href="#serialize-an-aggregatable-report" id="ref-for-serialize-an-aggregatable-report①">serialized</a>) <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report①②">aggregatable
+report</a> at the <a data-link-type="dfn" href="#aggregatable-report-original-report-time" id="ref-for-aggregatable-report-original-report-time②">original report time</a> leaks information
+about the user’s presence. Additionally, because the report request inherently
 includes an IP address, this could reveal the user’s IP-derived location to the
 reporting origin, including at-home vs. at-work or approximate real-world
 geolocation, or reveal patterns in the user’s browsing activity.</p>
@@ -1535,9 +1533,9 @@ geolocation, or reveal patterns in the user’s browsing activity.</p>
 as the original request made to the reporting origin is in close temporal
 proximity to the report request. However, it increases the likelihood that
 the reporting origin can correlate the original API invocation to the report
-being sent, which weakens the privacy controls of the API, see [Protecting
+being sent, which weakens the privacy controls of the API, see <a href="#protecting-against-leaks-via-the-number-of-reports">Protecting
 against leaks via the number of
-reports]{#protecting-against-leaks-via-the-number-of-reports}.</p>
+reports</a>.</p>
     <li data-md>
      <p>Send reports immediately to a trusted proxy server, which would itself apply
 additional delay: This would effectively hide both the user’s IP address and
@@ -1880,8 +1878,7 @@ to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encry
    <div class="issue"> Fill in the rest. (Need to put the contribution in some sort of queue and
     process the queue at some point. Need to decide where the queue should live
     given it has to outlive the auction.) <a class="issue-return" href="#issue-e94ae90c" title="Jump to section">↵</a></div>
-   <div class="issue"> Handle operation types, aggregation coordinators, maybe retries/offline,
-    report verification <a class="issue-return" href="#issue-d4626287" title="Jump to section">↵</a></div>
+   <div class="issue"> Handle context ID, maybe retries/offline <a class="issue-return" href="#issue-4dba390c" title="Jump to section">↵</a></div>
    <div class="issue"> Need to update "<code><a data-link-type="dfn" href="#context-type-fledge">fledge</a></code>" to reflect API name
     change. <a class="issue-return" href="#issue-40c067e9" title="Jump to section">↵</a></div>
    <div class="issue"> Remove exports when these definitions are used. <a class="issue-return" href="#issue-50e08c14" title="Jump to section">↵</a></div>
@@ -2296,9 +2293,9 @@ window.dfnpanelData['dom-paextendedhistogramcontribution-bucket'] = {"dfnID": "d
 window.dfnpanelData['dom-paextendedhistogramcontribution-value'] = {"dfnID": "dom-paextendedhistogramcontribution-value", "url": "#dom-paextendedhistogramcontribution-value", "dfnText": "value", "refSections": [{"refs": [{"id": "ref-for-dom-paextendedhistogramcontribution-value"}], "title": "8.4. Protected Audience API-specific"}], "external": false};
 window.dfnpanelData['dom-privateaggregation-contributetohistogramonevent'] = {"dfnID": "dom-privateaggregation-contributetohistogramonevent", "url": "#dom-privateaggregation-contributetohistogramonevent", "dfnText": "contributeToHistogramOnEvent(DOMString\nevent, PAExtendedHistogramContribution contribution)", "refSections": [{"refs": [{"id": "ref-for-dom-privateaggregation-contributetohistogramonevent"}], "title": "4. Exposing to the Protected Audience API"}], "external": false};
 window.dfnpanelData['process-the-protected-audience-contributions-cache'] = {"dfnID": "process-the-protected-audience-contributions-cache", "url": "#process-the-protected-audience-contributions-cache", "dfnText": "process the Protected Audience contributions cache", "refSections": [{"refs": [{"id": "ref-for-process-the-protected-audience-contributions-cache"}], "title": "4. Exposing to the Protected Audience API"}], "external": false};
-window.dfnpanelData['aggregatable-report'] = {"dfnID": "aggregatable-report", "url": "#aggregatable-report", "dfnText": "5.1.1. Aggregatable report", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report"}], "title": "5.1.1. Aggregatable report"}, {"refs": [{"id": "ref-for-aggregatable-report"}], "title": "6. Storage"}, {"refs": [{"id": "ref-for-aggregatable-report\u2460"}, {"id": "ref-for-aggregatable-report\u2461"}], "title": "7. Implementation-defined values"}, {"refs": [{"id": "ref-for-aggregatable-report\u2462"}, {"id": "ref-for-aggregatable-report\u2463"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report\u2464"}, {"id": "ref-for-aggregatable-report\u2465"}], "title": "8.2. Sending reports"}, {"refs": [{"id": "ref-for-aggregatable-report\u2466"}, {"id": "ref-for-aggregatable-report\u2467"}, {"id": "ref-for-aggregatable-report\u2468"}, {"id": "ref-for-aggregatable-report\u2460\u24ea"}, {"id": "ref-for-aggregatable-report\u2460\u2460"}], "title": "8.3. Serializing reports"}], "external": false};
+window.dfnpanelData['aggregatable-report'] = {"dfnID": "aggregatable-report", "url": "#aggregatable-report", "dfnText": "5.1.1. Aggregatable report", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report"}], "title": "5.1.1. Aggregatable report"}, {"refs": [{"id": "ref-for-aggregatable-report"}], "title": "6. Storage"}, {"refs": [{"id": "ref-for-aggregatable-report\u2460"}, {"id": "ref-for-aggregatable-report\u2461"}], "title": "7. Implementation-defined values"}, {"refs": [{"id": "ref-for-aggregatable-report\u2462"}, {"id": "ref-for-aggregatable-report\u2463"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report\u2464"}, {"id": "ref-for-aggregatable-report\u2465"}], "title": "8.2. Sending reports"}, {"refs": [{"id": "ref-for-aggregatable-report\u2466"}, {"id": "ref-for-aggregatable-report\u2467"}, {"id": "ref-for-aggregatable-report\u2468"}, {"id": "ref-for-aggregatable-report\u2460\u24ea"}, {"id": "ref-for-aggregatable-report\u2460\u2460"}], "title": "8.3. Serializing reports"}, {"refs": [{"id": "ref-for-aggregatable-report\u2460\u2461"}], "title": "9.3.2. User-presence tracking"}], "external": false};
 window.dfnpanelData['aggregatable-report-reporting-origin'] = {"dfnID": "aggregatable-report-reporting-origin", "url": "#aggregatable-report-reporting-origin", "dfnText": "reporting origin", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-reporting-origin"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-reporting-origin\u2460"}], "title": "8.2. Sending reports"}, {"refs": [{"id": "ref-for-aggregatable-report-reporting-origin\u2461"}], "title": "8.3. Serializing reports"}], "external": false};
-window.dfnpanelData['aggregatable-report-original-report-time'] = {"dfnID": "aggregatable-report-original-report-time", "url": "#aggregatable-report-original-report-time", "dfnText": "original report time", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-original-report-time"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-original-report-time\u2460"}], "title": "8.3. Serializing reports"}], "external": false};
+window.dfnpanelData['aggregatable-report-original-report-time'] = {"dfnID": "aggregatable-report-original-report-time", "url": "#aggregatable-report-original-report-time", "dfnText": "original report time", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-original-report-time"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-original-report-time\u2460"}], "title": "8.3. Serializing reports"}, {"refs": [{"id": "ref-for-aggregatable-report-original-report-time\u2461"}], "title": "9.3.2. User-presence tracking"}], "external": false};
 window.dfnpanelData['aggregatable-report-report-time'] = {"dfnID": "aggregatable-report-report-time", "url": "#aggregatable-report-report-time", "dfnText": "report time", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-report-time"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-report-time\u2460"}, {"id": "ref-for-aggregatable-report-report-time\u2461"}, {"id": "ref-for-aggregatable-report-report-time\u2462"}], "title": "8.2. Sending reports"}], "external": false};
 window.dfnpanelData['aggregatable-report-contributions'] = {"dfnID": "aggregatable-report-contributions", "url": "#aggregatable-report-contributions", "dfnText": "contributions", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-contributions"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-contributions\u2460"}], "title": "8.3. Serializing reports"}], "external": false};
 window.dfnpanelData['aggregatable-report-api'] = {"dfnID": "aggregatable-report-api", "url": "#aggregatable-report-api", "dfnText": "api", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-api"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-api\u2460"}], "title": "8.2. Sending reports"}, {"refs": [{"id": "ref-for-aggregatable-report-api\u2461"}], "title": "8.3. Serializing reports"}], "external": false};
@@ -2321,7 +2318,7 @@ window.dfnpanelData['attempt-to-queue-reports-for-sending'] = {"dfnID": "attempt
 window.dfnpanelData['attempt-to-deliver-a-report'] = {"dfnID": "attempt-to-deliver-a-report", "url": "#attempt-to-deliver-a-report", "dfnText": "attempt to deliver a report", "refSections": [{"refs": [{"id": "ref-for-attempt-to-deliver-a-report"}], "title": "8.2. Sending reports"}], "external": false};
 window.dfnpanelData['obtain-a-reporting-endpoint'] = {"dfnID": "obtain-a-reporting-endpoint", "url": "#obtain-a-reporting-endpoint", "dfnText": "obtain a reporting endpoint", "refSections": [{"refs": [{"id": "ref-for-obtain-a-reporting-endpoint"}], "title": "8.2. Sending reports"}], "external": false};
 window.dfnpanelData['create-a-report-request'] = {"dfnID": "create-a-report-request", "url": "#create-a-report-request", "dfnText": "create a report request", "refSections": [{"refs": [{"id": "ref-for-create-a-report-request"}], "title": "8.2. Sending reports"}], "external": false};
-window.dfnpanelData['serialize-an-aggregatable-report'] = {"dfnID": "serialize-an-aggregatable-report", "url": "#serialize-an-aggregatable-report", "dfnText": "serialize an aggregatable report", "refSections": [{"refs": [{"id": "ref-for-serialize-an-aggregatable-report"}], "title": "8.2. Sending reports"}], "external": false};
+window.dfnpanelData['serialize-an-aggregatable-report'] = {"dfnID": "serialize-an-aggregatable-report", "url": "#serialize-an-aggregatable-report", "dfnText": "serialize an aggregatable report", "refSections": [{"refs": [{"id": "ref-for-serialize-an-aggregatable-report"}], "title": "8.2. Sending reports"}, {"refs": [{"id": "ref-for-serialize-an-aggregatable-report\u2460"}], "title": "9.3.2. User-presence tracking"}], "external": false};
 window.dfnpanelData['obtain-the-aggregation-service-payloads'] = {"dfnID": "obtain-the-aggregation-service-payloads", "url": "#obtain-the-aggregation-service-payloads", "dfnText": "obtain the aggregation service payloads", "refSections": [{"refs": [{"id": "ref-for-obtain-the-aggregation-service-payloads"}], "title": "8.3. Serializing reports"}], "external": false};
 window.dfnpanelData['obtain-the-public-key-for-encryption'] = {"dfnID": "obtain-the-public-key-for-encryption", "url": "#obtain-the-public-key-for-encryption", "dfnText": "obtain the public key for encryption", "refSections": [{"refs": [{"id": "ref-for-obtain-the-public-key-for-encryption"}], "title": "8.3. Serializing reports"}, {"refs": [{"id": "ref-for-obtain-the-public-key-for-encryption\u2460"}], "title": "10.2. Protecting the histogram contributions"}], "external": false};
 window.dfnpanelData['obtain-the-encrypted-payload'] = {"dfnID": "obtain-the-encrypted-payload", "url": "#obtain-the-encrypted-payload", "dfnText": "obtain the encrypted payload", "refSections": [{"refs": [{"id": "ref-for-obtain-the-encrypted-payload"}], "title": "8.3. Serializing reports"}], "external": false};
