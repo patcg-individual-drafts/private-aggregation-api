@@ -261,6 +261,9 @@ The user agent must expose controls that allow the user to delete data from
 the [=aggregatable report cache=] as well as any contribution history data
 stored for the [=PrivateAggregation/consume budget if permitted=] algorithm.
 
+The user agent may expose controls that allow the user to delete data from the
+[=contributions cache=].
+
 [=Implementation-defined=] values {#implementation-defined-values}
 ==================================================================
 
@@ -924,6 +927,11 @@ The [=aggregatable report cache=] as well as any contribution history data
 stored for the [=PrivateAggregation/consume budget if permitted=] algorithm
 contain data about a user’s web activity. As such, user controls to delete this
 data are required, see [clearing storage](#clearing-storage).
+
+On the other hand, the [=contribution cache=] only contains short-lived data
+tied to particular batching scopes, so controls are not required.
+
+Issue: Link batching scopes
 
 Reporting delay concerns {#reporting-delay-concerns}
 ----------------------------------------------------
