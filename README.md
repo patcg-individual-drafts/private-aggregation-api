@@ -269,7 +269,7 @@ The following is an example report showing the JSON format
   ],
 
   // Optional debugging information if debugging is enabled and debug key specified
-  "debugKey": "[64 bit unsigned integer]"
+  "debug_key": "[64 bit unsigned integer]"
 }
 ```
 
