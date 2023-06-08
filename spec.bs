@@ -239,8 +239,7 @@ An aggregatable report is a [=struct=] with the following items:
 
 </dl>
 
-Issue: Handle operation types, aggregation coordinators, maybe retries/offline,
-    report verification
+Issue: Handle context ID, maybe retries/offline
 
 <h4 dfn-type=dfn>Context type</h4>
 A context type is a [=string=] indicating what kind of global scope the
@@ -887,7 +886,7 @@ and adds noise to each of these values to produce ‘summary reports’.
 
 The output of that processing will be an aggregated, noised histogram. The
 service ensures that any report can not be processed multiple times. Further,
-information exposure is limited by contribution budgets on the client. In
+information exposure is limited by contribution budgets on the user agent. In
 principle, this framework can support specifying a noise parameter which
 satisfies differential privacy.
 
@@ -928,10 +927,6 @@ data are required, see [clearing storage](#clearing-storage).
 
 Reporting delay concerns {#reporting-delay-concerns}
 ----------------------------------------------------
-
-Note: This section is largely copied from the
-    <a href="https://wicg.github.io/attribution-reporting-api/">Attribution
-    Reporting API spec</a>, adapting as necessary.
 
 Delaying sending reports after API invocation can enable side-channel leakage in
 some situations.
@@ -982,8 +977,9 @@ Possible mitigations include:
 The browser only tries to send reports while it is running and while it has
 internet connectivity (even without an explicit check for connectivity,
 naturally the report will fail to be sent if there is none), so receiving or not
-receiving an aggregatable report at the expected time leaks information about
-the user’s presence. Additionally, because the report request inherently
+receiving a ([=serializing an aggregatable report|serialized=]) [=aggregatable
+report=] at the [=aggregatable report/original report time=] leaks information
+about the user’s presence. Additionally, because the report request inherently
 includes an IP address, this could reveal the user’s IP-derived location to the
 reporting origin, including at-home vs. at-work or approximate real-world
 geolocation, or reveal patterns in the user’s browsing activity.
@@ -996,7 +992,7 @@ Possible mitigations include:
     the reporting origin can correlate the original API invocation to the report
     being sent, which weakens the privacy controls of the API, see [Protecting
     against leaks via the number of
-    reports]{#protecting-against-leaks-via-the-number-of-reports}.
+    reports](#protecting-against-leaks-via-the-number-of-reports).
 1. Send reports immediately to a trusted proxy server, which would itself apply
     additional delay: This would effectively hide both the user’s IP address and
     their online-offline presence from the reporting origin.
