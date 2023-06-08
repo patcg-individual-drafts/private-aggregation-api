@@ -137,7 +137,7 @@ are:
     "`NotAllowedError`".
 
     Note: This indicates the API is not yet available, for example, because the
-        the initial execution of the script after loading is not complete.
+        initial execution of the script after loading is not complete.
 
     Issue: Consider improving developer ergonomics here (e.g. a way to detect
         this case).
@@ -148,7 +148,8 @@ are:
     : [=contribution cache entry/batching scope=]
     :: The result of running |batchingScopeSteps|
 
-1. [=Append an entry to the contribution cache=] given |entry|.
+1. [=Append an entry to the contribution cache|Append=] |entry| to the
+    [=contribution cache=].
 
 Issue: Check that value can actually be zero in the spec pipeline.
 
@@ -157,9 +158,8 @@ Issue(44): Consider accepting an array of contributions.
 Exposing to global scopes {#exposing}
 =====================================
 
-To expose this API to a global scope, a readonly attribute of type
-{{PrivateAggregation}} named `privateAggregation` should be exposed on the
-global scope.
+To expose this API to a global scope, a readonly attribute `privateAggregation`
+of type {{PrivateAggregation}} should be exposed on the global scope.
 
 Additionally, each global scope should set the [=PrivateAggregation/get batching
 scope steps=] for the {{PrivateAggregation}} object it exposes to a non-null
@@ -184,12 +184,15 @@ to be available.
 </div>
 
 For any batching scope returned by the [=PrivateAggregation/get batching scope
-steps=], the [=mark a batching scope complete=] steps should later be performed
-given that same batching scope, the global scope's [=relevant settings
-object=]'s [=environment settings object/origin=] and some [=context type=].
+steps=], the [=process contributions for a batching scope=] steps should later
+be performed given that same batching scope, the global scope's [=relevant
+settings object=]'s [=environment settings object/origin=] and some [=context
+type=].
 
 Note: This last requirement means that global scopes with different origins
-    cannot share the same batching scope.
+    cannot share the same batching scope, see Same-origin policy discussion.
+
+    Issue: Link Same-origin policy section.
 
 Structures {#structures}
 ========================
@@ -276,27 +279,30 @@ possible decimal number.
 Issue: This would ideally be replaced by a more descriptive algorithm in Infra.
     See <a href="https://github.com/whatwg/infra/issues/201">infra/201</a>.
 
+Exported algorithms {#exported-algorithms}
+------------------------------------------
+
+Note: These algorithms allow other specifications can integrate with this API.
+
 To <dfn algorithm export>append an entry to the contribution cache</dfn> given a
 [=contribution cache entry=] |entry|:
 1. [=list/Append=] |entry| to the [=contribution cache=].
 
-To <dfn algorithm export>mark a batching scope complete</dfn> given a [=batching
-scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a [=context type=]
-|contextType|:
+To <dfn algorithm export>process contributions for a batching scope</dfn> given
+a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
+[=context type=] |contextType|:
 1. Let |batchEntries| be a new [=list/is empty|empty=] [=list=].
 1. [=list/iterate|For each=] |entry| of the [=contribution cache=]:
     1. If |entry|'s [=contribution cache entry/batching scope=] is
         |batchingScope|, [=list/append=] |entry| to |batchEntries|.
+1. If |batchEntries| is [=list/empty=], return.
 1. Let |batchContributions| be a new [=list/is empty|empty=] [=list=].
 1. [=list/iterate|For each=] |entry| of |batchEntries|:
     1. [=list/Remove=] |entry| from the [=contribution cache=].
     1. [=list/Append=] |entry|'s [=contribution cache entry/contribution=] to
         |batchContributions|.
-1. If |batchEntries| is [=list/empty=], return.
 1. Perform the [=PrivateAggregation/report creation and scheduling steps=] with
     |reportingOrigin|, |contextType| and |batchContributions|.
-
-Issue: Highlight exported algorithms more?
 
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
@@ -624,9 +630,10 @@ appropriate):
 </div>
 Second, at the end of the same nested scope, add the following step:
 <div algorithm="shared-storage-run-monkeypatch-2">
-5. When the above [=call=] returns, [=mark a batching scope complete=] given
-    <var ignore>batchingScope</var>, <var ignore>outsideSettings</var>'
-    [=environment settings object/origin=] and "<code>shared-storage</code>".
+5. When the above [=call=] returns, [=process contributions for a batching
+    scope=] given <var ignore>batchingScope</var>,
+    <var ignore>outsideSettings</var>' [=environment settings object/origin=]
+    and "<code>shared-storage</code>".
 
 </div>
 
@@ -640,9 +647,9 @@ appropriate):
 </div>
 Second, at the end of the same nested scope, add the following step:
 <div algorithm="shared-storage-selecturl-monkeypatch-2">
-8. [=Mark a batching scope complete=] given <var ignore>batchingScope</var>,
-    <var ignore>outsideSettings</var>' [=environment settings object/origin=]
-    and "<code>shared-storage</code>".
+8. [=Process contributions for a batching scope=] given
+    <var ignore>batchingScope</var>, <var ignore>outsideSettings</var>'
+    [=environment settings object/origin=] and "<code>shared-storage</code>".
 
 </div>
 
@@ -662,8 +669,8 @@ as appropriate:
         privateAggregation}}'s [=PrivateAggregation/get batching scope steps=]
         to the following algorithm:
         1. Return the [=batching scope=] that is scheduled to be passed to
-            [=mark a batching scope complete=] when the currently executing
-            call returns.
+            [=process contributions for a batching scope=] when the currently
+            executing call returns.
 
             Note: Multiple operation invocations can be in-progress at the same
             time, each with a different batching scope. However, only one can be
@@ -730,8 +737,8 @@ later steps as appropriate:
         contribution=] and then [=append an entry to the contribution cache=].
     1. [=list/iterate|For each=] |origin| → |batchingScope| of
         |batchingScopeMap|:
-        1. [=Mark a batching scope complete=] given |batchingScope|, |origin|
-            and "<code>protected-audience</code>".
+        1. [=Process contributions for a batching scope=] given |batchingScope|,
+            |origin| and "<code>protected-audience</code>".
 
 </div>
 
