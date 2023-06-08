@@ -971,7 +971,7 @@ Possible mitigations include:
     that the reporting origin can correlate the original API invocation to the
     report being sent, which weakens the privacy controls of the API, see
     [Protecting against leaks via the number of
-    reports]{#protecting-against-leaks-via-the-number-of-reports}.
+    reports](#protecting-against-leaks-via-the-number-of-reports).
 1. Use a trusted proxy server to send reports: This effectively moves the
     reporting origin into the report body, so only the proxy server would be
     visible to the network administrator.
