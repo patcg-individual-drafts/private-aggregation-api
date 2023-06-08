@@ -282,7 +282,7 @@ Issue: This would ideally be replaced by a more descriptive algorithm in Infra.
 Exported algorithms {#exported-algorithms}
 ------------------------------------------
 
-Note: These algorithms allow other specifications can integrate with this API.
+Note: These algorithms allow other specifications to integrate with this API.
 
 To <dfn algorithm export>append an entry to the contribution cache</dfn> given a
 [=contribution cache entry=] |entry|:
