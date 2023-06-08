@@ -609,8 +609,8 @@ To <dfn>obtain a report's shared info</dfn> given an [=aggregatable report=]
 1. Return the result of [=serializing an infra value to a json string=] given
     |sharedInfo|.
 
-Shared Storage API monkeypatches {#shared-storage-api-monkeypatches}
-====================================================================
+Shared Storage API monkey patches {#shared-storage-api-monkey-patches}
+======================================================================
 
 Issue(43): This should be moved to the Shared Storage spec.
 
@@ -624,12 +624,12 @@ The {{WindowSharedStorage}}'s {{WindowSharedStorage/run()}} method steps are
 modified in two ways. First, add the following step in the nested scope just
 after "Let |operation| be |operationMap|[|name|]." (renumbering later steps as
 appropriate):
-<div algorithm="shared-storage-run-monkeypatch-1">
+<div algorithm="shared-storage-run-monkey-patch-1">
 2. Let <var ignore>batchingScope</var> be a new [=batching scope=].
 
 </div>
 Second, at the end of the same nested scope, add the following step:
-<div algorithm="shared-storage-run-monkeypatch-2">
+<div algorithm="shared-storage-run-monkey-patch-2">
 5. When the above [=call=] returns, [=process contributions for a batching
     scope=] given <var ignore>batchingScope</var>,
     <var ignore>outsideSettings</var>' [=environment settings object/origin=]
@@ -641,12 +641,12 @@ The {{WindowSharedStorage}}'s {{WindowSharedStorage/selectURL()}} method steps
 are modified in two ways. First, add the following step in the nested scope just
 after "Let |operation| be |operationMap|[|name|]." (renumbering later steps as
 appropriate):
-<div algorithm="shared-storage-selecturl-monkeypatch-1">
+<div algorithm="shared-storage-selecturl-monkey-patch-1">
 2. Let <var ignore>batchingScope</var> be a new [=batching scope=].
 
 </div>
 Second, at the end of the same nested scope, add the following step:
-<div algorithm="shared-storage-selecturl-monkeypatch-2">
+<div algorithm="shared-storage-selecturl-monkey-patch-2">
 8. [=Process contributions for a batching scope=] given
     <var ignore>batchingScope</var>, <var ignore>outsideSettings</var>'
     [=environment settings object/origin=] and "<code>shared-storage</code>".
@@ -654,13 +654,13 @@ Second, at the end of the same nested scope, add the following step:
 </div>
 
 Issue: Once <a href="https://github.com/wicg/shared-storage/issues/88">
-    shared-storage/88</a> is resolved, align the above monkeypatches with how
+    shared-storage/88</a> is resolved, align the above monkey patches with how
     `keepAlive` is handled at operation completion.
 
 The {{Worklet/addModule()}} steps are modified to add a new step just before
 the final step ("Return <var ignore>promise</var>."), renumbering the last step
 as appropriate:
-<div algorithm="shared-storage-addmodule-monkeypatch">
+<div algorithm="shared-storage-addmodule-monkey-patch">
 7. If |this| is a {{SharedStorageWorklet}}, [=upon fulfillment=] of |promise| or
     [=upon rejection=] of |promise|, run the following steps:
     1. Let |globalScopes| be |this|'s [=Worklet/global scopes=].
@@ -679,17 +679,17 @@ as appropriate:
 </div>
 
 Issue: Once <a href="https://github.com/wicg/shared-storage/issues/89">
-    shared-storage/89</a> is resolved, align the above monkeypatch with how
+    shared-storage/89</a> is resolved, align the above monkey patch with how
     access to `sharedStorage` is prevented in
     {{SharedStorageWorkletGlobalScope}}s until {{Worklet/addModule()}}'s initial
     execution is complete.
 
 Note: This extends Shared Storage's existing {{Worklet/addModule()}}
     <a href="https://wicg.github.io/shared-storage/#worklet-monkey-patch">
-    monkeypatch</a>.
+    monkey patch</a>.
 
-Protected Audience API monkeypatches {#protected-audience-api-monkeypatches}
-============================================================================
+Protected Audience API monkey patches {#protected-audience-api-monkey-patches}
+==============================================================================
 
 Issue(43): This should be moved to the Protected Audience spec, along with any
     other Protected Audience-specific details.
@@ -722,7 +722,7 @@ Issue: Do we want to align naming with implementation?
 The {{Navigator/runAdAuction()}} method steps are modified to add the following
 steps after step 6 ("Let <var ignore>p</var> be [=a new promise=]"), renumbering
 later steps as appropriate:
-<div algorithm="protected-audience-runadauction-monkeypatch">
+<div algorithm="protected-audience-runadauction-monkey-patch">
 7. Let |batchingScopeMap| be a new [=map/is empty|empty=] [=map=].
 1. [=list/iterate|For each=] |bidderOrigin| of |auctionConfig|'s
     <a spec="turtledove" for="auction config">interest group buyers</a>:
@@ -751,7 +751,7 @@ Issue: Need to handle `auctionReportBuyers` and `auctionReportBuyerKeys` here or
 The <a spec="turtledove">evaluate a script</a> steps are modified to add the
 following steps after step 11 ("If <var ignore>evaluationStatus</var> is an
 [=ECMAScript/abrupt completion=]..."), renumbering later steps as appropriate:
-<div algorithm="protected-audience-evaluate-a-script-monkeypatch">
+<div algorithm="protected-audience-evaluate-a-script-monkey-patch">
 12. Set <var ignore>global</var>'s {{InterestGroupScriptRunnerGlobalScope/
     privateAggregation}}'s [=PrivateAggregation/get batching scope steps=] to
     the following algorithm:
@@ -762,8 +762,8 @@ following steps after step 11 ("If <var ignore>evaluationStatus</var> is an
 </div>
 
 Issue: Once <a href="https://github.com/wicg/turtledove/issues/615">
-    protected-audience/615</a> is resolved, align the above monkeypatch with how
-    access to other functions is prevented in
+    protected-audience/615</a> is resolved, align the above monkey patch with
+    how access to other functions is prevented in
     {{InterestGroupScriptRunnerGlobalScope}}s until the script's initial
     execution is complete.
 
