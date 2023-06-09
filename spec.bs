@@ -911,6 +911,27 @@ reports containing no contributions in the payloads if necessary). Additional
 mitigations may also be possible in the future, e.g. adding noise to the report
 count.
 
+### Protecting against leaks via payload size ### {#protecting-against-leaks-via-payload-size}
+
+The length of the payload could additionally expose some cross-site information,
+namely how many contributions are included. To protect against this, the payload
+will be padded in the future.
+
+Issue(56): Pad the payload to avoid this risk.
+
+### Temporary debugging mechanism ### {#temporary-debugging-mechanism}
+
+The `enableDebugMode()` method allows for the protections of this API to be
+bypassed to ease testing and integration. Specifically, the contents of the
+payload, i.e. the histogram contributions, are revealed in the clear when the
+debug mode is enabled. Optionally, a debug key can also be set to associate the
+report with the calling context. In the future, this mechanism will only be
+available for callers that are eligible to set third-party cookies. In that
+case, the API caller already has the ability to communicate information
+cross-site.
+
+Issue(57): Tie `enableDebugMode()` to third-party cookie eligibility.
+
 ### Privacy parameters ### {#privacy-parameters}
 
 The amount of information exposed by this API is a product of the privacy
