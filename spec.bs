@@ -36,6 +36,8 @@ spec: hr-time; type: dfn; urlPrefix: https://w3c.github.io/hr-time/
     text: moment; url: #dfn-moment
     text: unix epoch; url: #dfn-unix-epoch
     text: wall clock; url: #dfn-wall-clock
+spec: html; type: dfn; urlPrefix: https://tc39.es/ecma262/
+    text: call; url: sec-call
 </pre>
 
 <pre class=link-defaults>
@@ -109,16 +111,15 @@ dictionary PAHistogramContribution {
 };
 </xmp>
 
-Each {{PrivateAggregation}} has a <dfn>contributions cache</dfn>, a [=list=].
-Each item must be either a {{PAHistogramContribution}} or a
-{{PAExtendedHistogramContribution}}.
-
-Note: The steps to process the [=contributions cache=] are defined separately
-    for each [=context type=].
-
 Issue: Do we need to spec enableDebugMode?
 
 Issue: Need to spec Permissions Policy integration.
+
+Each {{PrivateAggregation}} object has a field named <dfn
+for="PrivateAggregation">get batching scope steps</dfn> (default null) that is
+either null or an algorithm returning a [=batching scope=].
+
+Note: See [Exposing to global scopes](#exposing) below.
 
 <div algorithm>
 The <dfn method for="PrivateAggregation">
@@ -130,102 +131,68 @@ are:
     is not in the range [0, 2<sup>128</sup>−1].
 1. Throw {{RangeError}} if |contribution|["{{PAHistogramContribution/value}}"]
     is negative.
-1. [=list/Append=] |contribution| to the [=contributions cache=].
+1. Let |batchingScopeSteps| be the {{PrivateAggregation}} object's
+    [=PrivateAggregation/get batching scope steps=].
+1. If |batchingScopeSteps| is null, throw a new {{DOMException}} with name
+    "`NotAllowedError`".
+
+    Note: This indicates the API is not yet available, for example, because the
+        initial execution of the script after loading is not complete.
+
+    Issue: Consider improving developer ergonomics here (e.g. a way to detect
+        this case).
+
+1. Let |entry| be a new [=contribution cache entry=] with the items:
+    : [=contribution cache entry/contribution=]
+    :: |contribution|
+    : [=contribution cache entry/batching scope=]
+    :: The result of running |batchingScopeSteps|
+
+1. [=Append an entry to the contribution cache|Append=] |entry| to the
+    [=contribution cache=].
 
 Issue: Check that value can actually be zero in the spec pipeline.
 
+Issue(44): Consider accepting an array of contributions.
 
-Exposing to the Shared Storage API {#shared-storage}
-====================================================
+Exposing to global scopes {#exposing}
+=====================================
 
-<xmp class="idl">
-partial interface SharedStorageWorkletGlobalScope {
-  readonly attribute PrivateAggregation privateAggregation;
-};
-</xmp>
+To expose this API to a global scope, a readonly attribute `privateAggregation`
+of type {{PrivateAggregation}} should be exposed on the global scope.
 
-Immediately after an operation completes, [=process the Shared Storage
-contributions cache=] given the worklet's [=contributions cache=] and the
-worklet's global scope.
+Additionally, each global scope should set the [=PrivateAggregation/get batching
+scope steps=] for the {{PrivateAggregation}} object it exposes to a non-null
+value. The global scope should wait to set the field until the API is intended
+to be available.
 
-Issue: How to handle batching different operation invocations properly. This
-    doesn't work for simultaneous operations. Also disallow usage outside an
-    operation.
+<div class="example" id="shared-storage-only-within-operations">
+    Shared Storage only allows Private Aggregation when an operation is being
+    invoked, not in the top-level context:
+    <pre highlight="js">
+    class ExampleOperation {
+      async run(data) {
+        privateAggregation.contributeToHistogram(...)  // This is allowed.
+      }
+    }
+    register('example-operation', ExampleOperation);
 
-To <dfn>process the Shared Storage contributions cache</dfn> given a [=list=]
-|contributionsCache| and a {{SharedStorageWorkletGlobalScope}} |scope|, perform
-the [=PrivateAggregation/report creation and scheduling steps=] with |scope|'s
-[=relevant settings object=]'s [=environment settings object/origin=],
-"<code>[=context type/shared-storage=]</code>" and |contributionsCache|.
-
-
-Exposing to the Protected Audience API {#protected-audience}
-============================================================
-
-<xmp class="idl">
-partial interface InterestGroupScriptRunnerGlobalScope {
-  readonly attribute PrivateAggregation privateAggregation;
-};
-
-dictionary PASignalValue {
-  required DOMString baseValue;
-  double scale;
-  (bigint or long) offset;
-};
-
-dictionary PAExtendedHistogramContribution {
-  required (PASignalValue or bigint) bucket;
-  required (PASignalValue or long) value;
-};
-
-[Exposed=InterestGroupScriptRunnerGlobalScope, SecureContext]
-partial interface PrivateAggregation {
-  undefined contributeToHistogramOnEvent(
-      DOMString event, PAExtendedHistogramContribution contribution);
-};
-</xmp>
-
-Issue: Do we want to align naming with implementation?
-
-Immediately after an auction completes, [=process the Protected Audience
-contributions cache=] given the worklet's [=contributions cache=] and the
-worklet's global scope.
-
-Issue: Does Protected Audience API have one global scope per auction or
-    multiple? If multiple, will need to change scope for batching.
-
-Issue: How to handle fenced frame-triggered contributions and other
-    event-triggered contributions.
-
-Issue: Need to handle `auctionReportBuyers` and `auctionReportBuyerKeys` here or
-    in the Protected Audience API spec.
-
-<div algorithm>
-The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(DOMString
-event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
+    privateAggregation.contributeToHistogram(...)  // This would cause an error.
+    </pre>
+    So, Shared Storage sets [=PrivateAggregation/get batching scope steps=]
+    after the initial execution of the module script is complete.
 </div>
 
-Issue: Fill in validation. Will need to check offsets are valid and in the right
-    range for the type etc. Also that base values are one of a set.
+For any batching scope returned by the [=PrivateAggregation/get batching scope
+steps=], the [=process contributions for a batching scope=] steps should later
+be performed given that same batching scope, the global scope's [=relevant
+settings object=]'s [=environment settings object/origin=] and some [=context
+type=].
 
-Issue: Need to document limits on offset, etc.
+Note: This last requirement means that global scopes with different origins
+    cannot share the same batching scope, see Same-origin policy discussion.
 
-Issue: Fill in the rest. (Need to put the contribution in some sort of queue and
-    process the queue at some point. Need to decide where the queue should live
-    given it has to outlive the auction.)
-
-To <dfn>process the Protected Audience contributions cache</dfn> given a
-[=list=] |contributionsCache| and a {{InterestGroupScriptRunnerGlobalScope}}
-|scope|, perform the following steps:
-1. Let |filledInContributions| be a new [=list/is empty|empty=] [=list=].
-1. [=list/iterate|For each=] |contribution| of |contributionsCache|:
-    1. [=list/Append=] the result of [=filling in the contribution=] given
-        |contribution| to |filledInContributions|.
-1. Perform the [=PrivateAggregation/report creation and scheduling steps=] with
-    |scope|'s [=relevant settings object=]'s [=environment settings object/
-    origin=], "<code>[=context type/fledge=]</code>" and
-    |filledInContributions|.
-
+    Issue: Link Same-origin policy section.
 
 Structures {#structures}
 ========================
@@ -233,7 +200,25 @@ Structures {#structures}
 General {#general-structures}
 -----------------------------
 
-<h4 dfn-type=dfn>Aggregatable report</h3>
+<h4 dfn-type=dfn>Batching scope</h4>
+A batching scope is a <a spec=HTML>unique internal value</a> that identifies
+which {{PAHistogramContribution}}s should be sent in the same [=aggregatable
+report=].
+
+Issue: Unique internal value is not an exported definition. See
+    <a href="https://github.com/whatwg/infra/issues/583">infra/583</a>.
+
+<h4 dfn-type=dfn>Contribution cache entry</h4>
+A contribution cache entry is a [=struct=] with the following items:
+<dl dfn-for="contribution cache entry">
+: <dfn>contribution</dfn>
+:: A {{PAHistogramContribution}}
+: <dfn>batching scope</dfn>
+:: A [=batching scope=]
+
+</dl>
+
+<h4 dfn-type=dfn>Aggregatable report</h4>
 
 An aggregatable report is a [=struct=] with the following items:
 <dl dfn-for="aggregatable report">
@@ -257,48 +242,15 @@ An aggregatable report is a [=struct=] with the following items:
 Issue: Handle operation types, aggregation coordinators, maybe retries/offline,
     report verification
 
-<h4 dfn-type=dfn>Context type</h3>
-A context type is one of the following:
-<dl dfn-for="context type">
-: "<dfn><code>fledge</code></dfn>"
-:: The global scope's [=global names=] [=list/contains=]
-    {{InterestGroupScriptRunnerGlobalScope}}.
-: "<dfn><code>shared-storage</code></dfn>"
-:: The global scope's [=global names=] [=list/contains=]
-    {{SharedStorageWorklet}}.
-
-</dl>
-
-Issue: Need to update "<code>[=context type/fledge=]</code>" to reflect API name
-    change.
-
-Protected Audience API-specific {#protected-audience-api-specific-structures}
------------------------------------------------------------------------------
-
-<h4 dfn-type=dfn>Signal base value</h3>
-A signal base value is one of the following:
-<dl dfn-for="signal base value">
-: "<dfn export><code>winning-bid</code></dfn>"
-:: The bid value of the winning bid.
-: "<dfn export><code>highest-scoring-other-bid</code></dfn>"
-:: The bid value of the highest scoring bid that did not win.
-: "<dfn export><code>script-run-time</code></dfn>"
-:: The running time of the script in ms(?).
-: "<dfn export><code>signals-fetch-time</code></dfn>"
-:: The time it took for the signals fetch to complete in ms(?)
-: "<dfn export><code>bid-reject-reason</code></dfn>"
-:: The reason a bid was rejected.
-
-</dl>
-
-Issue: Remove exports when these definitions are used.
-
-Issue: Make sure these definitions match "determine the numeric value" algorithm
-
-Issue: New enum needed for bid reject reasons.
+<h4 dfn-type=dfn>Context type</h4>
+A context type is a [=string=] indicating what kind of global scope the
+{{PrivateAggregation}} object was exposed in.
 
 Storage {#storage}
 ==================
+
+A user agent holds an <dfn>contribution cache</dfn>, which is a [=list=] of
+[=contribution cache entries=].
 
 A user agent holds an <dfn>aggregatable report cache</dfn>, which is a [=list=]
 of [=aggregatable reports=].
@@ -325,7 +277,32 @@ To <dfn>serialize an integer</dfn>, represent it as a [=string=] of the shortest
 possible decimal number.
 
 Issue: This would ideally be replaced by a more descriptive algorithm in Infra.
-    See infra/201
+    See <a href="https://github.com/whatwg/infra/issues/201">infra/201</a>.
+
+Exported algorithms {#exported-algorithms}
+------------------------------------------
+
+Note: These algorithms allow other specifications to integrate with this API.
+
+To <dfn algorithm export>append an entry to the contribution cache</dfn> given a
+[=contribution cache entry=] |entry|:
+1. [=list/Append=] |entry| to the [=contribution cache=].
+
+To <dfn algorithm export>process contributions for a batching scope</dfn> given
+a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
+[=context type=] |contextType|:
+1. Let |batchEntries| be a new [=list/is empty|empty=] [=list=].
+1. [=list/iterate|For each=] |entry| of the [=contribution cache=]:
+    1. If |entry|'s [=contribution cache entry/batching scope=] is
+        |batchingScope|, [=list/append=] |entry| to |batchEntries|.
+1. If |batchEntries| is [=list/empty=], return.
+1. Let |batchContributions| be a new [=list/is empty|empty=] [=list=].
+1. [=list/iterate|For each=] |entry| of |batchEntries|:
+    1. [=list/Remove=] |entry| from the [=contribution cache=].
+    1. [=list/Append=] |entry|'s [=contribution cache entry/contribution=] to
+        |batchContributions|.
+1. Perform the [=PrivateAggregation/report creation and scheduling steps=] with
+    |reportingOrigin|, |contextType| and |batchContributions|.
 
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
@@ -632,9 +609,207 @@ To <dfn>obtain a report's shared info</dfn> given an [=aggregatable report=]
 1. Return the result of [=serializing an infra value to a json string=] given
     |sharedInfo|.
 
+Shared Storage API monkey patches {#shared-storage-api-monkey-patches}
+======================================================================
 
-Protected Audience API-specific {#protected-audience-api-specific-algorithms}
------------------------------------------------------------------------------
+Issue(43): This should be moved to the Shared Storage spec.
+
+<xmp class="idl">
+partial interface SharedStorageWorkletGlobalScope {
+  readonly attribute PrivateAggregation privateAggregation;
+};
+</xmp>
+
+The {{WindowSharedStorage}}'s {{WindowSharedStorage/run()}} method steps are
+modified in two ways. First, add the following step in the nested scope just
+after "Let |operation| be |operationMap|[|name|]." (renumbering later steps as
+appropriate):
+<div algorithm="shared-storage-run-monkey-patch-1">
+2. Let <var ignore>batchingScope</var> be a new [=batching scope=].
+
+</div>
+Second, at the end of the same nested scope, add the following step:
+<div algorithm="shared-storage-run-monkey-patch-2">
+5. When the above [=call=] returns, [=process contributions for a batching
+    scope=] given <var ignore>batchingScope</var>,
+    <var ignore>outsideSettings</var>' [=environment settings object/origin=]
+    and "<code>shared-storage</code>".
+
+</div>
+
+The {{WindowSharedStorage}}'s {{WindowSharedStorage/selectURL()}} method steps
+are modified in two ways. First, add the following step in the nested scope just
+after "Let |operation| be |operationMap|[|name|]." (renumbering later steps as
+appropriate):
+<div algorithm="shared-storage-selecturl-monkey-patch-1">
+2. Let <var ignore>batchingScope</var> be a new [=batching scope=].
+
+</div>
+Second, at the end of the same nested scope, add the following step:
+<div algorithm="shared-storage-selecturl-monkey-patch-2">
+8. [=Process contributions for a batching scope=] given
+    <var ignore>batchingScope</var>, <var ignore>outsideSettings</var>'
+    [=environment settings object/origin=] and "<code>shared-storage</code>".
+
+</div>
+
+Issue: Once <a href="https://github.com/wicg/shared-storage/issues/88">
+    shared-storage/88</a> is resolved, align the above monkey patches with how
+    `keepAlive` is handled at operation completion.
+
+The {{Worklet/addModule()}} steps are modified to add a new step just before
+the final step ("Return <var ignore>promise</var>."), renumbering the last step
+as appropriate:
+<div algorithm="shared-storage-addmodule-monkey-patch">
+7. If |this| is a {{SharedStorageWorklet}}, [=upon fulfillment=] of |promise| or
+    [=upon rejection=] of |promise|, run the following steps:
+    1. Let |globalScopes| be |this|'s [=Worklet/global scopes=].
+    1. [=Assert=]: |globalScopes|' [=list/size=] equals 1.
+    1. Set |globalScopes|[0]'s {{SharedStorageWorkletGlobalScope/
+        privateAggregation}}'s [=PrivateAggregation/get batching scope steps=]
+        to the following algorithm:
+        1. Return the [=batching scope=] that is scheduled to be passed to
+            [=process contributions for a batching scope=] when the currently
+            executing call returns.
+
+            Note: Multiple operation invocations can be in-progress at the same
+            time, each with a different batching scope. However, only one can be
+            currently executing.
+
+</div>
+
+Issue: Once <a href="https://github.com/wicg/shared-storage/issues/89">
+    shared-storage/89</a> is resolved, align the above monkey patch with how
+    access to `sharedStorage` is prevented in
+    {{SharedStorageWorkletGlobalScope}}s until {{Worklet/addModule()}}'s initial
+    execution is complete.
+
+Note: This extends Shared Storage's existing {{Worklet/addModule()}}
+    <a href="https://wicg.github.io/shared-storage/#worklet-monkey-patch">
+    monkey patch</a>.
+
+Protected Audience API monkey patches {#protected-audience-api-monkey-patches}
+==============================================================================
+
+Issue(43): This should be moved to the Protected Audience spec, along with any
+    other Protected Audience-specific details.
+
+<xmp class="idl">
+partial interface InterestGroupScriptRunnerGlobalScope {
+  readonly attribute PrivateAggregation privateAggregation;
+};
+
+dictionary PASignalValue {
+  required DOMString baseValue;
+  double scale;
+  (bigint or long) offset;
+};
+
+dictionary PAExtendedHistogramContribution {
+  required (PASignalValue or bigint) bucket;
+  required (PASignalValue or long) value;
+};
+
+[Exposed=InterestGroupScriptRunnerGlobalScope, SecureContext]
+partial interface PrivateAggregation {
+  undefined contributeToHistogramOnEvent(
+      DOMString event, PAExtendedHistogramContribution contribution);
+};
+</xmp>
+
+Issue: Do we want to align naming with implementation?
+
+The {{Navigator/runAdAuction()}} method steps are modified to add the following
+steps after step 6 ("Let <var ignore>p</var> be [=a new promise=]"), renumbering
+later steps as appropriate:
+<div algorithm="protected-audience-runadauction-monkey-patch">
+7. Let |batchingScopeMap| be a new [=map/is empty|empty=] [=map=].
+1. [=list/iterate|For each=] |bidderOrigin| of |auctionConfig|'s
+    <a spec="turtledove" for="auction config">interest group buyers</a>:
+    1. [=map/Set=] |batchingScopeMap|[|bidderOrigin|] to a new [=batching
+        scope=].
+1. Let |sellerOrigin| be |auctionConfig|'s
+    <a spec="turtledove" for="auction config">seller</a>.
+1. [=map/Set=] |batchingScopeMap|[|sellerOrigin|] to a new [=batching scope=].
+1. [=Upon fulfillment=] of |p| or [=upon rejection=] of |p|, run the following
+    steps:
+    1. TODO: Take onEvent contributions from its cache, run [=fill in the
+        contribution=] and then [=append an entry to the contribution cache=].
+    1. [=list/iterate|For each=] |origin| → |batchingScope| of
+        |batchingScopeMap|:
+        1. [=Process contributions for a batching scope=] given |batchingScope|,
+            |origin| and "<code>protected-audience</code>".
+
+</div>
+
+Issue: How to handle fenced frame-triggered contributions and other
+    event-triggered contributions.
+
+Issue: Need to handle `auctionReportBuyers` and `auctionReportBuyerKeys` here or
+    in the Protected Audience API spec.
+
+The <a spec="turtledove">evaluate a script</a> steps are modified to add the
+following steps after step 11 ("If <var ignore>evaluationStatus</var> is an
+[=ECMAScript/abrupt completion=]..."), renumbering later steps as appropriate:
+<div algorithm="protected-audience-evaluate-a-script-monkey-patch">
+12. Set <var ignore>global</var>'s {{InterestGroupScriptRunnerGlobalScope/
+    privateAggregation}}'s [=PrivateAggregation/get batching scope steps=] to
+    the following algorithm:
+    1. Return the [=batching scope=] associated with the auction and the
+        <var ignore>scope</var>'s [=relevant settings object=]'s [=environment
+        settings object/origin=].
+
+</div>
+
+Issue: Once <a href="https://github.com/wicg/turtledove/issues/615">
+    protected-audience/615</a> is resolved, align the above monkey patch with
+    how access to other functions is prevented in
+    {{InterestGroupScriptRunnerGlobalScope}}s until the script's initial
+    execution is complete.
+
+<div algorithm>
+The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(DOMString
+event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
+</div>
+
+Issue: Fill in validation. Will need to check offsets are valid and in the right
+    range for the type etc. Also that base values are one of a set.
+
+Issue: Need to document limits on offset, etc.
+
+Issue: Fill in the rest. (Need to put the contribution in some sort of queue and
+    process the queue at some point. Need to decide where the queue should live
+    given it has to outlive the auction.)
+
+Issue(44): Consider accepting an array of contributions.
+
+Protected Audience API-specific structures {#protected-audience-api-specific-structures}
+----------------------------------------------------------------------------------------
+
+<h4 dfn-type=dfn>Signal base value</h3>
+A signal base value is one of the following:
+<dl dfn-for="signal base value">
+: "<dfn export><code>winning-bid</code></dfn>"
+:: The bid value of the winning bid.
+: "<dfn export><code>highest-scoring-other-bid</code></dfn>"
+:: The bid value of the highest scoring bid that did not win.
+: "<dfn export><code>script-run-time</code></dfn>"
+:: The running time of the script in milliseconds.
+: "<dfn export><code>signals-fetch-time</code></dfn>"
+:: The time it took for the signals fetch to complete in milliseconds.
+: "<dfn export><code>bid-reject-reason</code></dfn>"
+:: The reason a bid was rejected.
+
+</dl>
+
+Issue: Remove exports when these definitions are used.
+
+Issue: Make sure these definitions match "determine the numeric value" algorithm
+
+Issue: New enum needed for bid reject reasons.
+
+Protected Audience API-specific algorithms {#protected-audience-api-specific-algorithms}
+----------------------------------------------------------------------------------------
 
 To <dfn>fill in the contribution</dfn> given a |contribution|, perform the
 following steps. They return a {{PAHistogramContribution}}.
