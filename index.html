@@ -8,7 +8,7 @@
   <meta content="Bikeshed version 5fcd28d6d, updated Tue May 30 13:12:11 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="48e9ceb80a02b24d178af2250632f6f39179fca6" name="document-revision">
+  <meta content="e79ff12948e1243cd11360d8746303fba865250e" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -731,7 +731,11 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
         <li><a href="#context-type"><span class="secno">4.1.4</span> <span class="content">Context type</span></a>
        </ol>
      </ol>
-    <li><a href="#storage"><span class="secno">5</span> <span class="content">Storage</span></a>
+    <li>
+     <a href="#storage"><span class="secno">5</span> <span class="content">Storage</span></a>
+     <ol class="toc">
+      <li><a href="#clearing-storage"><span class="secno">5.1</span> <span class="content">Clearing storage</span></a>
+     </ol>
     <li><a href="#implementation-defined-values"><span class="secno">6</span> <span class="content"><span>Implementation-defined</span> values</span></a>
     <li>
      <a href="#algorithms"><span class="secno">7</span> <span class="content">Algorithms</span></a>
@@ -751,6 +755,33 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
         <li><a href="#signal-base-value"><span class="secno">9.1.1</span> <span class="content">Signal base value</span></a>
        </ol>
       <li><a href="#protected-audience-api-specific-algorithms"><span class="secno">9.2</span> <span class="content">Protected Audience API-specific algorithms</span></a>
+     </ol>
+    <li>
+     <a href="#privacy-considerations"><span class="secno">10</span> <span class="content">Privacy considerations</span></a>
+     <ol class="toc">
+      <li>
+       <a href="#cross-site-information-disclosure"><span class="secno">10.1</span> <span class="content">Cross-site information disclosure</span></a>
+       <ol class="toc">
+        <li><a href="#restricted-contribution-processing"><span class="secno">10.1.1</span> <span class="content">Restricted contribution processing</span></a>
+        <li><a href="#unencrypted-metadata"><span class="secno">10.1.2</span> <span class="content">Unencrypted metadata</span></a>
+        <li><a href="#protecting-against-leaks-via-the-number-of-reports"><span class="secno">10.1.3</span> <span class="content">Protecting against leaks via the number of reports</span></a>
+        <li><a href="#protecting-against-leaks-via-payload-size"><span class="secno">10.1.4</span> <span class="content">Protecting against leaks via payload size</span></a>
+        <li><a href="#temporary-debugging-mechanism"><span class="secno">10.1.5</span> <span class="content">Temporary debugging mechanism</span></a>
+        <li><a href="#privacy-parameters"><span class="secno">10.1.6</span> <span class="content">Privacy parameters</span></a>
+       </ol>
+      <li><a href="#clearing-site-data"><span class="secno">10.2</span> <span class="content">Clearing site data</span></a>
+      <li>
+       <a href="#reporting-delay-concerns"><span class="secno">10.3</span> <span class="content">Reporting delay concerns</span></a>
+       <ol class="toc">
+        <li><a href="#cross-network-reporting-origin-leakage"><span class="secno">10.3.1</span> <span class="content">Cross-network reporting origin leakage</span></a>
+        <li><a href="#user-presence-tracking"><span class="secno">10.3.2</span> <span class="content">User-presence tracking</span></a>
+       </ol>
+     </ol>
+    <li>
+     <a href="#security-considerations"><span class="secno">11</span> <span class="content">Security considerations</span></a>
+     <ol class="toc">
+      <li><a href="#same-origin-policy"><span class="secno">11.1</span> <span class="content">Same-origin policy</span></a>
+      <li><a href="#protecting-the-histogram-contributions"><span class="secno">11.2</span> <span class="content">Protecting the histogram contributions</span></a>
      </ol>
     <li>
      <a href="#w3c-conformance"><span class="secno"></span> <span class="content">Conformance</span></a>
@@ -901,7 +932,7 @@ report</a>.
     <dd data-md>
      <p>A <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope①">batching scope</a></p>
    </dl>
-   <h4 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="4.1.3" data-lt="Aggregatable report" data-noexport id="aggregatable-report"><span class="secno">4.1.3. </span><span class="content">Aggregatable report</span><a class="self-link" href="#aggregatable-report" id="ref-for-aggregatable-report①③"></a></h4>
+   <h4 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="4.1.3" data-lt="Aggregatable report" data-noexport id="aggregatable-report"><span class="secno">4.1.3. </span><span class="content">Aggregatable report</span><a class="self-link" href="#aggregatable-report" id="ref-for-aggregatable-report①④"></a></h4>
    <p>An aggregatable report is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#struct" id="ref-for-struct①">struct</a> with the following items:</p>
    <dl>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="aggregatable report" data-dfn-type="dfn" data-noexport id="aggregatable-report-reporting-origin">reporting origin</dfn>
@@ -926,13 +957,17 @@ report</a>.
     <dd data-md>
      <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#boolean" id="ref-for-boolean">boolean</a></p>
    </dl>
-   <p class="issue" id="issue-d4626287"><a class="self-link" href="#issue-d4626287"></a> Handle operation types, aggregation coordinators, maybe retries/offline,
-    report verification</p>
+   <p class="issue" id="issue-4dba390c"><a class="self-link" href="#issue-4dba390c"></a> Handle context ID, maybe retries/offline</p>
    <h4 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="4.1.4" data-lt="Context type" data-noexport id="context-type"><span class="secno">4.1.4. </span><span class="content">Context type</span><a class="self-link" href="#context-type" id="ref-for-context-type⑦"></a></h4>
     A context type is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string①">string</a> indicating what kind of global scope the <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation④">PrivateAggregation</a></code> object was exposed in. 
    <h2 class="heading settled" data-level="5" id="storage"><span class="secno">5. </span><span class="content">Storage</span><a class="self-link" href="#storage"></a></h2>
    <p>A user agent holds an <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="contribution-cache">contribution cache</dfn>, which is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①">list</a> of <a data-link-type="dfn" href="#contribution-cache-entry" id="ref-for-contribution-cache-entry①">contribution cache entries</a>.</p>
    <p>A user agent holds an <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="aggregatable-report-cache">aggregatable report cache</dfn>, which is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list②">list</a> of <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report①">aggregatable reports</a>.</p>
+   <h3 class="heading settled" data-level="5.1" id="clearing-storage"><span class="secno">5.1. </span><span class="content">Clearing storage</span><a class="self-link" href="#clearing-storage"></a></h3>
+   <p>The user agent must expose controls that allow the user to delete data from
+the <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache">aggregatable report cache</a> as well as any contribution history data
+stored for the <a data-link-type="dfn" href="#consume-budget-if-permitted" id="ref-for-consume-budget-if-permitted">consume budget if permitted</a> algorithm.</p>
+   <p>The user agent may expose controls that allow the user to delete data from the <a data-link-type="dfn" href="#contribution-cache" id="ref-for-contribution-cache①">contributions cache</a>.</p>
    <h2 class="heading settled" data-level="6" id="implementation-defined-values"><span class="secno">6. </span><span class="content"><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined">Implementation-defined</a> values</span><a class="self-link" href="#implementation-defined-values"></a></h2>
    <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="maximum-report-contributions">Maximum report contributions</dfn> is a positive integer that controls how
 many contributions can be present in a single report.</p>
@@ -952,7 +987,7 @@ possible decimal number.</p>
    <p>To <dfn class="dfn-paneled algorithm" data-algorithm="append an entry to the contribution cache" data-dfn-type="dfn" data-export id="append-an-entry-to-the-contribution-cache">append an entry to the contribution cache</dfn> given a <a data-link-type="dfn" href="#contribution-cache-entry" id="ref-for-contribution-cache-entry②">contribution cache entry</a> <var>entry</var>:</p>
    <ol>
     <li data-md>
-     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append">Append</a> <var>entry</var> to the <a data-link-type="dfn" href="#contribution-cache" id="ref-for-contribution-cache①">contribution cache</a>.</p>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append">Append</a> <var>entry</var> to the <a data-link-type="dfn" href="#contribution-cache" id="ref-for-contribution-cache②">contribution cache</a>.</p>
    </ol>
    <p>To <dfn class="dfn-paneled algorithm" data-algorithm="process contributions for a batching scope" data-dfn-type="dfn" data-export id="process-contributions-for-a-batching-scope">process contributions for a batching scope</dfn> given
 a <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope②">batching scope</a> <var>batchingScope</var>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin①">origin</a> <var>reportingOrigin</var> and a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type②">context type</a> <var>contextType</var>:</p>
@@ -960,7 +995,7 @@ a <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope②">
     <li data-md>
      <p>Let <var>batchEntries</var> be a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-is-empty" id="ref-for-list-is-empty">empty</a> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list③">list</a>.</p>
     <li data-md>
-     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate">For each</a> <var>entry</var> of the <a data-link-type="dfn" href="#contribution-cache" id="ref-for-contribution-cache②">contribution cache</a>:</p>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate">For each</a> <var>entry</var> of the <a data-link-type="dfn" href="#contribution-cache" id="ref-for-contribution-cache③">contribution cache</a>:</p>
      <ol>
       <li data-md>
        <p>If <var>entry</var>’s <a data-link-type="dfn" href="#contribution-cache-entry-batching-scope" id="ref-for-contribution-cache-entry-batching-scope①">batching scope</a> is <var>batchingScope</var>, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append①">append</a> <var>entry</var> to <var>batchEntries</var>.</p>
@@ -973,7 +1008,7 @@ a <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope②">
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate①">For each</a> <var>entry</var> of <var>batchEntries</var>:</p>
      <ol>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-remove" id="ref-for-list-remove">Remove</a> <var>entry</var> from the <a data-link-type="dfn" href="#contribution-cache" id="ref-for-contribution-cache③">contribution cache</a>.</p>
+       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-remove" id="ref-for-list-remove">Remove</a> <var>entry</var> from the <a data-link-type="dfn" href="#contribution-cache" id="ref-for-contribution-cache④">contribution cache</a>.</p>
       <li data-md>
        <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append②">Append</a> <var>entry</var>’s <a data-link-type="dfn" href="#contribution-cache-entry-contribution" id="ref-for-contribution-cache-entry-contribution①">contribution</a> to <var>batchContributions</var>.</p>
      </ol>
@@ -1014,13 +1049,13 @@ report contributions</a>, exclusive:</p>
     <li data-md>
      <p>Let <var>currentWallTime</var> be the <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-current-wall-time" id="ref-for-dfn-current-wall-time">current wall time</a>.</p>
     <li data-md>
-     <p>Let <var>sufficientBudget</var> be the result of <a data-link-type="dfn" href="#consume-budget-if-permitted" id="ref-for-consume-budget-if-permitted">consuming budget if permitted</a> given <var>contributionSum</var>, <var>reportingOrigin</var>, <var>api</var> and <var>currentWallTime</var>.</p>
+     <p>Let <var>sufficientBudget</var> be the result of <a data-link-type="dfn" href="#consume-budget-if-permitted" id="ref-for-consume-budget-if-permitted①">consuming budget if permitted</a> given <var>contributionSum</var>, <var>reportingOrigin</var>, <var>api</var> and <var>currentWallTime</var>.</p>
     <li data-md>
      <p>If <var>sufficientBudget</var> is false, return.</p>
     <li data-md>
      <p>Let <var>report</var> be the result of <a data-link-type="dfn" href="#obtain-an-aggregatable-report" id="ref-for-obtain-an-aggregatable-report">obtaining an aggregatable report</a> given <var>reportingOrigin</var>, <var>api</var>, <var>truncatedContributions</var> and <var>currentWallTime</var>.</p>
     <li data-md>
-     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append①">Append</a> <var>report</var> to the user agent’s <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache">aggregatable report cache</a>.</p>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append①">Append</a> <var>report</var> to the user agent’s <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache①">aggregatable report cache</a>.</p>
    </ol>
    <p class="issue" id="issue-b92a47e8"><a class="self-link" href="#issue-b92a47e8"></a> Do we need to ensure the reports aren’t queued after being sent?</p>
    <p class="issue" id="issue-a82d4aa0"><a class="self-link" href="#issue-a82d4aa0"></a> Do we need to address user settings here at all?</p>
@@ -1081,7 +1116,7 @@ delay</a>.</p>
     network on or whatever</p>
    <p class="issue" id="issue-2485156c"><a class="self-link" href="#issue-2485156c"></a> Do we have to use the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task">queue a task</a> algorithm here?</p>
    <p>The user agent must periodically <a data-link-type="dfn" href="#attempt-to-queue-reports-for-sending" id="ref-for-attempt-to-queue-reports-for-sending">attempt to queue reports for sending</a> with
-its <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache①">aggregatable report cache</a>.</p>
+its <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache②">aggregatable report cache</a>.</p>
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="attempt-to-queue-reports-for-sending">attempt to queue reports for sending</dfn> given a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑧">list</a> of <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report⑥">aggregatable reports</a> <var>reports</var>:</p>
    <ol>
     <li data-md>
@@ -1127,7 +1162,7 @@ false.</p>
     <li data-md>
      <p>Let <var>data</var> be the result of <a data-link-type="dfn" href="#serialize-an-aggregatable-report" id="ref-for-serialize-an-aggregatable-report">serializing an aggregatable report</a> given <var>report</var>.</p>
     <li data-md>
-     <p>If <var>data</var> is an error, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-remove" id="ref-for-list-remove①">remove</a> <var>report</var> from the <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache②">aggregatable
+     <p>If <var>data</var> is an error, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-remove" id="ref-for-list-remove①">remove</a> <var>report</var> from the <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache③">aggregatable
 report cache</a>. (TODO: do we need to queue this task?)</p>
     <li data-md>
      <p>Let <var>request</var> be the result of <a data-link-type="dfn" href="#create-a-report-request" id="ref-for-create-a-report-request">creating a report request</a> given <var>url</var> and <var>data</var>.</p>
@@ -1141,7 +1176,7 @@ should be false if no error occurred.</p>
       <li data-md>
        <p>If <var>shouldRetry</var> is true, set <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-queued" id="ref-for-aggregatable-report-queued⑤">queued</a> value to false.</p>
       <li data-md>
-       <p>Otherwise, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-remove" id="ref-for-list-remove②">remove</a> <var>report</var> from the <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache③">aggregatable report
+       <p>Otherwise, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-remove" id="ref-for-list-remove②">remove</a> <var>report</var> from the <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache④">aggregatable report
 cache</a>.</p>
      </ol>
    </ol>
@@ -1271,9 +1306,9 @@ key/value pairs:</p>
 of a public key and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③">string</a> (which should uniquely identify the public
 key), or an error in the event that the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent②">user agent</a> failed to obtain the
 public key. (TODO: why asynchronously.)</p>
-   <p class="note" role="note"><span class="marker">Note:</span> The user agent might enforce regular key rotation. If there are multiple
-    keys, the user agent might independently pick a key uniformly at random for
-    every encryption operation.</p>
+   <p class="note" role="note"><span class="marker">Note:</span> The user agent is encouraged to enforce regular key rotation. If there are
+    multiple keys, the user agent can independently pick a key uniformly at
+    random for every encryption operation.</p>
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="obtain-the-encrypted-payload">obtain the encrypted payload</dfn> given an <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report①⓪">aggregatable report</a> <var>report</var>, perform the following steps. They return a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#byte-sequence" id="ref-for-byte-sequence③">byte sequence</a> or an
 error.</p>
    <ol>
@@ -1594,6 +1629,168 @@ the result of adding <var>returnValue</var> to <var>value</var>["<code class="id
    <p class="issue" id="issue-b7f7c8b2"><a class="self-link" href="#issue-b7f7c8b2"></a> Maybe add refs to the rounding logic.</p>
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="determine-the-numeric-value">determine the numeric value</dfn> of a <a data-link-type="dfn" href="#signal-base-value" id="ref-for-signal-base-value①">signal base value</a> <var>signalBaseValue</var>, perform the following steps. They return a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-double" id="ref-for-idl-double①">double</a></code>.</p>
    <p class="issue" id="issue-cb6e966f"><a class="self-link" href="#issue-cb6e966f"></a> Fill in.</p>
+   <h2 class="heading settled" data-level="10" id="privacy-considerations"><span class="secno">10. </span><span class="content">Privacy considerations</span><a class="self-link" href="#privacy-considerations"></a></h2>
+   <p><em>This section is non-normative.</em></p>
+   <h3 class="heading settled" data-level="10.1" id="cross-site-information-disclosure"><span class="secno">10.1. </span><span class="content">Cross-site information disclosure</span><a class="self-link" href="#cross-site-information-disclosure"></a></h3>
+   <p>This API lets isolated contexts with access to cross-site data (i.e. <a href="https://wicg.github.io/shared-storage/">Shared Storage</a> worklets/<a href="https://wicg.github.io/turtledove/">Protected Audience</a> script runners)
+send aggregatable reports over the network.</p>
+   <p>Aggregatable reports contain encrypted high entropy cross-site information, in
+the form of key-value pairs (i.e. contributions to a histogram). The information
+embedded in the contributions is arbitrary but can include things like browsing
+history and other cross-site activity. The API aims to protect this information
+from being passed from one site to another.</p>
+   <h4 class="heading settled" data-level="10.1.1" id="restricted-contribution-processing"><span class="secno">10.1.1. </span><span class="content">Restricted contribution processing</span><a class="self-link" href="#restricted-contribution-processing"></a></h4>
+   <p>The histogram contributions are not exposed directly. Instead, they are
+encrypted so that they can only be processed by a trusted aggregation service.
+This trusted aggregation service sums the values across the reports for each key
+and adds noise to each of these values to produce ‘summary reports’.</p>
+   <p>The output of that processing will be an aggregated, noised histogram. The
+service ensures that any report can not be processed multiple times. Further,
+information exposure is limited by contribution budgets on the user agent. In
+principle, this framework can support specifying a noise parameter which
+satisfies differential privacy.</p>
+   <h4 class="heading settled" data-level="10.1.2" id="unencrypted-metadata"><span class="secno">10.1.2. </span><span class="content">Unencrypted metadata</span><a class="self-link" href="#unencrypted-metadata"></a></h4>
+   <p>These reports also expose a limited amount of metadata, which is not based on
+cross-site data. The recipient of the report may also be able to observe
+side-channel information such as the time when the report was sent, or IP
+address of the sender.</p>
+   <h4 class="heading settled" data-level="10.1.3" id="protecting-against-leaks-via-the-number-of-reports"><span class="secno">10.1.3. </span><span class="content">Protecting against leaks via the number of reports</span><a class="self-link" href="#protecting-against-leaks-via-the-number-of-reports"></a></h4>
+   <p>However, the number of reports with the given metadata could expose some
+cross-site information. To protect against this, the API delays sending reports
+by a randomized amount of time to make it difficult to determine whether a
+report was sent or not from any particular event. In the case that a context ID
+is supplied, the API makes the number of reports sent deterministic (sending
+reports containing no contributions in the payloads if necessary). Additional
+mitigations may also be possible in the future, e.g. adding noise to the report
+count.</p>
+   <h4 class="heading settled" data-level="10.1.4" id="protecting-against-leaks-via-payload-size"><span class="secno">10.1.4. </span><span class="content">Protecting against leaks via payload size</span><a class="self-link" href="#protecting-against-leaks-via-payload-size"></a></h4>
+   <p>The length of the payload could additionally expose some cross-site information,
+namely how many contributions are included. To protect against this, the payload
+will be padded in the future.</p>
+   <p class="issue" id="issue-7b2e2279"><a class="self-link" href="#issue-7b2e2279"></a> Pad the payload to avoid this risk. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/56">[Issue #56]</a></p>
+   <h4 class="heading settled" data-level="10.1.5" id="temporary-debugging-mechanism"><span class="secno">10.1.5. </span><span class="content">Temporary debugging mechanism</span><a class="self-link" href="#temporary-debugging-mechanism"></a></h4>
+   <p>The <code>enableDebugMode()</code> method allows for many of the protections of this API to
+be bypassed to ease testing and integration. Specifically, the contents of the
+payload, i.e. the histogram contributions, are revealed in the clear when the
+debug mode is enabled. Optionally, a debug key can also be set to associate the
+report with the calling context. In the future, this mechanism will only be
+available for callers that are eligible to set third-party cookies. In that
+case, the API caller already has the ability to communicate information
+cross-site.</p>
+   <p class="issue" id="issue-d97fad0c"><a class="self-link" href="#issue-d97fad0c"></a> Tie <code>enableDebugMode()</code> to third-party cookie eligibility. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/57">[Issue #57]</a></p>
+   <h4 class="heading settled" data-level="10.1.6" id="privacy-parameters"><span class="secno">10.1.6. </span><span class="content">Privacy parameters</span><a class="self-link" href="#privacy-parameters"></a></h4>
+   <p>The amount of information exposed by this API is a product of the privacy
+parameters used (e.g. contribution limits and the noise distribution used in the
+aggregation service). While we aim to minimize the amount of information
+exposed, we also aim to support a wide range of use cases. The privacy
+parameters are left <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑥">implementation-defined</a> to allow different and evolving
+choices in the tradeoffs between information exposure and utility.</p>
+   <h3 class="heading settled" data-level="10.2" id="clearing-site-data"><span class="secno">10.2. </span><span class="content">Clearing site data</span><a class="self-link" href="#clearing-site-data"></a></h3>
+   <p>The <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache⑤">aggregatable report cache</a> as well as any contribution history data
+stored for the <a data-link-type="dfn" href="#consume-budget-if-permitted" id="ref-for-consume-budget-if-permitted②">consume budget if permitted</a> algorithm contain data about a
+user’s web activity. As such, user controls to delete this data are required,
+see <a href="#clearing-storage">clearing storage</a>.</p>
+   <p>On the other hand, the <a data-link-type="dfn" href="#contribution-cache" id="ref-for-contribution-cache⑤">contribution cache</a> only contains short-lived data
+tied to particular batching scopes, so controls are not required.</p>
+   <p class="issue" id="issue-2e99bd22"><a class="self-link" href="#issue-2e99bd22"></a> Link batching scopes</p>
+   <h3 class="heading settled" data-level="10.3" id="reporting-delay-concerns"><span class="secno">10.3. </span><span class="content">Reporting delay concerns</span><a class="self-link" href="#reporting-delay-concerns"></a></h3>
+   <p>Delaying sending reports after API invocation can enable side-channel leakage in
+some situations.</p>
+   <h4 class="heading settled" data-level="10.3.1" id="cross-network-reporting-origin-leakage"><span class="secno">10.3.1. </span><span class="content">Cross-network reporting origin leakage</span><a class="self-link" href="#cross-network-reporting-origin-leakage"></a></h4>
+   <p>A report may be stored while the browser is connected to one network but sent
+while the browser is connected to a different network, potentially enabling
+cross-network leakage of the reporting origin.</p>
+   <p>Example: A user runs the browser with a particular browsing profile on their
+home network. An aggregatable report with a particular reporting origin is
+stored with a report time in the future. After the report time is reached, the
+user runs the browser with the same browsing profile on their employer’s
+network, at which point the browser sends the report to the reporting origin.
+Although the report itself may be sent over HTTPS, the reporting origin may be
+visible to the network administrator via DNS or the TLS client hello (which can
+be mitigated with ECH). Some reporting origins may be known to operate only or
+primarily on sensitive sites, so this could leak information about the user’s
+browsing activity to the user’s employer without their knowledge or consent.</p>
+   <p>Possible mitigations include:</p>
+   <ol>
+    <li data-md>
+     <p>Only sending reports with a given reporting origin when the browser has
+already made a request to that origin on the same network: This prevents the
+network administrator from gaining additional information from the Private
+Aggregation API. However, it increases report loss and report delays, which
+reduces the utility of the API for the reporting origin. It might also
+increase the effectiveness of timing attacks, as the origin may be able to
+better link the report with the user’s request that allowed the report to be
+released.</p>
+    <li data-md>
+     <p>Send reports immediately: This reduces the likelihood of a report being
+stored and sent on different networks. However, it increases the likelihood
+that the reporting origin can correlate the original API invocation to the
+report being sent, which weakens the privacy controls of the API, see <a href="#protecting-against-leaks-via-the-number-of-reports">Protecting against leaks via the number of
+reports</a>.</p>
+    <li data-md>
+     <p>Use a trusted proxy server to send reports: This effectively moves the
+reporting origin into the report body, so only the proxy server would be
+visible to the network administrator.</p>
+    <li data-md>
+     <p>Require <a href="https://datatracker.ietf.org/doc/html/rfc8484">DNS over HTTPS</a>: This
+effectively hides the reporting origin from the network administrator, but
+is likely impractical to enforce and is itself perhaps circumventable by the
+network administrator, e.g. by monitoring IP addresses instead.</p>
+   </ol>
+   <h4 class="heading settled" data-level="10.3.2" id="user-presence-tracking"><span class="secno">10.3.2. </span><span class="content">User-presence tracking</span><a class="self-link" href="#user-presence-tracking"></a></h4>
+   <p>The browser only tries to send reports while it is running and while it has
+internet connectivity (even without an explicit check for connectivity,
+naturally the report will fail to be sent if there is none), so receiving or not
+receiving a (<a data-link-type="dfn" href="#serialize-an-aggregatable-report" id="ref-for-serialize-an-aggregatable-report①">serialized</a>) <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report①③">aggregatable
+report</a> at the <a data-link-type="dfn" href="#aggregatable-report-original-report-time" id="ref-for-aggregatable-report-original-report-time②">original report time</a> leaks information
+about the user’s presence. Additionally, because the report request inherently
+includes an IP address, this could reveal the user’s IP-derived location to the
+reporting origin, including at-home vs. at-work or approximate real-world
+geolocation, or reveal patterns in the user’s browsing activity.</p>
+   <p>Possible mitigations include:</p>
+   <ol>
+    <li data-md>
+     <p>Send reports immediately: This effectively eliminates the presence tracking,
+as the original request made to the reporting origin is in close temporal
+proximity to the report request. However, it increases the likelihood that
+the reporting origin can correlate the original API invocation to the report
+being sent, which weakens the privacy controls of the API, see <a href="#protecting-against-leaks-via-the-number-of-reports">Protecting
+against leaks via the number of
+reports</a>.</p>
+    <li data-md>
+     <p>Send reports immediately to a trusted proxy server, which would itself apply
+additional delay: This would effectively hide both the user’s IP address and
+their online-offline presence from the reporting origin.</p>
+   </ol>
+   <h2 class="heading settled" data-level="11" id="security-considerations"><span class="secno">11. </span><span class="content">Security considerations</span><a class="self-link" href="#security-considerations"></a></h2>
+   <p><em>This section is non-normative.</em></p>
+   <h3 class="heading settled" data-level="11.1" id="same-origin-policy"><span class="secno">11.1. </span><span class="content">Same-origin policy</span><a class="self-link" href="#same-origin-policy"></a></h3>
+   <p>Writes to the <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache⑥">aggregatable report cache</a> and <a data-link-type="dfn" href="#contribution-cache" id="ref-for-contribution-cache⑥">contribution cache</a> are
+separated by the reporting <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑥">origin</a> and the data included in any report with a
+given reporting <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑦">origin</a> are generated with only data from that <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑧">origin</a>.</p>
+   <p>One notable exception is the <a data-link-type="dfn" href="#consume-budget-if-permitted" id="ref-for-consume-budget-if-permitted③">consume budget if permitted</a> algorithm which is <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑦">implementation-defined</a> and can consider contribution history from other <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑨">origins</a>. For example, the algorithm could consider all history from a
+particular <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#site" id="ref-for-site">site</a>. This would be an explicit relaxation of the same-origin
+policy as multiple origins would be able to influence the API’s behavior. One
+particular risk of these kinds of shared limits is the introduction of denial of
+service attacks, where a group of origins could collude to intentionally consume
+all available budget, causing subsequent origins to be unable to access the API.
+This trades off security for privacy, in that the limits are there to reduce the
+efficacy of many origins colluding together to violate privacy. However, this
+security risk is lessened if the set of origins limited are all <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#same-site" id="ref-for-same-site">same site</a>. <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent③">User agents</a> should consider these tradeoffs when choosing the <a data-link-type="dfn" href="#consume-budget-if-permitted" id="ref-for-consume-budget-if-permitted④">consume
+budget if permitted</a> algorithm.</p>
+   <h3 class="heading settled" data-level="11.2" id="protecting-the-histogram-contributions"><span class="secno">11.2. </span><span class="content">Protecting the histogram contributions</span><a class="self-link" href="#protecting-the-histogram-contributions"></a></h3>
+   <p>As discussed <a href="#restricted-contribution-processing">above</a>, the processing of
+histogram contributions is limited to protect privacy. This limitation relies on
+only the trusted aggregation service being able to access the unencrypted
+histogram contributions.</p>
+   <p>To ensure this, this API uses <a data-link-type="biblio" href="#biblio-rfc9180" title="Hybrid Public Key Encryption">HPKE</a>, a modern encryption
+specification. Additionally, each <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent④">user agent</a> is encouraged to require
+regular key rotation by the aggregation service. This limits the amount of data
+encrypted with the same key and thus the amount of vulnerable data in the case
+of a key being compromised.</p>
+   <p>While not specified here, each <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent⑤">user agent</a> is strongly encouraged to consider
+the security of any aggregation service design before allowing its public keys
+to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encryption" id="ref-for-obtain-the-public-key-for-encryption①">obtain the public key for encryption</a>.</p>
   </main>
   <div data-fill-with="conformance">
    <h2 class="no-ref no-num heading settled" id="w3c-conformance"><span class="content">Conformance</span><a class="self-link" href="#w3c-conformance"></a></h2>
@@ -1759,7 +1956,9 @@ the result of adding <var>returnValue</var> to <var>value</var>["<code class="id
      <li><span class="dfn-paneled" id="43ac8374">origin <small>(for environment settings object)</small></span>
      <li><span class="dfn-paneled" id="9a517a7d">queue a task</span>
      <li><span class="dfn-paneled" id="9c4c1e66">relevant settings object</span>
+     <li><span class="dfn-paneled" id="feac4ab3">same site</span>
      <li><span class="dfn-paneled" id="dae0bfde">serialization of an origin</span>
+     <li><span class="dfn-paneled" id="fb9bb722">site</span>
      <li><span class="dfn-paneled" id="45a22199">unique internal value</span>
     </ul>
    <li>
@@ -1925,8 +2124,7 @@ the result of adding <var>returnValue</var> to <var>value</var>["<code class="id
    <div class="issue"> Consider accepting an array of contributions. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/44">[Issue #44]</a> <a class="issue-return" href="#issue-e90e23c5" title="Jump to section">↵</a></div>
    <div class="issue"> Link Same-origin policy section. <a class="issue-return" href="#issue-50217756" title="Jump to section">↵</a></div>
    <div class="issue"> Unique internal value is not an exported definition. See <a href="https://github.com/whatwg/infra/issues/583">infra/583</a>. <a class="issue-return" href="#issue-24767e0c" title="Jump to section">↵</a></div>
-   <div class="issue"> Handle operation types, aggregation coordinators, maybe retries/offline,
-    report verification <a class="issue-return" href="#issue-d4626287" title="Jump to section">↵</a></div>
+   <div class="issue"> Handle context ID, maybe retries/offline <a class="issue-return" href="#issue-4dba390c" title="Jump to section">↵</a></div>
    <div class="issue"> More <a class="issue-return" href="#issue-d3da97e2" title="Jump to section">↵</a></div>
    <div class="issue"> This would ideally be replaced by a more descriptive algorithm in Infra.
     See <a href="https://github.com/whatwg/infra/issues/201">infra/201</a>. <a class="issue-return" href="#issue-6b252736" title="Jump to section">↵</a></div>
@@ -1962,6 +2160,9 @@ the result of adding <var>returnValue</var> to <var>value</var>["<code class="id
    <div class="issue"> New enum needed for bid reject reasons. <a class="issue-return" href="#issue-9532b98e" title="Jump to section">↵</a></div>
    <div class="issue"> Maybe add refs to the rounding logic. <a class="issue-return" href="#issue-b7f7c8b2" title="Jump to section">↵</a></div>
    <div class="issue"> Fill in. <a class="issue-return" href="#issue-cb6e966f" title="Jump to section">↵</a></div>
+   <div class="issue"> Pad the payload to avoid this risk. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/56">[Issue #56]</a> <a class="issue-return" href="#issue-7b2e2279" title="Jump to section">↵</a></div>
+   <div class="issue"> Tie <code>enableDebugMode()</code> to third-party cookie eligibility. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/57">[Issue #57]</a> <a class="issue-return" href="#issue-d97fad0c" title="Jump to section">↵</a></div>
+   <div class="issue"> Link batching scopes <a class="issue-return" href="#issue-2e99bd22" title="Jump to section">↵</a></div>
   </div>
 <script>/* Boilerplate: script-dfn-panel */
 "use strict";
@@ -2301,11 +2502,13 @@ window.dfnpanelData['eec46e27'] = {"dfnID": "eec46e27", "url": "https://html.spe
 window.dfnpanelData['f1d11a13'] = {"dfnID": "f1d11a13", "url": "https://tc39.es/ecma262/#sec-call", "dfnText": "call", "refSections": [{"refs": [{"id": "ref-for-sec-call"}], "title": "8. Shared Storage API monkey patches"}], "external": true};
 window.dfnpanelData['6f738b30'] = {"dfnID": "6f738b30", "url": "https://html.spec.whatwg.org/multipage/worklets.html#concept-worklet-global-scopes", "dfnText": "global scopes", "refSections": [{"refs": [{"id": "ref-for-concept-worklet-global-scopes"}], "title": "8. Shared Storage API monkey patches"}], "external": true};
 window.dfnpanelData['a72449dd'] = {"dfnID": "a72449dd", "url": "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel", "dfnText": "in parallel", "refSections": [{"refs": [{"id": "ref-for-in-parallel"}], "title": "7.3. Sending reports"}], "external": true};
-window.dfnpanelData['086e3aff'] = {"dfnID": "086e3aff", "url": "https://html.spec.whatwg.org/multipage/browsers.html#concept-origin", "dfnText": "origin", "refSections": [{"refs": [{"id": "ref-for-concept-origin"}], "title": "4.1.3. Aggregatable report"}, {"refs": [{"id": "ref-for-concept-origin\u2460"}], "title": "7.1. Exported algorithms"}, {"refs": [{"id": "ref-for-concept-origin\u2461"}, {"id": "ref-for-concept-origin\u2462"}, {"id": "ref-for-concept-origin\u2463"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-concept-origin\u2464"}], "title": "7.3. Sending reports"}], "external": true};
+window.dfnpanelData['086e3aff'] = {"dfnID": "086e3aff", "url": "https://html.spec.whatwg.org/multipage/browsers.html#concept-origin", "dfnText": "origin", "refSections": [{"refs": [{"id": "ref-for-concept-origin"}], "title": "4.1.3. Aggregatable report"}, {"refs": [{"id": "ref-for-concept-origin\u2460"}], "title": "7.1. Exported algorithms"}, {"refs": [{"id": "ref-for-concept-origin\u2461"}, {"id": "ref-for-concept-origin\u2462"}, {"id": "ref-for-concept-origin\u2463"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-concept-origin\u2464"}], "title": "7.3. Sending reports"}, {"refs": [{"id": "ref-for-concept-origin\u2465"}, {"id": "ref-for-concept-origin\u2466"}, {"id": "ref-for-concept-origin\u2467"}, {"id": "ref-for-concept-origin\u2468"}], "title": "11.1. Same-origin policy"}], "external": true};
 window.dfnpanelData['43ac8374'] = {"dfnID": "43ac8374", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin", "dfnText": "origin (for environment settings object)", "refSections": [{"refs": [{"id": "ref-for-concept-settings-object-origin"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-concept-settings-object-origin\u2460"}, {"id": "ref-for-concept-settings-object-origin\u2461"}], "title": "8. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-concept-settings-object-origin\u2462"}], "title": "9. Protected Audience API monkey patches"}], "external": true};
 window.dfnpanelData['9a517a7d'] = {"dfnID": "9a517a7d", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task", "dfnText": "queue a task", "refSections": [{"refs": [{"id": "ref-for-queue-a-task"}, {"id": "ref-for-queue-a-task\u2460"}], "title": "7.3. Sending reports"}], "external": true};
 window.dfnpanelData['9c4c1e66'] = {"dfnID": "9c4c1e66", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object", "dfnText": "relevant settings object", "refSections": [{"refs": [{"id": "ref-for-relevant-settings-object"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-relevant-settings-object\u2460"}], "title": "9. Protected Audience API monkey patches"}], "external": true};
+window.dfnpanelData['feac4ab3'] = {"dfnID": "feac4ab3", "url": "https://html.spec.whatwg.org/multipage/browsers.html#same-site", "dfnText": "same site", "refSections": [{"refs": [{"id": "ref-for-same-site"}], "title": "11.1. Same-origin policy"}], "external": true};
 window.dfnpanelData['dae0bfde'] = {"dfnID": "dae0bfde", "url": "https://html.spec.whatwg.org/multipage/browsers.html#ascii-serialisation-of-an-origin", "dfnText": "serialization of an origin", "refSections": [{"refs": [{"id": "ref-for-ascii-serialisation-of-an-origin"}], "title": "7.3. Sending reports"}, {"refs": [{"id": "ref-for-ascii-serialisation-of-an-origin\u2460"}], "title": "7.4. Serializing reports"}], "external": true};
+window.dfnpanelData['fb9bb722'] = {"dfnID": "fb9bb722", "url": "https://html.spec.whatwg.org/multipage/browsers.html#site", "dfnText": "site", "refSections": [{"refs": [{"id": "ref-for-site"}], "title": "11.1. Same-origin policy"}], "external": true};
 window.dfnpanelData['45a22199'] = {"dfnID": "45a22199", "url": "https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#unique-internal-value", "dfnText": "unique internal value", "refSections": [{"refs": [{"id": "ref-for-unique-internal-value"}], "title": "4.1.1. Batching scope"}], "external": true};
 window.dfnpanelData['1adcc035'] = {"dfnID": "1adcc035", "url": "https://infra.spec.whatwg.org/#abort-when", "dfnText": "abort when", "refSections": [{"refs": [{"id": "ref-for-abort-when"}], "title": "7.3. Sending reports"}], "external": true};
 window.dfnpanelData['53275e46'] = {"dfnID": "53275e46", "url": "https://infra.spec.whatwg.org/#list-append", "dfnText": "append (for list)", "refSections": [{"refs": [{"id": "ref-for-list-append"}, {"id": "ref-for-list-append\u2460"}, {"id": "ref-for-list-append\u2461"}], "title": "7.1. Exported algorithms"}, {"refs": [{"id": "ref-for-list-append\u2462"}, {"id": "ref-for-list-append\u2463"}], "title": "7.4. Serializing reports"}], "external": true};
@@ -2319,7 +2522,7 @@ window.dfnpanelData['1243a891'] = {"dfnID": "1243a891", "url": "https://infra.sp
 window.dfnpanelData['16d07e10'] = {"dfnID": "16d07e10", "url": "https://infra.spec.whatwg.org/#list-iterate", "dfnText": "for each", "refSections": [{"refs": [{"id": "ref-for-list-iterate"}, {"id": "ref-for-list-iterate\u2460"}], "title": "7.1. Exported algorithms"}, {"refs": [{"id": "ref-for-list-iterate\u2461"}, {"id": "ref-for-list-iterate\u2462"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-list-iterate\u2463"}], "title": "7.3. Sending reports"}, {"refs": [{"id": "ref-for-list-iterate\u2464"}], "title": "7.4. Serializing reports"}, {"refs": [{"id": "ref-for-list-iterate\u2465"}, {"id": "ref-for-list-iterate\u2466"}], "title": "9. Protected Audience API monkey patches"}], "external": true};
 window.dfnpanelData['b012ccb2'] = {"dfnID": "b012ccb2", "url": "https://infra.spec.whatwg.org/#forgiving-base64-encode", "dfnText": "forgiving-base64 encode", "refSections": [{"refs": [{"id": "ref-for-forgiving-base64-encode"}], "title": "7.4. Serializing reports"}], "external": true};
 window.dfnpanelData['715f22e4'] = {"dfnID": "715f22e4", "url": "https://infra.spec.whatwg.org/#if-aborted", "dfnText": "if aborted", "refSections": [{"refs": [{"id": "ref-for-if-aborted"}], "title": "7.3. Sending reports"}], "external": true};
-window.dfnpanelData['860300d4'] = {"dfnID": "860300d4", "url": "https://infra.spec.whatwg.org/#implementation-defined", "dfnText": "implementation-defined", "refSections": [{"refs": [{"id": "ref-for-implementation-defined"}], "title": "6. Implementation-defined values"}, {"refs": [{"id": "ref-for-implementation-defined\u2460"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2461"}, {"id": "ref-for-implementation-defined\u2462"}, {"id": "ref-for-implementation-defined\u2463"}], "title": "7.3. Sending reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2464"}], "title": "7.4. Serializing reports"}], "external": true};
+window.dfnpanelData['860300d4'] = {"dfnID": "860300d4", "url": "https://infra.spec.whatwg.org/#implementation-defined", "dfnText": "implementation-defined", "refSections": [{"refs": [{"id": "ref-for-implementation-defined"}], "title": "6. Implementation-defined values"}, {"refs": [{"id": "ref-for-implementation-defined\u2460"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2461"}, {"id": "ref-for-implementation-defined\u2462"}, {"id": "ref-for-implementation-defined\u2463"}], "title": "7.3. Sending reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2464"}], "title": "7.4. Serializing reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2465"}], "title": "10.1.6. Privacy parameters"}, {"refs": [{"id": "ref-for-implementation-defined\u2466"}], "title": "11.1. Same-origin policy"}], "external": true};
 window.dfnpanelData['6b815fdd'] = {"dfnID": "6b815fdd", "url": "https://infra.spec.whatwg.org/#list-is-empty", "dfnText": "is empty (for list)", "refSections": [{"refs": [{"id": "ref-for-list-is-empty"}, {"id": "ref-for-list-is-empty\u2460"}], "title": "7.1. Exported algorithms"}, {"refs": [{"id": "ref-for-list-is-empty\u2461"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-list-is-empty\u2462"}, {"id": "ref-for-list-is-empty\u2463"}], "title": "7.4. Serializing reports"}], "external": true};
 window.dfnpanelData['dc3369de'] = {"dfnID": "dc3369de", "url": "https://infra.spec.whatwg.org/#map-is-empty", "dfnText": "is empty (for map)", "refSections": [{"refs": [{"id": "ref-for-map-is-empty"}], "title": "9. Protected Audience API monkey patches"}], "external": true};
 window.dfnpanelData['f02cd417'] = {"dfnID": "f02cd417", "url": "https://infra.spec.whatwg.org/#list-iterate", "dfnText": "iterate", "refSections": [{"refs": [{"id": "ref-for-list-iterate"}, {"id": "ref-for-list-iterate\u2460"}], "title": "7.1. Exported algorithms"}, {"refs": [{"id": "ref-for-list-iterate\u2461"}, {"id": "ref-for-list-iterate\u2462"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-list-iterate\u2463"}], "title": "7.3. Sending reports"}, {"refs": [{"id": "ref-for-list-iterate\u2464"}], "title": "7.4. Serializing reports"}, {"refs": [{"id": "ref-for-list-iterate\u2465"}, {"id": "ref-for-list-iterate\u2466"}], "title": "9. Protected Audience API monkey patches"}], "external": true};
@@ -2335,7 +2538,7 @@ window.dfnpanelData['0698d556'] = {"dfnID": "0698d556", "url": "https://infra.sp
 window.dfnpanelData['984221ca'] = {"dfnID": "984221ca", "url": "https://infra.spec.whatwg.org/#struct", "dfnText": "struct", "refSections": [{"refs": [{"id": "ref-for-struct"}], "title": "4.1.2. Contribution cache entry"}, {"refs": [{"id": "ref-for-struct\u2460"}], "title": "4.1.3. Aggregatable report"}], "external": true};
 window.dfnpanelData['cf6542b2'] = {"dfnID": "cf6542b2", "url": "https://infra.spec.whatwg.org/#the-exclusive-range", "dfnText": "the exclusive range", "refSections": [{"refs": [{"id": "ref-for-the-exclusive-range"}], "title": "7.2. Scheduling reports"}], "external": true};
 window.dfnpanelData['0e8de730'] = {"dfnID": "0e8de730", "url": "https://infra.spec.whatwg.org/#tuple", "dfnText": "tuple", "refSections": [{"refs": [{"id": "ref-for-tuple"}], "title": "7.4. Serializing reports"}], "external": true};
-window.dfnpanelData['6d19ac93'] = {"dfnID": "6d19ac93", "url": "https://infra.spec.whatwg.org/#user-agent", "dfnText": "user agent", "refSections": [{"refs": [{"id": "ref-for-user-agent"}, {"id": "ref-for-user-agent\u2460"}], "title": "7.3. Sending reports"}, {"refs": [{"id": "ref-for-user-agent\u2461"}], "title": "7.4. Serializing reports"}], "external": true};
+window.dfnpanelData['6d19ac93'] = {"dfnID": "6d19ac93", "url": "https://infra.spec.whatwg.org/#user-agent", "dfnText": "user agent", "refSections": [{"refs": [{"id": "ref-for-user-agent"}, {"id": "ref-for-user-agent\u2460"}], "title": "7.3. Sending reports"}, {"refs": [{"id": "ref-for-user-agent\u2461"}], "title": "7.4. Serializing reports"}, {"refs": [{"id": "ref-for-user-agent\u2462"}], "title": "11.1. Same-origin policy"}, {"refs": [{"id": "ref-for-user-agent\u2463"}, {"id": "ref-for-user-agent\u2464"}], "title": "11.2. Protecting the histogram contributions"}], "external": true};
 window.dfnpanelData['96dabee7'] = {"dfnID": "96dabee7", "url": "https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin", "dfnText": "potentially trustworthy origin", "refSections": [{"refs": [{"id": "ref-for-potentially-trustworthy-origin"}, {"id": "ref-for-potentially-trustworthy-origin\u2460"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-potentially-trustworthy-origin\u2461"}], "title": "7.3. Sending reports"}], "external": true};
 window.dfnpanelData['54f6011e'] = {"dfnID": "54f6011e", "url": "https://wicg.github.io/shared-storage/#windowsharedstorage", "dfnText": "WindowSharedStorage", "refSections": [{"refs": [{"id": "ref-for-windowsharedstorage"}, {"id": "ref-for-windowsharedstorage\u2460"}], "title": "8. Shared Storage API monkey patches"}], "external": true};
 window.dfnpanelData['e9211cfb'] = {"dfnID": "e9211cfb", "url": "https://wicg.github.io/shared-storage/#dom-windowsharedstorage-run", "dfnText": "run(name)", "refSections": [{"refs": [{"id": "ref-for-dom-windowsharedstorage-run"}], "title": "8. Shared Storage API monkey patches"}], "external": true};
@@ -2369,17 +2572,17 @@ window.dfnpanelData['batching-scope'] = {"dfnID": "batching-scope", "url": "#bat
 window.dfnpanelData['contribution-cache-entry'] = {"dfnID": "contribution-cache-entry", "url": "#contribution-cache-entry", "dfnText": "4.1.2. Contribution cache entry", "refSections": [{"refs": [{"id": "ref-for-contribution-cache-entry"}], "title": "2.1. Worklet interface"}, {"refs": [{"id": "ref-for-contribution-cache-entry"}], "title": "4.1.2. Contribution cache entry"}, {"refs": [{"id": "ref-for-contribution-cache-entry\u2460"}], "title": "5. Storage"}, {"refs": [{"id": "ref-for-contribution-cache-entry\u2461"}], "title": "7.1. Exported algorithms"}], "external": false};
 window.dfnpanelData['contribution-cache-entry-contribution'] = {"dfnID": "contribution-cache-entry-contribution", "url": "#contribution-cache-entry-contribution", "dfnText": "contribution", "refSections": [{"refs": [{"id": "ref-for-contribution-cache-entry-contribution"}], "title": "2.1. Worklet interface"}, {"refs": [{"id": "ref-for-contribution-cache-entry-contribution\u2460"}], "title": "7.1. Exported algorithms"}], "external": false};
 window.dfnpanelData['contribution-cache-entry-batching-scope'] = {"dfnID": "contribution-cache-entry-batching-scope", "url": "#contribution-cache-entry-batching-scope", "dfnText": "batching scope", "refSections": [{"refs": [{"id": "ref-for-contribution-cache-entry-batching-scope"}], "title": "2.1. Worklet interface"}, {"refs": [{"id": "ref-for-contribution-cache-entry-batching-scope\u2460"}], "title": "7.1. Exported algorithms"}], "external": false};
-window.dfnpanelData['aggregatable-report'] = {"dfnID": "aggregatable-report", "url": "#aggregatable-report", "dfnText": "4.1.3. Aggregatable report", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report"}], "title": "4.1.1. Batching scope"}, {"refs": [{"id": "ref-for-aggregatable-report"}], "title": "4.1.3. Aggregatable report"}, {"refs": [{"id": "ref-for-aggregatable-report\u2460"}], "title": "5. Storage"}, {"refs": [{"id": "ref-for-aggregatable-report\u2461"}, {"id": "ref-for-aggregatable-report\u2462"}], "title": "6. Implementation-defined values"}, {"refs": [{"id": "ref-for-aggregatable-report\u2463"}, {"id": "ref-for-aggregatable-report\u2464"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report\u2465"}, {"id": "ref-for-aggregatable-report\u2466"}], "title": "7.3. Sending reports"}, {"refs": [{"id": "ref-for-aggregatable-report\u2467"}, {"id": "ref-for-aggregatable-report\u2468"}, {"id": "ref-for-aggregatable-report\u2460\u24ea"}, {"id": "ref-for-aggregatable-report\u2460\u2460"}, {"id": "ref-for-aggregatable-report\u2460\u2461"}], "title": "7.4. Serializing reports"}], "external": false};
+window.dfnpanelData['aggregatable-report'] = {"dfnID": "aggregatable-report", "url": "#aggregatable-report", "dfnText": "4.1.3. Aggregatable report", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report"}], "title": "4.1.1. Batching scope"}, {"refs": [{"id": "ref-for-aggregatable-report"}], "title": "4.1.3. Aggregatable report"}, {"refs": [{"id": "ref-for-aggregatable-report\u2460"}], "title": "5. Storage"}, {"refs": [{"id": "ref-for-aggregatable-report\u2461"}, {"id": "ref-for-aggregatable-report\u2462"}], "title": "6. Implementation-defined values"}, {"refs": [{"id": "ref-for-aggregatable-report\u2463"}, {"id": "ref-for-aggregatable-report\u2464"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report\u2465"}, {"id": "ref-for-aggregatable-report\u2466"}], "title": "7.3. Sending reports"}, {"refs": [{"id": "ref-for-aggregatable-report\u2467"}, {"id": "ref-for-aggregatable-report\u2468"}, {"id": "ref-for-aggregatable-report\u2460\u24ea"}, {"id": "ref-for-aggregatable-report\u2460\u2460"}, {"id": "ref-for-aggregatable-report\u2460\u2461"}], "title": "7.4. Serializing reports"}, {"refs": [{"id": "ref-for-aggregatable-report\u2460\u2462"}], "title": "10.3.2. User-presence tracking"}], "external": false};
 window.dfnpanelData['aggregatable-report-reporting-origin'] = {"dfnID": "aggregatable-report-reporting-origin", "url": "#aggregatable-report-reporting-origin", "dfnText": "reporting origin", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-reporting-origin"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-reporting-origin\u2460"}], "title": "7.3. Sending reports"}, {"refs": [{"id": "ref-for-aggregatable-report-reporting-origin\u2461"}], "title": "7.4. Serializing reports"}], "external": false};
-window.dfnpanelData['aggregatable-report-original-report-time'] = {"dfnID": "aggregatable-report-original-report-time", "url": "#aggregatable-report-original-report-time", "dfnText": "original report time", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-original-report-time"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-original-report-time\u2460"}], "title": "7.4. Serializing reports"}], "external": false};
+window.dfnpanelData['aggregatable-report-original-report-time'] = {"dfnID": "aggregatable-report-original-report-time", "url": "#aggregatable-report-original-report-time", "dfnText": "original report time", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-original-report-time"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-original-report-time\u2460"}], "title": "7.4. Serializing reports"}, {"refs": [{"id": "ref-for-aggregatable-report-original-report-time\u2461"}], "title": "10.3.2. User-presence tracking"}], "external": false};
 window.dfnpanelData['aggregatable-report-report-time'] = {"dfnID": "aggregatable-report-report-time", "url": "#aggregatable-report-report-time", "dfnText": "report time", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-report-time"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-report-time\u2460"}, {"id": "ref-for-aggregatable-report-report-time\u2461"}, {"id": "ref-for-aggregatable-report-report-time\u2462"}], "title": "7.3. Sending reports"}], "external": false};
 window.dfnpanelData['aggregatable-report-contributions'] = {"dfnID": "aggregatable-report-contributions", "url": "#aggregatable-report-contributions", "dfnText": "contributions", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-contributions"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-contributions\u2460"}], "title": "7.4. Serializing reports"}], "external": false};
 window.dfnpanelData['aggregatable-report-api'] = {"dfnID": "aggregatable-report-api", "url": "#aggregatable-report-api", "dfnText": "api", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-api"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-api\u2460"}], "title": "7.3. Sending reports"}, {"refs": [{"id": "ref-for-aggregatable-report-api\u2461"}], "title": "7.4. Serializing reports"}], "external": false};
 window.dfnpanelData['aggregatable-report-report-id'] = {"dfnID": "aggregatable-report-report-id", "url": "#aggregatable-report-report-id", "dfnText": "report ID", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-report-id"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-report-id\u2460"}], "title": "7.4. Serializing reports"}], "external": false};
 window.dfnpanelData['aggregatable-report-queued'] = {"dfnID": "aggregatable-report-queued", "url": "#aggregatable-report-queued", "dfnText": "queued", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-queued"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-queued\u2460"}, {"id": "ref-for-aggregatable-report-queued\u2461"}, {"id": "ref-for-aggregatable-report-queued\u2462"}, {"id": "ref-for-aggregatable-report-queued\u2463"}, {"id": "ref-for-aggregatable-report-queued\u2464"}], "title": "7.3. Sending reports"}], "external": false};
 window.dfnpanelData['context-type'] = {"dfnID": "context-type", "url": "#context-type", "dfnText": "4.1.4. Context type", "refSections": [{"refs": [{"id": "ref-for-context-type"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-context-type\u2460"}], "title": "4.1.3. Aggregatable report"}, {"refs": [{"id": "ref-for-context-type"}], "title": "4.1.4. Context type"}, {"refs": [{"id": "ref-for-context-type\u2461"}], "title": "7.1. Exported algorithms"}, {"refs": [{"id": "ref-for-context-type\u2462"}, {"id": "ref-for-context-type\u2463"}, {"id": "ref-for-context-type\u2464"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-context-type\u2465"}], "title": "7.3. Sending reports"}], "external": false};
-window.dfnpanelData['contribution-cache'] = {"dfnID": "contribution-cache", "url": "#contribution-cache", "dfnText": "contribution cache", "refSections": [{"refs": [{"id": "ref-for-contribution-cache"}], "title": "2.1. Worklet interface"}, {"refs": [{"id": "ref-for-contribution-cache\u2460"}, {"id": "ref-for-contribution-cache\u2461"}, {"id": "ref-for-contribution-cache\u2462"}], "title": "7.1. Exported algorithms"}], "external": false};
-window.dfnpanelData['aggregatable-report-cache'] = {"dfnID": "aggregatable-report-cache", "url": "#aggregatable-report-cache", "dfnText": "aggregatable report cache", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-cache"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-cache\u2460"}, {"id": "ref-for-aggregatable-report-cache\u2461"}, {"id": "ref-for-aggregatable-report-cache\u2462"}], "title": "7.3. Sending reports"}], "external": false};
+window.dfnpanelData['contribution-cache'] = {"dfnID": "contribution-cache", "url": "#contribution-cache", "dfnText": "contribution cache", "refSections": [{"refs": [{"id": "ref-for-contribution-cache"}], "title": "2.1. Worklet interface"}, {"refs": [{"id": "ref-for-contribution-cache\u2460"}], "title": "5.1. Clearing storage"}, {"refs": [{"id": "ref-for-contribution-cache\u2461"}, {"id": "ref-for-contribution-cache\u2462"}, {"id": "ref-for-contribution-cache\u2463"}], "title": "7.1. Exported algorithms"}, {"refs": [{"id": "ref-for-contribution-cache\u2464"}], "title": "10.2. Clearing site data"}, {"refs": [{"id": "ref-for-contribution-cache\u2465"}], "title": "11.1. Same-origin policy"}], "external": false};
+window.dfnpanelData['aggregatable-report-cache'] = {"dfnID": "aggregatable-report-cache", "url": "#aggregatable-report-cache", "dfnText": "aggregatable report cache", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-cache"}], "title": "5.1. Clearing storage"}, {"refs": [{"id": "ref-for-aggregatable-report-cache\u2460"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-cache\u2461"}, {"id": "ref-for-aggregatable-report-cache\u2462"}, {"id": "ref-for-aggregatable-report-cache\u2463"}], "title": "7.3. Sending reports"}, {"refs": [{"id": "ref-for-aggregatable-report-cache\u2464"}], "title": "10.2. Clearing site data"}, {"refs": [{"id": "ref-for-aggregatable-report-cache\u2465"}], "title": "11.1. Same-origin policy"}], "external": false};
 window.dfnpanelData['maximum-report-contributions'] = {"dfnID": "maximum-report-contributions", "url": "#maximum-report-contributions", "dfnText": "Maximum report contributions", "refSections": [{"refs": [{"id": "ref-for-maximum-report-contributions"}, {"id": "ref-for-maximum-report-contributions\u2460"}], "title": "7.2. Scheduling reports"}], "external": false};
 window.dfnpanelData['minimum-report-delay'] = {"dfnID": "minimum-report-delay", "url": "#minimum-report-delay", "dfnText": "Minimum report delay", "refSections": [{"refs": [{"id": "ref-for-minimum-report-delay"}], "title": "7.2. Scheduling reports"}], "external": false};
 window.dfnpanelData['randomized-report-delay'] = {"dfnID": "randomized-report-delay", "url": "#randomized-report-delay", "dfnText": "Randomized report delay", "refSections": [{"refs": [{"id": "ref-for-randomized-report-delay"}], "title": "7.2. Scheduling reports"}], "external": false};
@@ -2387,16 +2590,16 @@ window.dfnpanelData['serialize-an-integer'] = {"dfnID": "serialize-an-integer", 
 window.dfnpanelData['append-an-entry-to-the-contribution-cache'] = {"dfnID": "append-an-entry-to-the-contribution-cache", "url": "#append-an-entry-to-the-contribution-cache", "dfnText": "append an entry to the contribution cache", "refSections": [{"refs": [{"id": "ref-for-append-an-entry-to-the-contribution-cache"}], "title": "2.1. Worklet interface"}, {"refs": [{"id": "ref-for-append-an-entry-to-the-contribution-cache\u2460"}], "title": "9. Protected Audience API monkey patches"}], "external": false};
 window.dfnpanelData['process-contributions-for-a-batching-scope'] = {"dfnID": "process-contributions-for-a-batching-scope", "url": "#process-contributions-for-a-batching-scope", "dfnText": "process contributions for a batching scope", "refSections": [{"refs": [{"id": "ref-for-process-contributions-for-a-batching-scope"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-process-contributions-for-a-batching-scope\u2460"}, {"id": "ref-for-process-contributions-for-a-batching-scope\u2461"}, {"id": "ref-for-process-contributions-for-a-batching-scope\u2462"}], "title": "8. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-process-contributions-for-a-batching-scope\u2463"}], "title": "9. Protected Audience API monkey patches"}], "external": false};
 window.dfnpanelData['report-creation-and-scheduling-steps'] = {"dfnID": "report-creation-and-scheduling-steps", "url": "#report-creation-and-scheduling-steps", "dfnText": "report creation and scheduling steps", "refSections": [{"refs": [{"id": "ref-for-report-creation-and-scheduling-steps"}], "title": "7.1. Exported algorithms"}], "external": false};
-window.dfnpanelData['consume-budget-if-permitted'] = {"dfnID": "consume-budget-if-permitted", "url": "#consume-budget-if-permitted", "dfnText": "consume budget if permitted", "refSections": [{"refs": [{"id": "ref-for-consume-budget-if-permitted"}], "title": "7.2. Scheduling reports"}], "external": false};
+window.dfnpanelData['consume-budget-if-permitted'] = {"dfnID": "consume-budget-if-permitted", "url": "#consume-budget-if-permitted", "dfnText": "consume budget if permitted", "refSections": [{"refs": [{"id": "ref-for-consume-budget-if-permitted"}], "title": "5.1. Clearing storage"}, {"refs": [{"id": "ref-for-consume-budget-if-permitted\u2460"}], "title": "7.2. Scheduling reports"}, {"refs": [{"id": "ref-for-consume-budget-if-permitted\u2461"}], "title": "10.2. Clearing site data"}, {"refs": [{"id": "ref-for-consume-budget-if-permitted\u2462"}, {"id": "ref-for-consume-budget-if-permitted\u2463"}], "title": "11.1. Same-origin policy"}], "external": false};
 window.dfnpanelData['obtain-an-aggregatable-report'] = {"dfnID": "obtain-an-aggregatable-report", "url": "#obtain-an-aggregatable-report", "dfnText": "obtain an aggregatable report", "refSections": [{"refs": [{"id": "ref-for-obtain-an-aggregatable-report"}], "title": "7.2. Scheduling reports"}], "external": false};
 window.dfnpanelData['obtain-a-report-delivery-time'] = {"dfnID": "obtain-a-report-delivery-time", "url": "#obtain-a-report-delivery-time", "dfnText": "obtain a report delivery time", "refSections": [{"refs": [{"id": "ref-for-obtain-a-report-delivery-time"}], "title": "7.2. Scheduling reports"}], "external": false};
 window.dfnpanelData['attempt-to-queue-reports-for-sending'] = {"dfnID": "attempt-to-queue-reports-for-sending", "url": "#attempt-to-queue-reports-for-sending", "dfnText": "attempt to queue reports for sending", "refSections": [{"refs": [{"id": "ref-for-attempt-to-queue-reports-for-sending"}], "title": "7.3. Sending reports"}], "external": false};
 window.dfnpanelData['attempt-to-deliver-a-report'] = {"dfnID": "attempt-to-deliver-a-report", "url": "#attempt-to-deliver-a-report", "dfnText": "attempt to deliver a report", "refSections": [{"refs": [{"id": "ref-for-attempt-to-deliver-a-report"}], "title": "7.3. Sending reports"}], "external": false};
 window.dfnpanelData['obtain-a-reporting-endpoint'] = {"dfnID": "obtain-a-reporting-endpoint", "url": "#obtain-a-reporting-endpoint", "dfnText": "obtain a reporting endpoint", "refSections": [{"refs": [{"id": "ref-for-obtain-a-reporting-endpoint"}], "title": "7.3. Sending reports"}], "external": false};
 window.dfnpanelData['create-a-report-request'] = {"dfnID": "create-a-report-request", "url": "#create-a-report-request", "dfnText": "create a report request", "refSections": [{"refs": [{"id": "ref-for-create-a-report-request"}], "title": "7.3. Sending reports"}], "external": false};
-window.dfnpanelData['serialize-an-aggregatable-report'] = {"dfnID": "serialize-an-aggregatable-report", "url": "#serialize-an-aggregatable-report", "dfnText": "serialize an aggregatable report", "refSections": [{"refs": [{"id": "ref-for-serialize-an-aggregatable-report"}], "title": "7.3. Sending reports"}], "external": false};
+window.dfnpanelData['serialize-an-aggregatable-report'] = {"dfnID": "serialize-an-aggregatable-report", "url": "#serialize-an-aggregatable-report", "dfnText": "serialize an aggregatable report", "refSections": [{"refs": [{"id": "ref-for-serialize-an-aggregatable-report"}], "title": "7.3. Sending reports"}, {"refs": [{"id": "ref-for-serialize-an-aggregatable-report\u2460"}], "title": "10.3.2. User-presence tracking"}], "external": false};
 window.dfnpanelData['obtain-the-aggregation-service-payloads'] = {"dfnID": "obtain-the-aggregation-service-payloads", "url": "#obtain-the-aggregation-service-payloads", "dfnText": "obtain the aggregation service payloads", "refSections": [{"refs": [{"id": "ref-for-obtain-the-aggregation-service-payloads"}], "title": "7.4. Serializing reports"}], "external": false};
-window.dfnpanelData['obtain-the-public-key-for-encryption'] = {"dfnID": "obtain-the-public-key-for-encryption", "url": "#obtain-the-public-key-for-encryption", "dfnText": "obtain the public key for encryption", "refSections": [{"refs": [{"id": "ref-for-obtain-the-public-key-for-encryption"}], "title": "7.4. Serializing reports"}], "external": false};
+window.dfnpanelData['obtain-the-public-key-for-encryption'] = {"dfnID": "obtain-the-public-key-for-encryption", "url": "#obtain-the-public-key-for-encryption", "dfnText": "obtain the public key for encryption", "refSections": [{"refs": [{"id": "ref-for-obtain-the-public-key-for-encryption"}], "title": "7.4. Serializing reports"}, {"refs": [{"id": "ref-for-obtain-the-public-key-for-encryption\u2460"}], "title": "11.2. Protecting the histogram contributions"}], "external": false};
 window.dfnpanelData['obtain-the-encrypted-payload'] = {"dfnID": "obtain-the-encrypted-payload", "url": "#obtain-the-encrypted-payload", "dfnText": "obtain the encrypted payload", "refSections": [{"refs": [{"id": "ref-for-obtain-the-encrypted-payload"}], "title": "7.4. Serializing reports"}], "external": false};
 window.dfnpanelData['obtain-the-plaintext-payload'] = {"dfnID": "obtain-the-plaintext-payload", "url": "#obtain-the-plaintext-payload", "dfnText": "obtain the plaintext payload", "refSections": [{"refs": [{"id": "ref-for-obtain-the-plaintext-payload"}], "title": "7.4. Serializing reports"}], "external": false};
 window.dfnpanelData['encode-an-integer-for-the-payload'] = {"dfnID": "encode-an-integer-for-the-payload", "url": "#encode-an-integer-for-the-payload", "dfnText": "encode an integer for the payload", "refSections": [{"refs": [{"id": "ref-for-encode-an-integer-for-the-payload"}, {"id": "ref-for-encode-an-integer-for-the-payload\u2460"}], "title": "7.4. Serializing reports"}], "external": false};
