@@ -8,7 +8,7 @@
   <meta content="Bikeshed version 5fcd28d6d, updated Tue May 30 13:12:11 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="3d32307e7e97a21dc8ddcda151ed4a709b503f26" name="document-revision">
+  <meta content="48e9ceb80a02b24d178af2250632f6f39179fca6" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -978,11 +978,10 @@ a <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope②">
        <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append②">Append</a> <var>entry</var>’s <a data-link-type="dfn" href="#contribution-cache-entry-contribution" id="ref-for-contribution-cache-entry-contribution①">contribution</a> to <var>batchContributions</var>.</p>
      </ol>
     <li data-md>
-     <p>Perform the <a data-link-type="dfn" href="#privateaggregation-report-creation-and-scheduling-steps" id="ref-for-privateaggregation-report-creation-and-scheduling-steps">report creation and scheduling steps</a> with <var>reportingOrigin</var>, <var>contextType</var> and <var>batchContributions</var>.</p>
+     <p>Perform the <a data-link-type="dfn" href="#report-creation-and-scheduling-steps" id="ref-for-report-creation-and-scheduling-steps">report creation and scheduling steps</a> with <var>reportingOrigin</var>, <var>contextType</var> and <var>batchContributions</var>.</p>
    </ol>
    <h3 class="heading settled" data-level="7.2" id="scheduling-reports"><span class="secno">7.2. </span><span class="content">Scheduling reports</span><a class="self-link" href="#scheduling-reports"></a></h3>
-   <p>To perform the <dfn class="dfn-paneled algorithm" data-algorithm="report creation and scheduling steps" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-lt="report creation and scheduling steps" data-noexport id="privateaggregation-report-creation-and-scheduling-steps">report creation and
-scheduling steps</dfn> with an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin②">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type③">context type</a> <var>api</var> and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑤">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution④">PAHistogramContribution</a></code>s <var>contributions</var>:</p>
+   <p>To perform the <dfn class="dfn-paneled algorithm" data-algorithm="report creation and scheduling steps" data-dfn-type="dfn" data-noexport id="report-creation-and-scheduling-steps">report creation and scheduling steps</dfn> with an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin②">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type③">context type</a> <var>api</var> and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑤">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution④">PAHistogramContribution</a></code>s <var>contributions</var>:</p>
    <ol>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin">potentially trustworthy origin</a>.</p>
@@ -1015,32 +1014,29 @@ report contributions</a>, exclusive:</p>
     <li data-md>
      <p>Let <var>currentWallTime</var> be the <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-current-wall-time" id="ref-for-dfn-current-wall-time">current wall time</a>.</p>
     <li data-md>
-     <p>Let <var>sufficientBudget</var> be the result of <a data-link-type="dfn" href="#privateaggregation-consume-budget-if-permitted" id="ref-for-privateaggregation-consume-budget-if-permitted">consuming budget
-if permitted</a> given <var>contributionSum</var>, <var>reportingOrigin</var>, <var>api</var> and <var>currentWallTime</var>.</p>
+     <p>Let <var>sufficientBudget</var> be the result of <a data-link-type="dfn" href="#consume-budget-if-permitted" id="ref-for-consume-budget-if-permitted">consuming budget if permitted</a> given <var>contributionSum</var>, <var>reportingOrigin</var>, <var>api</var> and <var>currentWallTime</var>.</p>
     <li data-md>
      <p>If <var>sufficientBudget</var> is false, return.</p>
     <li data-md>
-     <p>Let <var>report</var> be the result of <a data-link-type="dfn" href="#privateaggregation-obtain-an-aggregatable-report" id="ref-for-privateaggregation-obtain-an-aggregatable-report">obtaining an aggregatable
-report</a> given <var>reportingOrigin</var>, <var>api</var>, <var>truncatedContributions</var> and <var>currentWallTime</var>.</p>
+     <p>Let <var>report</var> be the result of <a data-link-type="dfn" href="#obtain-an-aggregatable-report" id="ref-for-obtain-an-aggregatable-report">obtaining an aggregatable report</a> given <var>reportingOrigin</var>, <var>api</var>, <var>truncatedContributions</var> and <var>currentWallTime</var>.</p>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append①">Append</a> <var>report</var> to the user agent’s <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache">aggregatable report cache</a>.</p>
    </ol>
    <p class="issue" id="issue-b92a47e8"><a class="self-link" href="#issue-b92a47e8"></a> Do we need to ensure the reports aren’t queued after being sent?</p>
    <p class="issue" id="issue-a82d4aa0"><a class="self-link" href="#issue-a82d4aa0"></a> Do we need to address user settings here at all?</p>
-   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="consume budget if permitted" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-consume-budget-if-permitted">consume budget if permitted</dfn> given a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long①">long</a></code> <var>value</var>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin③">origin</a> <var>origin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type④">context
-type</a> <var>api</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment②">moment</a> <var>currentTime</var>, perform <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined①">implementation-defined</a> steps. They return a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#boolean" id="ref-for-boolean①">boolean</a>, which indicates whether there is sufficient
-'contribution budget' left to send the requested contribution <var>value</var>. This
-budget should be bound to usage over time, e.g. the contribution sum over the
-last 24 hours. The algorithm should assume that the contribution will be sent if
-and only if true is returned, i.e. it should consume the budget in that case.</p>
-   <p>To <dfn class="dfn-paneled" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-obtain-an-aggregatable-report">obtain an aggregatable report</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin④">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type⑤">context type</a> <var>api</var>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑦">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑤">PAHistogramContribution</a></code>s <var>contributions</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment③">moment</a> <var>currentTime</var>,
+   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="consume budget if permitted" data-dfn-type="dfn" data-noexport id="consume-budget-if-permitted">consume budget if permitted</dfn> given a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long①">long</a></code> <var>value</var>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin③">origin</a> <var>origin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type④">context type</a> <var>api</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment②">moment</a> <var>currentTime</var>, perform <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined①">implementation-defined</a> steps. They return
+a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#boolean" id="ref-for-boolean①">boolean</a>, which indicates whether there is sufficient 'contribution budget'
+left to send the requested contribution <var>value</var>. This budget should be bound to
+usage over time, e.g. the contribution sum over the last 24 hours. The algorithm
+should assume that the contribution will be sent if and only if true is
+returned, i.e. it should consume the budget in that case.</p>
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="obtain-an-aggregatable-report">obtain an aggregatable report</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin④">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type⑤">context type</a> <var>api</var>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑦">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑤">PAHistogramContribution</a></code>s <var>contributions</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment③">moment</a> <var>currentTime</var>,
 perform the following steps. They return an <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report④">aggregatable report</a>.</p>
    <ol>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert②">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin①">potentially trustworthy origin</a>.</p>
     <li data-md>
-     <p>Let <var>reportTime</var> be the result of running <a data-link-type="dfn" href="#privateaggregation-obtain-a-report-delivery-time" id="ref-for-privateaggregation-obtain-a-report-delivery-time">obtain a
-report delivery time</a> given <var>currentTime</var>.</p>
+     <p>Let <var>reportTime</var> be the result of running <a data-link-type="dfn" href="#obtain-a-report-delivery-time" id="ref-for-obtain-a-report-delivery-time">obtain a report delivery time</a> given <var>currentTime</var>.</p>
     <li data-md>
      <p>Let <var>report</var> be a new <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report⑤">aggregatable report</a> with the items:</p>
      <dl>
@@ -1069,8 +1065,7 @@ report delivery time</a> given <var>currentTime</var>.</p>
     <li data-md>
      <p>Return <var>report</var>.</p>
    </ol>
-   <p class="issue" id="issue-5196a8b7"><a class="self-link" href="#issue-5196a8b7"></a> Go through and be consistent about namespacing of algorithms.</p>
-   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="obtain a report delivery time" data-algorithm-for="PrivateAggregation" data-dfn-for="PrivateAggregation" data-dfn-type="dfn" data-noexport id="privateaggregation-obtain-a-report-delivery-time">obtain a report delivery time</dfn> given a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment④">moment</a> <var>currentTime</var>, perform the following steps. They return a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment⑤">moment</a>.</p>
+   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="obtain a report delivery time" data-dfn-type="dfn" data-noexport id="obtain-a-report-delivery-time">obtain a report delivery time</dfn> given a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment④">moment</a> <var>currentTime</var>, perform the following steps. They return a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment⑤">moment</a>.</p>
    <ol>
     <li data-md>
      <p>Let <var>r</var> be a random double between 0 (inclusive) and 1 (exclusive) with
@@ -1647,7 +1642,7 @@ the result of adding <var>returnValue</var> to <var>value</var>["<code class="id
      <li><a href="#dom-paextendedhistogramcontribution-bucket">dict-member for PAExtendedHistogramContribution</a><span>, in § 9</span>
      <li><a href="#dom-pahistogramcontribution-bucket">dict-member for PAHistogramContribution</a><span>, in § 2.1</span>
     </ul>
-   <li><a href="#privateaggregation-consume-budget-if-permitted">consume budget if permitted</a><span>, in § 7.2</span>
+   <li><a href="#consume-budget-if-permitted">consume budget if permitted</a><span>, in § 7.2</span>
    <li><a href="#context-type">Context type</a><span>, in § 4.1.3</span>
    <li><a href="#dom-privateaggregation-contributetohistogram">contributeToHistogram(contribution)</a><span>, in § 2.1</span>
    <li><a href="#dom-privateaggregation-contributetohistogramonevent">contributeToHistogramOnEvent(event, contribution)</a><span>, in § 9</span>
@@ -1664,8 +1659,8 @@ the result of adding <var>returnValue</var> to <var>value</var>["<code class="id
    <li><a href="#signal-base-value-highest-scoring-other-bid">highest-scoring-other-bid</a><span>, in § 9.1.1</span>
    <li><a href="#maximum-report-contributions">Maximum report contributions</a><span>, in § 6</span>
    <li><a href="#minimum-report-delay">Minimum report delay</a><span>, in § 6</span>
-   <li><a href="#privateaggregation-obtain-an-aggregatable-report">obtain an aggregatable report</a><span>, in § 7.2</span>
-   <li><a href="#privateaggregation-obtain-a-report-delivery-time">obtain a report delivery time</a><span>, in § 7.2</span>
+   <li><a href="#obtain-an-aggregatable-report">obtain an aggregatable report</a><span>, in § 7.2</span>
+   <li><a href="#obtain-a-report-delivery-time">obtain a report delivery time</a><span>, in § 7.2</span>
    <li><a href="#obtain-a-reporting-endpoint">obtain a reporting endpoint</a><span>, in § 7.3</span>
    <li><a href="#obtain-a-reports-shared-info">obtain a report’s shared info</a><span>, in § 7.4</span>
    <li><a href="#obtain-the-aggregation-service-payloads">obtain the aggregation service payloads</a><span>, in § 7.4</span>
@@ -1687,7 +1682,7 @@ the result of adding <var>returnValue</var> to <var>value</var>["<code class="id
    <li><a href="#process-contributions-for-a-batching-scope">process contributions for a batching scope</a><span>, in § 7.1</span>
    <li><a href="#aggregatable-report-queued">queued</a><span>, in § 4.1.3</span>
    <li><a href="#randomized-report-delay">Randomized report delay</a><span>, in § 6</span>
-   <li><a href="#privateaggregation-report-creation-and-scheduling-steps">report creation and scheduling steps</a><span>, in § 7.2</span>
+   <li><a href="#report-creation-and-scheduling-steps">report creation and scheduling steps</a><span>, in § 7.2</span>
    <li><a href="#aggregatable-report-report-id">report ID</a><span>, in § 4.1.3</span>
    <li><a href="#aggregatable-report-reporting-origin">reporting origin</a><span>, in § 4.1.3</span>
    <li><a href="#aggregatable-report-report-time">report time</a><span>, in § 4.1.3</span>
@@ -1937,7 +1932,6 @@ the result of adding <var>returnValue</var> to <var>value</var>["<code class="id
     See <a href="https://github.com/whatwg/infra/issues/201">infra/201</a>. <a class="issue-return" href="#issue-6b252736" title="Jump to section">↵</a></div>
    <div class="issue"> Do we need to ensure the reports aren’t queued after being sent? <a class="issue-return" href="#issue-b92a47e8" title="Jump to section">↵</a></div>
    <div class="issue"> Do we need to address user settings here at all? <a class="issue-return" href="#issue-a82d4aa0" title="Jump to section">↵</a></div>
-   <div class="issue"> Go through and be consistent about namespacing of algorithms. <a class="issue-return" href="#issue-5196a8b7" title="Jump to section">↵</a></div>
    <div class="issue"> Add logic for resetting <a data-link-type="dfn" href="#aggregatable-report-queued">queued</a> on start up or
     network on or whatever <a class="issue-return" href="#issue-236d01b4" title="Jump to section">↵</a></div>
    <div class="issue"> Do we have to use the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">queue a task</a> algorithm here? <a class="issue-return" href="#issue-2485156c" title="Jump to section">↵</a></div>
@@ -2392,10 +2386,10 @@ window.dfnpanelData['randomized-report-delay'] = {"dfnID": "randomized-report-de
 window.dfnpanelData['serialize-an-integer'] = {"dfnID": "serialize-an-integer", "url": "#serialize-an-integer", "dfnText": "serialize an integer", "refSections": [{"refs": [{"id": "ref-for-serialize-an-integer"}], "title": "7.4. Serializing reports"}], "external": false};
 window.dfnpanelData['append-an-entry-to-the-contribution-cache'] = {"dfnID": "append-an-entry-to-the-contribution-cache", "url": "#append-an-entry-to-the-contribution-cache", "dfnText": "append an entry to the contribution cache", "refSections": [{"refs": [{"id": "ref-for-append-an-entry-to-the-contribution-cache"}], "title": "2.1. Worklet interface"}, {"refs": [{"id": "ref-for-append-an-entry-to-the-contribution-cache\u2460"}], "title": "9. Protected Audience API monkey patches"}], "external": false};
 window.dfnpanelData['process-contributions-for-a-batching-scope'] = {"dfnID": "process-contributions-for-a-batching-scope", "url": "#process-contributions-for-a-batching-scope", "dfnText": "process contributions for a batching scope", "refSections": [{"refs": [{"id": "ref-for-process-contributions-for-a-batching-scope"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-process-contributions-for-a-batching-scope\u2460"}, {"id": "ref-for-process-contributions-for-a-batching-scope\u2461"}, {"id": "ref-for-process-contributions-for-a-batching-scope\u2462"}], "title": "8. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-process-contributions-for-a-batching-scope\u2463"}], "title": "9. Protected Audience API monkey patches"}], "external": false};
-window.dfnpanelData['privateaggregation-report-creation-and-scheduling-steps'] = {"dfnID": "privateaggregation-report-creation-and-scheduling-steps", "url": "#privateaggregation-report-creation-and-scheduling-steps", "dfnText": "report creation and\nscheduling steps", "refSections": [{"refs": [{"id": "ref-for-privateaggregation-report-creation-and-scheduling-steps"}], "title": "7.1. Exported algorithms"}], "external": false};
-window.dfnpanelData['privateaggregation-consume-budget-if-permitted'] = {"dfnID": "privateaggregation-consume-budget-if-permitted", "url": "#privateaggregation-consume-budget-if-permitted", "dfnText": "consume budget if permitted", "refSections": [{"refs": [{"id": "ref-for-privateaggregation-consume-budget-if-permitted"}], "title": "7.2. Scheduling reports"}], "external": false};
-window.dfnpanelData['privateaggregation-obtain-an-aggregatable-report'] = {"dfnID": "privateaggregation-obtain-an-aggregatable-report", "url": "#privateaggregation-obtain-an-aggregatable-report", "dfnText": "obtain an aggregatable report", "refSections": [{"refs": [{"id": "ref-for-privateaggregation-obtain-an-aggregatable-report"}], "title": "7.2. Scheduling reports"}], "external": false};
-window.dfnpanelData['privateaggregation-obtain-a-report-delivery-time'] = {"dfnID": "privateaggregation-obtain-a-report-delivery-time", "url": "#privateaggregation-obtain-a-report-delivery-time", "dfnText": "obtain a report delivery time", "refSections": [{"refs": [{"id": "ref-for-privateaggregation-obtain-a-report-delivery-time"}], "title": "7.2. Scheduling reports"}], "external": false};
+window.dfnpanelData['report-creation-and-scheduling-steps'] = {"dfnID": "report-creation-and-scheduling-steps", "url": "#report-creation-and-scheduling-steps", "dfnText": "report creation and scheduling steps", "refSections": [{"refs": [{"id": "ref-for-report-creation-and-scheduling-steps"}], "title": "7.1. Exported algorithms"}], "external": false};
+window.dfnpanelData['consume-budget-if-permitted'] = {"dfnID": "consume-budget-if-permitted", "url": "#consume-budget-if-permitted", "dfnText": "consume budget if permitted", "refSections": [{"refs": [{"id": "ref-for-consume-budget-if-permitted"}], "title": "7.2. Scheduling reports"}], "external": false};
+window.dfnpanelData['obtain-an-aggregatable-report'] = {"dfnID": "obtain-an-aggregatable-report", "url": "#obtain-an-aggregatable-report", "dfnText": "obtain an aggregatable report", "refSections": [{"refs": [{"id": "ref-for-obtain-an-aggregatable-report"}], "title": "7.2. Scheduling reports"}], "external": false};
+window.dfnpanelData['obtain-a-report-delivery-time'] = {"dfnID": "obtain-a-report-delivery-time", "url": "#obtain-a-report-delivery-time", "dfnText": "obtain a report delivery time", "refSections": [{"refs": [{"id": "ref-for-obtain-a-report-delivery-time"}], "title": "7.2. Scheduling reports"}], "external": false};
 window.dfnpanelData['attempt-to-queue-reports-for-sending'] = {"dfnID": "attempt-to-queue-reports-for-sending", "url": "#attempt-to-queue-reports-for-sending", "dfnText": "attempt to queue reports for sending", "refSections": [{"refs": [{"id": "ref-for-attempt-to-queue-reports-for-sending"}], "title": "7.3. Sending reports"}], "external": false};
 window.dfnpanelData['attempt-to-deliver-a-report'] = {"dfnID": "attempt-to-deliver-a-report", "url": "#attempt-to-deliver-a-report", "dfnText": "attempt to deliver a report", "refSections": [{"refs": [{"id": "ref-for-attempt-to-deliver-a-report"}], "title": "7.3. Sending reports"}], "external": false};
 window.dfnpanelData['obtain-a-reporting-endpoint'] = {"dfnID": "obtain-a-reporting-endpoint", "url": "#obtain-a-reporting-endpoint", "dfnText": "obtain a reporting endpoint", "refSections": [{"refs": [{"id": "ref-for-obtain-a-reporting-endpoint"}], "title": "7.3. Sending reports"}], "external": false};
