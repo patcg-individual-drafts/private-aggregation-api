@@ -26,6 +26,8 @@ urlPrefix: https://wicg.github.io/turtledove/; type: interface
     text: InterestGroupScriptRunnerGlobalScope
     text: InterestGroupScoringScriptRunnerGlobalScope
     text: InterestGroupReportingScriptRunnerGlobalScope
+urlPrefix: https://wicg.github.io/turtledove/; type: dfn
+    text: generate a bid; url: #generate-a-bid
 urlPrefix: https://wicg.github.io/shared-storage/; type: interface
     text: SharedStorageWorklet
     text: SharedStorageWorkletGlobalScope
@@ -137,8 +139,6 @@ dictionary PADebugModeOptions {
 };
 </xmp>
 
-Issue: Need to spec Permissions Policy integration.
-
 Each {{PrivateAggregation}} object has a field named <dfn
 for="PrivateAggregation">scoping details</dfn> that is a [=scoping details=] or
 null (default null).
@@ -151,6 +151,8 @@ contributeToHistogram(PAHistogramContribution contribution)</dfn> method steps
 are:
 </div>
 
+1. If [=this=]'s [=PrivateAggregation/allowed to use=] is false, throw a
+    {{DOMException}} with name `InvalidAccessError`.
 1. Throw {{RangeError}} if |contribution|["{{PAHistogramContribution/bucket}}"]
     is not in the range [0, 2<sup>128</sup>−1].
 1. Throw {{RangeError}} if |contribution|["{{PAHistogramContribution/value}}"]
@@ -165,7 +167,6 @@ are:
 
     Issue: Consider improving developer ergonomics here (e.g. a way to detect
         this case).
-
 1. Let |entry| be a new [=contribution cache entry=] with the items:
     : [=contribution cache entry/contribution=]
     :: |contribution|
@@ -188,6 +189,8 @@ The <dfn method for="PrivateAggregation">
 enableDebugMode(optional PADebugModeOptions options)</dfn> method steps are:
 </div>
 
+1. If [=this=]'s [=PrivateAggregation/allowed to use=] is false, throw a
+    {{DOMException}} with name `InvalidAccessError`.
 1. Let |scopingDetails| be the {{PrivateAggregation}} object's
     [=PrivateAggregation/scoping details=].
 1. If |scopingDetails| is null, throw a new {{DOMException}} with name
@@ -383,6 +386,18 @@ random delay to deliver an [=aggregatable report=]. This delay is additional to
 the minimum delay.
 
 Issue: More
+
+Permissions Policy integration {#permissions-policy-integration}
+================================================================
+
+This specification defines one [=policy-controlled feature=] identified by the
+string "<code><dfn>private-aggregation</dfn></code>". Its [=policy-controlled
+feature/default allowlist=] is "`*`".
+
+Each {{PrivateAggregation}} object has a boolean field named
+<dfn export for="PrivateAggregation">allowed to use</dfn> (default false).
+
+Note: This field is set by other specifications that integrate with this API.
 
 Algorithms {#algorithms}
 ====================
@@ -916,9 +931,13 @@ as appropriate:
     [=upon rejection=] of |promise|, run the following steps:
     1. Let |globalScopes| be |this|'s [=Worklet/global scopes=].
     1. [=Assert=]: |globalScopes|' [=list/size=] equals 1.
-    1. Set |globalScopes|[0]'s {{SharedStorageWorkletGlobalScope/
-        privateAggregation}}'s [=PrivateAggregation/scoping details=] a new
-            [=scoping details=] with the items:
+    1. Let |privateAggregationObj| be |globalScopes|[0]'s
+        {{SharedStorageWorkletGlobalScope/privateAggregation}}.
+    1. If [=this=]'s [=relevant global object=]'s [=associated document=] is
+        [=allowed to use=] "<code>[=private-aggregation=]</code>", set
+        |privateAggregationObj|'s [=PrivateAggregation/allowed to use=] to true.
+    1. Set |privateAggregationObj|'s [=PrivateAggregation/scoping details=] a
+            new [=scoping details=] with the items:
         : [=scoping details/get batching scope steps=]
         :: An algorithm that returns the [=batching scope=] that is scheduled to
             be passed to [=process contributions for a batching scope=] when the
@@ -982,6 +1001,8 @@ Issue: Do we want to align naming with implementation?
 The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(DOMString
 event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
 </div>
+1. If [=this=]'s [=PrivateAggregation/allowed to use=] is false, throw a
+    {{DOMException}} with name `InvalidAccessError`.
 1. Let |scopingDetails| be the {{PrivateAggregation}} object's
     [=PrivateAggregation/scoping details=].
 1. If |scopingDetails| is null, throw a new {{DOMException}} with name
@@ -1076,35 +1097,49 @@ nested scope), renumbering this and later steps as necessary.
 Issue: Need to handle `auctionReportBuyers` and `auctionReportBuyerKeys` here or
     in the Protected Audience API spec.
 
-The <a spec="turtledove">evaluate a script</a> steps are modified in two ways.
-First, the following steps are added after step 11 ("If
+The <a spec="turtledove">evaluate a script</a> steps are modified in three ways.
+First, we add two new parameters: an <a spec="turtledove">auction config</a>
+|auctionConfig| and an [=interest group=] or null |ig|.
+
+Second, we add the following steps after step 11 ("If
 <var ignore>evaluationStatus</var> is an [=ECMAScript/abrupt completion=]..."),
 renumbering later steps as appropriate:
-<div algorithm="protected-audience-evaluate-a-script-monkey-patch-1">
-12. Let |debugScope| be a new [=debug scope=].
-1. Set <var ignore>global</var>'s {{InterestGroupScriptRunnerGlobalScope/
+<div algorithm="protected-audience-evaluate-a-script-monkey-patch">
+12. If |auctionConfig|'s [=auction config/permissions policy state=]'s
+    [=permissions policy state/private aggregation enabled=] is true, set
+    |global|'s {{InterestGroupScriptRunnerGlobalScope/privateAggregation}}'s
+    [=PrivateAggregation/allowed to use=] to true.
+1. Let |debugScope| be a new [=debug scope=].
+1. Set |global|'s {{InterestGroupScriptRunnerGlobalScope/
     privateAggregation}}'s [=PrivateAggregation/scoping details=] to a new
         [=scoping details=] with the items:
     : [=scoping details/get batching scope steps=]
-    :: An algorithm that returns the [=batching scope=] associated with the
-        auction and the <var ignore>scope</var>'s [=relevant settings object=]'s
-        [=environment settings object/origin=].
+    :: An algorithm that performs the following steps:
+        1. Let |origin| be <var ignore>scope</var>'s [=relevant settings
+            object=]'s [=environment settings object/origin=].
+        1. Let |batchingScopeMap| be |auctionConfig|'s [=auction config/batching
+            scope map=].
+        1. Return |batchingScopeMap|[|origin|].
     : [=scoping details/get debug scope steps=]
     :: An algorithm that returns |debugScope|.
 
 </div>
-Second, in the nested scope of the last step, we insert a new step just after
+
+Issue: Once <a href="https://github.com/wicg/turtledove/issues/615">
+    protected-audience/615</a> is resolved, align the above monkey patch with
+    how access to other functions is prevented in
+    {{InterestGroupScriptRunnerGlobalScope}}s until the script's initial
+    execution is complete.
+
+Finally, in the nested scope of the last step, we insert a new step just after
 the step labelled "Clean up after script", renumbering the later step as
 appropriate:
 <div algorithm="protected-audience-evaluate-a-script-monkey-patch-2">
 2. Let |debugDetails| be the result of [=get a debug details=] given
     |debugScope|.
-1. Let |ig| be null.
-1. If this function execution is associated with a bidder, set |ig| to the
-    [=interest group=] associated with the current function execution.
-1. Let |onEventContributionCache| be the <a spec="turtledove">auction config</a>
-    associated with the current function execution's [=auction config/per-bid or
-    seller on event contribution cache=][|ig|].
+1. Let |onEventContributionCache| be <var ignore>auctionConfig</var>'s [=auction
+    config/per-bid or seller on event contribution cache=][<var
+    ignore>ig</var>].
 1. [=map/iterate|For each=] <var ignore>event</var> → |entries| of
     |onEventContributionCache|:
     1. [=list/iterate|For each=] |onEventEntry| of |entries|:
@@ -1115,34 +1150,82 @@ appropriate:
 
 </div>
 
-Issue: Once <a href="https://github.com/wicg/turtledove/issues/615">
-    protected-audience/615</a> is resolved, align the above monkey patch with
-    how access to other functions is prevented in
-    {{InterestGroupScriptRunnerGlobalScope}}s until the script's initial
-    execution is complete.
+The <a spec="turtledove">evaluate a bidding script</a>,
+<a spec="turtledove">evaluate a scoring script</a> and
+<a spec="turtledove">evaluate a reporting script</a> steps are also modified in
+the following two ways.
+
+First, we add new parameters. For <a spec="turtledove">evaluate a reporting
+script</a>, we add an <a spec="turtledove">auction config</a> |auctionConfig|
+and an [=interest group=] or null |ig|. For the other two algorithms, we add an
+<a spec="turtledove">auction config</a> |auctionConfig|.
+
+Note: The <a spec="turtledove">evaluate a bidding script</a> algorithm already
+takes an [=interest group=] parameter |ig|.
+
+Second, when <a spec="turtledove">evaluate a scoring script</a> calls
+<a spec="turtledove">evaluate a script</a>, |auctionConfig| and null are added
+to the list of arguments used. When the other two algorithms invoke
+<a spec="turtledove">evaluate a script</a>, |auctionConfig| and |ig| are added
+to the list of arguments used.
+
+Then, we modify the invocations of the above algorithms to plumb the new
+parameters in:
+
+The [=generate a bid=] algorithm is modified to add a new
+<a spec="turtledove">auction config</a> parameter |auctionConfig|. Additionally,
+its last step is modified by adding the argument |auctionConfig| to the
+invocation of <a spec="turtledove">evaluating a bidding script</a>. Further, the
+<a spec="turtledove">generate and score bids</a> algorithm is modified by
+adding the argument |auctionConfig| to both invocations of
+[=generate a bid=].
+
+The <a spec="turtledove">score and rank a bid</a> algorithm is modified by
+adding the argument |auctionConfig| to the invocation of
+<a spec="turtledove">evaluating a scoring script</a>.
+
+The <a spec="turtledove">report result</a> algorithm is modified by passing in
+the arguments |auctionConfig| and null to the invocation of
+<a spec="turtledove">evaluate a reporting script</a>.
+
+The <a spec="turtledove">report win</a> algorithm is modified by passing in
+the arguments |auctionConfig| and <var ignore>winner</var>'s
+<a spec="turtledove" for="generated bid">interest group</a> to the invocation of
+<a spec="turtledove">evaluate a reporting script</a>.
 
 Protected Audience API-specific structures {#protected-audience-api-specific-structures}
 ----------------------------------------------------------------------------------------
 
 <h4 id="extending-auction-config">Extending auction config</h4>
 
-Extend the <a spec="turtledove">auction config</a> [=struct=] to add a new
-field:
-: <dfn for="auction config" spec="turtledove">per-bid or seller on event
-    contribution cache</dfn>
+Extend the <a spec="turtledove">auction config</a> [=struct=] to add new fields:
+<dl dfn-for="auction config">
+: <dfn>per-bid or seller on event contribution cache</dfn>
 :: A [=map=] from [=interest group=] or null to a [=on event contribution
     cache=].
-: <dfn for="auction config" spec="turtledove">batching scope map</dfn>
+: <dfn>batching scope map</dfn>
 :: A [=map=] from [=origin=] to [=batching scope=], initially
     [=map/is empty|empty=].
 
     Note: Does not include [=batching scopes=] for contributions conditional on
         non-reserved events.
+: <dfn>permissions policy state</dfn>
+:: A [=permissions policy state=].
+
+</dl>
 
 <br/>
 Add the following definitions in a new subsection at the end of
 <a href="https://wicg.github.io/turtledove/#structures">Structures</a>,
 renumbered appropriately.
+
+<h4 dfn-type=dfn>Permissions policy state</h4>
+A permissions policy state is a [=struct=] with the following items:
+<dl dfn-for="permissions policy state">
+: <dfn>private aggregation enabled</dfn>
+:: A [=boolean=] (default false)
+
+</dl>
 
 <h4 dfn-type=dfn>Signal base value</h4>
 A signal base value is one of the following:
@@ -1203,7 +1286,7 @@ An on event contribution cache entry is a [=struct=] with the following items:
 An on event contribution cache is a [=map=] from [=string=] to a [=list=] of
 [=on event contribution cache entries=].
 
-Protected Audience API-specific algorithms {#protected-audience-api-specific-algorithms}
+Protected Audience API-specific new algorithms {#protected-audience-api-specific-new-algorithms}
 ----------------------------------------------------------------------------------------
 
 Add the following definitions:
