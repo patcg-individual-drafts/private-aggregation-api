@@ -794,9 +794,9 @@ A signal base value is one of the following:
 : "<dfn export><code>highest-scoring-other-bid</code></dfn>"
 :: The bid value of the highest scoring bid that did not win.
 : "<dfn export><code>script-run-time</code></dfn>"
-:: The running time of the script in ms(?).
+:: The running time of the script in milliseconds.
 : "<dfn export><code>signals-fetch-time</code></dfn>"
-:: The time it took for the signals fetch to complete in ms(?)
+:: The time it took for the signals fetch to complete in milliseconds.
 : "<dfn export><code>bid-reject-reason</code></dfn>"
 :: The reason a bid was rejected.
 
