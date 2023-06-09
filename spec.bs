@@ -259,7 +259,7 @@ Clearing storage {#clearing-storage}
 
 The user agent must expose controls that allow the user to delete data from
 the [=aggregatable report cache=] as well as any contribution history data
-stored for the [=PrivateAggregation/consume budget if permitted=] algorithm.
+stored for the [=consume budget if permitted=] algorithm.
 
 The user agent may expose controls that allow the user to delete data from the
 [=contributions cache=].
@@ -940,9 +940,9 @@ Clearing site data {#clearing-site-data}
 ----------------------------------------
 
 The [=aggregatable report cache=] as well as any contribution history data
-stored for the [=PrivateAggregation/consume budget if permitted=] algorithm
-contain data about a user’s web activity. As such, user controls to delete this
-data are required, see [clearing storage](#clearing-storage).
+stored for the [=consume budget if permitted=] algorithm contain data about a
+user’s web activity. As such, user controls to delete this data are required,
+see [clearing storage](#clearing-storage).
 
 On the other hand, the [=contribution cache=] only contains short-lived data
 tied to particular batching scopes, so controls are not required.
@@ -1033,20 +1033,19 @@ Writes to the [=aggregatable report cache=] and [=contribution cache=] are
 separated by the reporting [=origin=] and the data included in any report with a
 given reporting [=origin=] are generated with only data from that [=origin=].
 
-One notable exception is the [=PrivateAggregation/consume budget if permitted=]
-algorithm which is [=implementation-defined=] and can consider contribution
-history from other [=origins=]. For example, the algorithm could consider all
-history from a particular [=site=]. This would be an explicit relaxation of the
-same-origin policy as multiple origins would be able to influence the API's
-behavior. One particular risk of these kinds of shared limits is the
-introduction of denial of service attacks, where a group of origins could
-collude to intentionally consume all available budget, causing subsequent
-origins to be unable to access the API. This trades off security for privacy, in
-that the limits are there to reduce the efficacy of many origins colluding
-together to violate privacy. However, this security risk is lessened if the set
-of origins limited are all [=same site=]. [=User agents=] should consider these
-tradeoffs when choosing the [=PrivateAggregation/consume budget if permitted=]
-algorithm.
+One notable exception is the [=consume budget if permitted=] algorithm which is
+[=implementation-defined=] and can consider contribution history from other
+[=origins=]. For example, the algorithm could consider all history from a
+particular [=site=]. This would be an explicit relaxation of the same-origin
+policy as multiple origins would be able to influence the API's behavior. One
+particular risk of these kinds of shared limits is the introduction of denial of
+service attacks, where a group of origins could collude to intentionally consume
+all available budget, causing subsequent origins to be unable to access the API.
+This trades off security for privacy, in that the limits are there to reduce the
+efficacy of many origins colluding together to violate privacy. However, this
+security risk is lessened if the set of origins limited are all [=same site=].
+[=User agents=] should consider these tradeoffs when choosing the [=consume
+budget if permitted=] algorithm.
 
 Protecting the histogram contributions {#protecting-the-histogram-contributions}
 --------------------------------------------------------------------------------
