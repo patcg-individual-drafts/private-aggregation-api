@@ -921,8 +921,8 @@ Issue(56): Pad the payload to avoid this risk.
 
 ### Temporary debugging mechanism ### {#temporary-debugging-mechanism}
 
-The `enableDebugMode()` method allows for the protections of this API to be
-bypassed to ease testing and integration. Specifically, the contents of the
+The `enableDebugMode()` method allows for many of the protections of this API to
+be bypassed to ease testing and integration. Specifically, the contents of the
 payload, i.e. the histogram contributions, are revealed in the clear when the
 debug mode is enabled. Optionally, a debug key can also be set to associate the
 report with the calling context. In the future, this mechanism will only be
