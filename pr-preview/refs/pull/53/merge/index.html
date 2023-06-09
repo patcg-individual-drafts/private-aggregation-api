@@ -5,10 +5,10 @@
   <title>Private Aggregation API</title>
   <meta content="w3c/CG-DRAFT" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
-  <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
   <meta content="Bikeshed version 5fcd28d6d, updated Tue May 30 13:12:11 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="07a95b530fb1ac9827db80ffeb909e6ee430ce49" name="document-revision">
+  <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
+  <meta content="0df3d4b93563f68dd7901de1901beb19f32aa349" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -649,7 +649,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-06-08">8 June 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-06-09">9 June 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -665,7 +665,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     </div>
    </details>
    <div data-fill-with="warning"></div>
-   <p class="copyright" data-fill-with="copyright"><a href="https://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2023 <a href="https://www.w3.org/">World Wide Web Consortium</a>. <abbr title="World Wide Web Consortium">W3C</abbr><sup>®</sup> <a href="https://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="https://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="https://www.w3.org/Consortium/Legal/2015/copyright-software-and-document" rel="license">permissive document license</a> rules apply. </p>
+   <p class="copyright" data-fill-with="copyright"><a href="https://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2023 <a href="https://www.w3.org/">World Wide Web Consortium</a>. <abbr title="World Wide Web Consortium">W3C</abbr><sup>®</sup> <a href="https://www.w3.org/Consortium/Legal/ipr-notice#Legal_Disclaimer">liability</a>, <a href="https://www.w3.org/Consortium/Legal/ipr-notice#W3C_Trademarks">trademark</a> and <a href="https://www.w3.org/Consortium/Legal/2023/software-license" rel="license" title="W3C Software and Document License">permissive document license</a> rules apply. </p>
    <hr title="Separator for header">
   </div>
   <div class="p-summary" data-fill-with="abstract">
@@ -737,7 +737,9 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
         <li><a href="#restricted-contribution-processing"><span class="secno">9.1.1</span> <span class="content">Restricted contribution processing</span></a>
         <li><a href="#unencrypted-metadata"><span class="secno">9.1.2</span> <span class="content">Unencrypted metadata</span></a>
         <li><a href="#protecting-against-leaks-via-the-number-of-reports"><span class="secno">9.1.3</span> <span class="content">Protecting against leaks via the number of reports</span></a>
-        <li><a href="#privacy-parameters"><span class="secno">9.1.4</span> <span class="content">Privacy parameters</span></a>
+        <li><a href="#protecting-against-leaks-via-payload-size"><span class="secno">9.1.4</span> <span class="content">Protecting against leaks via payload size</span></a>
+        <li><a href="#temporary-debugging-mechanism"><span class="secno">9.1.5</span> <span class="content">Temporary debugging mechanism</span></a>
+        <li><a href="#privacy-parameters"><span class="secno">9.1.6</span> <span class="content">Privacy parameters</span></a>
        </ol>
       <li><a href="#clearing-site-data"><span class="secno">9.2</span> <span class="content">Clearing site data</span></a>
       <li>
@@ -1460,7 +1462,22 @@ is supplied, the API makes the number of reports sent deterministic (sending
 reports containing no contributions in the payloads if necessary). Additional
 mitigations may also be possible in the future, e.g. adding noise to the report
 count.</p>
-   <h4 class="heading settled" data-level="9.1.4" id="privacy-parameters"><span class="secno">9.1.4. </span><span class="content">Privacy parameters</span><a class="self-link" href="#privacy-parameters"></a></h4>
+   <h4 class="heading settled" data-level="9.1.4" id="protecting-against-leaks-via-payload-size"><span class="secno">9.1.4. </span><span class="content">Protecting against leaks via payload size</span><a class="self-link" href="#protecting-against-leaks-via-payload-size"></a></h4>
+   <p>The length of the payload could additionally expose some cross-site information,
+namely how many contributions are included. To protect against this, the payload
+will be padded in the future.</p>
+   <p class="issue" id="issue-7b2e2279"><a class="self-link" href="#issue-7b2e2279"></a> Pad the payload to avoid this risk. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/56">[Issue #56]</a></p>
+   <h4 class="heading settled" data-level="9.1.5" id="temporary-debugging-mechanism"><span class="secno">9.1.5. </span><span class="content">Temporary debugging mechanism</span><a class="self-link" href="#temporary-debugging-mechanism"></a></h4>
+   <p>The <code>enableDebugMode()</code> method allows for the protections of this API to be
+bypassed to ease testing and integration. Specifically, the contents of the
+payload, i.e. the histogram contributions, are revealed in the clear when the
+debug mode is enabled. Optionally, a debug key can also be set to associate the
+report with the calling context. In the future, this mechanism will only be
+available for callers that are eligible to set third-party cookies. In that
+case, the API caller already has the ability to communicate information
+cross-site.</p>
+   <p class="issue" id="issue-d97fad0c"><a class="self-link" href="#issue-d97fad0c"></a> Tie <code>enableDebugMode()</code> to third-party cookie eligibility. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/57">[Issue #57]</a></p>
+   <h4 class="heading settled" data-level="9.1.6" id="privacy-parameters"><span class="secno">9.1.6. </span><span class="content">Privacy parameters</span><a class="self-link" href="#privacy-parameters"></a></h4>
    <p>The amount of information exposed by this API is a product of the privacy
 parameters used (e.g. contribution limits and the noise distribution used in the
 aggregation service). While we aim to minimize the amount of information
@@ -1898,6 +1915,8 @@ to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encry
    <div class="issue"> Do we have to use the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">queue a task</a> algorithm here? <a class="issue-return" href="#issue-2485156c" title="Jump to section">↵</a></div>
    <div class="issue"> Maybe add refs to the rounding logic. <a class="issue-return" href="#issue-b7f7c8b2" title="Jump to section">↵</a></div>
    <div class="issue"> Fill in. <a class="issue-return" href="#issue-cb6e966f" title="Jump to section">↵</a></div>
+   <div class="issue"> Pad the payload to avoid this risk. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/56">[Issue #56]</a> <a class="issue-return" href="#issue-7b2e2279" title="Jump to section">↵</a></div>
+   <div class="issue"> Tie <code>enableDebugMode()</code> to third-party cookie eligibility. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/57">[Issue #57]</a> <a class="issue-return" href="#issue-d97fad0c" title="Jump to section">↵</a></div>
    <div class="issue"> Link batching scopes <a class="issue-return" href="#issue-2e99bd22" title="Jump to section">↵</a></div>
   </div>
 <script>/* Boilerplate: script-dfn-panel */
@@ -2253,7 +2272,7 @@ window.dfnpanelData['1243a891'] = {"dfnID": "1243a891", "url": "https://infra.sp
 window.dfnpanelData['16d07e10'] = {"dfnID": "16d07e10", "url": "https://infra.spec.whatwg.org/#list-iterate", "dfnText": "for each", "refSections": [{"refs": [{"id": "ref-for-list-iterate"}], "title": "4. Exposing to the Protected Audience API"}, {"refs": [{"id": "ref-for-list-iterate\u2460"}, {"id": "ref-for-list-iterate\u2461"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-list-iterate\u2462"}], "title": "8.2. Sending reports"}, {"refs": [{"id": "ref-for-list-iterate\u2463"}], "title": "8.3. Serializing reports"}], "external": true};
 window.dfnpanelData['b012ccb2'] = {"dfnID": "b012ccb2", "url": "https://infra.spec.whatwg.org/#forgiving-base64-encode", "dfnText": "forgiving-base64 encode", "refSections": [{"refs": [{"id": "ref-for-forgiving-base64-encode"}], "title": "8.3. Serializing reports"}], "external": true};
 window.dfnpanelData['715f22e4'] = {"dfnID": "715f22e4", "url": "https://infra.spec.whatwg.org/#if-aborted", "dfnText": "if aborted", "refSections": [{"refs": [{"id": "ref-for-if-aborted"}], "title": "8.2. Sending reports"}], "external": true};
-window.dfnpanelData['860300d4'] = {"dfnID": "860300d4", "url": "https://infra.spec.whatwg.org/#implementation-defined", "dfnText": "implementation-defined", "refSections": [{"refs": [{"id": "ref-for-implementation-defined"}], "title": "7. Implementation-defined values"}, {"refs": [{"id": "ref-for-implementation-defined\u2460"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2461"}, {"id": "ref-for-implementation-defined\u2462"}, {"id": "ref-for-implementation-defined\u2463"}], "title": "8.2. Sending reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2464"}], "title": "8.3. Serializing reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2465"}], "title": "9.1.4. Privacy parameters"}, {"refs": [{"id": "ref-for-implementation-defined\u2466"}], "title": "10.1. Same-origin policy"}], "external": true};
+window.dfnpanelData['860300d4'] = {"dfnID": "860300d4", "url": "https://infra.spec.whatwg.org/#implementation-defined", "dfnText": "implementation-defined", "refSections": [{"refs": [{"id": "ref-for-implementation-defined"}], "title": "7. Implementation-defined values"}, {"refs": [{"id": "ref-for-implementation-defined\u2460"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2461"}, {"id": "ref-for-implementation-defined\u2462"}, {"id": "ref-for-implementation-defined\u2463"}], "title": "8.2. Sending reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2464"}], "title": "8.3. Serializing reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2465"}], "title": "9.1.6. Privacy parameters"}, {"refs": [{"id": "ref-for-implementation-defined\u2466"}], "title": "10.1. Same-origin policy"}], "external": true};
 window.dfnpanelData['6b815fdd'] = {"dfnID": "6b815fdd", "url": "https://infra.spec.whatwg.org/#list-is-empty", "dfnText": "is empty", "refSections": [{"refs": [{"id": "ref-for-list-is-empty"}], "title": "4. Exposing to the Protected Audience API"}, {"refs": [{"id": "ref-for-list-is-empty\u2460"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-list-is-empty\u2461"}, {"id": "ref-for-list-is-empty\u2462"}], "title": "8.3. Serializing reports"}], "external": true};
 window.dfnpanelData['f02cd417'] = {"dfnID": "f02cd417", "url": "https://infra.spec.whatwg.org/#list-iterate", "dfnText": "iterate", "refSections": [{"refs": [{"id": "ref-for-list-iterate"}], "title": "4. Exposing to the Protected Audience API"}, {"refs": [{"id": "ref-for-list-iterate\u2460"}, {"id": "ref-for-list-iterate\u2461"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-list-iterate\u2462"}], "title": "8.2. Sending reports"}, {"refs": [{"id": "ref-for-list-iterate\u2463"}], "title": "8.3. Serializing reports"}], "external": true};
 window.dfnpanelData['649608b9'] = {"dfnID": "649608b9", "url": "https://infra.spec.whatwg.org/#list", "dfnText": "list", "refSections": [{"refs": [{"id": "ref-for-list"}], "title": "2.1. Worklet interface"}, {"refs": [{"id": "ref-for-list\u2460"}], "title": "3. Exposing to the Shared Storage API"}, {"refs": [{"id": "ref-for-list\u2461"}, {"id": "ref-for-list\u2462"}], "title": "4. Exposing to the Protected Audience API"}, {"refs": [{"id": "ref-for-list\u2463"}], "title": "5.1.1. Aggregatable report"}, {"refs": [{"id": "ref-for-list\u2464"}], "title": "6. Storage"}, {"refs": [{"id": "ref-for-list\u2465"}, {"id": "ref-for-list\u2466"}, {"id": "ref-for-list\u2467"}], "title": "8.1. Scheduling reports"}, {"refs": [{"id": "ref-for-list\u2468"}], "title": "8.2. Sending reports"}, {"refs": [{"id": "ref-for-list\u2460\u24ea"}, {"id": "ref-for-list\u2460\u2460"}, {"id": "ref-for-list\u2460\u2461"}], "title": "8.3. Serializing reports"}], "external": true};
