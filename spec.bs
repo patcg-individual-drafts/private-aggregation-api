@@ -239,8 +239,7 @@ An aggregatable report is a [=struct=] with the following items:
 
 </dl>
 
-Issue: Handle operation types, aggregation coordinators, maybe retries/offline,
-    report verification
+Issue: Handle context ID, maybe retries/offline
 
 <h4 dfn-type=dfn>Context type</h4>
 A context type is a [=string=] indicating what kind of global scope the
@@ -254,6 +253,16 @@ A user agent holds an <dfn>contribution cache</dfn>, which is a [=list=] of
 
 A user agent holds an <dfn>aggregatable report cache</dfn>, which is a [=list=]
 of [=aggregatable reports=].
+
+Clearing storage {#clearing-storage}
+----------------------------------------
+
+The user agent must expose controls that allow the user to delete data from
+the [=aggregatable report cache=] as well as any contribution history data
+stored for the [=PrivateAggregation/consume budget if permitted=] algorithm.
+
+The user agent may expose controls that allow the user to delete data from the
+[=contributions cache=].
 
 [=Implementation-defined=] values {#implementation-defined-values}
 ==================================================================
@@ -531,9 +540,9 @@ of a public key and a [=string=] (which should uniquely identify the public
 key), or an error in the event that the [=user agent=] failed to obtain the
 public key. (TODO: why asynchronously.)
 
-Note: The user agent might enforce regular key rotation. If there are multiple
-    keys, the user agent might independently pick a key uniformly at random for
-    every encryption operation.
+Note: The user agent is encouraged to enforce regular key rotation. If there are
+    multiple keys, the user agent can independently pick a key uniformly at
+    random for every encryption operation.
 
 To <dfn>obtain the encrypted payload</dfn> given an [=aggregatable report=]
 |report|, perform the following steps. They return a [=byte sequence=] or an
@@ -846,3 +855,213 @@ To <dfn>determine the numeric value</dfn> of a [=signal base value=]
 {{double}}.
 
 Issue: Fill in.
+
+Privacy considerations {#privacy-considerations}
+================================================
+
+<em>This section is non-normative.</em>
+
+Cross-site information disclosure {#cross-site-information-disclosure}
+----------------------------------------------------------------------
+
+This API lets isolated contexts with access to cross-site data (i.e. <a
+href="https://wicg.github.io/shared-storage/">Shared Storage</a> worklets/<a
+href="https://wicg.github.io/turtledove/">Protected Audience</a> script runners)
+send aggregatable reports over the network.
+
+Aggregatable reports contain encrypted high entropy cross-site information, in
+the form of key-value pairs (i.e. contributions to a histogram). The information
+embedded in the contributions is arbitrary but can include things like browsing
+history and other cross-site activity. The API aims to protect this information
+from being passed from one site to another.
+
+### Restricted contribution processing ### {#restricted-contribution-processing}
+
+The histogram contributions are not exposed directly. Instead, they are
+encrypted so that they can only be processed by a trusted aggregation service.
+This trusted aggregation service sums the values across the reports for each key
+and adds noise to each of these values to produce ‘summary reports’.
+
+The output of that processing will be an aggregated, noised histogram. The
+service ensures that any report can not be processed multiple times. Further,
+information exposure is limited by contribution budgets on the user agent. In
+principle, this framework can support specifying a noise parameter which
+satisfies differential privacy.
+
+### Unencrypted metadata ### {#unencrypted-metadata}
+
+These reports also expose a limited amount of metadata, which is not based on
+cross-site data. The recipient of the report may also be able to observe
+side-channel information such as the time when the report was sent, or IP
+address of the sender.
+
+### Protecting against leaks via the number of reports ### {#protecting-against-leaks-via-the-number-of-reports}
+
+However, the number of reports with the given metadata could expose some
+cross-site information. To protect against this, the API delays sending reports
+by a randomized amount of time to make it difficult to determine whether a
+report was sent or not from any particular event. In the case that a context ID
+is supplied, the API makes the number of reports sent deterministic (sending
+reports containing no contributions in the payloads if necessary). Additional
+mitigations may also be possible in the future, e.g. adding noise to the report
+count.
+
+### Protecting against leaks via payload size ### {#protecting-against-leaks-via-payload-size}
+
+The length of the payload could additionally expose some cross-site information,
+namely how many contributions are included. To protect against this, the payload
+will be padded in the future.
+
+Issue(56): Pad the payload to avoid this risk.
+
+### Temporary debugging mechanism ### {#temporary-debugging-mechanism}
+
+The `enableDebugMode()` method allows for many of the protections of this API to
+be bypassed to ease testing and integration. Specifically, the contents of the
+payload, i.e. the histogram contributions, are revealed in the clear when the
+debug mode is enabled. Optionally, a debug key can also be set to associate the
+report with the calling context. In the future, this mechanism will only be
+available for callers that are eligible to set third-party cookies. In that
+case, the API caller already has the ability to communicate information
+cross-site.
+
+Issue(57): Tie `enableDebugMode()` to third-party cookie eligibility.
+
+### Privacy parameters ### {#privacy-parameters}
+
+The amount of information exposed by this API is a product of the privacy
+parameters used (e.g. contribution limits and the noise distribution used in the
+aggregation service). While we aim to minimize the amount of information
+exposed, we also aim to support a wide range of use cases. The privacy
+parameters are left [=implementation-defined=] to allow different and evolving
+choices in the tradeoffs between information exposure and utility.
+
+Clearing site data {#clearing-site-data}
+----------------------------------------
+
+The [=aggregatable report cache=] as well as any contribution history data
+stored for the [=PrivateAggregation/consume budget if permitted=] algorithm
+contain data about a user’s web activity. As such, user controls to delete this
+data are required, see [clearing storage](#clearing-storage).
+
+On the other hand, the [=contribution cache=] only contains short-lived data
+tied to particular batching scopes, so controls are not required.
+
+Issue: Link batching scopes
+
+Reporting delay concerns {#reporting-delay-concerns}
+----------------------------------------------------
+
+Delaying sending reports after API invocation can enable side-channel leakage in
+some situations.
+
+### Cross-network reporting origin leakage ### {#cross-network-reporting-origin-leakage}
+
+A report may be stored while the browser is connected to one network but sent
+while the browser is connected to a different network, potentially enabling
+cross-network leakage of the reporting origin.
+
+Example: A user runs the browser with a particular browsing profile on their
+home network. An aggregatable report with a particular reporting origin is
+stored with a report time in the future. After the report time is reached, the
+user runs the browser with the same browsing profile on their employer’s
+network, at which point the browser sends the report to the reporting origin.
+Although the report itself may be sent over HTTPS, the reporting origin may be
+visible to the network administrator via DNS or the TLS client hello (which can
+be mitigated with ECH). Some reporting origins may be known to operate only or
+primarily on sensitive sites, so this could leak information about the user’s
+browsing activity to the user’s employer without their knowledge or consent.
+
+Possible mitigations include:
+
+1. Only sending reports with a given reporting origin when the browser has
+    already made a request to that origin on the same network: This prevents the
+    network administrator from gaining additional information from the Private
+    Aggregation API. However, it increases report loss and report delays, which
+    reduces the utility of the API for the reporting origin. It might also
+    increase the effectiveness of timing attacks, as the origin may be able to
+    better link the report with the user’s request that allowed the report to be
+    released.
+1. Send reports immediately: This reduces the likelihood of a report being
+    stored and sent on different networks. However, it increases the likelihood
+    that the reporting origin can correlate the original API invocation to the
+    report being sent, which weakens the privacy controls of the API, see
+    [Protecting against leaks via the number of
+    reports](#protecting-against-leaks-via-the-number-of-reports).
+1. Use a trusted proxy server to send reports: This effectively moves the
+    reporting origin into the report body, so only the proxy server would be
+    visible to the network administrator.
+1. Require [DNS over HTTPS](https://datatracker.ietf.org/doc/html/rfc8484): This
+    effectively hides the reporting origin from the network administrator, but
+    is likely impractical to enforce and is itself perhaps circumventable by the
+    network administrator, e.g. by monitoring IP addresses instead.
+
+### User-presence tracking ### {#user-presence-tracking}
+
+The browser only tries to send reports while it is running and while it has
+internet connectivity (even without an explicit check for connectivity,
+naturally the report will fail to be sent if there is none), so receiving or not
+receiving a ([=serializing an aggregatable report|serialized=]) [=aggregatable
+report=] at the [=aggregatable report/original report time=] leaks information
+about the user’s presence. Additionally, because the report request inherently
+includes an IP address, this could reveal the user’s IP-derived location to the
+reporting origin, including at-home vs. at-work or approximate real-world
+geolocation, or reveal patterns in the user’s browsing activity.
+
+Possible mitigations include:
+
+1. Send reports immediately: This effectively eliminates the presence tracking,
+    as the original request made to the reporting origin is in close temporal
+    proximity to the report request. However, it increases the likelihood that
+    the reporting origin can correlate the original API invocation to the report
+    being sent, which weakens the privacy controls of the API, see [Protecting
+    against leaks via the number of
+    reports](#protecting-against-leaks-via-the-number-of-reports).
+1. Send reports immediately to a trusted proxy server, which would itself apply
+    additional delay: This would effectively hide both the user’s IP address and
+    their online-offline presence from the reporting origin.
+
+Security considerations {#security-considerations}
+================================================
+
+<em>This section is non-normative.</em>
+
+Same-origin policy {#same-origin-policy}
+----------------------------------------
+
+Writes to the [=aggregatable report cache=] and [=contribution cache=] are
+separated by the reporting [=origin=] and the data included in any report with a
+given reporting [=origin=] are generated with only data from that [=origin=].
+
+One notable exception is the [=PrivateAggregation/consume budget if permitted=]
+algorithm which is [=implementation-defined=] and can consider contribution
+history from other [=origins=]. For example, the algorithm could consider all
+history from a particular [=site=]. This would be an explicit relaxation of the
+same-origin policy as multiple origins would be able to influence the API's
+behavior. One particular risk of these kinds of shared limits is the
+introduction of denial of service attacks, where a group of origins could
+collude to intentionally consume all available budget, causing subsequent
+origins to be unable to access the API. This trades off security for privacy, in
+that the limits are there to reduce the efficacy of many origins colluding
+together to violate privacy. However, this security risk is lessened if the set
+of origins limited are all [=same site=]. [=User agents=] should consider these
+tradeoffs when choosing the [=PrivateAggregation/consume budget if permitted=]
+algorithm.
+
+Protecting the histogram contributions {#protecting-the-histogram-contributions}
+--------------------------------------------------------------------------------
+
+As discussed [above](#restricted-contribution-processing), the processing of
+histogram contributions is limited to protect privacy. This limitation relies on
+only the trusted aggregation service being able to access the unencrypted
+histogram contributions.
+
+To ensure this, this API uses [[RFC9180|HPKE]], a modern encryption
+specification. Additionally, each [=user agent=] is encouraged to require
+regular key rotation by the aggregation service. This limits the amount of data
+encrypted with the same key and thus the amount of vulnerable data in the case
+of a key being compromised.
+
+While not specified here, each [=user agent=] is strongly encouraged to consider
+the security of any aggregation service design before allowing its public keys
+to be returned by [=obtain the public key for encryption=].
