@@ -119,8 +119,8 @@ dictionary PADebugModeOptions {
 Issue: Need to spec Permissions Policy integration.
 
 Each {{PrivateAggregation}} object has a field named <dfn
-for="PrivateAggregation">scope determination details</dfn> that is a [=scope
-determination details=] or null (default null).
+for="PrivateAggregation">scoping details</dfn> that is a [=scoping details=] or
+null (default null).
 
 Note: See [Exposing to global scopes](#exposing) below.
 
@@ -134,10 +134,10 @@ are:
     is not in the range [0, 2<sup>128</sup>−1].
 1. Throw {{RangeError}} if |contribution|["{{PAHistogramContribution/value}}"]
     is negative.
-1. Let |scopeDeterminationDetails| be the {{PrivateAggregation}} object's
-    [=PrivateAggregation/scope determination details=].
-1. If |scopeDeterminationDetails| is null, throw a new {{DOMException}} with
-    name "`NotAllowedError`".
+1. Let |scopingDetails| be the {{PrivateAggregation}} object's
+    [=PrivateAggregation/scoping details=].
+1. If |scopingDetails| is null, throw a new {{DOMException}} with name
+    "`NotAllowedError`".
 
     Note: This indicates the API is not yet available, for example, because the
         initial execution of the script after loading is not complete.
@@ -149,11 +149,11 @@ are:
     : [=contribution cache entry/contribution=]
     :: |contribution|
     : [=contribution cache entry/batching scope=]
-    :: The result of running |scopeDeterminationDetails|' [=scope determination
-        details/get batching scope steps=].
+    :: The result of running |scopingDetails|' [=scoping details/get batching
+        scope steps=].
     : [=contribution cache entry/debug info=]
-    :: The result of running |scopeDeterminationDetails|' [=scope determination
-        details/get debug scope steps=].
+    :: The result of running |scopingDetails|' [=scoping details/get debug scope
+        steps=].
 
 1. [=Append an entry to the contribution cache|Append=] |entry| to the
     [=contribution cache=].
@@ -167,16 +167,17 @@ The <dfn method for="PrivateAggregation">
 enableDebugMode(optional PADebugModeOptions options)</dfn> method steps are:
 </div>
 
-1. Let |scopeDeterminationDetails| be the {{PrivateAggregation}} object's
-    [=PrivateAggregation/scope determination details=].
-1. If |scopeDeterminationDetails| is null, throw a new {{DOMException}} with
-    name "`NotAllowedError`".
-1. Let |debugScope| be the result of running |scopeDeterminationDetails|'
-    [=scope determination details/get debug scope steps=].
-1. Throw {{DataError}} if [=debug scope map=][|debugScope|] [=map/exists=].
+1. Let |scopingDetails| be the {{PrivateAggregation}} object's
+    [=PrivateAggregation/scoping details=].
+1. If |scopingDetails| is null, throw a new {{DOMException}} with name
+    "`NotAllowedError`".
+1. Let |debugScope| be the result of running |scopingDetails|' [=scoping
+    details/get debug scope steps=].
+1. Let |debugScopeMap| be the [=debug scope map=].
+1. Throw {{DataError}} if |debugScopeMap|[|debugScope|] [=map/exists=].
+
     Note: This would occur if `enableDebugMode()` has already been run for this
         [=debug scope=].
-
 1. Let |debugKey| be null.
 1. If |options| was given:
     1. Throw {{DataError}} if |options|["{{PADebugModeOptions/debugKey}}] is not
@@ -188,7 +189,7 @@ enableDebugMode(optional PADebugModeOptions options)</dfn> method steps are:
     : [=debug details/key=]
     :: |debugKey|
 
-1. [=map/Set=] [=debug scope map=][|debugScope|] to |debugDetails|.
+1. [=map/Set=] |debugScopeMap|[|debugScope|] to |debugDetails|.
 
 Exposing to global scopes {#exposing}
 =====================================
@@ -196,10 +197,10 @@ Exposing to global scopes {#exposing}
 To expose this API to a global scope, a readonly attribute `privateAggregation`
 of type {{PrivateAggregation}} should be exposed on the global scope.
 
-Additionally, each global scope should set the [=PrivateAggregation/scope
-determination details=] for the {{PrivateAggregation}} object it exposes to a
-non-null value. The global scope should wait to set the field until the API is
-intended to be available.
+Additionally, each global scope should set the [=PrivateAggregation/scoping
+details=] for the {{PrivateAggregation}} object it exposes to a non-null value.
+The global scope should wait to set the field until the API is intended to be
+available.
 
 <div class="example" id="shared-storage-only-within-operations">
     Shared Storage only allows Private Aggregation when an operation is being
@@ -214,24 +215,24 @@ intended to be available.
 
     privateAggregation.contributeToHistogram(...)  // This would cause an error.
     </pre>
-    So, Shared Storage sets the [=PrivateAggregation/scope determination
-    details=] after the initial execution of the module script is complete.
+    So, Shared Storage sets the [=PrivateAggregation/scoping details=] after the
+    initial execution of the module script is complete.
 </div>
 
-For any [=batching scope=] returned by the [=scope determination details/get
-batching scope steps=], the [=process contributions for a batching scope=] steps
-should later be performed given that same batching scope, the global scope's
-[=relevant settings object=]'s [=environment settings object/origin=] and some
-[=context type=].
+For any [=batching scope=] returned by the [=scoping details/get batching scope
+steps=], the [=process contributions for a batching scope=] steps should later
+be performed given that same batching scope, the global scope's [=relevant
+settings object=]'s [=environment settings object/origin=] and some [=context
+type=].
 
 Note: This last requirement means that global scopes with different origins
     cannot share the same batching scope, see Same-origin policy discussion.
 
     Issue: Link Same-origin policy section.
 
-For any [=debug scope=] returned by the [=scope determination details/get
-debug scope steps=], the [=mark a debug scope complete=] steps should later be
-performed given that same debug scope.
+For any [=debug scope=] returned by the [=scoping details/get debug scope
+steps=], the [=mark a debug scope complete=] steps should later be performed
+given that same debug scope.
 
 Note: A later algorithm [=asserts=] that, for any [=contribution cache entry=]
     in the [=contribution cache=], the [=mark a debug scope complete=] steps
@@ -257,9 +258,9 @@ Issue: Unique internal value is not an exported definition. See
 A debug scope is a <a spec=HTML>unique internal value</a> that identifies which
 {{PAHistogramContribution}}s should be sent in the same [=aggregatable report=].
 
-<h4 dfn-type=dfn>Scope determination details</h4>
-A scope determination details is a [=struct=] with the following items:
-<dl dfn-for="scope determination details">
+<h4 dfn-type=dfn>Scoping details</h4>
+A scoping details is a [=struct=] with the following items:
+<dl dfn-for="scoping details">
 : <dfn>get batching scope steps</dfn>
 :: An algorithm returning a [=batching scope=]
 : <dfn>get debug scope steps</dfn>
@@ -415,9 +416,10 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
             empty|empty=] [=list=].
     1. [=list/Append=] |entry|'s [=contribution cache entry/contribution=] to
         |batchedContributions|[|debugDetails|].
-1. [=map/iterate|For each=] |key| → |value| of |batchedContributions|:
+1. [=map/iterate|For each=] |debugDetails| → |contributions| of
+    |batchedContributions|:
     1. Perform the [=report creation and scheduling steps=] with
-        |reportingOrigin|, |contextType|, |value| and |key|.
+        |reportingOrigin|, |contextType|, |contributions| and |debugDetails|.
 
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
@@ -795,13 +797,13 @@ as appropriate:
     1. Let |globalScopes| be |this|'s [=Worklet/global scopes=].
     1. [=Assert=]: |globalScopes|' [=list/size=] equals 1.
     1. Set |globalScopes|[0]'s {{SharedStorageWorkletGlobalScope/
-        privateAggregation}}'s [=PrivateAggregation/scope determination
-        details=] a new [=scope determination details=] with the items:
-        : [=scope determination details/get batching scope steps=]
+        privateAggregation}}'s [=PrivateAggregation/scoping details=] a new
+            [=scoping details=] with the items:
+        : [=scoping details/get batching scope steps=]
         :: An algorithm that returns the [=batching scope=] that is scheduled to
             be passed to [=process contributions for a batching scope=] when the
             call currently executing in |scope| returns.
-        : [=scope determination details/get debug scope steps=]
+        : [=scoping details/get debug scope steps=]
         :: An algorithm that returns the [=debug scope=] that is scheduled to be
             passed to [=mark a debug scope complete=] when the call currently
             executing in |scope| returns.
@@ -889,13 +891,13 @@ renumbering later steps as appropriate:
 <div algorithm="protected-audience-evaluate-a-script-monkey-patch-1">
 12. Let |debugScope| be a new [=debug scope=].
 1. Set <var ignore>global</var>'s {{InterestGroupScriptRunnerGlobalScope/
-    privateAggregation}}'s [=PrivateAggregation/scope determination details=] to
-    a new [=scope determination details=] with the items:
-    : [=scope determination details/get batching scope steps=]
+    privateAggregation}}'s [=PrivateAggregation/scoping details=] to a new
+        [=scoping details=] with the items:
+    : [=scoping details/get batching scope steps=]
     :: An algorithm that returns the [=batching scope=] associated with the
         auction and the <var ignore>scope</var>'s [=relevant settings object=]'s
         [=environment settings object/origin=].
-    : [=scope determination details/get debug scope steps=]
+    : [=scoping details/get debug scope steps=]
     :: An algorithm that returns |debugScope|.
 
 </div>
@@ -1058,16 +1060,17 @@ Issue(56): Pad the payload to avoid this risk.
 
 ### Temporary debugging mechanism ### {#temporary-debugging-mechanism}
 
-The `enableDebugMode()` method allows for many of the protections of this API to
-be bypassed to ease testing and integration. Specifically, the contents of the
-payload, i.e. the histogram contributions, are revealed in the clear when the
-debug mode is enabled. Optionally, a debug key can also be set to associate the
-report with the calling context. In the future, this mechanism will only be
-available for callers that are eligible to set third-party cookies. In that
-case, the API caller already has the ability to communicate information
-cross-site.
+The <code>{{PrivateAggregation/enableDebugMode()}}</code> method allows for many
+of the protections of this API to be bypassed to ease testing and integration.
+Specifically, the contents of the payload, i.e. the histogram contributions, are
+revealed in the clear when the debug mode is enabled. Optionally, a debug key
+can also be set to associate the report with the calling context. In the future,
+this mechanism will only be available for callers that are eligible to set
+third-party cookies. In that case, the API caller already has the ability to
+communicate information cross-site.
 
-Issue(57): Tie `enableDebugMode()` to third-party cookie eligibility.
+Issue(57): Tie <code>{{PrivateAggregation/enableDebugMode()}}</code> to
+    third-party cookie eligibility.
 
 ### Privacy parameters ### {#privacy-parameters}
 
