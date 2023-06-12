@@ -103,7 +103,7 @@ Worklet interface {#worklet-interface}
  SecureContext]
 interface PrivateAggregation {
   undefined contributeToHistogram(PAHistogramContribution contribution);
-  undefined enableDebugMode(optional PADebugModeOptions options);
+  undefined enableDebugMode(optional PADebugModeOptions options = {});
 };
 
 dictionary PAHistogramContribution {
@@ -420,6 +420,9 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
     |batchedContributions|:
     1. Perform the [=report creation and scheduling steps=] with
         |reportingOrigin|, |contextType|, |contributions| and |debugDetails|.
+
+Note: These steps break up the contributions based on their debug details as
+    each report can only have one set of metadata.
 
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
