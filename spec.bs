@@ -249,14 +249,14 @@ General {#general-structures}
 <h4 dfn-type=dfn>Batching scope</h4>
 A batching scope is a <a spec=HTML>unique internal value</a> that identifies
 which {{PAHistogramContribution}}s should be sent in the same [=aggregatable
-report=].
+report=] unless their [=aggregatable report/debug details=] differ.
 
 Issue: Unique internal value is not an exported definition. See
     <a href="https://github.com/whatwg/infra/issues/583">infra/583</a>.
 
 <h4 dfn-type=dfn>Debug scope</h4>
 A debug scope is a <a spec=HTML>unique internal value</a> that identifies which
-{{PAHistogramContribution}}s should be sent in the same [=aggregatable report=].
+{{PAHistogramContribution}}s should share the same [=debug details=].
 
 <h4 dfn-type=dfn>Scoping details</h4>
 A scoping details is a [=struct=] with the following items:
