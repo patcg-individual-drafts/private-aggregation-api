@@ -397,7 +397,7 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
 1. [=list/iterate|For each=] |entry| of the [=contribution cache=]:
     1. If |entry|'s [=contribution cache entry/batching scope=] is
         |batchingScope|:
-        1. [=Assert=] |entry|'s [=contribution cache entry/debug details=] is
+        1. [=Assert=]: |entry|'s [=contribution cache entry/debug details=] is
             null.
 
             Note: This asserts that the [=mark a debug scope complete=] steps
@@ -409,7 +409,7 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
 1. Let |batchedContributions| be a new [=map/is empty|empty=] [=ordered map=].
 1. [=list/iterate|For each=] |entry| of |batchEntries|:
     1. [=list/Remove=] |entry| from the [=contribution cache=].
-    1. Let |debugDetails| be |entry's| [=contribution cache entry/debug
+    1. Let |debugDetails| be |entry|'s [=contribution cache entry/debug
         details=].
     1. If |batchedContributions|[|debugDetails|] does not [=map/exist=]:
         1. [=map/Set=] |batchedContributions|[|debugDetails|] to a new [=list/is
@@ -1093,8 +1093,8 @@ user’s web activity. As such, user controls to delete this data are required,
 see [clearing storage](#clearing-storage).
 
 On the other hand, the [=contribution cache=] and [=debug scope map=] only
-contain short-lived data tied to particular [=batching scopes=], so controls are
-not required.
+contain short-lived data tied to particular [=batching scopes=] and [=debug
+scopes=], so controls are not required.
 
 Reporting delay concerns {#reporting-delay-concerns}
 ----------------------------------------------------
