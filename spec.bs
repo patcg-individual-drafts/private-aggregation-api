@@ -151,7 +151,7 @@ are:
     : [=contribution cache entry/batching scope=]
     :: The result of running |scopingDetails|' [=scoping details/get batching
         scope steps=].
-    : [=contribution cache entry/debug info=]
+    : [=contribution cache entry/debug scope=]
     :: The result of running |scopingDetails|' [=scoping details/get debug scope
         steps=].
 
@@ -232,11 +232,11 @@ Note: This last requirement means that global scopes with different origins
 
 For any [=debug scope=] returned by the [=scoping details/get debug scope
 steps=], the [=mark a debug scope complete=] steps should later be performed
-given that same debug scope.
+given that same [=debug scope=].
 
 Note: A later algorithm [=asserts=] that, for any [=contribution cache entry=]
     in the [=contribution cache=], the [=mark a debug scope complete=] steps
-    were performed given the entry's [=contribution cache entry/debug info=]
+    were performed given the entry's [=contribution cache entry/debug scope=]
     before the [=process contributions for a batching scope=] steps are
     performed given the entry's [=contribution cache entry/batching scope=].
 
@@ -285,8 +285,10 @@ A contribution cache entry is a [=struct=] with the following items:
 :: A {{PAHistogramContribution}}
 : <dfn>batching scope</dfn>
 :: A [=batching scope=]
-: <dfn>debug info</dfn>
-:: A [=debug scope=] or a [=debug details=]
+: <dfn>debug scope</dfn>
+:: A [=debug scope=]
+: <dfn>debug details</dfn>
+:: A [=debug details=] or null (default null)
 
 </dl>
 
@@ -322,14 +324,14 @@ A context type is a [=string=] indicating what kind of global scope the
 Storage {#storage}
 ==================
 
-A user agent holds a <dfn>debug scope map</dfn>, which is an [=ordered map=]
-from [=debug scopes=] to [=debug details=].
-
 A user agent holds a <dfn>contribution cache</dfn>, which is a [=list=] of
 [=contribution cache entries=].
 
 A user agent holds an <dfn>aggregatable report cache</dfn>, which is a [=list=]
 of [=aggregatable reports=].
+
+A user agent holds a <dfn>debug scope map</dfn>, which is an [=ordered map=]
+from [=debug scopes=] to [=debug details=].
 
 Clearing storage {#clearing-storage}
 ----------------------------------------
@@ -339,7 +341,7 @@ the [=aggregatable report cache=] as well as any contribution history data
 stored for the [=consume budget if permitted=] algorithm.
 
 The user agent may expose controls that allow the user to delete data from the
-[=contributions cache=].
+[=contributions cache=] and the [=debug scope map=].
 
 [=Implementation-defined=] values {#implementation-defined-values}
 ==================================================================
@@ -377,20 +379,16 @@ To <dfn algorithm export>append an entry to the contribution cache</dfn> given a
 To <dfn algorithm export>mark a debug scope complete</dfn> given a [=debug
 scope=] |debugScope|:
 
-1. Let |debugDetails| be a new [=debug details=] with the following items:
-    : [=debug details/enabled=]
-    :: false
-    : [=debug details/key=]
-    :: null
-
+1. Let |debugDetails| be a new [=debug details=].
 1. If [=debug scope map=][|debugScope|] [=map/exists=]:
     1. Set |debugDetails| to  [=debug scope map=][|debugScope|].
     1. [=map/Remove=] [=debug scope map=][|debugScope|].
     1. If |debugDetails|'s [=debug details/key=] is not null, [=assert=]
         |debugDetails|'s [=debug details/enabled=] is true.
 1. [=list/iterate|For each=] |entry| of the [=contribution cache=]:
-    1. If |entry|'s [=contribution cache entry/debug info=] is |debugScope|,
-        set |entry|'s [=contribution cache entry/debug info=] to |debugDetails|.
+    1. If |entry|'s [=contribution cache entry/debug scope=] is |debugScope|,
+        set |entry|'s [=contribution cache entry/debug details=] to
+        |debugDetails|.
 
 To <dfn algorithm export>process contributions for a batching scope</dfn> given
 a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
@@ -399,8 +397,9 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
 1. [=list/iterate|For each=] |entry| of the [=contribution cache=]:
     1. If |entry|'s [=contribution cache entry/batching scope=] is
         |batchingScope|:
-        1. [=Assert=] |entry|'s [=contribution cache entry/debug info=] is a
-            [=debug details=].
+        1. [=Assert=] |entry|'s [=contribution cache entry/debug details=] is
+            null.
+
             Note: This asserts that the [=mark a debug scope complete=] steps
                 were run before the [=process contributions for a batching
                 scope=] steps.
@@ -410,7 +409,8 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
 1. Let |batchedContributions| be a new [=map/is empty|empty=] [=ordered map=].
 1. [=list/iterate|For each=] |entry| of |batchEntries|:
     1. [=list/Remove=] |entry| from the [=contribution cache=].
-    1. Let |debugDetails| be |entry's| [=contribution cache entry/debug info=].
+    1. Let |debugDetails| be |entry's| [=contribution cache entry/debug
+        details=].
     1. If |batchedContributions|[|debugDetails|] does not [=map/exist=]:
         1. [=map/Set=] |batchedContributions|[|debugDetails|] to a new [=list/is
             empty|empty=] [=list=].
@@ -421,7 +421,7 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
     1. Perform the [=report creation and scheduling steps=] with
         |reportingOrigin|, |contextType|, |contributions| and |debugDetails|.
 
-Note: These steps break up the contributions based on their debug details as
+Note: These steps break up the contributions based on their [=debug details=] as
     each report can only have one set of metadata.
 
 Scheduling reports {#scheduling-reports}
@@ -812,8 +812,8 @@ as appropriate:
             executing in |scope| returns.
 
         Note: Multiple operation invocations can be in-progress at the same
-        time, each with a different batching scope. However, only one can be
-        currently executing.
+        time, each with a different batching scope and debug scope. However,
+        only one can be currently executing.
 
 </div>
 
@@ -1092,10 +1092,9 @@ stored for the [=consume budget if permitted=] algorithm contain data about a
 user’s web activity. As such, user controls to delete this data are required,
 see [clearing storage](#clearing-storage).
 
-On the other hand, the [=contribution cache=] only contains short-lived data
-tied to particular batching scopes, so controls are not required.
-
-Issue: Link batching scopes
+On the other hand, the [=contribution cache=] and [=debug scope map=] only
+contain short-lived data tied to particular [=batching scopes=], so controls are
+not required.
 
 Reporting delay concerns {#reporting-delay-concerns}
 ----------------------------------------------------
