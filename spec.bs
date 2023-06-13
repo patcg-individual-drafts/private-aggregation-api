@@ -398,7 +398,7 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
     1. If |entry|'s [=contribution cache entry/batching scope=] is
         |batchingScope|:
         1. [=Assert=]: |entry|'s [=contribution cache entry/debug details=] is
-            null.
+            not null.
 
             Note: This asserts that the [=mark a debug scope complete=] steps
                 were run before the [=process contributions for a batching
