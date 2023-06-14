@@ -91,6 +91,27 @@ batch the reports and send them to the aggregation service for processing. The
 output of that process is a summary report containing the (approximate) result,
 which is dispatched back to the script's origin.
 
+Considered alternative {#considered-alternative}
+------------------------------------------------
+
+Instead of the above API shape, we considered instead aligning with a design
+that is much closer to {{WindowOrWorkerGlobalScope/fetch()}}. However, there are
+a few key differences which made this unfavorable:
+- This API is designed to be used in isolated contexts where
+    {{WindowOrWorkerGlobalScope/fetch()}} is not available.
+- It's an anti-goal to give the developer control over when [=aggregatable
+    reports=] are being sent or knowledge that they were sent (outside of the
+    isolated context). (Except when providing a context ID from <em>outside</em>
+    the isolated context, see [Protecting against leaks via the number of
+    reports](#protecting-against-leaks-via-the-number-of-reports) below.
+- The reports cannot be sent to arbitrary reporting endpoints, only a
+    particular `.well-known` path on the script origin.
+- The report's input is very specific (an array of {{PAHistogramContribution}}s)
+    and is not amenable to {{WindowOrWorkerGlobalScope/fetch()}}'s general
+    purpose contents.
+- There is no concept of a response.
+
+So, we chose the more tailored API shape detailed below.
 
 General methods {#general-methods}
 ==================================
