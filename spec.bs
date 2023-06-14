@@ -38,6 +38,10 @@ spec: hr-time; type: dfn; urlPrefix: https://w3c.github.io/hr-time/
     text: wall clock; url: #dfn-wall-clock
 spec: html; type: dfn; urlPrefix: https://tc39.es/ecma262/
     text: call; url: sec-call
+spec: webdriver; urlPrefix: https://w3c.github.io/webdriver/
+    type: dfn
+        text: getting a property; url: dfn-getting-properties
+        text: error code; url: dfn-error-code
 </pre>
 
 <pre class=link-defaults>
@@ -359,6 +363,9 @@ A user agent holds a <dfn>contribution cache</dfn>, which is a [=list=] of
 A user agent holds a <dfn>debug scope map</dfn>, which is an [=ordered map=]
 from [=debug scopes=] to [=debug details=].
 
+A user agent holds a <dfn>developer mode enabled</dfn>, which is a [=boolean=],
+initially false.
+
 Clearing storage {#clearing-storage}
 ----------------------------------------
 
@@ -581,6 +588,7 @@ perform the following steps. They return an [=aggregatable report=].
 
 To <dfn algorithm>obtain a report delivery time</dfn> given a [=moment=]
 |currentTime|, perform the following steps. They return a [=moment=].
+1. If [=developer mode enabled=] is true, return |currentTime|.
 1. Let |r| be a random double between 0 (inclusive) and 1 (exclusive) with
     uniform probability.
 1. Return |currentTime| + [=minimum report delay=] + |r| * [=randomized report
@@ -832,6 +840,48 @@ To <dfn>obtain a report's shared info</dfn> given an [=aggregatable report=]
     :: "`0.1`"
 1. Return the result of [=serializing an infra value to a json string=] given
     |sharedInfo|.
+
+User-agent automation {#user-agent-automation}
+==============================================
+
+For the purposes of user-agent automation and website testing, this document
+defines the below [[WebDriver]] [=extension commands=] to control the API
+configuration.
+
+Set developer mode {#set-developer-mode}
+----------------------------------------
+
+<figure id="table-webdriver-setdevelopermode" class="table">
+    <table class="data">
+        <thead>
+            <tr>
+                <th>HTTP Method</th>
+                <th>URI Template</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>POST</td>
+                <td>`/session/{session id}/private-aggregation/`<dfn
+                    noexport>`developermode`</dfn></td>
+            </tr>
+        </tbody>
+    </table>
+</figure>
+
+The [=remote end steps=] are:
+
+1. If |parameters| is not a JSON [[ECMASCRIPT#sec-json-object|Object]], return a
+     [=error|WebDriver error=] with [=error code=] [=invalid argument=].
+1. Let |enabled| be the result of [=getting a property=] named `"enabled"` from
+    |parameters|.
+1. If |enabled| is {{undefined}} or is not a boolean, return a [=error|WebDriver
+    error=] with [=error code=] [=invalid argument=].
+1. Set [=developer mode enabled=] to |enabled|.
+1. Return [=success=] with data `null`.
+
+Note: Without this, [=aggregatable reports=] would be subject to delays, making
+    testing difficult.
 
 Shared Storage API monkey patches {#shared-storage-api-monkey-patches}
 ======================================================================
