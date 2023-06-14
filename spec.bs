@@ -1333,6 +1333,8 @@ To <dfn>determine a signal's numeric value</dfn> given a [=signal base value=]
     : <code>[=worklet function/report-win=]</code>
     :: Return 0.
 
+    </dl>
+
     Issue: Consider disallowing this in the latter two [=worklet functions=].
 1. If |signalBaseValue| is
     "<code>[=signal base value/bid-reject-reason=]</code>":
