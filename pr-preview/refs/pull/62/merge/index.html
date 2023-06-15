@@ -8,7 +8,7 @@
   <meta content="Bikeshed version 5fcd28d6d, updated Tue May 30 13:12:11 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="432aac3f8d9ba1a5a893e40399114e1becbbff53" name="document-revision">
+  <meta content="d1f003fa050ef5c6def7d9b7e128869c42c39aa2" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -1951,9 +1951,10 @@ address of the sender.</p>
 cross-site information. To protect against this, the API delays sending reports
 by a randomized amount of time to make it difficult to determine whether a
 report was sent or not from any particular event. In the case that a <a data-link-type="dfn" href="#aggregatable-report-context-id" id="ref-for-aggregatable-report-context-id③">context ID</a> is supplied, the API makes the number of
-reports sent deterministic (sending reports containing no contributions in the
-payloads if necessary). Additional mitigations may also be possible in the
-future, e.g. adding noise to the report count.</p>
+reports sent deterministic (sending 'null reports' if necessary -- each
+containing only a contribution with a value of 0 in the payload). Additional
+mitigations may also be possible in the future, e.g. adding noise to the report
+count.</p>
    <h4 class="heading settled" data-level="10.1.4" id="protecting-against-leaks-via-payload-size"><span class="secno">10.1.4. </span><span class="content">Protecting against leaks via payload size</span><a class="self-link" href="#protecting-against-leaks-via-payload-size"></a></h4>
    <p>The length of the payload could additionally expose some cross-site information,
 namely how many contributions are included. To protect against this, the payload
