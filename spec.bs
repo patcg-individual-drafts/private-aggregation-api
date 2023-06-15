@@ -403,8 +403,8 @@ To <dfn algorithm export>append an entry to the contribution cache</dfn> given a
 1. [=list/Append=] |entry| to the [=contribution cache=].
 
 To <dfn algorithm export>get a debug details</dfn> given a [=debug scope=]
-|debugScope:
-1. [=Assert=]: [=debug scope map=][|debugScope|] [=map/exists=]
+|debugScope|:
+1. [=Assert=]: [=debug scope map=][|debugScope|] [=map/exists=].
 1. Return [=debug scope map=][|debugScope|].
 
 To <dfn algorithm export>mark a debug scope complete</dfn> given a [=debug
