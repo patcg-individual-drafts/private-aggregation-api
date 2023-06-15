@@ -436,7 +436,7 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
 1. If |contextIdMap|[|batchingScope|] [=map/exists=]:
     1. Set |contextId| to |contextIdMap|[|batchingScope|].
     1. [=map/Remove=] |contextIdMap|[|batchingScope|].
-1. If |batchEntries| is [=list/empty=] and |contextId| is null, return.
+1. If |batchEntries| [=list/is empty=] and |contextId| is null, return.
 
     Note: If a context ID was specified, a report is always sent. See
         [Protecting against leaks via the number of
@@ -452,11 +452,7 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
     1. [=list/Append=] |entry|'s [=contribution cache entry/contribution=] to
         |batchedContributions|[|debugDetails|].
 1. If |batchedContributions| [=map/is empty=]:
-    1. Let |debugDetails| be a new [=debug details=] with the following items:
-        : [=debug details/enabled=]
-        :: false
-        : [=debug details/key=]
-        :: null
+    1. Let |debugDetails| be a new [=debug details=].
     1. Let |nullContribution| be a new {{PAHistogramContribution}} with the
         items:
         : {{PAHistogramContribution/bucket}}
@@ -478,9 +474,9 @@ Note: These steps break up the contributions based on their [=debug details=] as
 To <dfn algorithm export>set the context ID for a batching scope</dfn> given
 a [=string=] |contextId| and a [=batching scope=] |batchingScope|:
 
-1. [=Assert=] |contextId|'s [=string/length=] is not larger than 64.
+1. [=Assert=]: |contextId|'s [=string/length=] is not larger than 64.
 1. Let |contextIdMap| be the [=context ID map=].
-1. [=map/Set=] |contextIdMap[|batchingScope|] to |contextId|.
+1. [=map/Set=] |contextIdMap|[|batchingScope|] to |contextId|.
 
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
@@ -820,19 +816,32 @@ partial dictionary SharedStorageRunOperationMethodOptions {
 };
 </xmp>
 
+Add the following algorithm in the subsection
+"<a href="https://wicg.github.io/shared-storage/#run-op">Run Operation
+Methods</a>":
+
+To <dfn algorithm>obtain the context ID</dfn> given a
+{{SharedStorageRunOperationMethodOptions}} |options|, perform the following
+steps. They return a [=string=], null, or a {{DOMException}}:
+1. If |options|["`privateAggregationConfig`"] does not [=map/exist=], return
+    null.
+1. If |options|["`privateAggregationConfig`"]["`contextId`"] does not [=map/
+    exist=], return null.
+1. Set |contextId| to
+    |options|["`privateAggregationConfig`"]["`contextId`"].
+1. If |contextId|'s [=string/length=] is greater than 64, return a new
+    {{DOMException}} with name "`DataError`".
+1. Return |contextId|.
+
 The {{WindowSharedStorage}}'s {{WindowSharedStorage/run()}} method steps are
 modified in three ways. First, add the following steps just after step 2 ("If
 {{Worklet/addModule()}} has not yet been called, ..."), renumbering later steps
 as appropriate:
 <div algorithm="shared-storage-run-monkey-patch-1">
-3. Let |contextId| be null.
-1. If |options|["`privateAggregationConfig`"] [=map/exists=]:
-    1. If |options|["`privateAggregationConfig`"]["`contextId`"] [=map/exists=],
-        1. Set |contextId| to
-            |options|["`privateAggregationConfig`"]["`contextId`"].
-        1. If |contextId|'s [=string/length=] is greater than 64, return [=a
-            promise rejected with=] a new {{DOMException}} with name
-            "`DataError`".
+3. Let |contextId| be the result of [=obtaining the context ID=] given
+    <var ignore>options</var>.
+1. If |contextId| is a {{DOMException}}, return [=a promise rejected with=]
+    |contextId|.
 
 </div>
 Second, add the following steps in the nested scope just after "Let |operation|
@@ -860,14 +869,10 @@ are modified in three ways. First, add the following steps just after step 5
 ("If {{Worklet/addModule()}} has not yet been called, ..."), renumbering later
 steps:
 <div algorithm="shared-storage-selecturl-monkey-patch-1">
-6. Let |contextId| be null.
-1. If |options|["`privateAggregationConfig`"] [=map/exists=]:
-    1. If |options|["`privateAggregationConfig`"]["`contextId`"] [=map/exists=],
-        1. Set |contextId| to
-            |options|["`privateAggregationConfig`"]["`contextId`"].
-        1. If |contextId|'s [=string/length=] is greater than 64, return [=a
-            promise rejected with=] a new {{DOMException}} with name
-            "`DataError`".
+6. Let |contextId| be the result of [=obtaining the context ID=] given
+    <var ignore>options</var>.
+1. If |contextId| is a {{DOMException}}, return [=a promise rejected with=]
+    |contextId|.
 
 </div>
 Second, add the following steps in the nested scope just after "Let |operation|
