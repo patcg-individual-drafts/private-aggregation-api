@@ -1155,9 +1155,10 @@ cross-site information. To protect against this, the API delays sending reports
 by a randomized amount of time to make it difficult to determine whether a
 report was sent or not from any particular event. In the case that a
 [=aggregatable report/context ID=] is supplied, the API makes the number of
-reports sent deterministic (sending reports containing no contributions in the
-payloads if necessary). Additional mitigations may also be possible in the
-future, e.g. adding noise to the report count.
+reports sent deterministic (sending 'null reports' if necessary -- each
+containing only a contribution with a value of 0 in the payload). Additional
+mitigations may also be possible in the future, e.g. adding noise to the report
+count.
 
 ### Protecting against leaks via payload size ### {#protecting-against-leaks-via-payload-size}
 
