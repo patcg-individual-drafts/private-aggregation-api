@@ -1117,11 +1117,26 @@ Issue: Once <a href="https://github.com/wicg/turtledove/issues/615">
 Protected Audience API-specific structures {#protected-audience-api-specific-structures}
 ----------------------------------------------------------------------------------------
 
+<h4 id="extending-auction-config">Extending auction config</h4>
+
+Extend the <a spec="turtledove">auction config</a> [=struct=] to add a new
+field:
+: <dfn for="auction config" spec="turtledove">per-bid or seller on event
+    contribution cache</dfn>
+:: A [=map=] from [=interest group=] or null to a [=on event contribution cache=].
+: <dfn for="auction config" spec="turtledove">batching scope map</dfn>
+:: A [=map=] from [=origin=] to [=batching scope=], initially
+    [=map/is empty|empty=].
+
+    Note: Does not include [=batching scopes=] for contributions conditional on
+        non-reserved events.
+
+<br/>
 Add the following definitions in a new subsection at the end of
 <a href="https://wicg.github.io/turtledove/#structures">Structures</a>,
 renumbered appropriately.
 
-<h4 dfn-type=dfn>Signal base value</h3>
+<h4 dfn-type=dfn>Signal base value</h4>
 A signal base value is one of the following:
 <dl dfn-for="signal base value">
 : "<dfn><code>winning-bid</code></dfn>"
@@ -1179,18 +1194,6 @@ An on event contribution cache entry is a [=struct=] with the following items:
 <h4 dfn-type=dfn>On event contribution cache</h4>
 An on event contribution cache is a [=map=] from [=string=] to a [=list=] of
 [=on event contribution cache entries=].
-
-Extend the <a spec="turtledove">auction config</a> [=struct=] to add a new
-field:
-: <dfn for="auction config" spec="turtledove">per-bid or seller on event
-    contribution cache</dfn>
-:: A [=map=] from [=interest group=] or null to a [=on event contribution cache=].
-: <dfn for="auction config" spec="turtledove">batching scope map</dfn>
-:: A [=map=] from [=origin=] to [=batching scope=], initially
-    [=map/is empty|empty=].
-
-    Note: Does not include [=batching scopes=] for contributions conditional on
-        non-reserved events.
 
 Protected Audience API-specific algorithms {#protected-audience-api-specific-algorithms}
 ----------------------------------------------------------------------------------------
