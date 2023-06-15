@@ -331,6 +331,8 @@ An aggregatable report is a [=struct=] with the following items:
 :: A [=string=]
 : <dfn>debug details</dfn>
 :: A [=debug details=]
+: <dfn>context ID</dfn>
+:: A [=string=] or null
 : <dfn>queued</dfn>
 :: A [=boolean=]
 
@@ -345,11 +347,14 @@ A context type is a [=string=] indicating what kind of global scope the
 Storage {#storage}
 ==================
 
-A user agent holds a <dfn>contribution cache</dfn>, which is a [=list=] of
-[=contribution cache entries=].
-
 A user agent holds an <dfn>aggregatable report cache</dfn>, which is a [=list=]
 of [=aggregatable reports=].
+
+A user agent holds a <dfn>context ID map</dfn>, which is an [=ordered map=] from
+[=batching scopes=] to [=strings=].
+
+A user agent holds a <dfn>contribution cache</dfn>, which is a [=list=] of
+[=contribution cache entries=].
 
 A user agent holds a <dfn>debug scope map</dfn>, which is an [=ordered map=]
 from [=debug scopes=] to [=debug details=].
@@ -362,7 +367,7 @@ the [=aggregatable report cache=] as well as any contribution history data
 stored for the [=consume budget if permitted=] algorithm.
 
 The user agent may expose controls that allow the user to delete data from the
-[=contributions cache=] and the [=debug scope map=].
+[=context ID map=], the [=contribution cache=] and the [=debug scope map=].
 
 [=Implementation-defined=] values {#implementation-defined-values}
 ==================================================================
@@ -426,7 +431,16 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
                 scope=] steps.
 
         1. [=list/Append=] |entry| to |batchEntries|.
-1. If |batchEntries| is [=list/empty=], return.
+1. Let |contextId| be null.
+1. Let |contextIdMap| be the [=context ID map=].
+1. If |contextIdMap|[|batchingScope|] [=map/exists=]:
+    1. Set |contextId| to |contextIdMap|[|batchingScope|].
+    1. [=map/Remove=] |contextIdMap|[|batchingScope|].
+1. If |batchEntries| [=list/is empty=] and |contextId| is null, return.
+
+    Note: If a context ID was specified, a report is always sent. See
+        [Protecting against leaks via the number of
+        reports](#protecting-against-leaks-via-the-number-of-reports).
 1. Let |batchedContributions| be a new [=map/is empty|empty=] [=ordered map=].
 1. [=list/iterate|For each=] |entry| of |batchEntries|:
     1. [=list/Remove=] |entry| from the [=contribution cache=].
@@ -437,21 +451,40 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
             empty|empty=] [=list=].
     1. [=list/Append=] |entry|'s [=contribution cache entry/contribution=] to
         |batchedContributions|[|debugDetails|].
+1. If |batchedContributions| [=map/is empty=]:
+    1. Let |debugDetails| be a new [=debug details=].
+    1. Let |nullContribution| be a new {{PAHistogramContribution}} with the
+        items:
+        : {{PAHistogramContribution/bucket}}
+        :: 0
+        : {{PAHistogramContribution/value}}
+        :: 0
+    1. Set |batchedContributions|[|debugDetails|] to « |nullContribution| ».
+
+    Issue: Consider using an empty list of contributions for this case.
 1. [=map/iterate|For each=] |debugDetails| → |contributions| of
     |batchedContributions|:
     1. Perform the [=report creation and scheduling steps=] with
-        |reportingOrigin|, |contextType|, |contributions| and |debugDetails|.
+        |reportingOrigin|, |contextType|, |contributions|, |debugDetails| and
+        |contextId|.
 
 Note: These steps break up the contributions based on their [=debug details=] as
     each report can only have one set of metadata.
+
+To <dfn algorithm export>set the context ID for a batching scope</dfn> given
+a [=string=] |contextId| and a [=batching scope=] |batchingScope|:
+
+1. [=Assert=]: |contextId|'s [=string/length=] is not larger than 64.
+1. Let |contextIdMap| be the [=context ID map=].
+1. [=map/Set=] |contextIdMap|[|batchingScope|] to |contextId|.
 
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
 
 To perform the <dfn algorithm>report creation and scheduling steps</dfn> with an
 [=origin=] |reportingOrigin|, a [=context type=] |api|, a [=list=] of
-{{PAHistogramContribution}}s |contributions| and a [=debug details=]
-|debugDetails|:
+{{PAHistogramContribution}}s |contributions|, a [=debug details=] |debugDetails|
+and a [=string=] or null |contextId|:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |truncatedContributions| be a new [=list/is empty|empty=] [=list=].
 1. If |contributions| has a [=list/size=] greater than [=maximum report
@@ -469,8 +502,8 @@ To perform the <dfn algorithm>report creation and scheduling steps</dfn> with an
     given |contributionSum|, |reportingOrigin|, |api| and |currentWallTime|.
 1. If |sufficientBudget| is false, return.
 1. Let |report| be the result of [=obtaining an aggregatable report=] given
-    |reportingOrigin|, |api|, |truncatedContributions|, |debugDetails| and
-    |currentWallTime|.
+    |reportingOrigin|, |api|, |truncatedContributions|, |debugDetails|,
+    |contextId| and |currentWallTime|.
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
 Issue: Do we need to ensure the reports aren't queued after being sent?
@@ -489,8 +522,8 @@ returned, i.e. it should consume the budget in that case.
 To <dfn>obtain an aggregatable report</dfn> given an [=origin=]
 |reportingOrigin|, a [=context type=] |api|, a [=list=] of
 {{PAHistogramContribution}}s |contributions|, a [=debug details=]
-|debugDetails|, and a [=moment=] |currentTime|, perform the following steps.
-They return an [=aggregatable report=].
+|debugDetails|, a [=string=] or null |contextId| and a [=moment=] |currentTime|,
+perform the following steps. They return an [=aggregatable report=].
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |reportTime| be the result of running [=obtain a report delivery time=]
     given |currentTime|.
@@ -509,6 +542,8 @@ They return an [=aggregatable report=].
     :: The result of [=generating a random UUID=].
     : [=aggregatable report/debug details=]
     :: |debugDetails|
+    : [=aggregatable report/context ID=]
+    :: |contextId|
     : [=aggregatable report/queued=]
     :: false
 1. Return |report|.
@@ -653,6 +688,9 @@ error.
     details/key=].
 1. If |debugKey| is not null:
     1. [=map/Set=] |data|["`debug_key`"] to |debugKey|.
+1. If |report|'s [=aggregatable report/context ID=] is not null:
+    1. [=map/Set=] |data|["`context_id`"] to |report|'s [=aggregatable report/
+        context ID=].
 1. Return the [=byte sequence=] resulting from executing [=serialize an infra
     value to JSON bytes=] on |data|.
 
@@ -768,19 +806,55 @@ Issue(43): This should be moved to the Shared Storage spec.
 partial interface SharedStorageWorkletGlobalScope {
   readonly attribute PrivateAggregation privateAggregation;
 };
+
+dictionary SharedStoragePrivateAggregationConfig {
+  USVString contextId;
+};
+
+partial dictionary SharedStorageRunOperationMethodOptions {
+  SharedStoragePrivateAggregationConfig privateAggregationConfig;
+};
 </xmp>
 
+Add the following algorithm in the subsection
+"<a href="https://wicg.github.io/shared-storage/#run-op">Run Operation
+Methods</a>":
+
+To <dfn algorithm>obtain the context ID</dfn> given a
+{{SharedStorageRunOperationMethodOptions}} |options|, perform the following
+steps. They return a [=string=], null, or a {{DOMException}}:
+1. If |options|["`privateAggregationConfig`"] does not [=map/exist=], return
+    null.
+1. If |options|["`privateAggregationConfig`"]["`contextId`"] does not [=map/
+    exist=], return null.
+1. Set |contextId| to
+    |options|["`privateAggregationConfig`"]["`contextId`"].
+1. If |contextId|'s [=string/length=] is greater than 64, return a new
+    {{DOMException}} with name "`DataError`".
+1. Return |contextId|.
+
 The {{WindowSharedStorage}}'s {{WindowSharedStorage/run()}} method steps are
-modified in two ways. First, add the following step in the nested scope just
-after "Let |operation| be |operationMap|[|name|]." (renumbering later steps as
-appropriate):
+modified in three ways. First, add the following steps just after step 2 ("If
+{{Worklet/addModule()}} has not yet been called, ..."), renumbering later steps
+as appropriate:
 <div algorithm="shared-storage-run-monkey-patch-1">
-2. Let <var ignore>batchingScope</var> be a new [=batching scope=].
-1. Let <var ignore>debugScope</var> be a new [=debug scope=].
+3. Let |contextId| be the result of [=obtaining the context ID=] given
+    <var ignore>options</var>.
+1. If |contextId| is a {{DOMException}}, return [=a promise rejected with=]
+    |contextId|.
 
 </div>
-Second, at the end of the same nested scope, add the following step:
+Second, add the following steps in the nested scope just after "Let |operation|
+be |operationMap|[|name|]." (renumbering later steps as appropriate):
 <div algorithm="shared-storage-run-monkey-patch-2">
+2. Let |batchingScope| be a new [=batching scope=].
+1. Let <var ignore>debugScope</var> be a new [=debug scope=].
+1. If |contextId| is not null, [=set the context ID for a batching scope=] given
+        |contextId| and |batchingScope|.
+
+</div>
+Finally, at the end of the same nested scope, add the following step:
+<div algorithm="shared-storage-run-monkey-patch-3">
 6. When the above [=call=] returns, perform the following steps:
     1. [=Mark a debug scope complete=] given <var ignore>debugScope</var>.
     1. [=Process contributions for a batching scope=] given
@@ -791,16 +865,27 @@ Second, at the end of the same nested scope, add the following step:
 </div>
 
 The {{WindowSharedStorage}}'s {{WindowSharedStorage/selectURL()}} method steps
-are modified in two ways. First, add the following step in the nested scope just
-after "Let |operation| be |operationMap|[|name|]." (renumbering later steps as
-appropriate):
+are modified in three ways. First, add the following steps just after step 5
+("If {{Worklet/addModule()}} has not yet been called, ..."), renumbering later
+steps:
 <div algorithm="shared-storage-selecturl-monkey-patch-1">
-2. Let <var ignore>batchingScope</var> be a new [=batching scope=].
-1. Let <var ignore>debugScope</var> be a new [=debug scope=].
+6. Let |contextId| be the result of [=obtaining the context ID=] given
+    <var ignore>options</var>.
+1. If |contextId| is a {{DOMException}}, return [=a promise rejected with=]
+    |contextId|.
 
 </div>
-Second, at the end of the same nested scope, add the following steps:
+Second, add the following steps in the nested scope just after "Let |operation|
+be |operationMap|[|name|]." (renumbering later steps as appropriate):
 <div algorithm="shared-storage-selecturl-monkey-patch-2">
+2. Let |batchingScope| be a new [=batching scope=].
+1. Let <var ignore>debugScope</var> be a new [=debug scope=].
+1. If |contextId| is not null, [=set the context ID for a batching scope=] given
+        |contextId| and |batchingScope|.
+
+</div>
+Finally, at the end of the same nested scope, add the following steps:
+<div algorithm="shared-storage-selecturl-monkey-patch-3">
 9. [=Mark a debug scope complete=] given <var ignore>debugScope</var>.
 1. [=Process contributions for a batching scope=] given
     <var ignore>batchingScope</var>, <var ignore>outsideSettings</var>'
@@ -1068,9 +1153,10 @@ address of the sender.
 However, the number of reports with the given metadata could expose some
 cross-site information. To protect against this, the API delays sending reports
 by a randomized amount of time to make it difficult to determine whether a
-report was sent or not from any particular event. In the case that a context ID
-is supplied, the API makes the number of reports sent deterministic (sending
-reports containing no contributions in the payloads if necessary). Additional
+report was sent or not from any particular event. In the case that a
+[=aggregatable report/context ID=] is supplied, the API makes the number of
+reports sent deterministic (sending 'null reports' if necessary -- each
+containing only a contribution with a value of 0 in the payload). Additional
 mitigations may also be possible in the future, e.g. adding noise to the report
 count.
 
@@ -1113,9 +1199,9 @@ stored for the [=consume budget if permitted=] algorithm contain data about a
 user’s web activity. As such, user controls to delete this data are required,
 see [clearing storage](#clearing-storage).
 
-On the other hand, the [=contribution cache=] and [=debug scope map=] only
-contain short-lived data tied to particular [=batching scopes=] and [=debug
-scopes=], so controls are not required.
+On the other hand, the [=context ID map=], the [=contribution cache=] and the
+[=debug scope map=] only contain short-lived data tied to particular [=batching
+scopes=] and [=debug scopes=], so controls are not required.
 
 Reporting delay concerns {#reporting-delay-concerns}
 ----------------------------------------------------
@@ -1197,9 +1283,10 @@ Security considerations {#security-considerations}
 Same-origin policy {#same-origin-policy}
 ----------------------------------------
 
-Writes to the [=aggregatable report cache=] and [=contribution cache=] are
-separated by the reporting [=origin=] and the data included in any report with a
-given reporting [=origin=] are generated with only data from that [=origin=].
+Writes to the [=aggregatable report cache=], [=context ID map=], [=contribution
+cache=] and [=debug scope map=] are separated by the reporting [=origin=] and
+the data included in any report with a given reporting [=origin=] are generated
+with only data from that [=origin=].
 
 One notable exception is the [=consume budget if permitted=] algorithm which is
 [=implementation-defined=] and can consider contribution history from other
