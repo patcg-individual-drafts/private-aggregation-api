@@ -26,8 +26,6 @@ urlPrefix: https://wicg.github.io/turtledove/; type: interface
     text: InterestGroupScriptRunnerGlobalScope
     text: InterestGroupScoringScriptRunnerGlobalScope
     text: InterestGroupReportingScriptRunnerGlobalScope
-urlPrefix: https://wicg.github.io/turtledove/; type: dfn
-    text: generate a bid; url: #generate-a-bid
 urlPrefix: https://wicg.github.io/shared-storage/; type: interface
     text: SharedStorageWorklet
     text: SharedStorageWorkletGlobalScope
@@ -1172,13 +1170,13 @@ to the list of arguments used.
 Then, we modify the invocations of the above algorithms to plumb the new
 parameters in:
 
-The [=generate a bid=] algorithm is modified to add a new
+The <a spec="turtledove">generate a bid</a> algorithm is modified to add a new
 <a spec="turtledove">auction config</a> parameter |auctionConfig|. Additionally,
 its last step is modified by adding the argument |auctionConfig| to the
 invocation of <a spec="turtledove">evaluating a bidding script</a>. Further, the
 <a spec="turtledove">generate and score bids</a> algorithm is modified by
 adding the argument |auctionConfig| to both invocations of
-[=generate a bid=].
+<a spec="turtledove">generate a bid</a>.
 
 The <a spec="turtledove">score and rank a bid</a> algorithm is modified by
 adding the argument |auctionConfig| to the invocation of
