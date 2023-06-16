@@ -1342,7 +1342,7 @@ To <dfn>determine a signal's numeric value</dfn> given a [=signal base value=]
 1. If |signalBaseValue| is
     "<code>[=signal base value/bid-reject-reason=]</code>":
     1. If the bid did not succeed purely because it didn't meet the required
-        k-anonymity threshold, return 8.
+        <a spec="turtledove">k-anonymity threshold</a>, return 8.
     1. Let |bidRejectReason| be "`not-available`".
     1. If the seller provided a reject reason, set |bidRejectReason| to that
         value.
@@ -1372,6 +1372,10 @@ To <dfn>determine a signal's numeric value</dfn> given a [=signal base value=]
             Issue: Verify this once
                     <a href="https://github.com/WICG/turtledove/issues/627">
                     protected-audience/627</a> is resolved.
+
+            Issue: Once <a
+                href="https://github.com/WICG/turtledove/pull/594">protected-audience/594</a>
+                lands, update this mapping to align.
 
             Issue: Verify handling when the bid was not rejected.
 
