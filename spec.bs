@@ -7,6 +7,7 @@ Group: patcg
 Repository: patcg-individual-drafts/private-aggregation-api
 URL: https://patcg-individual-drafts.github.io/private-aggregation-api
 Editor: Alexander Turner, Google https://www.google.com, alexmt@chromium.org
+Editor: Nan Lin, Google https://www.google.com, linnan@chromium.org
 Abstract: A generic API for measuring aggregate, cross-site data in a privacy
     preserving manner. The potentially identifying cross-site data is
     encapsulated into <em>aggregatable reports</em>. To prevent leakage, this
