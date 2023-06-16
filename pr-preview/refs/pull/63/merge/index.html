@@ -8,7 +8,7 @@
   <meta content="Bikeshed version 5fcd28d6d, updated Tue May 30 13:12:11 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="ff1df9ec861787a6c9c1063ba4c5072b6a2dc715" name="document-revision">
+  <meta content="5cd34bf94eab6b4cbaeca1a5964cac700b8c96a0" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -670,7 +670,7 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-06-15">15 June 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-06-16">16 June 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -2232,8 +2232,7 @@ fetch to complete or 0 if no fetch was made.</p>
 "<code><a data-link-type="dfn" href="#signal-base-value-bid-reject-reason" id="ref-for-signal-base-value-bid-reject-reason">bid-reject-reason</a></code>":</p>
      <ol>
       <li data-md>
-       <p>If the bid did not succeed purely because it didn’t meet the required
-k-anonymity threshold, return 8.</p>
+       <p>If the bid did not succeed purely because it didn’t meet the required <a data-link-type="dfn" href="https://wicg.github.io/turtledove/#k-anonymity-threshold" id="ref-for-k-anonymity-threshold">k-anonymity threshold</a>, return 8.</p>
       <li data-md>
        <p>Let <var>bidRejectReason</var> be "<code>not-available</code>".</p>
       <li data-md>
@@ -2271,6 +2270,7 @@ value.</p>
          <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①③">Assert</a>: false</p>
          <p class="note" role="note"><span class="marker">Note:</span> this enum value is validated in <code>scoreAd()</code>.</p>
          <p class="issue" id="issue-7f9c7f3c"><a class="self-link" href="#issue-7f9c7f3c"></a> Verify this once <a href="https://github.com/WICG/turtledove/issues/627"> protected-audience/627</a> is resolved.</p>
+         <p class="issue" id="issue-6002541a"><a class="self-link" href="#issue-6002541a"></a> Once <a href="https://github.com/WICG/turtledove/pull/594">protected-audience/594</a> lands, update this mapping to align.</p>
          <p class="issue" id="issue-d55586bb"><a class="self-link" href="#issue-d55586bb"></a> Verify handling when the bid was not rejected.</p>
        </dl>
        <p class="issue" id="issue-e5ce0922"><a class="self-link" href="#issue-e5ce0922"></a> Consider disallowing this from reportWin() and reportResult().</p>
@@ -2732,6 +2732,7 @@ to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encry
      <li><span class="dfn-paneled" id="3ba6be6a">highest scoring other bid</span>
      <li><span class="dfn-paneled" id="654cec7d">interest group</span>
      <li><span class="dfn-paneled" id="79027840">interest group buyers</span>
+     <li><span class="dfn-paneled" id="b74dcd49">k-anonymity threshold</span>
      <li><span class="dfn-paneled" id="9e4d25d5">leading bid</span>
      <li><span class="dfn-paneled" id="4d8f32a4">leading bid info</span>
      <li><span class="dfn-paneled" id="e865646f">owner</span>
@@ -2907,6 +2908,7 @@ to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encry
    <div class="issue"> Verify interaction with component auctions. <a class="issue-return" href="#issue-c1e53695" title="Jump to section">↵</a></div>
    <div class="issue"> Consider disallowing this in the latter two <a data-link-type="dfn" href="#worklet-function">worklet functions</a>. <a class="issue-return" href="#issue-8f50da01" title="Jump to section">↵</a></div>
    <div class="issue"> Verify this once <a href="https://github.com/WICG/turtledove/issues/627"> protected-audience/627</a> is resolved. <a class="issue-return" href="#issue-7f9c7f3c" title="Jump to section">↵</a></div>
+   <div class="issue"> Once <a href="https://github.com/WICG/turtledove/pull/594">protected-audience/594</a> lands, update this mapping to align. <a class="issue-return" href="#issue-6002541a" title="Jump to section">↵</a></div>
    <div class="issue"> Verify handling when the bid was not rejected. <a class="issue-return" href="#issue-d55586bb" title="Jump to section">↵</a></div>
    <div class="issue"> Consider disallowing this from reportWin() and reportResult(). <a class="issue-return" href="#issue-e5ce0922" title="Jump to section">↵</a></div>
    <div class="issue"> Pad the payload to avoid this risk. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/56">[Issue #56]</a> <a class="issue-return" href="#issue-7b2e2279" title="Jump to section">↵</a></div>
@@ -3308,6 +3310,7 @@ window.dfnpanelData['8aa72f2c'] = {"dfnID": "8aa72f2c", "url": "https://wicg.git
 window.dfnpanelData['3ba6be6a'] = {"dfnID": "3ba6be6a", "url": "https://wicg.github.io/turtledove/#leading-bid-info-highest-scoring-other-bid", "dfnText": "highest scoring other bid", "refSections": [{"refs": [{"id": "ref-for-leading-bid-info-highest-scoring-other-bid"}, {"id": "ref-for-leading-bid-info-highest-scoring-other-bid\u2460"}], "title": "9.4. Protected Audience API-specific algorithms"}], "external": true};
 window.dfnpanelData['654cec7d'] = {"dfnID": "654cec7d", "url": "https://wicg.github.io/turtledove/#generated-bid-interest-group", "dfnText": "interest group", "refSections": [{"refs": [{"id": "ref-for-generated-bid-interest-group"}], "title": "9.4. Protected Audience API-specific algorithms"}], "external": true};
 window.dfnpanelData['79027840'] = {"dfnID": "79027840", "url": "https://wicg.github.io/turtledove/#auction-config-interest-group-buyers", "dfnText": "interest group buyers", "refSections": [{"refs": [{"id": "ref-for-auction-config-interest-group-buyers"}], "title": "9.2. Protected Audience API algorithm modifications"}], "external": true};
+window.dfnpanelData['b74dcd49'] = {"dfnID": "b74dcd49", "url": "https://wicg.github.io/turtledove/#k-anonymity-threshold", "dfnText": "k-anonymity threshold", "refSections": [{"refs": [{"id": "ref-for-k-anonymity-threshold"}], "title": "9.4. Protected Audience API-specific algorithms"}], "external": true};
 window.dfnpanelData['9e4d25d5'] = {"dfnID": "9e4d25d5", "url": "https://wicg.github.io/turtledove/#leading-bid-info-leading-bid", "dfnText": "leading bid", "refSections": [{"refs": [{"id": "ref-for-leading-bid-info-leading-bid"}], "title": "9.2. Protected Audience API algorithm modifications"}, {"refs": [{"id": "ref-for-leading-bid-info-leading-bid\u2460"}, {"id": "ref-for-leading-bid-info-leading-bid\u2461"}, {"id": "ref-for-leading-bid-info-leading-bid\u2462"}, {"id": "ref-for-leading-bid-info-leading-bid\u2463"}], "title": "9.4. Protected Audience API-specific algorithms"}], "external": true};
 window.dfnpanelData['4d8f32a4'] = {"dfnID": "4d8f32a4", "url": "https://wicg.github.io/turtledove/#leading-bid-info", "dfnText": "leading bid info", "refSections": [{"refs": [{"id": "ref-for-leading-bid-info"}, {"id": "ref-for-leading-bid-info\u2460"}, {"id": "ref-for-leading-bid-info\u2461"}, {"id": "ref-for-leading-bid-info\u2462"}], "title": "9.4. Protected Audience API-specific algorithms"}], "external": true};
 window.dfnpanelData['e865646f'] = {"dfnID": "e865646f", "url": "https://wicg.github.io/turtledove/#interest-group-owner", "dfnText": "owner", "refSections": [{"refs": [{"id": "ref-for-interest-group-owner"}, {"id": "ref-for-interest-group-owner\u2460"}], "title": "9.4. Protected Audience API-specific algorithms"}], "external": true};
