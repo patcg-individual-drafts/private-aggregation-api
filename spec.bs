@@ -42,6 +42,7 @@ spec: html; type: dfn; urlPrefix: https://tc39.es/ecma262/
 
 <pre class=link-defaults>
 spec:infra; type:dfn; text:user agent
+spec:webidl; type:dfn; text:attribute
 </pre>
 
 
@@ -64,12 +65,12 @@ the data cannot escape the user agent.
 
 Relative to cross-site data from an individual user, aggregate data about groups
 of users can be less sensitive and yet would be sufficient for a wide range of
-use cases. An aggregation service has been proposed to allow reporting noisy,
-aggregated cross-site data. This service was originally proposed for use by the
+use cases. An aggregation service has been built to allow reporting noisy,
+aggregated cross-site data. This service was originally created for use by the
 <a href="https://wicg.github.io/attribution-reporting-api/">Attribution
-Reporting API</a>, but allowing more general aggregation would support
-additional use cases. In particular, the Protected Audience and Shared Storage
-proposals expect this functionality to become available.
+Reporting API</a>, but allowing more general aggregation supports additional use
+cases. In particular, the Protected Audience and Shared Storage APIs expect this
+functionality to be available.
 
 Overview {#overview}
 --------------------
@@ -82,7 +83,7 @@ is encrypted to ensure it can only be processed by the aggregation service.
 During processing, this service adds noise and imposes limits on how many
 queries can be performed.
 
-This API provides functions allowing the origin to construct an aggregatable
+This API provides functions that allow the origin to construct an aggregatable
 report and specify the values to be embedded into its encrypted payload (for
 later computation via the aggregation service). These calls result in the
 aggregatable report being queued to be sent to the reporting endpoint of the
@@ -91,21 +92,22 @@ batch the reports and send them to the aggregation service for processing. The
 output of that process is a summary report containing the (approximate) result,
 which is dispatched back to the script's origin.
 
-Considered alternative {#considered-alternative}
+Alternative considered {#alternative-considered}
 ------------------------------------------------
 
 Instead of the chosen API shape, we considered aligning with a design that is
 much closer to {{WindowOrWorkerGlobalScope/fetch()}}. However, there are a few
-key differences which made this unfavorable:
+key differences which make this unfavorable:
 - This API is designed to be used in isolated contexts where
     {{WindowOrWorkerGlobalScope/fetch()}} is not available.
 - It's an anti-goal to give the developer control over when [=aggregatable
     reports=] are being sent or knowledge that they were sent (outside of the
-    isolated context). (Except when providing a context ID from <em>outside</em>
-    the isolated context, see [Protecting against leaks via the number of
-    reports](#protecting-against-leaks-via-the-number-of-reports) below.)
+    isolated context). Note, however, the exception when providing a context ID
+    from <em>outside</em> the isolated context, see [Protecting against leaks
+    via the number of
+    reports](#protecting-against-leaks-via-the-number-of-reports) below.
 - The reports cannot be sent to arbitrary reporting endpoints, only a
-    particular `.well-known` path on the script origin.
+    particular <code>[[RFC8615|.well-known]]</code> path on the script origin.
 - The report's input is very specific (an array of {{PAHistogramContribution}}s)
     and is not amenable to {{WindowOrWorkerGlobalScope/fetch()}}'s general
     purpose contents.
@@ -113,11 +115,8 @@ key differences which made this unfavorable:
 
 So, we chose the more tailored API shape detailed below.
 
-General methods {#general-methods}
-==================================
-
-Worklet interface {#worklet-interface}
---------------------------------------
+Exposed interface {#exposed-interface}
+======================================
 
 <xmp class="idl">
 [Exposed=(InterestGroupScriptRunnerGlobalScope,SharedStorageWorklet),
@@ -178,8 +177,6 @@ are:
 1. [=Append an entry to the contribution cache|Append=] |entry| to the
     [=contribution cache=].
 
-Issue: Check that value can actually be zero in the spec pipeline.
-
 Issue(44): Consider accepting an array of contributions.
 
 <div algorithm>
@@ -216,7 +213,7 @@ enableDebugMode(optional PADebugModeOptions options)</dfn> method steps are:
 Exposing to global scopes {#exposing}
 =====================================
 
-To expose this API to a global scope, a readonly attribute `privateAggregation`
+To expose this API to a global scope, a [=read only=] [=attribute=] `privateAggregation`
 of type {{PrivateAggregation}} should be exposed on the global scope.
 
 Additionally, each global scope should set the [=PrivateAggregation/scoping
@@ -237,8 +234,8 @@ available.
 
     privateAggregation.contributeToHistogram(...)  // This would cause an error.
     </pre>
-    So, Shared Storage sets the [=PrivateAggregation/scoping details=] after the
-    initial execution of the module script is complete.
+    So, Shared Storage sets the [=PrivateAggregation/scoping details=]
+    immediately after the initial execution of the module script is complete.
 </div>
 
 For any [=batching scope=] returned by the [=scoping details/get batching scope
@@ -248,9 +245,8 @@ settings object=]'s [=environment settings object/origin=] and some [=context
 type=].
 
 Note: This last requirement means that global scopes with different origins
-    cannot share the same batching scope, see Same-origin policy discussion.
-
-    Issue: Link Same-origin policy section.
+    cannot share the same batching scope, see [Same-origin
+    policy](#same-origin-policy) discussion.
 
 For any [=debug scope=] returned by the [=scoping details/get debug scope
 steps=], the [=mark a debug scope complete=] steps should later be performed
@@ -265,10 +261,7 @@ Note: A later algorithm [=asserts=] that, for any [=contribution cache entry=]
 Structures {#structures}
 ========================
 
-General {#general-structures}
------------------------------
-
-<h4 dfn-type=dfn>Batching scope</h4>
+<h3 dfn-type=dfn>Batching scope</h3>
 A batching scope is a <a spec=HTML>unique internal value</a> that identifies
 which {{PAHistogramContribution}}s should be sent in the same [=aggregatable
 report=] unless their [=aggregatable report/debug details=] differ.
@@ -276,11 +269,11 @@ report=] unless their [=aggregatable report/debug details=] differ.
 Issue: Unique internal value is not an exported definition. See
     <a href="https://github.com/whatwg/infra/issues/583">infra/583</a>.
 
-<h4 dfn-type=dfn>Debug scope</h4>
+<h3 dfn-type=dfn>Debug scope</h3>
 A debug scope is a <a spec=HTML>unique internal value</a> that identifies which
 {{PAHistogramContribution}}s should share the same [=debug details=].
 
-<h4 dfn-type=dfn>Scoping details</h4>
+<h3 dfn-type=dfn>Scoping details</h3>
 A scoping details is a [=struct=] with the following items:
 <dl dfn-for="scoping details">
 : <dfn>get batching scope steps</dfn>
@@ -290,7 +283,7 @@ A scoping details is a [=struct=] with the following items:
 
 </dl>
 
-<h4 dfn-type=dfn>Debug details</h4>
+<h3 dfn-type=dfn>Debug details</h3>
 A debug details is a [=struct=] with the following items:
 <dl dfn-for="debug details">
 : <dfn>enabled</dfn> (default false)
@@ -300,7 +293,7 @@ A debug details is a [=struct=] with the following items:
 
 </dl>
 
-<h4 dfn-type=dfn>Contribution cache entry</h4>
+<h3 dfn-type=dfn>Contribution cache entry</h3>
 A contribution cache entry is a [=struct=] with the following items:
 <dl dfn-for="contribution cache entry">
 : <dfn>contribution</dfn>
@@ -314,7 +307,7 @@ A contribution cache entry is a [=struct=] with the following items:
 
 </dl>
 
-<h4 dfn-type=dfn>Aggregatable report</h4>
+<h3 dfn-type=dfn>Aggregatable report</h3>
 
 An aggregatable report is a [=struct=] with the following items:
 <dl dfn-for="aggregatable report">
@@ -339,11 +332,10 @@ An aggregatable report is a [=struct=] with the following items:
 
 </dl>
 
-Issue: Handle context ID, maybe retries/offline
-
-<h4 dfn-type=dfn>Context type</h4>
+<h3 dfn-type=dfn>Context type</h3>
 A context type is a [=string=] indicating what kind of global scope the
-{{PrivateAggregation}} object was exposed in.
+{{PrivateAggregation}} object was exposed in. Each API exposing Private
+Aggregation should pick a unique string (or multiple) for this.
 
 Storage {#storage}
 ==================
@@ -381,14 +373,12 @@ minimum delay to deliver an [=aggregatable report=]
 
 <dfn>Randomized report delay</dfn> is a positive [=duration=] that controls the
 random delay to deliver an [=aggregatable report=]. This delay is additional to
-the minimum delay.
-
-Issue: More
+the [=minimum report delay=].
 
 Permissions Policy integration {#permissions-policy-integration}
 ================================================================
 
-This specification defines one [=policy-controlled feature=] identified by the
+This specification defines a [=policy-controlled feature=] identified by the
 string "<code><dfn>private-aggregation</dfn></code>". Its [=policy-controlled
 feature/default allowlist=] is "`*`".
 
@@ -427,7 +417,7 @@ scope=] |debugScope|:
 1. If [=debug scope map=][|debugScope|] [=map/exists=]:
     1. Set |debugDetails| to  [=debug scope map=][|debugScope|].
     1. [=map/Remove=] [=debug scope map=][|debugScope|].
-    1. If |debugDetails|'s [=debug details/key=] is not null, [=assert=]
+    1. If |debugDetails|'s [=debug details/key=] is not null, [=assert=]:
         |debugDetails|'s [=debug details/enabled=] is true.
 1. [=list/iterate|For each=] |entry| of the [=contribution cache=]:
     1. If |entry|'s [=contribution cache entry/debug scope=] is |debugScope|,
@@ -527,8 +517,6 @@ and a [=string=] or null |contextId|:
     |contextId| and |currentWallTime|.
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
-Issue: Do we need to ensure the reports aren't queued after being sent?
-
 Issue: Do we need to address user settings here at all?
 
 To <dfn algorithm>consume budget if permitted</dfn> given a {{long}} |value|, an
@@ -583,12 +571,10 @@ Note: This section is largely copied from the
     <a href="https://wicg.github.io/attribution-reporting-api/">Attribution
     Reporting API spec</a>, adapting as necessary.
 
-Issue: Add logic for resetting [=aggregatable report/queued=] on start up or
-    network on or whatever
 
 Issue: Do we have to use the [=queue a task=] algorithm here?
 
-The user agent must periodically [=attempt to queue reports for sending=] with
+The user agent must periodically [=attempt to queue reports for sending=] given
 its [=aggregatable report cache=].
 
 To <dfn>attempt to queue reports for sending</dfn> given a [=list=] of
@@ -614,12 +600,12 @@ To <dfn>attempt to queue reports for sending</dfn> given a [=list=] of
             [=duration=].
 
             Note: This is intended to allow user agents to optimize device
-                resource usage.
+                resource usage and wait for the user agent to be online.
         1. Run [=attempt to deliver a report=] with |report|.
     1. [=If aborted=], set |report|'s [=aggregatable report/queued=] value to
         false.
 
-        Note: It might be more practical to perform these steps when the [=user
+        Note: It might be more practical to perform this step when the [=user
             agent=] next starts up.
 
 To <dfn>attempt to deliver a report</dfn> given an [=aggregatable report=]
@@ -630,15 +616,20 @@ To <dfn>attempt to deliver a report</dfn> given an [=aggregatable report=]
 1. Let |data| be the result of [=serializing an aggregatable report=] given
     |report|.
 1. If |data| is an error, [=list/remove=] |report| from the [=aggregatable
-    report cache=]. (TODO: do we need to queue this task?)
+    report cache=].
+
+    Issue: Do we need to queue this task?
 1. Let |request| be the result of [=creating a report request=] given |url| and
     |data|.
 1. [=Queue a task=] to [=fetch=] |request| with [=fetch/processResponse=] being
     the following steps:
     1. Let |shouldRetry| be an [=implementation-defined=] [=boolean=]. The value
         should be false if no error occurred.
-    1. If |shouldRetry| is true, set |report|'s [=aggregatable report/queued=]
-        value to false.
+    1. If |shouldRetry| is true:
+        1. Set |report|'s [=aggregatable report/report time=] to the [=current
+            wall time=] plus an [=implementation-defined=] non-negative
+            [=duration=].
+        1. Set |report|'s [=aggregatable report/queued=] value to false.
     1. Otherwise, [=list/remove=] |report| from the [=aggregatable report
         cache=].
 
@@ -646,7 +637,9 @@ To <dfn>obtain a reporting endpoint</dfn> given an [=origin=] |reportingOrigin|
 and [=context type=] |api|, perform the following steps. They return a [=URL=].
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |path| be the [=string/concatenation=] of
-    «"<code>.well-known/private-aggregation/report-</code>", |api|».
+    «"<code>[[RFC8615|.well-known]]/private-aggregation/report-</code>", |api|».
+
+    Issue(67): Register this well-known directory.
 1. Let |base| be the result on running the [=URL parser=] on the [=serialization
     of an origin|serialization=] of |reportingOrigin|.
 1. [=Assert=]: |base| is not failure.
@@ -707,24 +700,26 @@ error.
     :: The result of [=obtaining a report's shared info=] given |report|.
 1. Let |debugKey| be |report|'s [=aggregatable report/debug details=]'s [=debug
     details/key=].
-1. If |debugKey| is not null:
-    1. [=map/Set=] |data|["`debug_key`"] to |debugKey|.
-1. If |report|'s [=aggregatable report/context ID=] is not null:
-    1. [=map/Set=] |data|["`context_id`"] to |report|'s [=aggregatable report/
-        context ID=].
+1. If |debugKey| is not null, [=map/set=] |data|["`debug_key`"] to |debugKey|.
+1. Let |contextId| be |report|'s [=aggregatable report/context ID=].
+1. If |contextId| is not null, [=map/set=] |data|["`context_id`"] to
+    |contextId|.
 1. Return the [=byte sequence=] resulting from executing [=serialize an infra
     value to JSON bytes=] on |data|.
 
 To <dfn>obtain the aggregation service payloads</dfn> given an [=aggregatable
 report=] |report|, perform the following steps. They return a [=list=] of
 [=maps=] or an error.
-1. Let (|pkR|, |keyId|) be the result of [=obtaining the public key for
+1. Let |publicKeyTuple| be the result of [=obtaining the public key for
     encryption=].
-1. If |pkR| is an error, return |pkR|.
+1. If |publicKeyTuple| is an error, return |publicKeyTuple|.
+1. Let (|pkR|, |keyId|) be |publicKeyTuple|.
 1. Let |plaintextPayload| be the result of [=obtaining the plaintext payload=]
     given |report|.
-1. Let |encryptedPayload| be the result of [=obtaining the encrypted payload=]
-    given |plaintextPayload| and |pkR|.
+1. Let |sharedInfo| be the result of [=obtaining a report's shared info=] given
+    |report|.
+1. Let |encryptedPayload| be the result of [=encrypting the payload=] given
+    |plaintextPayload|, |pkR| and |sharedInfo|.
 1. If |encryptedPayload| is an error, return |encryptedPayload|.
 1. Let |aggregationServicePayloads| be a new [=list/is empty|empty=] [=list=].
 1. Let |aggregationServicePayload| be an [=ordered map=] of the following
@@ -740,11 +735,11 @@ report=] |report|, perform the following steps. They return a [=list=] of
 1. [=list/Append=] |aggregationServicePayload| to |aggregationServicePayloads|.
 1. Return |aggregationServicePayloads|.
 
-To <dfn>obtain the public key for encryption</dfn>, asynchronously perform an
+To <dfn>obtain the public key for encryption</dfn>, perform an
 [=implementation-defined=] sequence of steps. They return a [=tuple=] consisting
 of a public key and a [=string=] (which should uniquely identify the public
 key), or an error in the event that the [=user agent=] failed to obtain the
-public key. (TODO: why asynchronously.)
+public key.
 
 Note: The user agent is encouraged to enforce regular key rotation. If there are
     multiple keys, the user agent can independently pick a key uniformly at
@@ -772,14 +767,12 @@ To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=]
 1. Return the [=byte sequence=] resulting from [[!RFC8949|CBOR encoding]]
     |payload|.
 
-To <dfn>obtain the encrypted payload</dfn> given a [=byte sequence=]
-|plaintextPayload|, perform the following steps. They return a [=byte sequence=]
-or an error.
+To <dfn>encrypt the payload</dfn> given a [=byte sequence=] |plaintextPayload|,
+public key |pkR| and a [=string=] |sharedInfo|, perform the following steps.
+They return a [=byte sequence=] or an error.
 
-1. Let |sharedInfo| be the result of [=obtaining a report's shared info=] given
-    |report|.
 1. Let |info| be the result of [=UTF-8 encoding=] the [=string/concatenation=]
-    of «"`aggregation_service`", |sharedInfo|».
+    of « "`aggregation_service`", |sharedInfo| ».
 1. Let (|kem_id|, |kdf_id|, |aead_id|) be (0x0020, 0x0001, 0x0003).
 
     Note: These indicate the HPKE algorithm identifiers, specifying the KEM
@@ -971,8 +964,8 @@ Protected Audience API monkey patches {#protected-audience-api-monkey-patches}
 Issue(43): This should be moved to the Protected Audience spec, along with any
     other Protected Audience-specific details.
 
-Protected Audience API-specific WebIDL {#protected-audience-api-specific-webidl}
---------------------------------------------------------------------------------
+WebIDL {#protected-audience-api-specific-webidl}
+------------------------------------------------
 
 <xmp class="idl">
 partial interface InterestGroupScriptRunnerGlobalScope {
@@ -1066,8 +1059,103 @@ Issue: Expose the auction config or per-bid or seller on event contribution
 
 Issue(44): Consider accepting an array of contributions.
 
-Protected Audience API algorithm modifications {#protected-audience-api-algorithm-modifications}
-------------------------------------------------------------------------------------------------
+Structures {#protected-audience-api-specific-structures}
+--------------------------------------------------------
+
+<h4 id="extending-auction-config">Extending auction config</h4>
+
+Extend the <a spec="turtledove">auction config</a> [=struct=] to add new fields:
+<dl dfn-for="auction config">
+: <dfn>per-bid or seller on event contribution cache</dfn>
+:: A [=map=] from [=interest group=] or null to a [=on event contribution
+    cache=].
+
+    Note: a null key represents the seller.
+: <dfn>batching scope map</dfn>
+:: A [=map=] from [=origin=] to [=batching scope=], initially
+    [=map/is empty|empty=].
+
+    Note: Does not include [=batching scopes=] for contributions conditional on
+        non-reserved events.
+: <dfn>permissions policy state</dfn>
+:: A [=permissions policy state=].
+
+</dl>
+
+<br/>
+Add the following definitions in a new subsection at the end of
+<a href="https://wicg.github.io/turtledove/#structures">Structures</a>,
+renumbered appropriately.
+
+<h4 dfn-type=dfn>Permissions policy state</h4>
+A permissions policy state is a [=struct=] with the following items:
+<dl dfn-for="permissions policy state">
+: <dfn>private aggregation enabled</dfn>
+:: A [=boolean=] (default false)
+
+</dl>
+
+<h4 dfn-type=dfn>Signal base value</h4>
+A signal base value is one of the following:
+<dl dfn-for="signal base value">
+: "<dfn><code>winning-bid</code></dfn>"
+:: The numeric value is the bid value of the winning bid.
+: "<dfn><code>highest-scoring-other-bid</code></dfn>"
+:: The numeric value is the bid value of the highest scoring bid that did not
+    win.
+: "<dfn><code>script-run-time</code></dfn>"
+:: The numeric value is the number of milliseconds of CPU time the calling
+    function (e.g. `generateBid()`) took to run.
+: "<dfn><code>signals-fetch-time</code></dfn>"
+:: The numeric value is the number of milliseconds it took for the trusted
+    bidding or scoring signals fetch to complete, when called from
+    `generateBid()` or `scoreAd()`, respectively.
+
+    Issue: Can this value be used in `reportWin()` or `reportResult()`?
+: "<dfn><code>bid-reject-reason</code></dfn>"
+:: The numeric value is an integer representing the reason a bid was rejected.
+
+    Note: this mapping to an integer is defined in [=determine a signal's
+        numeric value=].
+
+</dl>
+
+<h4 dfn-type=dfn>Worklet function</h4>
+A worklet function is one of the following:
+<dl dfn-for="worklet function">
+: "<dfn><code>generate-bid</code></dfn>"
+:: The `generateBid()` function.
+: "<dfn><code>score-ad</code></dfn>"
+:: The `scoreAd()` function.
+: "<dfn><code>report-result</code></dfn>"
+:: The `reportResult()` function.
+: "<dfn><code>report-win</code></dfn>"
+:: The `reportWin()` function.
+
+</dl>
+
+<h4 dfn-type=dfn>On event contribution cache entry</h4>
+An on event contribution cache entry is a [=struct=] with the following items:
+<dl dfn-for="on event contribution cache entry">
+: <dfn>contribution</dfn>
+:: A {{PAExtendedHistogramContribution}}
+: <dfn>batching scope</dfn>
+:: A [=batching scope=] or null
+: <dfn>debug scope</dfn>
+:: A [=debug scope=]
+: <dfn>debug details</dfn>
+:: A [=debug details=] or null (default null)
+: <dfn>worklet function</dfn>
+:: A [=worklet function=]
+
+</dl>
+
+<h4 dfn-type=dfn>On event contribution cache</h4>
+An on event contribution cache is a [=map=] from [=string=] to a [=list=] of
+[=on event contribution cache entries=].
+
+Algorithm modifications {#protected-audience-api-algorithm-modifications}
+-------------------------------------------------------------------------
 
 The {{Navigator/runAdAuction()}} method steps are modified to add the
 following step just after step 5 ("If <var ignore>auctionConfig</var> is a
@@ -1208,101 +1296,8 @@ the arguments |auctionConfig| and <var ignore>winner</var>'s
 <a spec="turtledove" for="generated bid">interest group</a> to the invocation of
 <a spec="turtledove">evaluate a reporting script</a>.
 
-Protected Audience API-specific structures {#protected-audience-api-specific-structures}
-----------------------------------------------------------------------------------------
-
-<h4 id="extending-auction-config">Extending auction config</h4>
-
-Extend the <a spec="turtledove">auction config</a> [=struct=] to add new fields:
-<dl dfn-for="auction config">
-: <dfn>per-bid or seller on event contribution cache</dfn>
-:: A [=map=] from [=interest group=] or null to a [=on event contribution
-    cache=].
-: <dfn>batching scope map</dfn>
-:: A [=map=] from [=origin=] to [=batching scope=], initially
-    [=map/is empty|empty=].
-
-    Note: Does not include [=batching scopes=] for contributions conditional on
-        non-reserved events.
-: <dfn>permissions policy state</dfn>
-:: A [=permissions policy state=].
-
-</dl>
-
-<br/>
-Add the following definitions in a new subsection at the end of
-<a href="https://wicg.github.io/turtledove/#structures">Structures</a>,
-renumbered appropriately.
-
-<h4 dfn-type=dfn>Permissions policy state</h4>
-A permissions policy state is a [=struct=] with the following items:
-<dl dfn-for="permissions policy state">
-: <dfn>private aggregation enabled</dfn>
-:: A [=boolean=] (default false)
-
-</dl>
-
-<h4 dfn-type=dfn>Signal base value</h4>
-A signal base value is one of the following:
-<dl dfn-for="signal base value">
-: "<dfn><code>winning-bid</code></dfn>"
-:: The numeric value is the bid value of the winning bid.
-: "<dfn><code>highest-scoring-other-bid</code></dfn>"
-:: The numeric value is the bid value of the highest scoring bid that did not
-    win.
-: "<dfn><code>script-run-time</code></dfn>"
-:: The numeric value is the number of milliseconds of CPU time the calling
-    function (e.g. `generateBid()`) took to run.
-: "<dfn><code>signals-fetch-time</code></dfn>"
-:: The numeric value is the number of milliseconds it took for the trusted
-    bidding or scoring signals fetch to complete, when called from
-    `generateBid()` or `scoreAd()`, respectively.
-
-    Issue: Can this value be used in `reportWin()` or `reportResult()`?
-: "<dfn><code>bid-reject-reason</code></dfn>"
-:: The numeric value is an integer representing the reason a bid was rejected.
-
-    Note: this mapping to an integer is defined in [=determine a signal's
-        numeric value=].
-
-</dl>
-
-<h4 dfn-type=dfn>Worklet function</h4>
-A worklet function is one of the following:
-<dl dfn-for="worklet function">
-: "<dfn><code>generate-bid</code></dfn>"
-:: The `generateBid()` function.
-: "<dfn><code>score-ad</code></dfn>"
-:: The `scoreAd()` function.
-: "<dfn><code>report-result</code></dfn>"
-:: The `reportResult()` function.
-: "<dfn><code>report-win</code></dfn>"
-:: The `reportWin()` function.
-
-</dl>
-
-<h4 dfn-type=dfn>On event contribution cache entry</h4>
-An on event contribution cache entry is a [=struct=] with the following items:
-<dl dfn-for="on event contribution cache entry">
-: <dfn>contribution</dfn>
-:: A {{PAExtendedHistogramContribution}}
-: <dfn>batching scope</dfn>
-:: A [=batching scope=] or null
-: <dfn>debug scope</dfn>
-:: A [=debug scope=]
-: <dfn>debug details</dfn>
-:: A [=debug details=] or null (default null)
-: <dfn>worklet function</dfn>
-:: A [=worklet function=]
-
-</dl>
-
-<h4 dfn-type=dfn>On event contribution cache</h4>
-An on event contribution cache is a [=map=] from [=string=] to a [=list=] of
-[=on event contribution cache entries=].
-
-Protected Audience API-specific new algorithms {#protected-audience-api-specific-new-algorithms}
-----------------------------------------------------------------------------------------
+New algorithms {#protected-audience-api-specific-new-algorithms}
+----------------------------------------------------------------
 
 Add the following definitions:
 
@@ -1625,10 +1620,10 @@ Possible mitigations include:
 1. Use a trusted proxy server to send reports: This effectively moves the
     reporting origin into the report body, so only the proxy server would be
     visible to the network administrator.
-1. Require [DNS over HTTPS](https://datatracker.ietf.org/doc/html/rfc8484): This
-    effectively hides the reporting origin from the network administrator, but
-    is likely impractical to enforce and is itself perhaps circumventable by the
-    network administrator, e.g. by monitoring IP addresses instead.
+1. Require [[RFC8484|DNS over HTTPS]]: This effectively hides the reporting
+    origin from the network administrator, but is likely impractical to enforce
+    and is itself perhaps circumventable by the network administrator, e.g. by
+    monitoring IP addresses instead.
 
 ### User-presence tracking ### {#user-presence-tracking}
 
