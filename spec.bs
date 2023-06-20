@@ -402,6 +402,11 @@ To <dfn algorithm export>append an entry to the contribution cache</dfn> given a
 [=contribution cache entry=] |entry|:
 1. [=list/Append=] |entry| to the [=contribution cache=].
 
+To <dfn algorithm export>get a debug details</dfn> given a [=debug scope=]
+|debugScope|:
+1. [=Assert=]: [=debug scope map=][|debugScope|] [=map/exists=].
+1. Return [=debug scope map=][|debugScope|].
+
 To <dfn algorithm export>mark a debug scope complete</dfn> given a [=debug
 scope=] |debugScope|:
 
@@ -470,6 +475,9 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
 
 Note: These steps break up the contributions based on their [=debug details=] as
     each report can only have one set of metadata.
+
+Issue: Here and elsewhere, no need to specify that a new [=list=] or [=map=] is
+    empty.
 
 To <dfn algorithm export>set the context ID for a batching scope</dfn> given
 a [=string=] |contextId| and a [=batching scope=] |batchingScope|:
@@ -802,6 +810,9 @@ Shared Storage API monkey patches {#shared-storage-api-monkey-patches}
 
 Issue(43): This should be moved to the Shared Storage spec.
 
+Issue: Go through all monkey patches and ensure every definition (including)
+    structures that is needed is exported.
+
 <xmp class="idl">
 partial interface SharedStorageWorkletGlobalScope {
   readonly attribute PrivateAggregation privateAggregation;
@@ -939,6 +950,9 @@ Protected Audience API monkey patches {#protected-audience-api-monkey-patches}
 Issue(43): This should be moved to the Protected Audience spec, along with any
     other Protected Audience-specific details.
 
+Protected Audience API-specific WebIDL {#protected-audience-api-specific-webidl}
+--------------------------------------------------------------------------------
+
 <xmp class="idl">
 partial interface InterestGroupScriptRunnerGlobalScope {
   readonly attribute PrivateAggregation privateAggregation;
@@ -964,11 +978,80 @@ partial interface PrivateAggregation {
 
 Issue: Do we want to align naming with implementation?
 
-The {{Navigator/runAdAuction()}} method steps are modified to add the following
-steps after step 6 ("Let <var ignore>p</var> be [=a new promise=]"), renumbering
-later steps as appropriate:
-<div algorithm="protected-audience-runadauction-monkey-patch">
-7. Let |batchingScopeMap| be a new [=map/is empty|empty=] [=map=].
+<div algorithm>
+The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(DOMString
+event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
+</div>
+1. Let |scopingDetails| be the {{PrivateAggregation}} object's
+    [=PrivateAggregation/scoping details=].
+1. If |scopingDetails| is null, throw a new {{DOMException}} with name
+    "`NotAllowedError`".
+1. If |event| [=string/starts with=] "`reserved.`" and « "`reserved.always`",
+    "`reserved.loss`", "`reserved.win`" » does not [=list/contain=] |event|,
+    return.
+
+    Note: No error is thrown to allow forward compatibility if additional
+        reserved event types are added later.
+1. Let |bucket| be |contribution|["{{PAExtendedHistogramContribution/bucket}}"].
+1. If |bucket| is a {{PASignalValue}}:
+    1. If |bucket|["{{PASignalValue/baseValue}}"] is not a valid [=signal base
+        value=], throw a {{TypeError}}.
+    1. If |bucket|["{{PASignalValue/offset}}"] is not a {{bigint}}, throw a
+        {{TypeError}}.
+1. Let |value| be |contribution|["{{PAExtendedHistogramContribution/value}}"].
+1. If |value| is a {{PASignalValue}}:
+    1. If |value|["{{PASignalValue/baseValue}}"] is not a valid [=signal base
+        value=], throw a {{TypeError}}.
+    1. If |value|["{{PASignalValue/offset}}"] is a {{bigint}}, throw a
+        {{TypeError}}.
+1. Let |batchingScope| be null.
+1. If |event| [=string/starts with=] "`reserved.`", set |batchingScope| to the
+    result of running |scopingDetails|' [=scoping details/get batching scope
+    steps=].
+
+    Note: Each non-reserved |event| will have a different [=batching scope=]
+        that is created later.
+1. Let |entry| be a new [=on event contribution cache entry=] with the items:
+    : [=on event contribution cache entry/contribution=]
+    :: |contribution|
+    : [=on event contribution cache entry/batching scope=]
+    :: |batchingScope|
+    : [=on event contribution cache entry/debug scope=]
+    :: The result of running |scopingDetails|' [=scoping details/get debug scope
+        steps=].
+    : [=on event contribution cache entry/worklet function=]
+    :: The [=worklet function=] that is currently being executed.
+
+1. Let |auctionConfig| be the <a spec="turtledove">auction config</a> associated
+    with the global scope.
+1. Let |ig| be null.
+1. If this function execution is associated with a bidder, set |ig| to the
+    [=interest group=] associated with the current function execution.
+1. Let |cacheMap| be |auctionConfig|'s [=auction config/per-bid or seller on
+    event contribution cache=].
+1. If |cacheMap|[|ig|] does not [=map/exist=], [=map/set=] |cacheMap|[|ig|] to
+    a new [=map/is empty|empty=] [=on event contribution cache=].
+1. Let |onEventContributionCache| be |cacheMap|[|ig|].
+1. If |onEventContributionCache|[|event|] does not [=map/exist=], set
+    |onEventContributionCache|[|event|] to a new [=list=].
+1. [=list/Append=] |entry| to |onEventContributionCache|[|event|].
+
+Issue: Expose the auction config or per-bid or seller on event contribution
+    cache to each global scope. Also expose the interest group to each
+    {{InterestGroupReportingScriptRunnerGlobalScope}} that is associated with a
+    bidder. This will allow for replacing the handwavy prose above.
+
+Issue(44): Consider accepting an array of contributions.
+
+Protected Audience API algorithm modifications {#protected-audience-api-algorithm-modifications}
+------------------------------------------------------------------------------------------------
+
+The <a spec="turtledove">validate and convert auction ad config</a> steps are
+modified to add the following steps just before the last step ("Return
+<var ignore>auctionConfig</var>"), renumbering the later step as appropriate:
+<div algorithm="protected-audience-validate-config-monkey-patch">
+7. Let |batchingScopeMap| be |auctionConfig|'s [=auction config/batching scope
+    map=].
 1. [=list/iterate|For each=] |bidderOrigin| of |auctionConfig|'s
     <a spec="turtledove" for="auction config">interest group buyers</a>:
     1. [=map/Set=] |batchingScopeMap|[|bidderOrigin|] to a new [=batching
@@ -976,19 +1059,19 @@ later steps as appropriate:
 1. Let |sellerOrigin| be |auctionConfig|'s
     <a spec="turtledove" for="auction config">seller</a>.
 1. [=map/Set=] |batchingScopeMap|[|sellerOrigin|] to a new [=batching scope=].
-1. [=Upon fulfillment=] of |p| or [=upon rejection=] of |p|, run the following
-    steps:
-    1. TODO: Take onEvent contributions from its cache, run [=fill in the
-        contribution=] and then [=append an entry to the contribution cache=].
-    1. [=list/iterate|For each=] |origin| → |batchingScope| of
-        |batchingScopeMap|:
-        1. [=Process contributions for a batching scope=] given |batchingScope|,
-            |origin| and "<code>protected-audience</code>".
 
 </div>
 
-Issue: How to handle fenced frame-triggered contributions and other
-    event-triggered contributions.
+
+The <a spec="turtledove">generate and score bids</a> algorithm is modified by
+inserting the following step before each of the two "Return |leadingBidInfo|'s
+<a spec="turtledove" for="leading bid info">leading bid</a>" steps (one in a
+nested scope), renumbering this and later steps as necessary.
+<div algorithm="protected-audience-generate-and-score-bids-monkey-patch">
+1. [=Process the Private Aggregation contributions for an auction=] given
+    <var ignore>auctionConfig</var> and <var ignore>leadingBidInfo</var>.
+
+</div>
 
 Issue: Need to handle `auctionReportBuyers` and `auctionReportBuyerKeys` here or
     in the Protected Audience API spec.
@@ -1014,7 +1097,21 @@ Second, in the nested scope of the last step, we insert a new step just after
 the step labelled "Clean up after script", renumbering the later step as
 appropriate:
 <div algorithm="protected-audience-evaluate-a-script-monkey-patch-2">
-2. [=Mark a debug scope complete=] given <var ignore>debugScope</var>.
+2. Let |debugDetails| be the result of [=get a debug details=] given
+    |debugScope|.
+1. Let |ig| be null.
+1. If this function execution is associated with a bidder, set |ig| to the
+    [=interest group=] associated with the current function execution.
+1. Let |onEventContributionCache| be the <a spec="turtledove">auction config</a>
+    associated with the current function execution's [=auction config/per-bid or
+    seller on event contribution cache=][|ig|].
+1. [=map/iterate|For each=] <var ignore>event</var> → |entries| of
+    |onEventContributionCache|:
+    1. [=list/iterate|For each=] |onEventEntry| of |entries|:
+        1. If |onEventEntry|'s [=on event contribution cache entry/debug scope=]
+            is |debugScope|, set |onEventEntry|'s [=on event contribution cache
+            entry/debug details=] to |debugDetails|.
+1. [=Mark a debug scope complete=] given |debugScope|.
 
 </div>
 
@@ -1024,73 +1121,186 @@ Issue: Once <a href="https://github.com/wicg/turtledove/issues/615">
     {{InterestGroupScriptRunnerGlobalScope}}s until the script's initial
     execution is complete.
 
-<div algorithm>
-The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(DOMString
-event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
-</div>
-
-Issue: Fill in validation. Will need to check offsets are valid and in the right
-    range for the type etc. Also that base values are one of a set.
-
-Issue: Need to document limits on offset, etc.
-
-Issue: Fill in the rest. (Need to put the contribution in some sort of queue and
-    process the queue at some point. Need to decide where the queue should live
-    given it has to outlive the auction.)
-
-Issue(44): Consider accepting an array of contributions.
-
 Protected Audience API-specific structures {#protected-audience-api-specific-structures}
 ----------------------------------------------------------------------------------------
 
-<h4 dfn-type=dfn>Signal base value</h3>
+<h4 id="extending-auction-config">Extending auction config</h4>
+
+Extend the <a spec="turtledove">auction config</a> [=struct=] to add a new
+field:
+: <dfn for="auction config" spec="turtledove">per-bid or seller on event
+    contribution cache</dfn>
+:: A [=map=] from [=interest group=] or null to a [=on event contribution
+    cache=].
+: <dfn for="auction config" spec="turtledove">batching scope map</dfn>
+:: A [=map=] from [=origin=] to [=batching scope=], initially
+    [=map/is empty|empty=].
+
+    Note: Does not include [=batching scopes=] for contributions conditional on
+        non-reserved events.
+
+<br/>
+Add the following definitions in a new subsection at the end of
+<a href="https://wicg.github.io/turtledove/#structures">Structures</a>,
+renumbered appropriately.
+
+<h4 dfn-type=dfn>Signal base value</h4>
 A signal base value is one of the following:
 <dl dfn-for="signal base value">
-: "<dfn export><code>winning-bid</code></dfn>"
-:: The bid value of the winning bid.
-: "<dfn export><code>highest-scoring-other-bid</code></dfn>"
-:: The bid value of the highest scoring bid that did not win.
-: "<dfn export><code>script-run-time</code></dfn>"
-:: The running time of the script in milliseconds.
-: "<dfn export><code>signals-fetch-time</code></dfn>"
-:: The time it took for the signals fetch to complete in milliseconds.
-: "<dfn export><code>bid-reject-reason</code></dfn>"
-:: The reason a bid was rejected.
+: "<dfn><code>winning-bid</code></dfn>"
+:: The numeric value is the bid value of the winning bid.
+: "<dfn><code>highest-scoring-other-bid</code></dfn>"
+:: The numeric value is the bid value of the highest scoring bid that did not
+    win.
+: "<dfn><code>script-run-time</code></dfn>"
+:: The numeric value is the number of milliseconds of CPU time the calling
+    function (e.g. `generateBid()`) took to run.
+: "<dfn><code>signals-fetch-time</code></dfn>"
+:: The numeric value is the number of milliseconds it took for the trusted
+    bidding or scoring signals fetch to complete, when called from
+    `generateBid()` or `scoreAd()`, respectively.
+
+    Issue: Can this value be used in `reportWin()` or `reportResult()`?
+: "<dfn><code>bid-reject-reason</code></dfn>"
+:: The numeric value is an integer representing the reason a bid was rejected.
+
+    Note: this mapping to an integer is defined in [=determine a signal's
+        numeric value=].
 
 </dl>
 
-Issue: Remove exports when these definitions are used.
+<h4 dfn-type=dfn>Worklet function</h4>
+A worklet function is one of the following:
+<dl dfn-for="worklet function">
+: "<dfn><code>generate-bid</code></dfn>"
+:: The `generateBid()` function.
+: "<dfn><code>score-ad</code></dfn>"
+:: The `scoreAd()` function.
+: "<dfn><code>report-result</code></dfn>"
+:: The `reportResult()` function.
+: "<dfn><code>report-win</code></dfn>"
+:: The `reportWin()` function.
 
-Issue: Make sure these definitions match "determine the numeric value" algorithm
+</dl>
 
-Issue: New enum needed for bid reject reasons.
+<h4 dfn-type=dfn>On event contribution cache entry</h4>
+An on event contribution cache entry is a [=struct=] with the following items:
+<dl dfn-for="on event contribution cache entry">
+: <dfn>contribution</dfn>
+:: A {{PAExtendedHistogramContribution}}
+: <dfn>batching scope</dfn>
+:: A [=batching scope=] or null
+: <dfn>debug scope</dfn>
+:: A [=debug scope=]
+: <dfn>debug details</dfn>
+:: A [=debug details=] or null (default null)
+: <dfn>worklet function</dfn>
+:: A [=worklet function=]
+
+</dl>
+
+<h4 dfn-type=dfn>On event contribution cache</h4>
+An on event contribution cache is a [=map=] from [=string=] to a [=list=] of
+[=on event contribution cache entries=].
 
 Protected Audience API-specific algorithms {#protected-audience-api-specific-algorithms}
 ----------------------------------------------------------------------------------------
 
-To <dfn>fill in the contribution</dfn> given a |contribution|, perform the
+Add the following definitions:
+
+To <dfn>process the Private Aggregation contributions for an auction</dfn> given
+an <a spec="turtledove">auction config</a> |auctionConfig| and a
+<a spec="turtledove">leading bid info</a> |leadingBidInfo|:
+1. Let |winnerOrigin| be null.
+1. If |leadingBidInfo|'s <a spec="turtledove" for="leading bid info">leading
+    bid</a> is not null, set |winnerOrigin| to |leadingBidInfo|'s
+    <a spec="turtledove" for="leading bid info">leading bid</a>'s
+    <a spec="turtledove" for="generated bid">interest group</a>'s
+    <a spec="turtledove" for="interest group">owner</a>.
+1. [=map/iterate|For each=] |ig| → |onEventContributionCache| of
+    |auctionConfig|'s [=auction config/per-bid or seller on event contribution
+    cache=]:
+    1. Let |origin| be null.
+    1. If |ig| is null, set |origin| to |auctionConfig|'s
+        <a spec="turtledove" for="auction config">seller</a>.
+    1. Otherwise, set |origin| to |ig|'s
+        <a spec="turtledove" for="interest group">owner</a>.
+    1. [=map/iterate|For each=] |event| → |entries| of
+        |onEventContributionCache|:
+        1. If |event| is "`reserved.win`" or does not [=string/start with=]
+            "`reserved.`":
+            1. If |origin| is not |winnerOrigin|, return.
+        1. If |event| is "`reserved.loss`" and |origin| is |winnerOrigin|,
+            return.
+        1. [=list/iterate|For each=] |onEventEntry| of |entries|:
+            1. Let |filledInContribution| be the result of [=filling in the
+                contribution=] given |onEventEntry|'s [=on event contribution
+                cache entry/contribution=] and |leadingBidInfo|.
+
+                Issue: Once
+                    <a href="https://github.com/WICG/turtledove/issues/627">
+                    protected-audience/627</a> is resolved, align 'filling in'
+                    logic with `forDebuggingOnly`.
+            1. If |event| does not [=string/start with=] "`reserved.`":
+                1. Store |event|, |filledInContribution|, |onEventEntry|'s [=on
+                    event contribution cache entry/debug details=] in the
+                    {{FencedFrameConfig}} as appropriate.
+
+                    Note: Each non-reserved |event| will have a different
+                        [=batching scope=].
+
+                    Issue: Once
+                        <a href="https://github.com/WICG/turtledove/issues/616">
+                        protected-audience/616</a> and any successors are
+                        landed, align integration and fill in fenced frame's
+                        <a spec="fenced-frame">report a private aggregation
+                        event</a>.
+                1. [=iteration/Continue=].
+            1. Let |entry| be a new [=contribution cache entry=] with the items:
+                : [=contribution cache entry/contribution=]
+                :: |filledInContribution|
+                : [=contribution cache entry/batching scope=]
+                :: |onEventEntry|'s [=on event contribution cache entry/batching
+                    scope=]
+                : [=contribution cache entry/debug scope=]
+                :: |onEventEntry|'s [=on event contribution cache entry/debug
+                    scope=]
+                : [=contribution cache entry/debug details=]
+                :: |onEventEntry|'s [=on event contribution cache entry/debug
+                    details=]
+            1. [=Append an entry to the contribution cache|Append=] |entry| to
+                the [=contribution cache=].
+
+1. [=list/iterate|For each=] |origin| → |batchingScope| of
+    |auctionConfig|'s [=auction config/batching scope map=]:
+    1. [=Process contributions for a batching scope=] given |batchingScope|,
+        |origin| and "<code>protected-audience</code>".
+
+Issue: Verify interaction with component auctions.
+
+To <dfn>fill in the contribution</dfn> given a
+{{PAExtendedHistogramContribution}} |contribution| and a
+<a spec="turtledove">leading bid info</a> |leadingBidInfo|, perform the
 following steps. They return a {{PAHistogramContribution}}.
-1. If |contribution| is a {{PAHistogramContribution}}, return |contribution|.
-1. Otherwise, [=assert=]: |contribution| is a
-    {{PAExtendedHistogramContribution}}.
 1. Let |bucket| be |contribution|["{{PAExtendedHistogramContribution/bucket}}"].
 1. If |bucket| is a {{PASignalValue}}, set |bucket| to the result of [=filling
-    in the signal value=] given |bucket| and 65535.
+    in the signal value=] given |bucket|, 65535 and |leadingBidInfo|.
 1. Let |value| be |contribution|["{{PAExtendedHistogramContribution/value}}"].
 1. If |value| is a {{PASignalValue}}, set |value| to the result of [=filling in
-    the signal value=] given |value| and 2<sup>128</sup>−1.
+    the signal value=] given |value|, 2<sup>128</sup>−1 and |leadingBidInfo|.
 1. Return a new {{PAHistogramContribution}} with the items:
     : {{PAHistogramContribution/bucket}}
     :: |bucket|
     : {{PAHistogramContribution/value}}
     :: |value|
 
-To <dfn>fill in the signal value</dfn> given a {{PASignalValue}} |value| and an
-integer |maxAllowed|, perform the following steps. They return an integer.
+To <dfn>fill in the signal value</dfn> given a {{PASignalValue}} |value|, an
+integer |maxAllowed| and a <a spec="turtledove">leading bid info</a>
+|leadingBidInfo|, perform the following steps. They return an integer.
 1. [=Assert=]: |value|["{{PASignalValue/baseValue}}"] is a valid [=signal base
     value=].
-1. Let |returnValue| be the result of [=determining the numeric value=] of
-    |value|["{{PASignalValue/baseValue}}"].
+1. Let |returnValue| be the result of [=determining a signal's numeric value=]
+    given |value|["{{PASignalValue/baseValue}}"] and |leadingBidInfo|.
 1. If |value|["{{PASignalValue/scale}}"] [=map/exists=], set |returnValue| to
     the result of multiplying |value|["{{PASignalValue/scale}}"] with
     |returnValue|.
@@ -1101,13 +1311,85 @@ integer |maxAllowed|, perform the following steps. They return an integer.
     the result of adding |returnValue| to |value|["{{PASignalValue/offset}}"].
 1. Clamp |returnValue| to the range [0, |maxAllowed|] and return the result.
 
-Issue: Maybe add refs to the rounding logic.
+To <dfn>determine a signal's numeric value</dfn> given a [=signal base value=]
+|signalBaseValue| and a <a spec="turtledove">leading bid info</a>
+|leadingBidInfo|, perform the following steps. They return a {{double}}.
+1. If |signalBaseValue| is "<code>[=signal base value/winning-bid=]</code>":
+    1. If |leadingBidInfo|'s <a spec="turtledove" for="leading bid info">leading
+        bid</a> is null, return 0.
+    1. Otherwise, return  |leadingBidInfo|'s
+        <a spec="turtledove" for="leading bid info">leading bid</a>'s
+        <a spec="turtledove" for="generated bid">bid</a>.
+1. If |signalBaseValue| is
+    "<code>[=signal base value/highest-scoring-other-bid=]</code>":
+    1. If |leadingBidInfo|'s <a spec="turtledove" for="leading bid info">highest
+        scoring other bid</a> is null, return 0.
+    1. Otherwise, return |leadingBidInfo|'s
+        <a spec="turtledove" for="leading bid info">highest scoring other
+        bid</a>'s <a spec="turtledove" for="generated bid">bid</a>.
+1. If |signalBaseValue| is "<code>[=signal base value/script-run-time=]</code>":
+    1. Return the number of milliseconds of CPU time that the calling function
+        (e.g. `generateBid()`) took to run.
+1. If |signalBaseValue| is
+    "<code>[=signal base value/signals-fetch-time=]</code>":
+    Switch on the associated [=worklet function=]:
+    <dl class="switch">
+    : <code>[=worklet function/generate-bid=]</code>
+    :: Return the number of milliseconds it took for the trusted bidding signals
+        fetch to complete, or 0 if no fetch was made.
+    : <code>[=worklet function/score-ad=]</code>
+    :: Return the number of milliseconds it took for the trusted scoring signals
+        fetch to complete or 0 if no fetch was made.
+    : <code>[=worklet function/report-result=]</code>
+    : <code>[=worklet function/report-win=]</code>
+    :: Return 0.
 
-To <dfn>determine the numeric value</dfn> of a [=signal base value=]
-<var ignore=''>signalBaseValue</var>, perform the following steps. They return a
-{{double}}.
+    </dl>
 
-Issue: Fill in.
+    Issue: Consider disallowing this in the latter two [=worklet functions=].
+1. If |signalBaseValue| is
+    "<code>[=signal base value/bid-reject-reason=]</code>":
+    1. If the bid did not succeed purely because it didn't meet the required
+        <a spec="turtledove">k-anonymity threshold</a>, return 8.
+    1. Let |bidRejectReason| be "`not-available`".
+    1. If the seller provided a reject reason, set |bidRejectReason| to that
+        value.
+    1. If |bidRejectReason| is:
+        <dl class="switch">
+        : "`not-available`"
+        :: Return 0.
+        : "`invalid-bid`"
+        :: Return 1.
+        : "`bid-below-auction-floor`"
+        :: Return 2.
+        : "`pending-approval-by-exchange`"
+        :: Return 3.
+        : "`disapproved-by-exchange`"
+        :: Return 4.
+        : "`blocked-by-publisher`"
+        :: Return 5.
+        : "`language-exclusions`"
+        :: Return 6.
+        : "`category-exclusions`"
+        :: Return 7.
+        : None of the above values
+        :: [=Assert=]: false
+
+            Note: this enum value is validated in `scoreAd()`.
+
+            Issue: Verify this once
+                    <a href="https://github.com/WICG/turtledove/issues/627">
+                    protected-audience/627</a> is resolved.
+
+            Issue: Once <a
+                href="https://github.com/WICG/turtledove/pull/594">protected-audience/594</a>
+                lands, update this mapping to align.
+
+            Issue: Verify handling when the bid was not rejected.
+
+        </dl>
+
+        Issue: Consider disallowing this from reportWin() and reportResult().
 
 Privacy considerations {#privacy-considerations}
 ================================================
