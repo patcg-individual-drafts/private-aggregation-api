@@ -931,10 +931,11 @@ as appropriate:
     1. [=Assert=]: |globalScopes|' [=list/size=] equals 1.
     1. Let |privateAggregationObj| be |globalScopes|[0]'s
         {{SharedStorageWorkletGlobalScope/privateAggregation}}.
-    1. If [=this=]'s [=relevant global object=]'s [=associated document=] is
-        [=allowed to use=] "<code>[=private-aggregation=]</code>", set
-        |privateAggregationObj|'s [=PrivateAggregation/allowed to use=] to true.
-    1. Set |privateAggregationObj|'s [=PrivateAggregation/scoping details=] a
+    1. Set |privateAggregationObj|'s [=PrivateAggregation/allowed to use=] to
+        the result of determining whether [=this=]'s [=relevant global
+        object=]'s [=associated document=] is [=allowed to use=] the
+        "<code>[=private-aggregation=]</code>" [=policy-controlled feature=].
+    1. Set |privateAggregationObj|'s [=PrivateAggregation/scoping details=] to a
             new [=scoping details=] with the items:
         : [=scoping details/get batching scope steps=]
         :: An algorithm that returns the [=batching scope=] that is scheduled to
@@ -1065,6 +1066,19 @@ Issue(44): Consider accepting an array of contributions.
 Protected Audience API algorithm modifications {#protected-audience-api-algorithm-modifications}
 ------------------------------------------------------------------------------------------------
 
+The {{Navigator/runAdAuction()}} method steps are modified to add the
+following step just after step 5 ("If <var ignore>auctionConfig</var> is a
+failure, then..."), renumbering the later steps as appropriate:
+<div algorithm="protected-audience-runadauction-monkey-patch">
+6. Set <var ignore>auctionConfig</var>'s [=auction config/permissions policy
+    state=] to a new [=permissions policy state=] with the items:
+    : [=permissions policy state/private aggregation enabled=]
+    :: The result of determining whether <var ignore>global</var>'s [=associated
+        Document=] is [=allowed to use=] the
+        "<code>[=private-aggregation=]</code>" [=policy-controlled feature=].
+
+</div>
+
 The <a spec="turtledove">validate and convert auction ad config</a> steps are
 modified to add the following steps just before the last step ("Return
 <var ignore>auctionConfig</var>"), renumbering the later step as appropriate:
@@ -1103,10 +1117,10 @@ Second, we add the following steps after step 11 ("If
 <var ignore>evaluationStatus</var> is an [=ECMAScript/abrupt completion=]..."),
 renumbering later steps as appropriate:
 <div algorithm="protected-audience-evaluate-a-script-monkey-patch">
-12. If |auctionConfig|'s [=auction config/permissions policy state=]'s
-    [=permissions policy state/private aggregation enabled=] is true, set
-    |global|'s {{InterestGroupScriptRunnerGlobalScope/privateAggregation}}'s
-    [=PrivateAggregation/allowed to use=] to true.
+12. Set |global|'s {{InterestGroupScriptRunnerGlobalScope/privateAggregation}}'s
+    [=PrivateAggregation/allowed to use=] to |auctionConfig|'s [=auction config/
+    permissions policy state=]'s [=permissions policy state/private aggregation
+    enabled=].
 1. Let |debugScope| be a new [=debug scope=].
 1. Set |global|'s {{InterestGroupScriptRunnerGlobalScope/
     privateAggregation}}'s [=PrivateAggregation/scoping details=] to a new
