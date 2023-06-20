@@ -935,6 +935,9 @@ as appropriate:
         the result of determining whether [=this=]'s [=relevant global
         object=]'s [=associated document=] is [=allowed to use=] the
         "<code>[=private-aggregation=]</code>" [=policy-controlled feature=].
+
+        Issue: Consider adding an early return here (and equivalently for
+            Protected Audience) if the permissions policy check is made first.
     1. Set |privateAggregationObj|'s [=PrivateAggregation/scoping details=] to a
             new [=scoping details=] with the items:
         : [=scoping details/get batching scope steps=]
