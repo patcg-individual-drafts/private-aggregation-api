@@ -996,7 +996,7 @@ event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
 1. If |bucket| is a {{PASignalValue}}:
     1. If |bucket|["{{PASignalValue/baseValue}}"] is not a valid [=signal base
         value=], throw a {{TypeError}}.
-    1. If |bucket|["{{PASignalValue/offset}}"] is a {{long}}, throw a
+    1. If |bucket|["{{PASignalValue/offset}}"] is not a {{bigint}}, throw a
         {{TypeError}}.
 1. Let |value| be |contribution|["{{PAExtendedHistogramContribution/value}}"].
 1. If |value| is a {{PASignalValue}}:
@@ -1035,6 +1035,11 @@ event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
 1. If |onEventContributionCache|[|event|] does not [=map/exist=], set
     |onEventContributionCache|[|event|] to a new [=list=].
 1. [=list/Append=] |entry| to |onEventContributionCache|[|event|].
+
+Issue: Expose the auction config or per-bid or seller on event contribution
+    cache to each global scope. Also expose the interest group to each
+    {{InterestGroupReportingScriptRunnerGlobalScope}} that is associated with a
+    bidder. This will allow for replacing the handwavy prose above.
 
 Issue(44): Consider accepting an array of contributions.
 
@@ -1125,7 +1130,8 @@ Extend the <a spec="turtledove">auction config</a> [=struct=] to add a new
 field:
 : <dfn for="auction config" spec="turtledove">per-bid or seller on event
     contribution cache</dfn>
-:: A [=map=] from [=interest group=] or null to a [=on event contribution cache=].
+:: A [=map=] from [=interest group=] or null to a [=on event contribution
+    cache=].
 : <dfn for="auction config" spec="turtledove">batching scope map</dfn>
 :: A [=map=] from [=origin=] to [=batching scope=], initially
     [=map/is empty|empty=].
