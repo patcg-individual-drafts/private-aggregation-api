@@ -8,7 +8,7 @@
   <meta content="Bikeshed version 5fcd28d6d, updated Tue May 30 13:12:11 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="6d5590e97a87d8d95b404417de9054edef0d8d3a" name="document-revision">
+  <meta content="df62a7ce89f6c28c1bf442ff11b43195797c3ffe" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -1775,6 +1775,8 @@ as appropriate:</p>
 the result of determining whether <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this②">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global">relevant global
 object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/nav-history-apis.html#concept-document-window" id="ref-for-concept-document-window">associated document</a> is <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#allowed-to-use" id="ref-for-allowed-to-use">allowed to use</a> the
 "<code><a data-link-type="dfn" href="#private-aggregation" id="ref-for-private-aggregation">private-aggregation</a></code>" <a data-link-type="dfn" href="https://w3c.github.io/webappsec-permissions-policy/#policy-controlled-feature" id="ref-for-policy-controlled-feature①">policy-controlled feature</a>.</p>
+        <p class="issue" id="issue-fccec62f"><a class="self-link" href="#issue-fccec62f"></a> Consider adding an early return here (and equivalently for
+    Protected Audience) if the permissions policy check is made first.</p>
        <li data-md>
         <p>Set <var>privateAggregationObj</var>’s <a data-link-type="dfn" href="#privateaggregation-scoping-details" id="ref-for-privateaggregation-scoping-details④">scoping details</a> to a
     new <a data-link-type="dfn" href="#scoping-details" id="ref-for-scoping-details①">scoping details</a> with the items:</p>
@@ -2989,6 +2991,8 @@ to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encry
    <div class="issue"> Go through all monkey patches and ensure every definition (including)
     structures that is needed is exported. <a class="issue-return" href="#issue-e413f917" title="Jump to section">↵</a></div>
    <div class="issue"> Once <a href="https://github.com/wicg/shared-storage/issues/88"> shared-storage/88</a> is resolved, align the above monkey patches with how <code>keepAlive</code> is handled at operation completion. <a class="issue-return" href="#issue-be3d1d22" title="Jump to section">↵</a></div>
+   <div class="issue"> Consider adding an early return here (and equivalently for
+    Protected Audience) if the permissions policy check is made first. <a class="issue-return" href="#issue-fccec62f" title="Jump to section">↵</a></div>
    <div class="issue"> Once <a href="https://github.com/wicg/shared-storage/issues/89"> shared-storage/89</a> is resolved, align the above monkey patch with how
     access to <code>sharedStorage</code> is prevented in <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope">SharedStorageWorkletGlobalScope</a></code>s until <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/worklets.html#dom-worklet-addmodule">addModule()</a></code>'s initial
     execution is complete. <a class="issue-return" href="#issue-9d79975e" title="Jump to section">↵</a></div>
