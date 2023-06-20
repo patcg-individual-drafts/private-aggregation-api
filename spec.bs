@@ -628,7 +628,7 @@ To <dfn>attempt to deliver a report</dfn> given an [=aggregatable report=]
     1. If |shouldRetry| is true:
         1. Set |report|'s [=aggregatable report/report time=] to the [=current
             wall time=] plus an [=implementation-defined=] non-negative
-            duration.
+            [=duration=].
         1. Set |report|'s [=aggregatable report/queued=] value to false.
     1. Otherwise, [=list/remove=] |report| from the [=aggregatable report
         cache=].
