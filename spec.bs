@@ -148,16 +148,14 @@ contributeToHistogram(PAHistogramContribution contribution)</dfn> method steps
 are:
 </div>
 
-1. If [=this=]'s [=PrivateAggregation/allowed to use=] is false, throw a
-    {{DOMException}} with name `InvalidAccessError`.
-1. Throw {{RangeError}} if |contribution|["{{PAHistogramContribution/bucket}}"]
-    is not in the range [0, 2<sup>128</sup>−1].
-1. Throw {{RangeError}} if |contribution|["{{PAHistogramContribution/value}}"]
-    is negative.
-1. Let |scopingDetails| be the {{PrivateAggregation}} object's
-    [=PrivateAggregation/scoping details=].
-1. If |scopingDetails| is null, throw a new {{DOMException}} with name
-    "`NotAllowedError`".
+1. If [=this=]'s [=PrivateAggregation/allowed to use=] is false, throw an
+    "{{InvalidAccessError}}" {{DOMException}}.
+1. If |contribution|["{{PAHistogramContribution/bucket}}"] is not in the range
+    [0, 2<sup>128</sup>−1], throw a {{RangeError}}.
+1. If |contribution|["{{PAHistogramContribution/value}}"] is negative, throw a
+    {{RangeError}}.
+1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
+1. If |scopingDetails| is null, throw a "{{NotAllowedError}}" {{DOMException}}.
 
     Note: This indicates the API is not yet available, for example, because the
         initial execution of the script after loading is not complete.
@@ -177,6 +175,9 @@ are:
 1. [=Append an entry to the contribution cache|Append=] |entry| to the
     [=contribution cache=].
 
+Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
+    deprecated.
+
 Issue(44): Consider accepting an array of contributions.
 
 <div algorithm>
@@ -184,23 +185,22 @@ The <dfn method for="PrivateAggregation">
 enableDebugMode(optional PADebugModeOptions options)</dfn> method steps are:
 </div>
 
-1. If [=this=]'s [=PrivateAggregation/allowed to use=] is false, throw a
-    {{DOMException}} with name `InvalidAccessError`.
-1. Let |scopingDetails| be the {{PrivateAggregation}} object's
-    [=PrivateAggregation/scoping details=].
-1. If |scopingDetails| is null, throw a new {{DOMException}} with name
-    "`NotAllowedError`".
+1. If [=this=]'s [=PrivateAggregation/allowed to use=] is false, throw an
+    "{{InvalidAccessError}}" {{DOMException}}.
+1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
+1. If |scopingDetails| is null, throw a "{{NotAllowedError}}" {{DOMException}}.
 1. Let |debugScope| be the result of running |scopingDetails|' [=scoping
     details/get debug scope steps=].
 1. Let |debugScopeMap| be the [=debug scope map=].
-1. Throw {{DataError}} if |debugScopeMap|[|debugScope|] [=map/exists=].
+1. If |debugScopeMap|[|debugScope|] [=map/exists=], throw a "{{DataError}}"
+    {{DOMException}}.
 
     Note: This would occur if `enableDebugMode()` has already been run for this
         [=debug scope=].
 1. Let |debugKey| be null.
 1. If |options| was given:
-    1. Throw {{DataError}} if |options|["{{PADebugModeOptions/debugKey}}] is not
-        in the range [0, 2<sup>64</sup>−1].
+    1. If |options|["{{PADebugModeOptions/debugKey}}] is not in the range
+        [0, 2<sup>64</sup>−1], throw a "{{DataError}}" {{DOMException}}.
     1. Set |debugKey| to |options|["{{PADebugModeOptions/debugKey}}].
 1. Let |debugDetails| be a new [=debug details=] with the items:
     : [=debug details/enabled=]
@@ -209,6 +209,9 @@ enableDebugMode(optional PADebugModeOptions options)</dfn> method steps are:
     :: |debugKey|
 
 1. [=map/Set=] |debugScopeMap|[|debugScope|] to |debugDetails|.
+
+Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
+    deprecated.
 
 Exposing to global scopes {#exposing}
 =====================================
@@ -271,7 +274,9 @@ Issue: Unique internal value is not an exported definition. See
 
 <h3 dfn-type=dfn>Debug scope</h3>
 A debug scope is a <a spec=HTML>unique internal value</a> that identifies which
-{{PAHistogramContribution}}s should share the same [=debug details=].
+{{PAHistogramContribution}}s should have their [=debug details=] affected by the
+presence or absence of a call to {{PrivateAggregation/enableDebugMode()}} in the
+same period of execution.
 
 <h3 dfn-type=dfn>Scoping details</h3>
 A scoping details is a [=struct=] with the following items:
@@ -289,7 +294,8 @@ A debug details is a [=struct=] with the following items:
 : <dfn>enabled</dfn> (default false)
 :: A [=boolean=]
 : <dfn>key</dfn> (default null)
-:: Null or an unsigned 64-bit integer. The key must be null if enabled is false.
+:: An unsigned 64-bit integer or null. The key must be null if [=debug
+    details/enabled=] is false.
 
 </dl>
 
@@ -302,8 +308,8 @@ A contribution cache entry is a [=struct=] with the following items:
 :: A [=batching scope=]
 : <dfn>debug scope</dfn>
 :: A [=debug scope=]
-: <dfn>debug details</dfn>
-:: A [=debug details=] or null (default null)
+: <dfn>debug details</dfn> (default null)
+:: A [=debug details=] or null
 
 </dl>
 
@@ -407,16 +413,18 @@ To <dfn algorithm export>append an entry to the contribution cache</dfn> given a
 
 To <dfn algorithm export>get a debug details</dfn> given a [=debug scope=]
 |debugScope|:
-1. [=Assert=]: [=debug scope map=][|debugScope|] [=map/exists=].
-1. Return [=debug scope map=][|debugScope|].
+1. Let |debugScopeMap| be the [=debug scope map=].
+1. [=Assert=]: |debugScopeMap|[|debugScope|] [=map/exists=].
+1. Return |debugScopeMap|[|debugScope|].
 
 To <dfn algorithm export>mark a debug scope complete</dfn> given a [=debug
 scope=] |debugScope|:
 
 1. Let |debugDetails| be a new [=debug details=].
-1. If [=debug scope map=][|debugScope|] [=map/exists=]:
-    1. Set |debugDetails| to  [=debug scope map=][|debugScope|].
-    1. [=map/Remove=] [=debug scope map=][|debugScope|].
+1. Let |debugScopeMap| be the [=debug scope map=].
+1. If |debugScopeMap|[|debugScope|] [=map/exists=]:
+    1. Set |debugDetails| to  |debugScopeMap|[|debugScope|].
+    1. [=map/Remove=] |debugScopeMap|[|debugScope|].
     1. If |debugDetails|'s [=debug details/key=] is not null, [=assert=]:
         |debugDetails|'s [=debug details/enabled=] is true.
 1. [=list/iterate|For each=] |entry| of the [=contribution cache=]:
@@ -996,12 +1004,10 @@ Issue: Do we want to align naming with implementation?
 The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(DOMString
 event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
 </div>
-1. If [=this=]'s [=PrivateAggregation/allowed to use=] is false, throw a
-    {{DOMException}} with name `InvalidAccessError`.
-1. Let |scopingDetails| be the {{PrivateAggregation}} object's
-    [=PrivateAggregation/scoping details=].
-1. If |scopingDetails| is null, throw a new {{DOMException}} with name
-    "`NotAllowedError`".
+1. If [=this=]'s [=PrivateAggregation/allowed to use=] is false, throw an
+    "{{InvalidAccessError}}" {{DOMException}}.
+1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
+1. If |scopingDetails| is null, throw a "{{NotAllowedError}}" {{DOMException}}.
 1. If |event| [=string/starts with=] "`reserved.`" and « "`reserved.always`",
     "`reserved.loss`", "`reserved.win`" » does not [=list/contain=] |event|,
     return.
@@ -1051,6 +1057,9 @@ event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
 1. If |onEventContributionCache|[|event|] does not [=map/exist=], set
     |onEventContributionCache|[|event|] to a new [=list=].
 1. [=list/Append=] |entry| to |onEventContributionCache|[|event|].
+
+Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
+    deprecated.
 
 Issue(44): Consider accepting an array of contributions.
 
