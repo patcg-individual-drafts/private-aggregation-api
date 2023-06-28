@@ -363,9 +363,6 @@ A user agent holds a <dfn>contribution cache</dfn>, which is a [=list=] of
 A user agent holds a <dfn>debug scope map</dfn>, which is an [=ordered map=]
 from [=debug scopes=] to [=debug details=].
 
-A user agent holds a <dfn>developer mode enabled</dfn>, which is a [=boolean=],
-initially false.
-
 Clearing storage {#clearing-storage}
 ----------------------------------------
 
@@ -588,7 +585,7 @@ perform the following steps. They return an [=aggregatable report=].
 
 To <dfn algorithm>obtain a report delivery time</dfn> given a [=moment=]
 |currentTime|, perform the following steps. They return a [=moment=].
-1. If [=developer mode enabled=] is true, return |currentTime|.
+1. If [=automation local testing mode enabled=] is true, return |currentTime|.
 1. Let |r| be a random double between 0 (inclusive) and 1 (exclusive) with
     uniform probability.
 1. Return |currentTime| + [=minimum report delay=] + |r| * [=randomized report
@@ -844,14 +841,17 @@ To <dfn>obtain a report's shared info</dfn> given an [=aggregatable report=]
 User-agent automation {#user-agent-automation}
 ==============================================
 
+A user agent holds a boolean <dfn>automation local testing mode enabled</dfn>
+(default false).
+
 For the purposes of user-agent automation and website testing, this document
 defines the below [[WebDriver]] [=extension commands=] to control the API
 configuration.
 
-Set developer mode {#set-developer-mode}
-----------------------------------------
+Set local testing mode {#set-local-testing-mode}
+------------------------------------------------
 
-<figure id="table-webdriver-setdevelopermode" class="table">
+<figure id="table-webdriver-setlocaltestingmode" class="table">
     <table class="data">
         <thead>
             <tr>
@@ -863,7 +863,7 @@ Set developer mode {#set-developer-mode}
             <tr>
                 <td>POST</td>
                 <td>`/session/{session id}/private-aggregation/`<dfn
-                    noexport>`developermode`</dfn></td>
+                    noexport>`localtestingmode`</dfn></td>
             </tr>
         </tbody>
     </table>
@@ -877,7 +877,7 @@ The [=remote end steps=] are:
     |parameters|.
 1. If |enabled| is {{undefined}} or is not a boolean, return a [=error|WebDriver
     error=] with [=error code=] [=invalid argument=].
-1. Set [=developer mode enabled=] to |enabled|.
+1. Set [=automation local testing mode enabled=] to |enabled|.
 1. Return [=success=] with data `null`.
 
 Note: Without this, [=aggregatable reports=] would be subject to delays, making
