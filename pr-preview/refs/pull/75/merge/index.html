@@ -8,7 +8,7 @@
   <meta content="Bikeshed version 5edf5e459, updated Thu Jun 22 11:28:01 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="0fa73ee2955d1ca7bf60edeedf89f7d67b381228" name="document-revision">
+  <meta content="c271f259b43443127e35b671b67b1a3301b58616" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -670,7 +670,7 @@ var.selected6 { background-color: #FFBCF2; box-shadow: 0 0 0 2px #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-06-23">23 June 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-07-06">6 July 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -902,9 +902,9 @@ are: </div>
    <ol>
     <li data-md>
      <p>If <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket">bucket</a></code>"] is not in the range
-[0, 2<sup>128</sup>−1], throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-rangeerror" id="ref-for-exceptiondef-rangeerror">RangeError</a></code>.</p>
+[0, 2<sup>128</sup>−1], <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw">throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-rangeerror" id="ref-for-exceptiondef-rangeerror">RangeError</a></code>.</p>
     <li data-md>
-     <p>If <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value">value</a></code>"] is negative, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-rangeerror" id="ref-for-exceptiondef-rangeerror①">RangeError</a></code>.</p>
+     <p>If <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value">value</a></code>"] is negative, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw①">throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-rangeerror" id="ref-for-exceptiondef-rangeerror①">RangeError</a></code>.</p>
     <li data-md>
      <p>Let <var>scopingDetails</var> be <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this">this</a>'s <a data-link-type="dfn" href="#privateaggregation-scoping-details" id="ref-for-privateaggregation-scoping-details">scoping details</a>.</p>
     <li data-md>
@@ -937,7 +937,8 @@ steps</a>.</p>
     <li data-md>
      <p>Let <var>debugScopeMap</var> be the <a data-link-type="dfn" href="#debug-scope-map" id="ref-for-debug-scope-map">debug scope map</a>.</p>
     <li data-md>
-     <p>If <var>debugScopeMap</var>[<var>debugScope</var>] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists">exists</a>, throw a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#dataerror" id="ref-for-dataerror">DataError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException">DOMException</a></code>.</p>
+     <p>If <var>debugScopeMap</var>[<var>debugScope</var>] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists">exists</a>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw②">throw</a> a
+"<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#dataerror" id="ref-for-dataerror">DataError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException">DOMException</a></code>.</p>
      <p class="note" role="note"><span class="marker">Note:</span> This would occur if <code>enableDebugMode()</code> has already been run for this <a data-link-type="dfn" href="#debug-scope" id="ref-for-debug-scope">debug scope</a>.</p>
     <li data-md>
      <p>Let <var>debugKey</var> be null.</p>
@@ -946,7 +947,7 @@ steps</a>.</p>
      <ol>
       <li data-md>
        <p>If <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-padebugmodeoptions-debugkey" id="ref-for-dom-padebugmodeoptions-debugkey">debugKey</a></code>] is not in the range
-[0, 2<sup>64</sup>−1], throw a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#dataerror" id="ref-for-dataerror①">DataError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①">DOMException</a></code>.</p>
+[0, 2<sup>64</sup>−1], <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw③">throw</a> a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#dataerror" id="ref-for-dataerror①">DataError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①">DOMException</a></code>.</p>
       <li data-md>
        <p>Set <var>debugKey</var> to <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-padebugmodeoptions-debugkey" id="ref-for-dom-padebugmodeoptions-debugkey①">debugKey</a></code>].</p>
      </ol>
@@ -969,9 +970,7 @@ steps</a>.</p>
    <p>To expose this API to a global scope, a <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-read-only" id="ref-for-dfn-read-only">read only</a> <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-attribute" id="ref-for-dfn-attribute">attribute</a> <code>privateAggregation</code> of type <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation①">PrivateAggregation</a></code> should be exposed on the
 global scope. Its <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#getter-steps" id="ref-for-getter-steps">getter steps</a> should be set to the <a data-link-type="dfn" href="#get-the-privateaggregation" id="ref-for-get-the-privateaggregation">get the
 privateAggregation</a> steps given <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this②">this</a>.</p>
-   <p>Each global scope should set the <a data-link-type="dfn" href="#privateaggregation-allowed-to-use" id="ref-for-privateaggregation-allowed-to-use">allowed to use</a> for the <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation②">PrivateAggregation</a></code> object it exposes based on whether the
-"<code><a data-link-type="dfn" href="#private-aggregation" id="ref-for-private-aggregation">private-aggregation</a></code>" <a data-link-type="dfn" href="https://w3c.github.io/webappsec-permissions-policy/#policy-controlled-feature" id="ref-for-policy-controlled-feature">policy-controlled feature</a> is enabled
-for a relevant <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document" id="ref-for-concept-document">document</a>.</p>
+   <p>Each global scope should set the <a data-link-type="dfn" href="#privateaggregation-allowed-to-use" id="ref-for-privateaggregation-allowed-to-use">allowed to use</a> for the <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation②">PrivateAggregation</a></code> object it exposes based on whether a relevant <a data-link-type="dfn" href="https://dom.spec.whatwg.org/#concept-document" id="ref-for-concept-document">document</a> is <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#allowed-to-use" id="ref-for-allowed-to-use">allowed to use</a> the "<code><a data-link-type="dfn" href="#private-aggregation" id="ref-for-private-aggregation">private-aggregation</a></code>" <a data-link-type="dfn" href="https://w3c.github.io/webappsec-permissions-policy/#policy-controlled-feature" id="ref-for-policy-controlled-feature">policy-controlled feature</a>.</p>
    <p>Additionally, each global scope should set the <a data-link-type="dfn" href="#privateaggregation-scoping-details" id="ref-for-privateaggregation-scoping-details②">scoping
 details</a> for the <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation③">PrivateAggregation</a></code> object it exposes to a non-null value.
 The global scope should wait to set the field until the API is intended to be
@@ -1119,13 +1118,13 @@ possible decimal number.</p>
     <li data-md>
      <p>Let <var>scopingDetails</var> be <var>this</var>’s <a data-link-type="dfn" href="#privateaggregation-scoping-details" id="ref-for-privateaggregation-scoping-details④">scoping details</a>.</p>
     <li data-md>
-     <p>If <var>scopingDetails</var> is null, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw">throw</a> a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notallowederror" id="ref-for-notallowederror">NotAllowedError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②">DOMException</a></code>.</p>
+     <p>If <var>scopingDetails</var> is null, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw④">throw</a> a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notallowederror" id="ref-for-notallowederror">NotAllowedError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②">DOMException</a></code>.</p>
      <p class="note" role="note"><span class="marker">Note:</span> This indicates the API is not yet available, for example, because the
     initial execution of the script after loading is not complete.</p>
      <p class="issue" id="issue-1c64074f"><a class="self-link" href="#issue-1c64074f"></a> Consider improving developer ergonomics here (e.g. a way to detect
     this case).</p>
     <li data-md>
-     <p>If <var>this</var>’s <a data-link-type="dfn" href="#privateaggregation-allowed-to-use" id="ref-for-privateaggregation-allowed-to-use②">allowed to use</a> is false, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw①"> throw</a> an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidaccesserror" id="ref-for-invalidaccesserror②">InvalidAccessError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException③">DOMException</a></code>.</p>
+     <p>If <var>this</var>’s <a data-link-type="dfn" href="#privateaggregation-allowed-to-use" id="ref-for-privateaggregation-allowed-to-use②">allowed to use</a> is false, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw⑤"> throw</a> an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidaccesserror" id="ref-for-invalidaccesserror②">InvalidAccessError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException③">DOMException</a></code>.</p>
     <li data-md>
      <p>Return <var>this</var>.</p>
    </ol>
@@ -1689,7 +1688,8 @@ nearest number of whole seconds and <a data-link-type="dfn" href="#serialize-an-
   <a data-link-type="idl-name" href="#dictdef-sharedstorageprivateaggregationconfig" id="ref-for-dictdef-sharedstorageprivateaggregationconfig"><c- n>SharedStoragePrivateAggregationConfig</c-></a> <dfn class="idl-code" data-dfn-for="SharedStorageRunOperationMethodOptions" data-dfn-type="dict-member" data-export data-type="SharedStoragePrivateAggregationConfig " id="dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig"><code><c- g>privateAggregationConfig</c-></code><a class="self-link" href="#dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig"></a></dfn>;
 };
 </pre>
-   <p>The <code class="idl"><a data-link-type="idl" href="#dom-sharedstorageworkletglobalscope-privateaggregation" id="ref-for-dom-sharedstorageworkletglobalscope-privateaggregation">privateAggregation</a></code> getter steps are to <a data-link-type="dfn" href="#get-the-privateaggregation" id="ref-for-get-the-privateaggregation①">get the privateAggregation</a> given <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this③">this</a>.</p>
+   <p>The <code class="idl"><a data-link-type="idl" href="#dom-sharedstorageworkletglobalscope-privateaggregation" id="ref-for-dom-sharedstorageworkletglobalscope-privateaggregation">privateAggregation</a></code> <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#getter-steps" id="ref-for-getter-steps①">getter steps</a> are
+to <a data-link-type="dfn" href="#get-the-privateaggregation" id="ref-for-get-the-privateaggregation①">get the privateAggregation</a> given <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this③">this</a>.</p>
    <p>Add the following algorithm in the subsection
 "<a href="https://wicg.github.io/shared-storage/#run-op">Run Operation
 Methods</a>":</p>
@@ -1794,7 +1794,7 @@ as appropriate:</p>
        <li data-md>
         <p>Set <var>privateAggregationObj</var>’s <a data-link-type="dfn" href="#privateaggregation-allowed-to-use" id="ref-for-privateaggregation-allowed-to-use③">allowed to use</a> to
 the result of determining whether <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this④">this</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global" id="ref-for-concept-relevant-global">relevant global
-object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/nav-history-apis.html#concept-document-window" id="ref-for-concept-document-window">associated document</a> is <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#allowed-to-use" id="ref-for-allowed-to-use">allowed to use</a> the
+object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/nav-history-apis.html#concept-document-window" id="ref-for-concept-document-window">associated document</a> is <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#allowed-to-use" id="ref-for-allowed-to-use①">allowed to use</a> the
 "<code><a data-link-type="dfn" href="#private-aggregation" id="ref-for-private-aggregation①">private-aggregation</a></code>" <a data-link-type="dfn" href="https://w3c.github.io/webappsec-permissions-policy/#policy-controlled-feature" id="ref-for-policy-controlled-feature③">policy-controlled feature</a>.</p>
         <p class="issue" id="issue-fccec62f"><a class="self-link" href="#issue-fccec62f"></a> Consider adding an early return here (and equivalently for
     Protected Audience) if the permissions policy check is made first.</p>
@@ -1849,8 +1849,7 @@ only one can be currently executing.</p>
 };
 </pre>
    <p class="issue" id="issue-6c6263d3"><a class="self-link" href="#issue-6c6263d3"></a> Do we want to align naming with implementation?</p>
-   <p>The <code class="idl"><a data-link-type="idl" href="#dom-interestgroupscriptrunnerglobalscope-privateaggregation" id="ref-for-dom-interestgroupscriptrunnerglobalscope-privateaggregation">privateAggregation</a></code> getter steps are
-to <a data-link-type="dfn" href="#get-the-privateaggregation" id="ref-for-get-the-privateaggregation②">get the privateAggregation</a> given <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑤">this</a>.</p>
+   <p>The <code class="idl"><a data-link-type="idl" href="#dom-interestgroupscriptrunnerglobalscope-privateaggregation" id="ref-for-dom-interestgroupscriptrunnerglobalscope-privateaggregation">privateAggregation</a></code> <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#getter-steps" id="ref-for-getter-steps②">getter steps</a> are to <a data-link-type="dfn" href="#get-the-privateaggregation" id="ref-for-get-the-privateaggregation②">get the privateAggregation</a> given <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑤">this</a>.</p>
    <div class="algorithm" data-algorithm="contributeToHistogramOnEvent(DOMString event, PAExtendedHistogramContribution contribution)" data-algorithm-for="PrivateAggregation"> The <dfn class="dfn-paneled idl-code" data-dfn-for="PrivateAggregation" data-dfn-type="method" data-export data-lt="contributeToHistogramOnEvent(event, contribution)" id="dom-privateaggregation-contributetohistogramonevent"><code>contributeToHistogramOnEvent(DOMString
 event, PAExtendedHistogramContribution contribution)</code></dfn> method steps are: </div>
    <ol>
@@ -1869,9 +1868,9 @@ return.</p>
      <ol>
       <li data-md>
        <p>If <var>bucket</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-basevalue" id="ref-for-dom-pasignalvalue-basevalue">baseValue</a></code>"] is not a valid <a data-link-type="dfn" href="#signal-base-value" id="ref-for-signal-base-value">signal base
-value</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror">TypeError</a></code>.</p>
+value</a>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw⑥">throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror">TypeError</a></code>.</p>
       <li data-md>
-       <p>If <var>bucket</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset">offset</a></code>"] is not a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint④">bigint</a></code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①">TypeError</a></code>.</p>
+       <p>If <var>bucket</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset">offset</a></code>"] is not a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint④">bigint</a></code>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw⑦"> throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①">TypeError</a></code>.</p>
      </ol>
     <li data-md>
      <p>Let <var>value</var> be <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-value" id="ref-for-dom-paextendedhistogramcontribution-value">value</a></code>"].</p>
@@ -1880,9 +1879,9 @@ value</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webid
      <ol>
       <li data-md>
        <p>If <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-basevalue" id="ref-for-dom-pasignalvalue-basevalue①">baseValue</a></code>"] is not a valid <a data-link-type="dfn" href="#signal-base-value" id="ref-for-signal-base-value①">signal base
-value</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②">TypeError</a></code>.</p>
+value</a>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw⑧">throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②">TypeError</a></code>.</p>
       <li data-md>
-       <p>If <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset①">offset</a></code>"] is a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint⑤">bigint</a></code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror③">TypeError</a></code>.</p>
+       <p>If <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset①">offset</a></code>"] is a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint⑤">bigint</a></code>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw⑨"> throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror③">TypeError</a></code>.</p>
      </ol>
     <li data-md>
      <p>Let <var>batchingScope</var> be null.</p>
@@ -2053,7 +2052,7 @@ state</a> to a new <a data-link-type="dfn" href="#permissions-policy-state" id="
        <dt data-md><a data-link-type="dfn" href="#permissions-policy-state-private-aggregation-enabled" id="ref-for-permissions-policy-state-private-aggregation-enabled">private aggregation enabled</a>
        <dd data-md>
         <p>The result of determining whether <var>global</var>’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/nav-history-apis.html#concept-document-window" id="ref-for-concept-document-window①">associated
-Document</a> is <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#allowed-to-use" id="ref-for-allowed-to-use①">allowed to use</a> the
+Document</a> is <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/iframe-embed-object.html#allowed-to-use" id="ref-for-allowed-to-use②">allowed to use</a> the
 "<code><a data-link-type="dfn" href="#private-aggregation" id="ref-for-private-aggregation②">private-aggregation</a></code>" <a data-link-type="dfn" href="https://w3c.github.io/webappsec-permissions-policy/#policy-controlled-feature" id="ref-for-policy-controlled-feature④">policy-controlled feature</a>.</p>
       </dl>
     </ol>
@@ -3484,7 +3483,7 @@ window.dfnpanelData['c9a0df83'] = {"dfnID": "c9a0df83", "url": "https://w3c.gith
 window.dfnpanelData['1e2edd5b'] = {"dfnID": "1e2edd5b", "url": "https://w3c.github.io/hr-time/#dfn-moment", "dfnText": "moment", "refSections": [{"refs": [{"id": "ref-for-dfn-moment"}, {"id": "ref-for-dfn-moment\u2460"}], "title": "4.6. Aggregatable report"}, {"refs": [{"id": "ref-for-dfn-moment\u2461"}, {"id": "ref-for-dfn-moment\u2462"}, {"id": "ref-for-dfn-moment\u2463"}, {"id": "ref-for-dfn-moment\u2464"}], "title": "8.2. Scheduling reports"}], "external": true};
 window.dfnpanelData['be5dbc8c'] = {"dfnID": "be5dbc8c", "url": "https://w3c.github.io/hr-time/#dfn-unix-epoch", "dfnText": "unix epoch", "refSections": [{"refs": [{"id": "ref-for-dfn-unix-epoch"}], "title": "8.4. Serializing reports"}], "external": true};
 window.dfnpanelData['eec46e27'] = {"dfnID": "eec46e27", "url": "https://html.spec.whatwg.org/multipage/worklets.html#dom-worklet-addmodule", "dfnText": "addModule(moduleURL, options)", "refSections": [{"refs": [{"id": "ref-for-dom-worklet-addmodule"}, {"id": "ref-for-dom-worklet-addmodule\u2460"}, {"id": "ref-for-dom-worklet-addmodule\u2461"}, {"id": "ref-for-dom-worklet-addmodule\u2462"}, {"id": "ref-for-dom-worklet-addmodule\u2463"}], "title": "9. Shared Storage API monkey patches"}], "external": true};
-window.dfnpanelData['3610bd67'] = {"dfnID": "3610bd67", "url": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#allowed-to-use", "dfnText": "allowed to use", "refSections": [{"refs": [{"id": "ref-for-allowed-to-use"}], "title": "9. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-allowed-to-use\u2460"}], "title": "10.3. Algorithm modifications"}], "external": true};
+window.dfnpanelData['3610bd67'] = {"dfnID": "3610bd67", "url": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#allowed-to-use", "dfnText": "allowed to use", "refSections": [{"refs": [{"id": "ref-for-allowed-to-use"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-allowed-to-use\u2460"}], "title": "9. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-allowed-to-use\u2461"}], "title": "10.3. Algorithm modifications"}], "external": true};
 window.dfnpanelData['3349d69f'] = {"dfnID": "3349d69f", "url": "https://html.spec.whatwg.org/multipage/nav-history-apis.html#concept-document-window", "dfnText": "associated document", "refSections": [{"refs": [{"id": "ref-for-concept-document-window"}], "title": "9. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-concept-document-window\u2460"}], "title": "10.3. Algorithm modifications"}], "external": true};
 window.dfnpanelData['f1d11a13'] = {"dfnID": "f1d11a13", "url": "https://tc39.es/ecma262/#sec-call", "dfnText": "call", "refSections": [{"refs": [{"id": "ref-for-sec-call"}], "title": "9. Shared Storage API monkey patches"}], "external": true};
 window.dfnpanelData['6f738b30'] = {"dfnID": "6f738b30", "url": "https://html.spec.whatwg.org/multipage/worklets.html#concept-worklet-global-scopes", "dfnText": "global scopes", "refSections": [{"refs": [{"id": "ref-for-concept-worklet-global-scopes"}], "title": "9. Shared Storage API monkey patches"}], "external": true};
@@ -3579,11 +3578,11 @@ window.dfnpanelData['d0b4a948'] = {"dfnID": "d0b4a948", "url": "https://webidl.s
 window.dfnpanelData['5bf9ea61'] = {"dfnID": "5bf9ea61", "url": "https://webidl.spec.whatwg.org/#dfn-attribute", "dfnText": "attribute", "refSections": [{"refs": [{"id": "ref-for-dfn-attribute"}], "title": "3. Exposing to global scopes"}], "external": true};
 window.dfnpanelData['bdcd112d'] = {"dfnID": "bdcd112d", "url": "https://webidl.spec.whatwg.org/#idl-bigint", "dfnText": "bigint", "refSections": [{"refs": [{"id": "ref-for-idl-bigint"}, {"id": "ref-for-idl-bigint\u2460"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-idl-bigint\u2461"}, {"id": "ref-for-idl-bigint\u2462"}, {"id": "ref-for-idl-bigint\u2463"}, {"id": "ref-for-idl-bigint\u2464"}], "title": "10.1. WebIDL"}], "external": true};
 window.dfnpanelData['8c800cdf'] = {"dfnID": "8c800cdf", "url": "https://webidl.spec.whatwg.org/#idl-double", "dfnText": "double", "refSections": [{"refs": [{"id": "ref-for-idl-double"}], "title": "10.1. WebIDL"}, {"refs": [{"id": "ref-for-idl-double\u2460"}], "title": "10.4. New algorithms"}], "external": true};
-window.dfnpanelData['833154f2'] = {"dfnID": "833154f2", "url": "https://webidl.spec.whatwg.org/#getter-steps", "dfnText": "getter steps", "refSections": [{"refs": [{"id": "ref-for-getter-steps"}], "title": "3. Exposing to global scopes"}], "external": true};
+window.dfnpanelData['833154f2'] = {"dfnID": "833154f2", "url": "https://webidl.spec.whatwg.org/#getter-steps", "dfnText": "getter steps", "refSections": [{"refs": [{"id": "ref-for-getter-steps"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-getter-steps\u2460"}], "title": "9. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-getter-steps\u2461"}], "title": "10.1. WebIDL"}], "external": true};
 window.dfnpanelData['f8de33a3'] = {"dfnID": "f8de33a3", "url": "https://webidl.spec.whatwg.org/#idl-long", "dfnText": "long", "refSections": [{"refs": [{"id": "ref-for-idl-long"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-idl-long\u2460"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-idl-long\u2461"}, {"id": "ref-for-idl-long\u2462"}], "title": "10.1. WebIDL"}], "external": true};
 window.dfnpanelData['bfc48225'] = {"dfnID": "bfc48225", "url": "https://webidl.spec.whatwg.org/#dfn-read-only", "dfnText": "read only", "refSections": [{"refs": [{"id": "ref-for-dfn-read-only"}], "title": "3. Exposing to global scopes"}], "external": true};
 window.dfnpanelData['4013a022'] = {"dfnID": "4013a022", "url": "https://webidl.spec.whatwg.org/#this", "dfnText": "this", "refSections": [{"refs": [{"id": "ref-for-this"}, {"id": "ref-for-this\u2460"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-this\u2461"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-this\u2462"}, {"id": "ref-for-this\u2463"}], "title": "9. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-this\u2464"}, {"id": "ref-for-this\u2465"}, {"id": "ref-for-this\u2466"}], "title": "10.1. WebIDL"}], "external": true};
-window.dfnpanelData['b4cfa5ce'] = {"dfnID": "b4cfa5ce", "url": "https://webidl.spec.whatwg.org/#dfn-throw", "dfnText": "throw", "refSections": [{"refs": [{"id": "ref-for-dfn-throw"}, {"id": "ref-for-dfn-throw\u2460"}], "title": "8.1. Exported algorithms"}], "external": true};
+window.dfnpanelData['b4cfa5ce'] = {"dfnID": "b4cfa5ce", "url": "https://webidl.spec.whatwg.org/#dfn-throw", "dfnText": "throw", "refSections": [{"refs": [{"id": "ref-for-dfn-throw"}, {"id": "ref-for-dfn-throw\u2460"}, {"id": "ref-for-dfn-throw\u2461"}, {"id": "ref-for-dfn-throw\u2462"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-dfn-throw\u2463"}, {"id": "ref-for-dfn-throw\u2464"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-dfn-throw\u2465"}, {"id": "ref-for-dfn-throw\u2466"}, {"id": "ref-for-dfn-throw\u2467"}, {"id": "ref-for-dfn-throw\u2468"}], "title": "10.1. WebIDL"}], "external": true};
 window.dfnpanelData['5f90bbfb'] = {"dfnID": "5f90bbfb", "url": "https://webidl.spec.whatwg.org/#idl-undefined", "dfnText": "undefined", "refSections": [{"refs": [{"id": "ref-for-idl-undefined"}, {"id": "ref-for-idl-undefined\u2460"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-idl-undefined\u2461"}], "title": "10.1. WebIDL"}], "external": true};
 window.dfnpanelData['24bd7d25'] = {"dfnID": "24bd7d25", "url": "https://webidl.spec.whatwg.org/#upon-fulfillment", "dfnText": "upon fulfillment", "refSections": [{"refs": [{"id": "ref-for-upon-fulfillment"}], "title": "9. Shared Storage API monkey patches"}], "external": true};
 window.dfnpanelData['f14ed351'] = {"dfnID": "f14ed351", "url": "https://webidl.spec.whatwg.org/#upon-rejection", "dfnText": "upon rejection", "refSections": [{"refs": [{"id": "ref-for-upon-rejection"}], "title": "9. Shared Storage API monkey patches"}], "external": true};
