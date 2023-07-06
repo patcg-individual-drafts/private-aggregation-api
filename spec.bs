@@ -216,9 +216,9 @@ global scope. Its [=getter steps=] should be set to the [=get the
 privateAggregation=] steps given [=this=].
 
 Each global scope should set the [=PrivateAggregation/allowed to use=] for the
-{{PrivateAggregation}} object it exposes based on whether the
-"<code>[=private-aggregation=]</code>" [=policy-controlled feature=] is enabled
-for a relevant [=document=].
+{{PrivateAggregation}} object it exposes based on whether a relevant
+[=document=] is [=allowed to use=] the "<code>[=private-aggregation=]</code>"
+[=policy-controlled feature=].
 
 Additionally, each global scope should set the [=PrivateAggregation/scoping
 details=] for the {{PrivateAggregation}} object it exposes to a non-null value.
@@ -855,8 +855,8 @@ partial dictionary SharedStorageRunOperationMethodOptions {
 };
 </xmp>
 
-The {{SharedStorageWorkletGlobalScope/privateAggregation}} getter steps are to
-[=get the privateAggregation=] given [=this=].
+The {{SharedStorageWorkletGlobalScope/privateAggregation}} [=getter steps=] are
+to [=get the privateAggregation=] given [=this=].
 
 Add the following algorithm in the subsection
 "<a href="https://wicg.github.io/shared-storage/#run-op">Run Operation
@@ -1017,8 +1017,8 @@ partial interface PrivateAggregation {
 
 Issue: Do we want to align naming with implementation?
 
-The {{InterestGroupScriptRunnerGlobalScope/privateAggregation}} getter steps are
-to [=get the privateAggregation=] given [=this=].
+The {{InterestGroupScriptRunnerGlobalScope/privateAggregation}} [=getter steps=]
+are to [=get the privateAggregation=] given [=this=].
 
 <div algorithm>
 The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(DOMString
