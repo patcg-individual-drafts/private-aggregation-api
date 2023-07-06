@@ -136,9 +136,14 @@ dictionary PADebugModeOptions {
 };
 </xmp>
 
-Each {{PrivateAggregation}} object has a field named <dfn
-for="PrivateAggregation">scoping details</dfn> that is a [=scoping details=] or
-null (default null).
+Each {{PrivateAggregation}} object has the following fields:
+<dl dfn-for="PrivateAggregation">
+: <dfn>scoping details</dfn> (default null)
+:: A [=scoping details=] or null
+: <dfn>allowed to use</dfn> (default false)
+:: A [=boolean=]
+
+</dl>
 
 Note: See [Exposing to global scopes](#exposing) below.
 
@@ -148,21 +153,11 @@ contributeToHistogram(PAHistogramContribution contribution)</dfn> method steps
 are:
 </div>
 
-1. If [=this=]'s [=PrivateAggregation/allowed to use=] is false, [=exception/
-    throw=] an "{{InvalidAccessError}}" {{DOMException}}.
 1. If |contribution|["{{PAHistogramContribution/bucket}}"] is not in the range
     [0, 2<sup>128</sup>−1], [=exception/throw=] a {{RangeError}}.
 1. If |contribution|["{{PAHistogramContribution/value}}"] is negative,
     [=exception/throw=] a {{RangeError}}.
 1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
-1. If |scopingDetails| is null, [=exception/throw=] a "{{NotAllowedError}}"
-    {{DOMException}}.
-
-    Note: This indicates the API is not yet available, for example, because the
-        initial execution of the script after loading is not complete.
-
-    Issue: Consider improving developer ergonomics here (e.g. a way to detect
-        this case).
 1. Let |entry| be a new [=contribution cache entry=] with the items:
     : [=contribution cache entry/contribution=]
     :: |contribution|
@@ -186,11 +181,7 @@ The <dfn method for="PrivateAggregation">
 enableDebugMode(optional PADebugModeOptions options)</dfn> method steps are:
 </div>
 
-1. If [=this=]'s [=PrivateAggregation/allowed to use=] is false, [=exception/
-    throw=] an "{{InvalidAccessError}}" {{DOMException}}.
 1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
-1. If |scopingDetails| is null, [=exception/throw=] a "{{NotAllowedError}}"
-    {{DOMException}}.
 1. Let |debugScope| be the result of running |scopingDetails|' [=scoping
     details/get debug scope steps=].
 1. Let |debugScopeMap| be the [=debug scope map=].
@@ -219,8 +210,15 @@ Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
 Exposing to global scopes {#exposing}
 =====================================
 
-To expose this API to a global scope, a [=read only=] [=attribute=] `privateAggregation`
-of type {{PrivateAggregation}} should be exposed on the global scope.
+To expose this API to a global scope, a [=read only=] [=attribute=]
+`privateAggregation` of type {{PrivateAggregation}} should be exposed on the
+global scope. Its [=getter steps=] should be set to the [=get the
+privateAggregation=] steps given [=this=].
+
+Each global scope should set the [=PrivateAggregation/allowed to use=] for the
+{{PrivateAggregation}} object it exposes based on whether a relevant
+[=document=] is [=allowed to use=] the "<code>[=private-aggregation=]</code>"
+[=policy-controlled feature=].
 
 Additionally, each global scope should set the [=PrivateAggregation/scoping
 details=] for the {{PrivateAggregation}} object it exposes to a non-null value.
@@ -391,10 +389,9 @@ This specification defines a [=policy-controlled feature=] identified by the
 string "<code><dfn>private-aggregation</dfn></code>". Its [=policy-controlled
 feature/default allowlist=] is "`*`".
 
-Each {{PrivateAggregation}} object has a boolean field named
-<dfn export for="PrivateAggregation">allowed to use</dfn> (default false).
-
-Note: This field is set by other specifications that integrate with this API.
+Note: The [=PrivateAggregation/allowed to use=] field is set by other
+    specifications that integrate with this API according to this
+    [=policy-controlled feature=].
 
 Algorithms {#algorithms}
 ====================
@@ -409,6 +406,24 @@ Exported algorithms {#exported-algorithms}
 ------------------------------------------
 
 Note: These algorithms allow other specifications to integrate with this API.
+
+To <dfn algorithm export>get the privateAggregation</dfn> given a
+{{PrivateAggregation}} |this|:
+1. Let |scopingDetails| be |this|'s [=PrivateAggregation/scoping details=].
+1. If |scopingDetails| is null, [=exception/throw=] a "{{NotAllowedError}}"
+    {{DOMException}}.
+
+    Note: This indicates the API is not yet available, for example, because the
+        initial execution of the script after loading is not complete.
+
+    Issue: Consider improving developer ergonomics here (e.g. a way to detect
+        this case).
+1. If |this|'s [=PrivateAggregation/allowed to use=] is false, [=exception/
+    throw=] an "{{InvalidAccessError}}" {{DOMException}}.
+1. Return |this|.
+
+Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
+    deprecated.
 
 To <dfn algorithm export>append an entry to the contribution cache</dfn> given a
 [=contribution cache entry=] |entry|:
@@ -840,6 +855,9 @@ partial dictionary SharedStorageRunOperationMethodOptions {
 };
 </xmp>
 
+The {{SharedStorageWorkletGlobalScope/privateAggregation}} [=getter steps=] are
+to [=get the privateAggregation=] given [=this=].
+
 Add the following algorithm in the subsection
 "<a href="https://wicg.github.io/shared-storage/#run-op">Run Operation
 Methods</a>":
@@ -999,15 +1017,14 @@ partial interface PrivateAggregation {
 
 Issue: Do we want to align naming with implementation?
 
+The {{InterestGroupScriptRunnerGlobalScope/privateAggregation}} [=getter steps=]
+are to [=get the privateAggregation=] given [=this=].
+
 <div algorithm>
 The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(DOMString
 event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
 </div>
-1. If [=this=]'s [=PrivateAggregation/allowed to use=] is false, [=exception/
-    throw=] an "{{InvalidAccessError}}" {{DOMException}}.
 1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
-1. If |scopingDetails| is null, [=exception/throw=] a "{{NotAllowedError}}"
-    {{DOMException}}.
 1. If |event| [=string/starts with=] "`reserved.`" and « "`reserved.always`",
     "`reserved.loss`", "`reserved.win`" » does not [=list/contain=] |event|,
     return.
