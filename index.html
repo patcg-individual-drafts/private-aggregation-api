@@ -5,10 +5,10 @@
   <title>Private Aggregation API</title>
   <meta content="w3c/CG-DRAFT" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
-  <meta content="Bikeshed version 516eaf3cf, updated Tue Jun 20 13:48:28 2023 -0700" name="generator">
+  <meta content="Bikeshed version 5edf5e459, updated Thu Jun 22 11:28:01 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="b4028f75fb764179f08ecbe231eb7973753e04bc" name="document-revision">
+  <meta content="ddb61fdc3dc2e99ccf90afbf296d2362edd88ee3" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -515,33 +515,12 @@ a.self-link::before            { content: "¶"; }
 .heading > a.self-link::before { content: "§"; }
 dfn > a.self-link::before      { content: "#"; }
 </style>
-<style>/* Boilerplate: style-style-syntax-highlighting */
+<style>/* Boilerplate: style-syntax-highlighting */
 
             pre.idl.highlight {
                 background: var(--borderedblock-bg, var(--def-bg));
             }
             
-</style>
-<style>/* Boilerplate: style-style-var-click-highlighting */
-/*
-Colors were chosen in Lab using https://nixsensor.com/free-color-converter/
-D50 2deg illuminant, L in [0,100], a and b in [-128, 128]
-0 = lab(85,0,85)
-1 = lab(85,80,30)
-2 = lab(85,-40,40)
-3 = lab(85,-50,0)
-4 = lab(85,5,15)
-5 = lab(85,-10,-50)
-6 = lab(85,35,-15)
-*/
-var { cursor: pointer; }
-var.selected0 { background-color: #F4D200; box-shadow: 0 0 0 2px #F4D200; }
-var.selected1 { background-color: #FF87A2; box-shadow: 0 0 0 2px #FF87A2; }
-var.selected2 { background-color: #96E885; box-shadow: 0 0 0 2px #96E885; }
-var.selected3 { background-color: #3EEED2; box-shadow: 0 0 0 2px #3EEED2; }
-var.selected4 { background-color: #EACFB6; box-shadow: 0 0 0 2px #EACFB6; }
-var.selected5 { background-color: #82DDFF; box-shadow: 0 0 0 2px #82DDFF; }
-var.selected6 { background-color: #FFBCF2; box-shadow: 0 0 0 2px #FFBCF2; }
 </style>
 <style>/* Boilerplate: style-syntax-highlighting */
 
@@ -666,11 +645,32 @@ c-[il] { color: #000000 } /* Literal.Number.Integer.Long */
     c-[il] { color: #657b83 } /* Literal.Number.Integer.Long */
 }
 </style>
+<style>/* Boilerplate: style-var-click-highlighting */
+/*
+Colors were chosen in Lab using https://nixsensor.com/free-color-converter/
+D50 2deg illuminant, L in [0,100], a and b in [-128, 128]
+0 = lab(85,0,85)
+1 = lab(85,80,30)
+2 = lab(85,-40,40)
+3 = lab(85,-50,0)
+4 = lab(85,5,15)
+5 = lab(85,-10,-50)
+6 = lab(85,35,-15)
+*/
+var { cursor: pointer; }
+var.selected0 { background-color: #F4D200; box-shadow: 0 0 0 2px #F4D200; }
+var.selected1 { background-color: #FF87A2; box-shadow: 0 0 0 2px #FF87A2; }
+var.selected2 { background-color: #96E885; box-shadow: 0 0 0 2px #96E885; }
+var.selected3 { background-color: #3EEED2; box-shadow: 0 0 0 2px #3EEED2; }
+var.selected4 { background-color: #EACFB6; box-shadow: 0 0 0 2px #EACFB6; }
+var.selected5 { background-color: #82DDFF; box-shadow: 0 0 0 2px #82DDFF; }
+var.selected6 { background-color: #FFBCF2; box-shadow: 0 0 0 2px #FFBCF2; }
+</style>
  <body class="h-entry">
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-06-22">22 June 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-07-06">6 July 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -894,17 +894,16 @@ null (default null).</p>
 are: </div>
    <ol>
     <li data-md>
-     <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this">this</a>'s <a data-link-type="dfn" href="#privateaggregation-allowed-to-use" id="ref-for-privateaggregation-allowed-to-use">allowed to use</a> is false, throw an
-"<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidaccesserror" id="ref-for-invalidaccesserror">InvalidAccessError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException">DOMException</a></code>.</p>
+     <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this">this</a>'s <a data-link-type="dfn" href="#privateaggregation-allowed-to-use" id="ref-for-privateaggregation-allowed-to-use">allowed to use</a> is false, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw"> throw</a> an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidaccesserror" id="ref-for-invalidaccesserror">InvalidAccessError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException">DOMException</a></code>.</p>
     <li data-md>
      <p>If <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket">bucket</a></code>"] is not in the range
-[0, 2<sup>128</sup>−1], throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-rangeerror" id="ref-for-exceptiondef-rangeerror">RangeError</a></code>.</p>
+[0, 2<sup>128</sup>−1], <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw①">throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-rangeerror" id="ref-for-exceptiondef-rangeerror">RangeError</a></code>.</p>
     <li data-md>
-     <p>If <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value">value</a></code>"] is negative, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-rangeerror" id="ref-for-exceptiondef-rangeerror①">RangeError</a></code>.</p>
+     <p>If <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value">value</a></code>"] is negative, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw②">throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-rangeerror" id="ref-for-exceptiondef-rangeerror①">RangeError</a></code>.</p>
     <li data-md>
      <p>Let <var>scopingDetails</var> be <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this①">this</a>'s <a data-link-type="dfn" href="#privateaggregation-scoping-details" id="ref-for-privateaggregation-scoping-details">scoping details</a>.</p>
     <li data-md>
-     <p>If <var>scopingDetails</var> is null, throw a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notallowederror" id="ref-for-notallowederror">NotAllowedError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①">DOMException</a></code>.</p>
+     <p>If <var>scopingDetails</var> is null, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw③">throw</a> a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notallowederror" id="ref-for-notallowederror">NotAllowedError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①">DOMException</a></code>.</p>
      <p class="note" role="note"><span class="marker">Note:</span> This indicates the API is not yet available, for example, because the
     initial execution of the script after loading is not complete.</p>
      <p class="issue" id="issue-1c64074f"><a class="self-link" href="#issue-1c64074f"></a> Consider improving developer ergonomics here (e.g. a way to detect
@@ -933,18 +932,18 @@ steps</a>.</p>
    <div class="algorithm" data-algorithm="enableDebugMode(optional PADebugModeOptions options)" data-algorithm-for="PrivateAggregation"> The <dfn class="dfn-paneled idl-code" data-dfn-for="PrivateAggregation" data-dfn-type="method" data-export data-lt="enableDebugMode(options)|enableDebugMode()" id="dom-privateaggregation-enabledebugmode"><code> enableDebugMode(optional PADebugModeOptions options)</code></dfn> method steps are: </div>
    <ol>
     <li data-md>
-     <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this②">this</a>'s <a data-link-type="dfn" href="#privateaggregation-allowed-to-use" id="ref-for-privateaggregation-allowed-to-use①">allowed to use</a> is false, throw an
-"<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidaccesserror" id="ref-for-invalidaccesserror②">InvalidAccessError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②">DOMException</a></code>.</p>
+     <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this②">this</a>'s <a data-link-type="dfn" href="#privateaggregation-allowed-to-use" id="ref-for-privateaggregation-allowed-to-use①">allowed to use</a> is false, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw④"> throw</a> an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidaccesserror" id="ref-for-invalidaccesserror②">InvalidAccessError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException②">DOMException</a></code>.</p>
     <li data-md>
      <p>Let <var>scopingDetails</var> be <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this③">this</a>'s <a data-link-type="dfn" href="#privateaggregation-scoping-details" id="ref-for-privateaggregation-scoping-details①">scoping details</a>.</p>
     <li data-md>
-     <p>If <var>scopingDetails</var> is null, throw a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notallowederror" id="ref-for-notallowederror①">NotAllowedError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException③">DOMException</a></code>.</p>
+     <p>If <var>scopingDetails</var> is null, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw⑤">throw</a> a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notallowederror" id="ref-for-notallowederror①">NotAllowedError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException③">DOMException</a></code>.</p>
     <li data-md>
      <p>Let <var>debugScope</var> be the result of running <var>scopingDetails</var>’ <a data-link-type="dfn" href="#scoping-details-get-debug-scope-steps" id="ref-for-scoping-details-get-debug-scope-steps①">get debug scope steps</a>.</p>
     <li data-md>
      <p>Let <var>debugScopeMap</var> be the <a data-link-type="dfn" href="#debug-scope-map" id="ref-for-debug-scope-map">debug scope map</a>.</p>
     <li data-md>
-     <p>If <var>debugScopeMap</var>[<var>debugScope</var>] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists">exists</a>, throw a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#dataerror" id="ref-for-dataerror">DataError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException④">DOMException</a></code>.</p>
+     <p>If <var>debugScopeMap</var>[<var>debugScope</var>] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists">exists</a>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw⑥">throw</a> a
+"<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#dataerror" id="ref-for-dataerror">DataError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException④">DOMException</a></code>.</p>
      <p class="note" role="note"><span class="marker">Note:</span> This would occur if <code>enableDebugMode()</code> has already been run for this <a data-link-type="dfn" href="#debug-scope" id="ref-for-debug-scope">debug scope</a>.</p>
     <li data-md>
      <p>Let <var>debugKey</var> be null.</p>
@@ -953,7 +952,7 @@ steps</a>.</p>
      <ol>
       <li data-md>
        <p>If <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-padebugmodeoptions-debugkey" id="ref-for-dom-padebugmodeoptions-debugkey">debugKey</a></code>] is not in the range
-[0, 2<sup>64</sup>−1], throw a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#dataerror" id="ref-for-dataerror①">DataError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException⑤">DOMException</a></code>.</p>
+[0, 2<sup>64</sup>−1], <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw⑦">throw</a> a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#dataerror" id="ref-for-dataerror①">DataError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException⑤">DOMException</a></code>.</p>
       <li data-md>
        <p>Set <var>debugKey</var> to <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-padebugmodeoptions-debugkey" id="ref-for-dom-padebugmodeoptions-debugkey①">debugKey</a></code>].</p>
      </ol>
@@ -1837,12 +1836,11 @@ only one can be currently executing.</p>
 event, PAExtendedHistogramContribution contribution)</code></dfn> method steps are: </div>
    <ol>
     <li data-md>
-     <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑤">this</a>'s <a data-link-type="dfn" href="#privateaggregation-allowed-to-use" id="ref-for-privateaggregation-allowed-to-use③">allowed to use</a> is false, throw an
-"<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidaccesserror" id="ref-for-invalidaccesserror④">InvalidAccessError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⓪">DOMException</a></code>.</p>
+     <p>If <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑤">this</a>'s <a data-link-type="dfn" href="#privateaggregation-allowed-to-use" id="ref-for-privateaggregation-allowed-to-use③">allowed to use</a> is false, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw⑧"> throw</a> an "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidaccesserror" id="ref-for-invalidaccesserror④">InvalidAccessError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⓪">DOMException</a></code>.</p>
     <li data-md>
      <p>Let <var>scopingDetails</var> be <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑥">this</a>'s <a data-link-type="dfn" href="#privateaggregation-scoping-details" id="ref-for-privateaggregation-scoping-details⑤">scoping details</a>.</p>
     <li data-md>
-     <p>If <var>scopingDetails</var> is null, throw a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notallowederror" id="ref-for-notallowederror②">NotAllowedError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①①">DOMException</a></code>.</p>
+     <p>If <var>scopingDetails</var> is null, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw⑨">throw</a> a "<code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#notallowederror" id="ref-for-notallowederror②">NotAllowedError</a></code>" <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①①">DOMException</a></code>.</p>
     <li data-md>
      <p>If <var>event</var> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string-starts-with" id="ref-for-string-starts-with">starts with</a> "<code>reserved.</code>" and « "<code>reserved.always</code>",
 "<code>reserved.loss</code>", "<code>reserved.win</code>" » does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-contain" id="ref-for-list-contain">contain</a> <var>event</var>,
@@ -1856,9 +1854,9 @@ return.</p>
      <ol>
       <li data-md>
        <p>If <var>bucket</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-basevalue" id="ref-for-dom-pasignalvalue-basevalue">baseValue</a></code>"] is not a valid <a data-link-type="dfn" href="#signal-base-value" id="ref-for-signal-base-value">signal base
-value</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror">TypeError</a></code>.</p>
+value</a>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw①⓪">throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror">TypeError</a></code>.</p>
       <li data-md>
-       <p>If <var>bucket</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset">offset</a></code>"] is not a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint④">bigint</a></code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①">TypeError</a></code>.</p>
+       <p>If <var>bucket</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset">offset</a></code>"] is not a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint④">bigint</a></code>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw①①"> throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①">TypeError</a></code>.</p>
      </ol>
     <li data-md>
      <p>Let <var>value</var> be <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-value" id="ref-for-dom-paextendedhistogramcontribution-value">value</a></code>"].</p>
@@ -1867,9 +1865,9 @@ value</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webid
      <ol>
       <li data-md>
        <p>If <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-basevalue" id="ref-for-dom-pasignalvalue-basevalue①">baseValue</a></code>"] is not a valid <a data-link-type="dfn" href="#signal-base-value" id="ref-for-signal-base-value①">signal base
-value</a>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②">TypeError</a></code>.</p>
+value</a>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw①②">throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror②">TypeError</a></code>.</p>
       <li data-md>
-       <p>If <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset①">offset</a></code>"] is a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint⑤">bigint</a></code>, throw a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror③">TypeError</a></code>.</p>
+       <p>If <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset①">offset</a></code>"] is a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint⑤">bigint</a></code>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw①③"> throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror③">TypeError</a></code>.</p>
      </ol>
     <li data-md>
      <p>Let <var>batchingScope</var> be null.</p>
@@ -2961,6 +2959,7 @@ to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encry
      <li><span class="dfn-paneled" id="f8de33a3">long</span>
      <li><span class="dfn-paneled" id="bfc48225">read only</span>
      <li><span class="dfn-paneled" id="4013a022">this</span>
+     <li><span class="dfn-paneled" id="b4cfa5ce">throw</span>
      <li><span class="dfn-paneled" id="5f90bbfb">undefined</span>
      <li><span class="dfn-paneled" id="24bd7d25">upon fulfillment</span>
      <li><span class="dfn-paneled" id="f14ed351">upon rejection</span>
@@ -3556,6 +3555,7 @@ window.dfnpanelData['8c800cdf'] = {"dfnID": "8c800cdf", "url": "https://webidl.s
 window.dfnpanelData['f8de33a3'] = {"dfnID": "f8de33a3", "url": "https://webidl.spec.whatwg.org/#idl-long", "dfnText": "long", "refSections": [{"refs": [{"id": "ref-for-idl-long"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-idl-long\u2460"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-idl-long\u2461"}, {"id": "ref-for-idl-long\u2462"}], "title": "10.1. WebIDL"}], "external": true};
 window.dfnpanelData['bfc48225'] = {"dfnID": "bfc48225", "url": "https://webidl.spec.whatwg.org/#dfn-read-only", "dfnText": "read only", "refSections": [{"refs": [{"id": "ref-for-dfn-read-only"}], "title": "3. Exposing to global scopes"}], "external": true};
 window.dfnpanelData['4013a022'] = {"dfnID": "4013a022", "url": "https://webidl.spec.whatwg.org/#this", "dfnText": "this", "refSections": [{"refs": [{"id": "ref-for-this"}, {"id": "ref-for-this\u2460"}, {"id": "ref-for-this\u2461"}, {"id": "ref-for-this\u2462"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-this\u2463"}], "title": "9. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-this\u2464"}, {"id": "ref-for-this\u2465"}, {"id": "ref-for-this\u2466"}], "title": "10.1. WebIDL"}], "external": true};
+window.dfnpanelData['b4cfa5ce'] = {"dfnID": "b4cfa5ce", "url": "https://webidl.spec.whatwg.org/#dfn-throw", "dfnText": "throw", "refSections": [{"refs": [{"id": "ref-for-dfn-throw"}, {"id": "ref-for-dfn-throw\u2460"}, {"id": "ref-for-dfn-throw\u2461"}, {"id": "ref-for-dfn-throw\u2462"}, {"id": "ref-for-dfn-throw\u2463"}, {"id": "ref-for-dfn-throw\u2464"}, {"id": "ref-for-dfn-throw\u2465"}, {"id": "ref-for-dfn-throw\u2466"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-dfn-throw\u2467"}, {"id": "ref-for-dfn-throw\u2468"}, {"id": "ref-for-dfn-throw\u2460\u24ea"}, {"id": "ref-for-dfn-throw\u2460\u2460"}, {"id": "ref-for-dfn-throw\u2460\u2461"}, {"id": "ref-for-dfn-throw\u2460\u2462"}], "title": "10.1. WebIDL"}], "external": true};
 window.dfnpanelData['5f90bbfb'] = {"dfnID": "5f90bbfb", "url": "https://webidl.spec.whatwg.org/#idl-undefined", "dfnText": "undefined", "refSections": [{"refs": [{"id": "ref-for-idl-undefined"}, {"id": "ref-for-idl-undefined\u2460"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-idl-undefined\u2461"}], "title": "10.1. WebIDL"}], "external": true};
 window.dfnpanelData['24bd7d25'] = {"dfnID": "24bd7d25", "url": "https://webidl.spec.whatwg.org/#upon-fulfillment", "dfnText": "upon fulfillment", "refSections": [{"refs": [{"id": "ref-for-upon-fulfillment"}], "title": "9. Shared Storage API monkey patches"}], "external": true};
 window.dfnpanelData['f14ed351'] = {"dfnID": "f14ed351", "url": "https://webidl.spec.whatwg.org/#upon-rejection", "dfnText": "upon rejection", "refSections": [{"refs": [{"id": "ref-for-upon-rejection"}], "title": "9. Shared Storage API monkey patches"}], "external": true};
