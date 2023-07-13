@@ -446,10 +446,12 @@ propose the following structure. See [below](#implementation-plan) for the
 specific choices we have made in our current implementation.
 
 First, each user agent will limit the contribution that it could make to the
-output of a query. In the case of a histogram operation, the user agent could
-bound the L<sub>1</sub> norm of the _values_, i.e. the sum of all the
-contributions across all buckets. The user agent could consider other bounds,
-e.g. the L<sub>2</sub> norm.
+outputs of aggregation service queries. (Note that this limitation is a rate
+over time, not an absolute number, see [Partition choice](#partition-choice)
+below.) In the case of a histogram operation, the user agent could bound the
+L<sub>1</sub> norm of the _values_, i.e. the sum of all the contributions across
+all buckets. The user agent could consider other bounds, e.g. the L<sub>2</sub>
+norm.
 
 The user agent would also need to determine what the appropriate
 'partition' is for this budgeting, see [partition choice](#partition-choice)
