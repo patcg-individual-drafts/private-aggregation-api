@@ -31,6 +31,7 @@ Author: Alex Turner (alexmt@chromium.org)
     - [Scaling values](#scaling-values)
     - [Examples](#examples-1)
     - [Partition choice](#partition-choice)
+    - [Implementation plan](#implementation-plan)
 - [Future Iterations](#future-iterations)
   - [Supporting different aggregation services](#supporting-different-aggregation-services)
   - [Shared contribution budget](#shared-contribution-budget)
@@ -441,7 +442,8 @@ noise, aiming to have a framework that could support differential privacy.
 However, simply protecting each _query_ to the aggregation service or each
 _report_ sent from a user agent would be vulnerable to an adversary that repeats
 queries or issues multiple reports, and combines the results. Instead, we
-propose the following.
+propose the following structure. See [below](#implementation-plan) for the
+specific choices we have made in our current implementation.
 
 First, each user agent will limit the contribution that it could make to the
 output of a query. In the case of a histogram operation, the user agent could
@@ -492,8 +494,7 @@ scale. The examples below explore this in more detail.
 
 #### Examples
 
-These examples use the L<sub>1</sub> bound of 2<sup>16</sup> = 65 536 as
-proposed below.
+These examples use an L<sub>1</sub> bound of 2<sup>16</sup> = 65 536.
 
 Let's consider a basic measurement case: a binary histogram of counts. For
 example, using bucket 0 to indicate a user is a member of some group and bucket
@@ -539,6 +540,8 @@ e.g. resetting limits periodically. This does risk long-term information leakage
 from dedicated adversaries, but is essential for utility. Other options for
 recovering from an exhausted budget may be possible but need further
 exploration, e.g. allowing a site to clear its data to reset its budget.
+
+#### Implementation plan
 
 We plan to enforce a per-[site](https://web.dev/same-site-same-origin/#site)
 budget that resets every 10 minutes; that is, we will bound the contributions
