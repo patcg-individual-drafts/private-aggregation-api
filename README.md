@@ -31,6 +31,7 @@ Author: Alex Turner (alexmt@chromium.org)
     - [Scaling values](#scaling-values)
     - [Examples](#examples-1)
     - [Partition choice](#partition-choice)
+    - [Implementation plan](#implementation-plan)
 - [Future Iterations](#future-iterations)
   - [Supporting different aggregation services](#supporting-different-aggregation-services)
   - [Shared contribution budget](#shared-contribution-budget)
@@ -441,16 +442,14 @@ noise, aiming to have a framework that could support differential privacy.
 However, simply protecting each _query_ to the aggregation service or each
 _report_ sent from a user agent would be vulnerable to an adversary that repeats
 queries or issues multiple reports, and combines the results. Instead, we
-propose the following.
+propose the following structure. See [below](#implementation-plan) for the
+specific choices we have made in our current implementation.
 
 First, each user agent will limit the contribution that it could make to the
 output of a query. In the case of a histogram operation, the user agent could
 bound the L<sub>1</sub> norm of the _values_, i.e. the sum of all the
 contributions across all buckets. The user agent could consider other bounds,
-e.g. the L<sub>2</sub> norm. We initially plan to use an L<sub>1</sub> bound of
-2<sup>16</sup> = 65 536; this aligns with the [Attribution Reporting API with
-Aggregatable Reports
-explainer](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#privacy-budgeting).
+e.g. the L<sub>2</sub> norm.
 
 The user agent would also need to determine what the appropriate
 'partition' is for this budgeting, see [partition choice](#partition-choice)
@@ -495,8 +494,7 @@ scale. The examples below explore this in more detail.
 
 #### Examples
 
-These examples use the L<sub>1</sub> bound of 2<sup>16</sup> = 65 536 as
-proposed above.
+These examples use an L<sub>1</sub> bound of 2<sup>16</sup> = 65 536.
 
 Let's consider a basic measurement case: a binary histogram of counts. For
 example, using bucket 0 to indicate a user is a member of some group and bucket
@@ -543,12 +541,18 @@ from dedicated adversaries, but is essential for utility. Other options for
 recovering from an exhausted budget may be possible but need further
 exploration, e.g. allowing a site to clear its data to reset its budget.
 
+#### Implementation plan
+
 We plan to enforce a per-[site](https://web.dev/same-site-same-origin/#site)
 budget that resets every 10 minutes; that is, we will bound the contributions
-that any site can make to a histogram over any 10 minute window. As a backstop
-to limit worst-case leakage, we plan a separate, looser per-site bound that
-resets daily, limiting the daily L<sub>1</sub> norm to 2<sup>20</sup>
-= 1 048 576.
+that any site can make to a histogram over any 10 minute rolling window. We plan
+to use an L<sub>1</sub> bound of 2<sup>16</sup> = 65 536 for this bound; this
+aligns with the [Attribution Reporting API with Aggregatable Reports
+explainer](https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#privacy-budgeting).
+
+As a backstop to limit worst-case leakage, we plan a separate, looser per-site
+bound that is enforced on a 24 hour rolling window, limiting the daily
+L<sub>1</sub> norm to 2<sup>20</sup> = 1 048 576.
 
 This site will match the site of the execution environment, i.e. the site of the
 reporting origin, no matter which top-level sites are involved. For the earlier
