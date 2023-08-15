@@ -13,8 +13,6 @@ Abstract: A generic API for measuring aggregate, cross-site data in a privacy
     data is encrypted, ensuring it can only be processed by an <em>aggregation
     service</em>. During processing, this service will add noise and impose
     limits on how many queries can be performed.
-
-<!--- Warning: Not Ready -->
 Markup Shorthands: markdown on
 Complain About: accidental-2119 on, missing-example-ids on
 Assume Explicit For: on
