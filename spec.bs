@@ -521,6 +521,12 @@ To perform the <dfn algorithm>report creation and scheduling steps</dfn> with an
 {{PAHistogramContribution}}s |contributions|, a [=debug details=] |debugDetails|
 and a [=string=] or null |contextId|:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
+1. Optionally, return.
+
+    Note: This [=implementation-defined=] condition is intended to allow [=user
+        agents=] to drop reports for a number of reasons, for example user
+        opt-out or an origin not being
+        <a href="<https://github.com/privacysandbox/attestation">enrolled</a>.
 1. Let |truncatedContributions| be a new [=list=].
 1. If |contributions| has a [=list/size=] greater than [=maximum report
     contributions=]:
@@ -540,8 +546,6 @@ and a [=string=] or null |contextId|:
     |reportingOrigin|, |api|, |truncatedContributions|, |debugDetails|,
     |contextId| and |currentWallTime|.
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
-
-Issue: Do we need to address user settings here at all?
 
 To <dfn algorithm>consume budget if permitted</dfn> given a {{long}} |value|, an
 [=origin=] <var ignore=''>origin</var>, a [=context type=] |api| and a
