@@ -526,7 +526,7 @@ and a [=string=] or null |contextId|:
     Note: This [=implementation-defined=] condition is intended to allow [=user
         agents=] to drop reports for a number of reasons, for example user
         opt-out or an origin not being
-        <a href="<https://github.com/privacysandbox/attestation">enrolled</a>.
+        <a href="https://github.com/privacysandbox/attestation">enrolled</a>.
 1. Let |truncatedContributions| be a new [=list=].
 1. If |contributions| has a [=list/size=] greater than [=maximum report
     contributions=]:
