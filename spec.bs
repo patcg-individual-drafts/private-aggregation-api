@@ -3,7 +3,7 @@ Title: Private Aggregation API
 Shortname: private-aggregation-api
 Level: 1
 Status: UD
-Group: patcg-ig
+Group: patcg-id
 Repository: patcg-individual-drafts/private-aggregation-api
 URL: https://patcg-individual-drafts.github.io/private-aggregation-api
 Editor: Alexander Turner, Google https://www.google.com, alexmt@chromium.org
