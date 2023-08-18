@@ -5,10 +5,10 @@
   <title>Private Aggregation API</title>
   <meta content="w3c/CG-DRAFT" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/cg-draft" rel="stylesheet">
-  <meta content="Bikeshed version d29f71adb, updated Wed Jul 19 11:08:56 2023 -0700" name="generator">
+  <meta content="Bikeshed version 6edc88947, updated Thu Aug 17 11:18:09 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
   <link href="https://www.w3.org/2008/site/images/favicon.ico" rel="icon">
-  <meta content="16e05f962ca6bd64165042092057e13c3407edeb" name="document-revision">
+  <meta content="ef50c13a292e4a9c043bf1cddc26b7485b7afde8" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -670,7 +670,7 @@ var.selected6 { background-color: #FFBCF2; box-shadow: 0 0 0 2px #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-08-17">17 August 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#CG-DRAFT">Draft Community Group Report</a>, <time class="dt-updated" datetime="2023-08-18">18 August 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1275,6 +1275,11 @@ a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-f
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑤">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin">potentially trustworthy origin</a>.</p>
     <li data-md>
+     <p>Optionally, return.</p>
+     <p class="note" role="note"><span class="marker">Note:</span> This <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined①">implementation-defined</a> condition is intended to allow <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent">user
+    agents</a> to drop reports for a number of reasons, for example user
+    opt-out or an origin not being <a href="https://github.com/privacysandbox/attestation">enrolled</a>.</p>
+    <li data-md>
      <p>Let <var>truncatedContributions</var> be a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑥">list</a>.</p>
     <li data-md>
      <p>If <var>contributions</var> has a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size">size</a> greater than <a data-link-type="dfn" href="#maximum-report-contributions" id="ref-for-maximum-report-contributions">maximum report
@@ -1311,8 +1316,7 @@ report contributions</a>, exclusive:</p>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append①">Append</a> <var>report</var> to the user agent’s <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache①">aggregatable report cache</a>.</p>
    </ol>
-   <p class="issue" id="issue-a82d4aa0"><a class="self-link" href="#issue-a82d4aa0"></a> Do we need to address user settings here at all?</p>
-   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="consume budget if permitted" data-dfn-type="dfn" data-noexport id="consume-budget-if-permitted">consume budget if permitted</dfn> given a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long①">long</a></code> <var>value</var>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin③">origin</a> <var>origin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type④">context type</a> <var>api</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment②">moment</a> <var>currentTime</var>, perform <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined①">implementation-defined</a> steps. They return
+   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="consume budget if permitted" data-dfn-type="dfn" data-noexport id="consume-budget-if-permitted">consume budget if permitted</dfn> given a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long①">long</a></code> <var>value</var>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin③">origin</a> <var>origin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type④">context type</a> <var>api</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment②">moment</a> <var>currentTime</var>, perform <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined②">implementation-defined</a> steps. They return
 a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#boolean" id="ref-for-boolean③">boolean</a>, which indicates whether there is sufficient 'contribution budget'
 left to send the requested contribution <var>value</var>. This budget should be bound to
 usage over time, e.g. the contribution sum over the last 24 hours. The algorithm
@@ -1383,7 +1387,7 @@ its <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggreg
 parallel</a>:</p>
      <ol>
       <li data-md>
-       <p>Run these steps, but <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#abort-when" id="ref-for-abort-when">abort when</a> the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent">user agent</a> shuts down:</p>
+       <p>Run these steps, but <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#abort-when" id="ref-for-abort-when">abort when</a> the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent①">user agent</a> shuts down:</p>
        <ol>
         <li data-md>
          <p>If <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-queued" id="ref-for-aggregatable-report-queued①">queued</a> value is true, return.</p>
@@ -1393,7 +1397,7 @@ parallel</a>:</p>
          <p>Let <var>currentWallTime</var> be the <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-current-wall-time" id="ref-for-dfn-current-wall-time①">current wall time</a>.</p>
         <li data-md>
          <p>If <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-report-time" id="ref-for-aggregatable-report-report-time①">report time</a> is before <var>currentWallTime</var>, set <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-report-time" id="ref-for-aggregatable-report-report-time②">report
-time</a> to <var>currentWallTime</var> plus an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined②">implementation-defined</a> random non-negative <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-duration" id="ref-for-dfn-duration②">duration</a>.</p>
+time</a> to <var>currentWallTime</var> plus an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined③">implementation-defined</a> random non-negative <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-duration" id="ref-for-dfn-duration②">duration</a>.</p>
          <p class="note" role="note"><span class="marker">Note:</span> On startup, it is possible the user agent will need to send
     many reports whose report times passed while the browser was
     closed. Adding random delay prevents temporal joining of
@@ -1401,7 +1405,7 @@ time</a> to <var>currentWallTime</var> plus an <a data-link-type="dfn" href="htt
         <li data-md>
          <p>Wait until the <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-current-wall-time" id="ref-for-dfn-current-wall-time②">current wall time</a> is equal to or after <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-report-time" id="ref-for-aggregatable-report-report-time③">report time</a>.</p>
         <li data-md>
-         <p>Optionally, wait a further <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined③">implementation-defined</a> non-negative <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-duration" id="ref-for-dfn-duration③">duration</a>.</p>
+         <p>Optionally, wait a further <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined④">implementation-defined</a> non-negative <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-duration" id="ref-for-dfn-duration③">duration</a>.</p>
          <p class="note" role="note"><span class="marker">Note:</span> This is intended to allow user agents to optimize device
     resource usage and wait for the user agent to be online.</p>
         <li data-md>
@@ -1410,7 +1414,7 @@ time</a> to <var>currentWallTime</var> plus an <a data-link-type="dfn" href="htt
       <li data-md>
        <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#if-aborted" id="ref-for-if-aborted">If aborted</a>, set <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-queued" id="ref-for-aggregatable-report-queued③">queued</a> value to
 false.</p>
-       <p class="note" role="note"><span class="marker">Note:</span> It might be more practical to perform this step when the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent①">user
+       <p class="note" role="note"><span class="marker">Note:</span> It might be more practical to perform this step when the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent②">user
     agent</a> next starts up.</p>
      </ol>
    </ol>
@@ -1431,14 +1435,14 @@ report cache</a>.</p>
 the following steps:</p>
      <ol>
       <li data-md>
-       <p>Let <var>shouldRetry</var> be an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined④">implementation-defined</a> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#boolean" id="ref-for-boolean④">boolean</a>. The value
+       <p>Let <var>shouldRetry</var> be an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑤">implementation-defined</a> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#boolean" id="ref-for-boolean④">boolean</a>. The value
 should be false if no error occurred.</p>
       <li data-md>
        <p>If <var>shouldRetry</var> is true:</p>
        <ol>
         <li data-md>
          <p>Set <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-report-time" id="ref-for-aggregatable-report-report-time④">report time</a> to the <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-current-wall-time" id="ref-for-dfn-current-wall-time③">current
-wall time</a> plus an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑤">implementation-defined</a> non-negative <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-duration" id="ref-for-dfn-duration④">duration</a>.</p>
+wall time</a> plus an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑥">implementation-defined</a> non-negative <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-duration" id="ref-for-dfn-duration④">duration</a>.</p>
         <li data-md>
          <p>Set <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-queued" id="ref-for-aggregatable-report-queued④">queued</a> value to false.</p>
        </ol>
@@ -1590,9 +1594,9 @@ key/value pairs:</p>
     <li data-md>
      <p>Return <var>aggregationServicePayloads</var>.</p>
    </ol>
-   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="obtain-the-public-key-for-encryption">obtain the public key for encryption</dfn>, perform an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑥">implementation-defined</a> sequence of steps. They return a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#tuple" id="ref-for-tuple">tuple</a> consisting
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="obtain-the-public-key-for-encryption">obtain the public key for encryption</dfn>, perform an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑦">implementation-defined</a> sequence of steps. They return a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#tuple" id="ref-for-tuple">tuple</a> consisting
 of a public key and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string⑧">string</a> (which should uniquely identify the public
-key), or an error in the event that the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent②">user agent</a> failed to obtain the
+key), or an error in the event that the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent③">user agent</a> failed to obtain the
 public key.</p>
    <p class="note" role="note"><span class="marker">Note:</span> The user agent is encouraged to enforce regular key rotation. If there are
     multiple keys, the user agent can independently pick a key uniformly at
@@ -2542,7 +2546,7 @@ communicate information cross-site.</p>
 parameters used (e.g. contribution limits and the noise distribution used in the
 aggregation service). While we aim to minimize the amount of information
 exposed, we also aim to support a wide range of use cases. The privacy
-parameters are left <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑦">implementation-defined</a> to allow different and evolving
+parameters are left <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑧">implementation-defined</a> to allow different and evolving
 choices in the tradeoffs between information exposure and utility.</p>
    <h3 class="heading settled" data-level="12.2" id="clearing-site-data"><span class="secno">12.2. </span><span class="content">Clearing site data</span><a class="self-link" href="#clearing-site-data"></a></h3>
    <p>The <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache⑤">aggregatable report cache</a> as well as any contribution history data
@@ -2627,7 +2631,7 @@ their online-offline presence from the reporting origin.</p>
 cache</a> and <a data-link-type="dfn" href="#debug-scope-map" id="ref-for-debug-scope-map⑤">debug scope map</a> are separated by the reporting <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑦">origin</a> and
 the data included in any report with a given reporting <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑧">origin</a> are generated
 with only data from that <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑨">origin</a>.</p>
-   <p>One notable exception is the <a data-link-type="dfn" href="#consume-budget-if-permitted" id="ref-for-consume-budget-if-permitted③">consume budget if permitted</a> algorithm which is <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑧">implementation-defined</a> and can consider contribution history from other <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin①⓪">origins</a>. For example, the algorithm could consider all history from a
+   <p>One notable exception is the <a data-link-type="dfn" href="#consume-budget-if-permitted" id="ref-for-consume-budget-if-permitted③">consume budget if permitted</a> algorithm which is <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑨">implementation-defined</a> and can consider contribution history from other <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin①⓪">origins</a>. For example, the algorithm could consider all history from a
 particular <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#site" id="ref-for-site">site</a>. This would be an explicit relaxation of the same-origin
 policy as multiple origins would be able to influence the API’s behavior. One
 particular risk of these kinds of shared limits is the introduction of denial of
@@ -2635,7 +2639,7 @@ service attacks, where a group of origins could collude to intentionally consume
 all available budget, causing subsequent origins to be unable to access the API.
 This trades off security for privacy, in that the limits are there to reduce the
 efficacy of many origins colluding together to violate privacy. However, this
-security risk is lessened if the set of origins limited are all <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#same-site" id="ref-for-same-site">same site</a>. <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent③">User agents</a> should consider these tradeoffs when choosing the <a data-link-type="dfn" href="#consume-budget-if-permitted" id="ref-for-consume-budget-if-permitted④">consume
+security risk is lessened if the set of origins limited are all <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#same-site" id="ref-for-same-site">same site</a>. <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent④">User agents</a> should consider these tradeoffs when choosing the <a data-link-type="dfn" href="#consume-budget-if-permitted" id="ref-for-consume-budget-if-permitted④">consume
 budget if permitted</a> algorithm.</p>
    <h3 class="heading settled" data-level="13.2" id="protecting-the-histogram-contributions"><span class="secno">13.2. </span><span class="content">Protecting the histogram contributions</span><a class="self-link" href="#protecting-the-histogram-contributions"></a></h3>
    <p>As discussed <a href="#restricted-contribution-processing">above</a>, the processing of
@@ -2643,11 +2647,11 @@ histogram contributions is limited to protect privacy. This limitation relies on
 only the trusted aggregation service being able to access the unencrypted
 histogram contributions.</p>
    <p>To ensure this, this API uses <a data-link-type="biblio" href="#biblio-rfc9180" title="Hybrid Public Key Encryption">HPKE</a>, a modern encryption
-specification. Additionally, each <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent④">user agent</a> is encouraged to require
+specification. Additionally, each <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent⑤">user agent</a> is encouraged to require
 regular key rotation by the aggregation service. This limits the amount of data
 encrypted with the same key and thus the amount of vulnerable data in the case
 of a key being compromised.</p>
-   <p>While not specified here, each <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent⑤">user agent</a> is strongly encouraged to consider
+   <p>While not specified here, each <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent⑥">user agent</a> is strongly encouraged to consider
 the security of any aggregation service design before allowing its public keys
 to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encryption" id="ref-for-obtain-the-public-key-for-encryption①">obtain the public key for encryption</a>.</p>
   </main>
@@ -3164,7 +3168,6 @@ to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encry
    <div class="issue"> Ensure errors are of an appropriate type, e.g. <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidaccesserror">InvalidAccessError</a></code> is
     deprecated. <a class="issue-return" href="#issue-2f48ed07②" title="Jump to section">↵</a></div>
    <div class="issue"> Consider using an empty list of contributions for this case. <a class="issue-return" href="#issue-a43740dc" title="Jump to section">↵</a></div>
-   <div class="issue"> Do we need to address user settings here at all? <a class="issue-return" href="#issue-a82d4aa0" title="Jump to section">↵</a></div>
    <div class="issue"> Do we have to use the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">queue a task</a> algorithm here? <a class="issue-return" href="#issue-2485156c" title="Jump to section">↵</a></div>
    <div class="issue"> Do we need to queue this task? <a class="issue-return" href="#issue-380e314b" title="Jump to section">↵</a></div>
    <div class="issue"> Register this well-known directory. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/67">[Issue #67]</a> <a class="issue-return" href="#issue-6bd15926" title="Jump to section">↵</a></div>
@@ -3573,7 +3576,7 @@ window.dfnpanelData['1243a891'] = {"dfnID": "1243a891", "url": "https://infra.sp
 window.dfnpanelData['16d07e10'] = {"dfnID": "16d07e10", "url": "https://infra.spec.whatwg.org/#list-iterate", "dfnText": "for each", "refSections": [{"refs": [{"id": "ref-for-list-iterate"}, {"id": "ref-for-list-iterate\u2460"}, {"id": "ref-for-list-iterate\u2461"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-list-iterate\u2462"}, {"id": "ref-for-list-iterate\u2463"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-list-iterate\u2464"}], "title": "8.3. Sending reports"}, {"refs": [{"id": "ref-for-list-iterate\u2465"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-list-iterate\u2466"}, {"id": "ref-for-list-iterate\u2467"}], "title": "11.3. Algorithm modifications"}, {"refs": [{"id": "ref-for-list-iterate\u2468"}, {"id": "ref-for-list-iterate\u2460\u24ea"}], "title": "11.4. New algorithms"}], "external": true};
 window.dfnpanelData['b012ccb2'] = {"dfnID": "b012ccb2", "url": "https://infra.spec.whatwg.org/#forgiving-base64-encode", "dfnText": "forgiving-base64 encode", "refSections": [{"refs": [{"id": "ref-for-forgiving-base64-encode"}, {"id": "ref-for-forgiving-base64-encode\u2460"}], "title": "8.4. Serializing reports"}], "external": true};
 window.dfnpanelData['715f22e4'] = {"dfnID": "715f22e4", "url": "https://infra.spec.whatwg.org/#if-aborted", "dfnText": "if aborted", "refSections": [{"refs": [{"id": "ref-for-if-aborted"}], "title": "8.3. Sending reports"}], "external": true};
-window.dfnpanelData['860300d4'] = {"dfnID": "860300d4", "url": "https://infra.spec.whatwg.org/#implementation-defined", "dfnText": "implementation-defined", "refSections": [{"refs": [{"id": "ref-for-implementation-defined"}], "title": "6. Implementation-defined values"}, {"refs": [{"id": "ref-for-implementation-defined\u2460"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2461"}, {"id": "ref-for-implementation-defined\u2462"}, {"id": "ref-for-implementation-defined\u2463"}, {"id": "ref-for-implementation-defined\u2464"}], "title": "8.3. Sending reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2465"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2466"}], "title": "12.1.6. Privacy parameters"}, {"refs": [{"id": "ref-for-implementation-defined\u2467"}], "title": "13.1. Same-origin policy"}], "external": true};
+window.dfnpanelData['860300d4'] = {"dfnID": "860300d4", "url": "https://infra.spec.whatwg.org/#implementation-defined", "dfnText": "implementation-defined", "refSections": [{"refs": [{"id": "ref-for-implementation-defined"}], "title": "6. Implementation-defined values"}, {"refs": [{"id": "ref-for-implementation-defined\u2460"}, {"id": "ref-for-implementation-defined\u2461"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2462"}, {"id": "ref-for-implementation-defined\u2463"}, {"id": "ref-for-implementation-defined\u2464"}, {"id": "ref-for-implementation-defined\u2465"}], "title": "8.3. Sending reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2466"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2467"}], "title": "12.1.6. Privacy parameters"}, {"refs": [{"id": "ref-for-implementation-defined\u2468"}], "title": "13.1. Same-origin policy"}], "external": true};
 window.dfnpanelData['6b815fdd'] = {"dfnID": "6b815fdd", "url": "https://infra.spec.whatwg.org/#list-is-empty", "dfnText": "is empty (for list)", "refSections": [{"refs": [{"id": "ref-for-list-is-empty"}], "title": "8.1. Exported algorithms"}], "external": true};
 window.dfnpanelData['dc3369de'] = {"dfnID": "dc3369de", "url": "https://infra.spec.whatwg.org/#map-is-empty", "dfnText": "is empty (for map)", "refSections": [{"refs": [{"id": "ref-for-map-is-empty"}], "title": "8.1. Exported algorithms"}], "external": true};
 window.dfnpanelData['f02cd417'] = {"dfnID": "f02cd417", "url": "https://infra.spec.whatwg.org/#list-iterate", "dfnText": "iterate (for list)", "refSections": [{"refs": [{"id": "ref-for-list-iterate"}, {"id": "ref-for-list-iterate\u2460"}, {"id": "ref-for-list-iterate\u2461"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-list-iterate\u2462"}, {"id": "ref-for-list-iterate\u2463"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-list-iterate\u2464"}], "title": "8.3. Sending reports"}, {"refs": [{"id": "ref-for-list-iterate\u2465"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-list-iterate\u2466"}, {"id": "ref-for-list-iterate\u2467"}], "title": "11.3. Algorithm modifications"}, {"refs": [{"id": "ref-for-list-iterate\u2468"}, {"id": "ref-for-list-iterate\u2460\u24ea"}], "title": "11.4. New algorithms"}], "external": true};
@@ -3593,7 +3596,7 @@ window.dfnpanelData['0698d556'] = {"dfnID": "0698d556", "url": "https://infra.sp
 window.dfnpanelData['984221ca'] = {"dfnID": "984221ca", "url": "https://infra.spec.whatwg.org/#struct", "dfnText": "struct", "refSections": [{"refs": [{"id": "ref-for-struct"}], "title": "4.3. Scoping details"}, {"refs": [{"id": "ref-for-struct\u2460"}], "title": "4.4. Debug details"}, {"refs": [{"id": "ref-for-struct\u2461"}], "title": "4.5. Contribution cache entry"}, {"refs": [{"id": "ref-for-struct\u2462"}], "title": "4.6. Aggregatable report"}, {"refs": [{"id": "ref-for-struct\u2463"}], "title": "11.2.1. Extending auction config"}, {"refs": [{"id": "ref-for-struct\u2464"}], "title": "11.2.2. Permissions policy state"}, {"refs": [{"id": "ref-for-struct\u2465"}], "title": "11.2.5. On event contribution cache entry"}], "external": true};
 window.dfnpanelData['cf6542b2'] = {"dfnID": "cf6542b2", "url": "https://infra.spec.whatwg.org/#the-exclusive-range", "dfnText": "the exclusive range", "refSections": [{"refs": [{"id": "ref-for-the-exclusive-range"}], "title": "8.2. Scheduling reports"}], "external": true};
 window.dfnpanelData['0e8de730'] = {"dfnID": "0e8de730", "url": "https://infra.spec.whatwg.org/#tuple", "dfnText": "tuple", "refSections": [{"refs": [{"id": "ref-for-tuple"}], "title": "8.4. Serializing reports"}], "external": true};
-window.dfnpanelData['6d19ac93'] = {"dfnID": "6d19ac93", "url": "https://infra.spec.whatwg.org/#user-agent", "dfnText": "user agent", "refSections": [{"refs": [{"id": "ref-for-user-agent"}, {"id": "ref-for-user-agent\u2460"}], "title": "8.3. Sending reports"}, {"refs": [{"id": "ref-for-user-agent\u2461"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-user-agent\u2462"}], "title": "13.1. Same-origin policy"}, {"refs": [{"id": "ref-for-user-agent\u2463"}, {"id": "ref-for-user-agent\u2464"}], "title": "13.2. Protecting the histogram contributions"}], "external": true};
+window.dfnpanelData['6d19ac93'] = {"dfnID": "6d19ac93", "url": "https://infra.spec.whatwg.org/#user-agent", "dfnText": "user agent", "refSections": [{"refs": [{"id": "ref-for-user-agent"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-user-agent\u2460"}, {"id": "ref-for-user-agent\u2461"}], "title": "8.3. Sending reports"}, {"refs": [{"id": "ref-for-user-agent\u2462"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-user-agent\u2463"}], "title": "13.1. Same-origin policy"}, {"refs": [{"id": "ref-for-user-agent\u2464"}, {"id": "ref-for-user-agent\u2465"}], "title": "13.2. Protecting the histogram contributions"}], "external": true};
 window.dfnpanelData['1570624a'] = {"dfnID": "1570624a", "url": "https://w3c.github.io/webappsec-permissions-policy/#policy-controlled-feature-default-allowlist", "dfnText": "default allowlist", "refSections": [{"refs": [{"id": "ref-for-policy-controlled-feature-default-allowlist"}], "title": "7. Permissions Policy integration"}], "external": true};
 window.dfnpanelData['cc890cc1'] = {"dfnID": "cc890cc1", "url": "https://w3c.github.io/webappsec-permissions-policy/#policy-controlled-feature", "dfnText": "policy-controlled feature", "refSections": [{"refs": [{"id": "ref-for-policy-controlled-feature"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-policy-controlled-feature\u2460"}, {"id": "ref-for-policy-controlled-feature\u2461"}], "title": "7. Permissions Policy integration"}, {"refs": [{"id": "ref-for-policy-controlled-feature\u2462"}], "title": "10. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-policy-controlled-feature\u2463"}], "title": "11.3. Algorithm modifications"}], "external": true};
 window.dfnpanelData['96dabee7'] = {"dfnID": "96dabee7", "url": "https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin", "dfnText": "potentially trustworthy origin", "refSections": [{"refs": [{"id": "ref-for-potentially-trustworthy-origin"}, {"id": "ref-for-potentially-trustworthy-origin\u2460"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-potentially-trustworthy-origin\u2461"}], "title": "8.3. Sending reports"}], "external": true};
