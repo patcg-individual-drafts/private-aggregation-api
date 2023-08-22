@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-UD" rel="stylesheet">
   <meta content="Bikeshed version 6edc88947, updated Thu Aug 17 11:18:09 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="9675f68658d1f7c7d95fa2fb1ee33be68977f66c" name="document-revision">
+  <meta content="aafbbc43e967eb091ef010fa21b1d12d0e831359" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -1155,9 +1155,9 @@ possible decimal number.</p>
      <p>Let <var>debugScopeMap</var> be the <a data-link-type="dfn" href="#debug-scope-map" id="ref-for-debug-scope-map②">debug scope map</a>.</p>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①">Assert</a>: <var>debugScopeMap</var>[<var>debugScope</var>] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①">exists</a>.</p>
+     <p class="issue" id="issue-cb42d541"><a class="self-link" href="#issue-cb42d541"></a> This should return a default when the scope does not exist.</p>
     <li data-md>
-     <p>Return <var>debugScopeMap</var>[<var>debugScope</var>].
-Issue: This should return a default when the scope does not exist.</p>
+     <p>Return <var>debugScopeMap</var>[<var>debugScope</var>].</p>
    </ol>
    <p>To <dfn class="dfn-paneled algorithm" data-algorithm="mark a debug scope complete" data-dfn-type="dfn" data-export id="mark-a-debug-scope-complete">mark a debug scope complete</dfn> given a <a data-link-type="dfn" href="#debug-scope" id="ref-for-debug-scope⑦">debug
 scope</a> <var>debugScope</var>:</p>
@@ -3177,6 +3177,7 @@ to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encry
     this case). <a class="issue-return" href="#issue-1c64074f" title="Jump to section">↵</a></div>
    <div class="issue"> Ensure errors are of an appropriate type, e.g. <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidaccesserror">InvalidAccessError</a></code> is
     deprecated. <a class="issue-return" href="#issue-2f48ed07②" title="Jump to section">↵</a></div>
+   <div class="issue"> This should return a default when the scope does not exist. <a class="issue-return" href="#issue-cb42d541" title="Jump to section">↵</a></div>
    <div class="issue"> Consider using an empty list of contributions for this case. <a class="issue-return" href="#issue-a43740dc" title="Jump to section">↵</a></div>
    <div class="issue"> Do we have to use the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">queue a task</a> algorithm here? <a class="issue-return" href="#issue-2485156c" title="Jump to section">↵</a></div>
    <div class="issue"> Do we need to queue this task? <a class="issue-return" href="#issue-380e314b" title="Jump to section">↵</a></div>
