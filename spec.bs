@@ -204,6 +204,10 @@ enableDebugMode(optional PADebugModeOptions options)</dfn> method steps are:
     : [=debug details/key=]
     :: |debugKey|
 
+1. Optionally, set |debugDetails| to a new [=debug details=].
+
+    Note: This allows the user agent to make debug mode unavailable globally or
+        just for certain callers.
 1. [=map/Set=] |debugScopeMap|[|debugScope|] to |debugDetails|.
 
 Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
@@ -436,6 +440,7 @@ To <dfn algorithm export>get a debug details</dfn> given a [=debug scope=]
 1. Let |debugScopeMap| be the [=debug scope map=].
 1. [=Assert=]: |debugScopeMap|[|debugScope|] [=map/exists=].
 1. Return |debugScopeMap|[|debugScope|].
+    Issue: This should return a default when the scope does not exist.
 
 To <dfn algorithm export>mark a debug scope complete</dfn> given a [=debug
 scope=] |debugScope|:
