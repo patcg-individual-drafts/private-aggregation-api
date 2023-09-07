@@ -543,7 +543,13 @@ and a [=string=] or null |contextId|:
     given |contributionSum|, |reportingOrigin|, |api| and |currentWallTime|.
 1. If |sufficientBudget| is false:
     1. If |contextId| is null, return.
-    1. [=list/Empty=] |truncatedContributions|.
+    1. Let |nullContribution| be a new {{PAHistogramContribution}} with the
+        items:
+        : {{PAHistogramContribution/bucket}}
+        :: 0
+        : {{PAHistogramContribution/value}}
+        :: 0
+    1. Set |truncatedContributions| to « |nullContribution| ».
 
         Note:  If a context ID was specified, a report is sent, even if there is
             insufficent budget for the requested contributions. In this case,
