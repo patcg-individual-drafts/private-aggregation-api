@@ -298,7 +298,10 @@ debugging functionality on these reports.
 
 This data will only be available in a transitional phase while third-party
 cookies are available and are already capable of user tracking. The debug mode
-will be disabled if third-party cookies are disabled/deprecated.
+will only be enabled for contexts that are able to access third-party cookies.
+That is, it will be disabled if third-party cookies are disabled/deprecated
+generally or for a particular site/context; note that this also means debug
+mode will automatically become deprecated when third-party cookies are.
 
 #### Enabling
 
