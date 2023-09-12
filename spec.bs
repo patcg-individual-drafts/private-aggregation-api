@@ -496,15 +496,7 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a
         |batchedContributions|[|debugDetails|].
 1. If |batchedContributions| [=map/is empty=]:
     1. Let |debugDetails| be a new [=debug details=].
-    1. Let |nullContribution| be a new {{PAHistogramContribution}} with the
-        items:
-        : {{PAHistogramContribution/bucket}}
-        :: 0
-        : {{PAHistogramContribution/value}}
-        :: 0
-    1. Set |batchedContributions|[|debugDetails|] to « |nullContribution| ».
-
-    Issue: Consider using an empty list of contributions for this case.
+    1. Set |batchedContributions|[|debugDetails|] to a new [=list=].
 1. [=map/iterate|For each=] |debugDetails| → |contributions| of
     |batchedContributions|:
     1. Perform the [=report creation and scheduling steps=] with
@@ -552,13 +544,7 @@ To perform the <dfn algorithm>report creation and scheduling steps</dfn> with an
     given |contributionSum|, |reportingOrigin|, |api| and |currentWallTime|.
 1. If |sufficientBudget| is false:
     1. If |contextId| is null, return.
-    1. Let |nullContribution| be a new {{PAHistogramContribution}} with the
-        items:
-        : {{PAHistogramContribution/bucket}}
-        :: 0
-        : {{PAHistogramContribution/value}}
-        :: 0
-    1. Set |truncatedContributions| to « |nullContribution| ».
+    1. [=list/Empty=] |truncatedContributions|.
 
         Note:  If a context ID was specified, a report is sent, even if there is
             insufficent budget for the requested contributions. In this case,
@@ -809,6 +795,17 @@ Note: The user agent is encouraged to enforce regular key rotation. If there are
 To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=]
     |report|, perform the following steps. They return a [=byte sequence=].
 1. Let |payloadData| be a new [=list=].
+1. Let |contributions| be |report|'s [=aggregatable report/contributions=].
+1. If |contributions| [=list/is empty=]:
+    1. Let |nullContribution| be a new {{PAHistogramContribution}} with the
+        items:
+        : {{PAHistogramContribution/bucket}}
+        :: 0
+        : {{PAHistogramContribution/value}}
+        :: 0
+    1. Set |contributions| to « |nullContribution| ».
+
+    Issue(56): Replace with more generic padding.
 1. [=list/iterate|For each=] |contribution| of |report|'s [=aggregatable report/
     contributions=]:
     1. Let |contributionData| be an [=ordered map=] of the following key/value
