@@ -794,16 +794,21 @@ To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=]
     |report|, perform the following steps. They return a [=byte sequence=].
 1. Let |payloadData| be a new [=list=].
 1. Let |contributions| be |report|'s [=aggregatable report/contributions=].
-1. If |contributions| [=list/is empty=]:
+1. [=Assert=]: |contributions|' [=list/size=] is not greater than [=maximum
+    report contributions=].
+1. [=iteration/While=] |contributions|' [=list/size=] is less than [=maximum
+    report contributions=]:
     1. Let |nullContribution| be a new {{PAHistogramContribution}} with the
         items:
         : {{PAHistogramContribution/bucket}}
         :: 0
         : {{PAHistogramContribution/value}}
         :: 0
-    1. Set |contributions| to « |nullContribution| ».
+    1. [=list/Append=] |nullContribution| to |contributions|.
 
-    Issue(56): Replace with more generic padding.
+    Note: This padding protects against the number of contributions being leaked
+        through the encrypted payload size, see discussion
+        [below](#protecting-against-leaks-via-payload-size).
 1. [=list/iterate|For each=] |contribution| of |report|'s [=aggregatable report/
     contributions=]:
     1. Let |contributionData| be an [=ordered map=] of the following key/value
@@ -1744,10 +1749,7 @@ count.
 
 The length of the payload could additionally expose some cross-site information,
 namely how many contributions are included. To protect against this, the payload
-will be padded in the future.
-
-Issue(56): Pad the payload to avoid this risk.
-
+is padded to a fixed number of contributions.
 ### Temporary debugging mechanism ### {#temporary-debugging-mechanism}
 
 The <code>{{PrivateAggregation/enableDebugMode()}}</code> method allows for many
