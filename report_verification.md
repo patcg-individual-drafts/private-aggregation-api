@@ -175,8 +175,9 @@ approach explicitly reveals this association (with other mitigations), we can
 shorten these delays. We plan to impose a 5 second timeout on Shared Storage
 operations making contributions. We then plan to wait until the timeout to
 send a report, even if execution finishes early. This avoids leaking
-information through how long the operation took to run. As an alternative, we
-could consider instead keeping a shorter randomized delay (e.g. up to 1 minute).
+information through how long the operation took to run. We also considered
+instead keeping a shorter randomized delay (e.g. up to 1 minute), but that
+did not seem necessary.
 
 ## FLEDGE sellers
 
