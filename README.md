@@ -24,6 +24,7 @@ Author: Alex Turner (alexmt@chromium.org)
     - [Batching scope](#batching-scope)
     - [Contributions limit](#contributions-limit)
     - [Padding](#padding)
+  - [Aggregation coordinator choice](#aggregation-coordinator-choice)
 - [Privacy and security](#privacy-and-security)
   - [Metadata readable by the reporting origin](#metadata-readable-by-the-reporting-origin)
     - [Open question: what metadata to allow](#open-question-what-metadata-to-allow)
@@ -33,7 +34,7 @@ Author: Alex Turner (alexmt@chromium.org)
     - [Partition choice](#partition-choice)
     - [Implementation plan](#implementation-plan)
 - [Future Iterations](#future-iterations)
-  - [Supporting different aggregation services](#supporting-different-aggregation-services)
+  - [Supporting different aggregation modes](#supporting-different-aggregation-modes)
   - [Shared contribution budget](#shared-contribution-budget)
   - [Authentication and data integrity](#authentication-and-data-integrity)
   - [Aggregate error reporting](#aggregate-error-reporting)
@@ -357,7 +358,10 @@ even between different interest groups or Protected Audience function calls.
 However, reports triggered via `window.fence.reportEvent()` (see
 [here](https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md#reporting-bidding-data-associated-with-an-event-in-a-frame)
 for more detail), should only be batched per-event. This avoids excessive delay
-if this event is triggered substantially later.
+if this event is triggered substantially later. Reports for Protected Audience
+bidders may not share the same [aggregation coordinator
+choice](#aggregation-coordinator-choice). In this case, calls should be batched
+separately for the different coordinator choices.
 
 One consideration in the short term is that these calls may have different
 associated [debug modes or keys](#temporary-debugging-mechanism). In this case,
@@ -379,6 +383,62 @@ Strawman limit: 20 contributions per report.
 The size of the encrypted payload may reveal information about the number of
 contributions embedded in the aggregatable report. This can be mitigated by
 padding the plaintext payload (e.g. to a fixed size).
+
+### Aggregation coordinator choice
+
+This API should support multiple deployment options for the aggregation service,
+e.g. deployments on [different cloud
+providers](https://github.com/WICG/attribution-reporting-api/blob/main/AGGREGATION_SERVICE_TEE.md#initial-experiment-plans).
+To avoid a leak, this choice should not be possible from within an isolated
+context when a [context
+ID](https://github.com/patcg-individual-drafts/private-aggregation-api/blob/main/report_verification.md#shared-storage)
+is set.
+
+We propose a new optional string field `aggregationCoordinatorOrigin` to allow
+developers to specify the deployment option, e.g. the origin for the aggregation
+service deployed on AWS, GCP, and other platforms in the future. The specified
+origin would need to be on an allowlist maintained by the browser. If none is
+specified, a default will be used.
+
+Shared Storage callers would specify this field when calling the `run()` or
+`selectURL()` APIs, e.g.
+
+```js
+sharedStorage.run('someOperation', {'privateAggregationConfig':
+    {'aggregationCoordinatorOrigin': 'https://coordinator.example'}});
+```
+
+Note that we are reusing the `privateAggregationConfig` that currently allows
+for specifying a context ID (see
+[here](https://github.com/patcg-individual-drafts/private-aggregation-api/blob/main/report_verification.md)).
+
+Protected Audience sellers would specify this field in the `auctionConfig`, e.g.
+
+```js
+const myAuctionConfig = {
+  ...
+  'privateAggregationConfig': {
+    'aggregationCoordinatorOrigin': 'https://coordinator.example'
+  }
+};
+const auctionResultPromise = navigator.runAdAuction(myAuctionConfig);
+```
+
+For Protected Audience bidders, we plan to allow this choice to be set for each
+interest group via `navigator.joinAdInterestGroup()`, e.g.
+
+```js
+const interestGroup = {
+  ...
+  'privateAggregationConfig': {
+    'aggregationCoordinatorOrigin': 'https://coordinator.example'
+  }
+};
+const auctionResultPromise = navigator.joinAdInterestGroup(interestGroup);
+```
+This setting would be able to be overridden via the typical interest group
+mechanisms. For example, the update mechanism could support a new
+`privateAggregationConfig` key matching the call to `joinAdInterestGroup()`.
 
 ## Privacy and security
 
@@ -568,7 +628,7 @@ contribution budget](#shared-contribution-budget) below.
 
 ## Future Iterations
 
-### Supporting different aggregation services
+### Supporting different aggregation modes
 
 This API will support an optional parameter `alternativeAggregationMode` that
 accepts a string value. This parameter will allow developers to choose among
