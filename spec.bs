@@ -247,8 +247,8 @@ available.
 For any [=batching scope=] returned by the [=scoping details/get batching scope
 steps=], the [=process contributions for a batching scope=] steps should later
 be performed given that same batching scope, the global scope's [=relevant
-settings object=]'s [=environment settings object/origin=] and some [=context
-type=].
+settings object=]'s [=environment settings object/origin=], some [=context
+type=] and a timeout (or null).
 
 Note: This last requirement means that global scopes with different origins
     cannot share the same batching scope, see [Same-origin
@@ -378,7 +378,7 @@ The user agent may expose controls that allow the user to delete data from the
 many contributions can be present in a single report.
 
 <dfn>Minimum report delay</dfn> is a non-negative [=duration=] that controls the
-minimum delay to deliver an [=aggregatable report=]
+minimum delay to deliver an [=aggregatable report=].
 
 <dfn>Randomized report delay</dfn> is a positive [=duration=] that controls the
 random delay to deliver an [=aggregatable report=]. This delay is additional to
@@ -453,8 +453,8 @@ scope=] |debugScope|:
         |debugDetails|.
 
 To <dfn algorithm export>process contributions for a batching scope</dfn> given
-a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
-[=context type=] |contextType|:
+a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a
+[=context type=] |contextType| and a [=moment=] or null |timeout|:
 1. Let |batchEntries| be a new [=list=].
 1. [=list/iterate|For each=] |entry| of the [=contribution cache=]:
     1. If |entry|'s [=contribution cache entry/batching scope=] is
@@ -472,6 +472,9 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
 1. If |contextIdMap|[|batchingScope|] [=map/exists=]:
     1. Set |contextId| to |contextIdMap|[|batchingScope|].
     1. [=map/Remove=] |contextIdMap|[|batchingScope|].
+1. Otherwise, [=assert=]: |timeout| is null.
+
+    Note: Timeouts should only be used for determinstic reports.
 1. If |batchEntries| [=list/is empty=] and |contextId| is null, return.
 
     Note: If a context ID was specified, a report is always sent. See
@@ -500,8 +503,8 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
 1. [=map/iterate|For each=] |debugDetails| → |contributions| of
     |batchedContributions|:
     1. Perform the [=report creation and scheduling steps=] with
-        |reportingOrigin|, |contextType|, |contributions|, |debugDetails| and
-        |contextId|.
+        |reportingOrigin|, |contextType|, |contributions|, |debugDetails|,
+        |contextId| and |timeout|.
 
 Note: These steps break up the contributions based on their [=debug details=] as
     each report can only have one set of metadata.
@@ -518,8 +521,9 @@ Scheduling reports {#scheduling-reports}
 
 To perform the <dfn algorithm>report creation and scheduling steps</dfn> with an
 [=origin=] |reportingOrigin|, a [=context type=] |api|, a [=list=] of
-{{PAHistogramContribution}}s |contributions|, a [=debug details=] |debugDetails|
-and a [=string=] or null |contextId|:
+{{PAHistogramContribution}}s |contributions|, a [=debug details=]
+|debugDetails|, a [=string=] or null |contextId| and a [=moment=] or null
+|timeout|:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Optionally, return.
 
@@ -544,7 +548,7 @@ and a [=string=] or null |contextId|:
 1. If |sufficientBudget| is false, return.
 1. Let |report| be the result of [=obtaining an aggregatable report=] given
     |reportingOrigin|, |api|, |truncatedContributions|, |debugDetails|,
-    |contextId| and |currentWallTime|.
+    |contextId|, |timeout| and |currentWallTime|.
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
 To <dfn algorithm>consume budget if permitted</dfn> given a {{long}} |value|, an
@@ -559,11 +563,12 @@ returned, i.e. it should consume the budget in that case.
 To <dfn>obtain an aggregatable report</dfn> given an [=origin=]
 |reportingOrigin|, a [=context type=] |api|, a [=list=] of
 {{PAHistogramContribution}}s |contributions|, a [=debug details=]
-|debugDetails|, a [=string=] or null |contextId| and a [=moment=] |currentTime|,
+|debugDetails|, a [=string=] or null |contextId|, a [=moment] or null |timeout|
+and a [=moment=] |currentTime|,
 perform the following steps. They return an [=aggregatable report=].
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |reportTime| be the result of running [=obtain a report delivery time=]
-    given |currentTime|.
+    given |currentTime| and |timeout|.
 1. Let |report| be a new [=aggregatable report=] with the items:
     : [=aggregatable report/reporting origin=]
     :: |reportingOrigin|
@@ -586,12 +591,19 @@ perform the following steps. They return an [=aggregatable report=].
 1. Return |report|.
 
 To <dfn algorithm>obtain a report delivery time</dfn> given a [=moment=]
-|currentTime|, perform the following steps. They return a [=moment=].
-1. If [=automation local testing mode enabled=] is true, return |currentTime|.
+|currentTime| and a [=moment=] or null |timeout|, perform the following steps.
+They return a [=moment=].
+
+1. Let |reportTriggeredTime| be |currentTime|.
+1. If |timeout| is not null, set |reportTriggeredTime| to |timeout|.
+    Issue(80): Reduce the delay when a |timeout| is provided, i.e. when a
+        context ID is set.
+1. If [=automation local testing mode enabled=] is true, return
+    |reportTriggeredTime|.
 1. Let |r| be a random double between 0 (inclusive) and 1 (exclusive) with
     uniform probability.
-1. Return |currentTime| + [=minimum report delay=] + |r| * [=randomized report
-    delay=].
+1. Return |reportTriggeredTime| + [=minimum report delay=] + |r| * [=randomized
+    report delay=].
 
 Sending reports {#sending-reports}
 ----------------------------------
@@ -928,7 +940,7 @@ steps. They return a [=string=], null, or a {{DOMException}}:
 1. Return |contextId|.
 
 The {{WindowSharedStorage}}'s {{WindowSharedStorage/run()}} method steps are
-modified in three ways. First, add the following steps just after step 2 ("If
+modified in four ways. First, add the following steps just after step 2 ("If
 {{Worklet/addModule()}} has not yet been called, ..."), renumbering later steps
 as appropriate:
 <div algorithm="shared-storage-run-monkey-patch-1">
@@ -943,18 +955,43 @@ be |operationMap|[|name|]." (renumbering later steps as appropriate):
 <div algorithm="shared-storage-run-monkey-patch-2">
 2. Let |batchingScope| be a new [=batching scope=].
 1. Let <var ignore>debugScope</var> be a new [=debug scope=].
-1. If |contextId| is not null, [=set the context ID for a batching scope=] given
-        |contextId| and |batchingScope|.
+1. Let |privateAggregationTimeout| be null.
+1. If |contextId| is not null:
+    1. Set |privateAggregationTimeout| to the [=current wall time=] plus a
+        non-negative [=implementation-defined=] [=duration=].
+    1. [=Set the context ID for a batching scope=] given |contextId| and
+        |batchingScope|.
 
 </div>
-Finally, at the end of the same nested scope, add the following step:
+
+Third, add the following steps in the same nested scope just before the current
+last step ("Otherwise, [=call=] operation without any arguments list",
+renumbering the last step as appropriate):
 <div algorithm="shared-storage-run-monkey-patch-3">
-6. When the above [=call=] returns, perform the following steps:
+1. Let |hasRunPrivateAggregationCompletionTask| be false.
+1. Let |privateAggregationCompletionTask| be an algorithm to perform the
+    following steps:
+    1. If |hasRunPrivateAggregationCompletionTask|, return.
+    1. Set |hasRunPrivateAggregationCompletionTask| to true.
     1. [=Mark a debug scope complete=] given <var ignore>debugScope</var>.
     1. [=Process contributions for a batching scope=] given
         <var ignore>batchingScope</var>, <var ignore>outsideSettings</var>'
-        [=environment settings object/origin=] and
-        "<code>shared-storage</code>".
+        [=environment settings object/origin=], "<code>shared-storage</code>"
+        and |privateAggregationTimeout|.
+1. If |contextId| is not null:
+    1. Set |privateAggregationTimeout| to the [=current wall time=] plus a
+        non-negative [=implementation-defined=] [=duration=].
+    1. [=Set the context ID for a batching scope=] given |contextId| and
+        |batchingScope|.
+    1. Run the following steps [=in parallel=]:
+        1. Wait until |privateAggregationTimeout|.
+        1. Run |privateAggregationCompletionTask|.
+</div>
+
+Finally, at the end of the same nested scope, add the following step:
+<div algorithm="shared-storage-run-monkey-patch-4">
+9. When the above [=call=] returns, perform the following steps:
+    1. Run |privateAggregationCompletionTask|.
 
 </div>
 
@@ -974,16 +1011,29 @@ be |operationMap|[|name|]." (renumbering later steps as appropriate):
 <div algorithm="shared-storage-selecturl-monkey-patch-2">
 2. Let |batchingScope| be a new [=batching scope=].
 1. Let <var ignore>debugScope</var> be a new [=debug scope=].
-1. If |contextId| is not null, [=set the context ID for a batching scope=] given
-        |contextId| and |batchingScope|.
+1. Let |privateAggregationTimeout| be null.
+1. Let |hasRunPrivateAggregationCompletionTask| be false.
+1. Let |privateAggregationCompletionTask| be the following steps:
+    1. If |hasRunPrivateAggregationCompletionTask|, return.
+    1. Set |hasRunPrivateAggregationCompletionTask| to true.
+    1. [=Mark a debug scope complete=] given <var ignore>debugScope</var>.
+    1. [=Process contributions for a batching scope=] given
+        <var ignore>batchingScope</var>, <var ignore>outsideSettings</var>'
+        [=environment settings object/origin=], "<code>shared-storage</code>"
+        and |privateAggregationTimeout|.
+1. If |contextId| is not null:
+    1. Set |privateAggregationTimeout| to the [=current wall time=] plus a
+        non-negative [=implementation-defined=] [=duration=].
+    1. [=Set the context ID for a batching scope=] given |contextId| and
+        |batchingScope|.
+    1. Run the following steps [=in parallel=]:
+        1. Wait until |privateAggregationTimeout|.
+        1. Run |privateAggregationCompletionTask|.
 
 </div>
 Finally, at the end of the same nested scope, add the following steps:
 <div algorithm="shared-storage-selecturl-monkey-patch-3">
-9. [=Mark a debug scope complete=] given <var ignore>debugScope</var>.
-1. [=Process contributions for a batching scope=] given
-    <var ignore>batchingScope</var>, <var ignore>outsideSettings</var>'
-    [=environment settings object/origin=] and "<code>shared-storage</code>".
+13. Run |privateAggregationCompletionTask|.
 
 </div>
 
@@ -1489,7 +1539,7 @@ an <a spec="turtledove">auction config</a> |auctionConfig| and a
 1. [=list/iterate|For each=] |origin| → |batchingScope| of
     |auctionConfig|'s [=auction config/batching scope map=]:
     1. [=Process contributions for a batching scope=] given |batchingScope|,
-        |origin| and "<code>protected-audience</code>".
+        |origin|, "<code>protected-audience</code>" and null.
 
 Issue: Verify interaction with component auctions.
 
