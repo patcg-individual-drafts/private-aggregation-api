@@ -32,6 +32,7 @@ Author: Alex Turner (alexmt@chromium.org)
     - [Examples](#examples-1)
     - [Partition choice](#partition-choice)
     - [Implementation plan](#implementation-plan)
+  - [Enrollment and attestation](#enrollment-and-attestation)
 - [Future Iterations](#future-iterations)
   - [Supporting different aggregation services](#supporting-different-aggregation-services)
   - [Shared contribution budget](#shared-contribution-budget)
@@ -565,6 +566,19 @@ within `reportResult()` and the interest group owner within
 We initially plan to have two separate budgets: one for calls within Shared
 Storage worklets and one for Protected Audience worklets. However, see [shared
 contribution budget](#shared-contribution-budget) below.
+
+### Enrollment and attestation
+Use of this API requires
+[enrollment](https://github.com/privacysandbox/attestation/blob/main/how-to-enroll.md)
+and
+[attestation](https://github.com/privacysandbox/attestation/blob/main/README.md#core-privacy-attestations)
+via the [Privacy Sandbox enrollment attestation
+model](https://github.com/privacysandbox/attestation/blob/main/README.md).
+
+When an aggregatable report is triggered, a check will be performed to determine
+whether the calling
+[site](https://html.spec.whatwg.org/multipage/browsers.html#site) is enrolled and
+attested. If this check fails, the report will be dropped (i.e. not sent).
 
 ## Future Iterations
 
