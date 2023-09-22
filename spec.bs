@@ -614,16 +614,14 @@ To <dfn algorithm>obtain a report delivery time</dfn> given a [=moment=]
 |currentTime| and a [=moment=] or null |timeout|, perform the following steps.
 They return a [=moment=].
 
-1. Let |reportTriggeredTime| be |currentTime|.
-1. If |timeout| is not null, set |reportTriggeredTime| to |timeout|.
-    Issue(80): Reduce the delay when a |timeout| is provided, i.e. when a
-        context ID is set.
+1. If |timeout| is not null:
+    1. Return |timeout|.
 1. If [=automation local testing mode enabled=] is true, return
-    |reportTriggeredTime|.
+    |currentTime|.
 1. Let |r| be a random double between 0 (inclusive) and 1 (exclusive) with
     uniform probability.
-1. Return |reportTriggeredTime| + [=minimum report delay=] + |r| * [=randomized
-    report delay=].
+1. Return |currentTime| + [=minimum report delay=] + |r| * [=randomized report
+    delay=].
 
 Sending reports {#sending-reports}
 ----------------------------------
