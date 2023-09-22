@@ -474,7 +474,7 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a
     1. [=map/Remove=] |contextIdMap|[|batchingScope|].
 1. Otherwise, [=assert=]: |timeout| is null.
 
-    Note: Timeouts should only be used for determinstic reports.
+    Note: Timeouts can only be used for deterministic reports.
 1. If |batchEntries| [=list/is empty=] and |contextId| is null, return.
 
     Note: If a context ID was specified, a report is always sent. See
@@ -975,9 +975,9 @@ renumbering the last step as appropriate):
     1. Set |hasRunPrivateAggregationCompletionTask| to true.
     1. [=Mark a debug scope complete=] given <var ignore>debugScope</var>.
     1. [=Process contributions for a batching scope=] given
-        <var ignore>batchingScope</var>, <var ignore>outsideSettings</var>'
-        [=environment settings object/origin=], "<code>shared-storage</code>"
-        and |privateAggregationTimeout|.
+        |batchingScope|, <var ignore>outsideSettings</var>' [=environment
+        settings object/origin=], "<code>shared-storage</code>" and
+        |privateAggregationTimeout|.
 1. If |contextId| is not null:
     1. Set |privateAggregationTimeout| to the [=current wall time=] plus a
         non-negative [=implementation-defined=] [=duration=].
@@ -986,12 +986,13 @@ renumbering the last step as appropriate):
     1. Run the following steps [=in parallel=]:
         1. Wait until |privateAggregationTimeout|.
         1. Run |privateAggregationCompletionTask|.
+
 </div>
 
 Finally, at the end of the same nested scope, add the following step:
 <div algorithm="shared-storage-run-monkey-patch-4">
 9. When the above [=call=] returns, perform the following steps:
-    1. Run |privateAggregationCompletionTask|.
+    1. Run <var ignore>privateAggregationCompletionTask</var>.
 
 </div>
 
@@ -1010,15 +1011,16 @@ Second, add the following steps in the nested scope just after "Let |operation|
 be |operationMap|[|name|]." (renumbering later steps as appropriate):
 <div algorithm="shared-storage-selecturl-monkey-patch-2">
 2. Let |batchingScope| be a new [=batching scope=].
-1. Let <var ignore>debugScope</var> be a new [=debug scope=].
+1. Let |debugScope| be a new [=debug scope=].
 1. Let |privateAggregationTimeout| be null.
 1. Let |hasRunPrivateAggregationCompletionTask| be false.
-1. Let |privateAggregationCompletionTask| be the following steps:
+1. Let |privateAggregationCompletionTask| be an algorithm to perform the
+    following steps:
     1. If |hasRunPrivateAggregationCompletionTask|, return.
     1. Set |hasRunPrivateAggregationCompletionTask| to true.
-    1. [=Mark a debug scope complete=] given <var ignore>debugScope</var>.
+    1. [=Mark a debug scope complete=] given |debugScope|.
     1. [=Process contributions for a batching scope=] given
-        <var ignore>batchingScope</var>, <var ignore>outsideSettings</var>'
+        |batchingScope|, <var ignore>outsideSettings</var>'
         [=environment settings object/origin=], "<code>shared-storage</code>"
         and |privateAggregationTimeout|.
 1. If |contextId| is not null:
@@ -1033,7 +1035,7 @@ be |operationMap|[|name|]." (renumbering later steps as appropriate):
 </div>
 Finally, at the end of the same nested scope, add the following steps:
 <div algorithm="shared-storage-selecturl-monkey-patch-3">
-13. Run |privateAggregationCompletionTask|.
+13. Run <var ignore>privateAggregationCompletionTask</var>.
 
 </div>
 
