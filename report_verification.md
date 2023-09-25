@@ -173,11 +173,12 @@ a chosen subset of reports to be a privacy concern, given other protections
 Currently, reports are delayed by up to one hour to avoid revealing an
 association between the issued reports and the original context. As this
 approach explicitly reveals this association (with other mitigations), we can
-shorten these delays. We will likely need to impose a timeout on Shared Storage
-operations to avoid leaking information through how long the operation took to
-run. We could then consider keeping a shorter randomized delay (e.g. between 1
-and 5 minutes) or simply waiting until the timeout, even if execution finishes
-early.
+shorten these delays. We plan to impose a 5 second timeout on Shared Storage
+operations making contributions. We then plan to wait until the timeout to
+send a report, even if execution finishes early. This avoids leaking
+information through how long the operation took to run. We also considered
+instead keeping a shorter randomized delay (e.g. up to 1 minute), but that
+did not seem necessary.
 
 ## FLEDGE sellers
 
