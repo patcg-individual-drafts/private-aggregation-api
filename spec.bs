@@ -480,8 +480,8 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin| and a
     1. [=map/Remove=] |contextIdMap|[|batchingScope|].
 1. If |batchEntries| [=list/is empty=] and |contextId| is null, return.
 
-    Note: If a context ID was specified, a report is always sent. See
-        [Protecting against leaks via the number of
+    Note: If a context ID was specified, a report is sent, even if there are no
+        contributions. See [Protecting against leaks via the number of
         reports](#protecting-against-leaks-via-the-number-of-reports).
 1. Let |batchedContributions| be a new [=ordered map=].
 1. [=list/iterate|For each=] |entry| of |batchEntries|:
@@ -547,7 +547,21 @@ and a [=string=] or null |contextId|:
 1. Let |currentWallTime| be the [=current wall time=].
 1. Let |sufficientBudget| be the result of [=consuming budget if permitted=]
     given |contributionSum|, |reportingOrigin|, |api| and |currentWallTime|.
-1. If |sufficientBudget| is false, return.
+1. If |sufficientBudget| is false:
+    1. If |contextId| is null, return.
+    1. Let |nullContribution| be a new {{PAHistogramContribution}} with the
+        items:
+        : {{PAHistogramContribution/bucket}}
+        :: 0
+        : {{PAHistogramContribution/value}}
+        :: 0
+    1. Set |truncatedContributions| to « |nullContribution| ».
+
+        Note:  If a context ID was specified, a report is sent, even if there is
+            insufficent budget for the requested contributions. In this case,
+            the contributions are dropped. See
+            [Protecting against leaks via the number of
+            reports](#protecting-against-leaks-via-the-number-of-reports).
 1. Let |report| be the result of [=obtaining an aggregatable report=] given
     |reportingOrigin|, |api|, |truncatedContributions|, |debugDetails|,
     |contextId| and |currentWallTime|.
@@ -560,7 +574,8 @@ a [=boolean=], which indicates whether there is sufficient 'contribution budget'
 left to send the requested contribution |value|. This budget should be bound to
 usage over time, e.g. the contribution sum over the last 24 hours. The algorithm
 should assume that the contribution will be sent if and only if true is
-returned, i.e. it should consume the budget in that case.
+returned, i.e. it should consume the budget in that case. If |value| is zero,
+this algorithm should return true.
 
 To <dfn>obtain an aggregatable report</dfn> given an [=origin=]
 |reportingOrigin|, a [=context type=] |api|, a [=list=] of
