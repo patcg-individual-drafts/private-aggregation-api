@@ -120,7 +120,8 @@ report would have a variable number of contributions embedded (see [batching
 proposal](https://github.com/patcg-individual-drafts/private-aggregation-api#reducing-volume-by-batching)).
 To avoid leaking the number of contributions, we will need to
 [pad](https://github.com/patcg-individual-drafts/private-aggregation-api#padding)
-the encrypted payload.
+the encrypted payload. Additionally, if a context has run out of budget, a
+report should still be sent (containing no contributions).
 
 #### Allows retrospective filtering
 
