@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-UD" rel="stylesheet">
   <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="2eb3d35f095cc9f03f76f720c30582f25ce8a017" name="document-revision">
+  <meta content="2d2ee098442f82a0fe26d81ccb286bd26280b5d1" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -1219,7 +1219,8 @@ not null.</p>
      </ol>
     <li data-md>
      <p>If <var>batchEntries</var> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-is-empty" id="ref-for-list-is-empty">is empty</a> and <var>contextId</var> is null, return.</p>
-     <p class="note" role="note"><span class="marker">Note:</span> If a context ID was specified, a report is always sent. See <a href="#protecting-against-leaks-via-the-number-of-reports">Protecting against leaks via the number of
+     <p class="note" role="note"><span class="marker">Note:</span> If a context ID was specified, a report is sent, even if there are no
+    contributions. See <a href="#protecting-against-leaks-via-the-number-of-reports">Protecting against leaks via the number of
     reports</a>.</p>
     <li data-md>
      <p>Let <var>batchedContributions</var> be a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map②">ordered map</a>.</p>
@@ -1320,7 +1321,28 @@ report contributions</a>, exclusive:</p>
     <li data-md>
      <p>Let <var>sufficientBudget</var> be the result of <a data-link-type="dfn" href="#consume-budget-if-permitted" id="ref-for-consume-budget-if-permitted①">consuming budget if permitted</a> given <var>contributionSum</var>, <var>reportingOrigin</var>, <var>api</var> and <var>currentWallTime</var>.</p>
     <li data-md>
-     <p>If <var>sufficientBudget</var> is false, return.</p>
+     <p>If <var>sufficientBudget</var> is false:</p>
+     <ol>
+      <li data-md>
+       <p>If <var>contextId</var> is null, return.</p>
+      <li data-md>
+       <p>Let <var>nullContribution</var> be a new <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑧">PAHistogramContribution</a></code> with the
+items:</p>
+       <dl>
+        <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket②">bucket</a></code>
+        <dd data-md>
+         <p>0</p>
+        <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value②">value</a></code>
+        <dd data-md>
+         <p>0</p>
+       </dl>
+      <li data-md>
+       <p>Set <var>truncatedContributions</var> to « <var>nullContribution</var> ».</p>
+       <p class="note" role="note"><span class="marker">Note:</span> If a context ID was specified, a report is sent, even if there is
+    insufficent budget for the requested contributions. In this case,
+    the contributions are dropped. See <a href="#protecting-against-leaks-via-the-number-of-reports">Protecting against leaks via the number of
+    reports</a>.</p>
+     </ol>
     <li data-md>
      <p>Let <var>report</var> be the result of <a data-link-type="dfn" href="#obtain-an-aggregatable-report" id="ref-for-obtain-an-aggregatable-report">obtaining an aggregatable report</a> given <var>reportingOrigin</var>, <var>api</var>, <var>truncatedContributions</var>, <var>debugDetails</var>, <var>contextId</var> and <var>currentWallTime</var>.</p>
     <li data-md>
@@ -1331,8 +1353,9 @@ a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#boolean" id="ref-
 left to send the requested contribution <var>value</var>. This budget should be bound to
 usage over time, e.g. the contribution sum over the last 24 hours. The algorithm
 should assume that the contribution will be sent if and only if true is
-returned, i.e. it should consume the budget in that case.</p>
-   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="obtain-an-aggregatable-report">obtain an aggregatable report</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin④">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type⑤">context type</a> <var>api</var>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑦">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑧">PAHistogramContribution</a></code>s <var>contributions</var>, a <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details①⓪">debug details</a> <var>debugDetails</var>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string⑦">string</a> or null <var>contextId</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment③">moment</a> <var>currentTime</var>,
+returned, i.e. it should consume the budget in that case. If <var>value</var> is zero,
+this algorithm should return true.</p>
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="obtain-an-aggregatable-report">obtain an aggregatable report</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin④">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type⑤">context type</a> <var>api</var>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑦">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑨">PAHistogramContribution</a></code>s <var>contributions</var>, a <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details①⓪">debug details</a> <var>debugDetails</var>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string⑦">string</a> or null <var>contextId</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment③">moment</a> <var>currentTime</var>,
 perform the following steps. They return an <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report⑤">aggregatable report</a>.</p>
    <ol>
     <li data-md>
@@ -1624,10 +1647,10 @@ pairs:</p>
        <dl>
         <dt data-md>"<code>bucket</code>"
         <dd data-md>
-         <p>The result of <a data-link-type="dfn" href="#encode-an-integer-for-the-payload" id="ref-for-encode-an-integer-for-the-payload">encoding an integer for the payload</a> given <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket②">bucket</a></code>"] and 128.</p>
+         <p>The result of <a data-link-type="dfn" href="#encode-an-integer-for-the-payload" id="ref-for-encode-an-integer-for-the-payload">encoding an integer for the payload</a> given <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket③">bucket</a></code>"] and 128.</p>
         <dt data-md>"<code>value</code>"
         <dd data-md>
-         <p>The result of <a data-link-type="dfn" href="#encode-an-integer-for-the-payload" id="ref-for-encode-an-integer-for-the-payload①">encoding an integer for the payload</a> given <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value②">value</a></code>"] and 32.</p>
+         <p>The result of <a data-link-type="dfn" href="#encode-an-integer-for-the-payload" id="ref-for-encode-an-integer-for-the-payload①">encoding an integer for the payload</a> given <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value③">value</a></code>"] and 32.</p>
        </dl>
       <li data-md>
        <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append④">Append</a> <var>contributionData</var> to <var>payloadData</var>.</p>
@@ -2342,7 +2365,7 @@ the <a data-link-type="dfn" href="#contribution-cache" id="ref-for-contribution-
    </ol>
    <p class="issue" id="issue-c1e53695"><a class="self-link" href="#issue-c1e53695"></a> Verify interaction with component auctions.</p>
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fill-in-the-contribution">fill in the contribution</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-paextendedhistogramcontribution" id="ref-for-dictdef-paextendedhistogramcontribution②">PAExtendedHistogramContribution</a></code> <var>contribution</var> and a <a data-link-type="dfn" href="https://wicg.github.io/turtledove/#leading-bid-info" id="ref-for-leading-bid-info①">leading bid info</a> <var>leadingBidInfo</var>, perform the
-following steps. They return a <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑨">PAHistogramContribution</a></code>.</p>
+following steps. They return a <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution①⓪">PAHistogramContribution</a></code>.</p>
    <ol>
     <li data-md>
      <p>Let <var>bucket</var> be <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-bucket" id="ref-for-dom-paextendedhistogramcontribution-bucket①">bucket</a></code>"].</p>
@@ -2355,12 +2378,12 @@ in the signal value</a> given <var>bucket</var>, 65535 and <var>leadingBidInfo</
      <p>If <var>value</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue⑤">PASignalValue</a></code>, set <var>value</var> to the result of <a data-link-type="dfn" href="#fill-in-the-signal-value" id="ref-for-fill-in-the-signal-value①">filling in
 the signal value</a> given <var>value</var>, 2<sup>128</sup>−1 and <var>leadingBidInfo</var>.</p>
     <li data-md>
-     <p>Return a new <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution①⓪">PAHistogramContribution</a></code> with the items:</p>
+     <p>Return a new <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution①①">PAHistogramContribution</a></code> with the items:</p>
      <dl>
-      <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket③">bucket</a></code>
+      <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket④">bucket</a></code>
       <dd data-md>
        <p><var>bucket</var></p>
-      <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value③">value</a></code>
+      <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value④">value</a></code>
       <dd data-md>
        <p><var>value</var></p>
      </dl>
@@ -3671,9 +3694,9 @@ window.dfnpanelData['5f90bbfb'] = {"dfnID": "5f90bbfb", "url": "https://webidl.s
 window.dfnpanelData['24bd7d25'] = {"dfnID": "24bd7d25", "url": "https://webidl.spec.whatwg.org/#upon-fulfillment", "dfnText": "upon fulfillment", "refSections": [{"refs": [{"id": "ref-for-upon-fulfillment"}], "title": "10. Shared Storage API monkey patches"}], "external": true};
 window.dfnpanelData['f14ed351'] = {"dfnID": "f14ed351", "url": "https://webidl.spec.whatwg.org/#upon-rejection", "dfnText": "upon rejection", "refSections": [{"refs": [{"id": "ref-for-upon-rejection"}], "title": "10. Shared Storage API monkey patches"}], "external": true};
 window.dfnpanelData['privateaggregation'] = {"dfnID": "privateaggregation", "url": "#privateaggregation", "dfnText": "PrivateAggregation", "refSections": [{"refs": [{"id": "ref-for-privateaggregation"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-privateaggregation\u2460"}, {"id": "ref-for-privateaggregation\u2461"}, {"id": "ref-for-privateaggregation\u2462"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-privateaggregation\u2463"}], "title": "4.7. Context type"}, {"refs": [{"id": "ref-for-privateaggregation\u2464"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-privateaggregation\u2465"}], "title": "10. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-privateaggregation\u2466"}, {"id": "ref-for-privateaggregation\u2467"}], "title": "11.1. WebIDL"}], "external": false};
-window.dfnpanelData['dictdef-pahistogramcontribution'] = {"dfnID": "dictdef-pahistogramcontribution", "url": "#dictdef-pahistogramcontribution", "dfnText": "PAHistogramContribution", "refSections": [{"refs": [{"id": "ref-for-dictdef-pahistogramcontribution"}], "title": "1.3. Alternative considered"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2460"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2461"}], "title": "4.1. Batching scope"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2462"}], "title": "4.2. Debug scope"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2463"}], "title": "4.5. Contribution cache entry"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2464"}], "title": "4.6. Aggregatable report"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2465"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2466"}, {"id": "ref-for-dictdef-pahistogramcontribution\u2467"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2468"}, {"id": "ref-for-dictdef-pahistogramcontribution\u2460\u24ea"}], "title": "11.4. New algorithms"}], "external": false};
-window.dfnpanelData['dom-pahistogramcontribution-bucket'] = {"dfnID": "dom-pahistogramcontribution-bucket", "url": "#dom-pahistogramcontribution-bucket", "dfnText": "bucket", "refSections": [{"refs": [{"id": "ref-for-dom-pahistogramcontribution-bucket"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-bucket\u2460"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-bucket\u2461"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-bucket\u2462"}], "title": "11.4. New algorithms"}], "external": false};
-window.dfnpanelData['dom-pahistogramcontribution-value'] = {"dfnID": "dom-pahistogramcontribution-value", "url": "#dom-pahistogramcontribution-value", "dfnText": "value", "refSections": [{"refs": [{"id": "ref-for-dom-pahistogramcontribution-value"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-value\u2460"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-value\u2461"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-value\u2462"}], "title": "11.4. New algorithms"}], "external": false};
+window.dfnpanelData['dictdef-pahistogramcontribution'] = {"dfnID": "dictdef-pahistogramcontribution", "url": "#dictdef-pahistogramcontribution", "dfnText": "PAHistogramContribution", "refSections": [{"refs": [{"id": "ref-for-dictdef-pahistogramcontribution"}], "title": "1.3. Alternative considered"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2460"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2461"}], "title": "4.1. Batching scope"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2462"}], "title": "4.2. Debug scope"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2463"}], "title": "4.5. Contribution cache entry"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2464"}], "title": "4.6. Aggregatable report"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2465"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2466"}, {"id": "ref-for-dictdef-pahistogramcontribution\u2467"}, {"id": "ref-for-dictdef-pahistogramcontribution\u2468"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-dictdef-pahistogramcontribution\u2460\u24ea"}, {"id": "ref-for-dictdef-pahistogramcontribution\u2460\u2460"}], "title": "11.4. New algorithms"}], "external": false};
+window.dfnpanelData['dom-pahistogramcontribution-bucket'] = {"dfnID": "dom-pahistogramcontribution-bucket", "url": "#dom-pahistogramcontribution-bucket", "dfnText": "bucket", "refSections": [{"refs": [{"id": "ref-for-dom-pahistogramcontribution-bucket"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-bucket\u2460"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-bucket\u2461"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-bucket\u2462"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-bucket\u2463"}], "title": "11.4. New algorithms"}], "external": false};
+window.dfnpanelData['dom-pahistogramcontribution-value'] = {"dfnID": "dom-pahistogramcontribution-value", "url": "#dom-pahistogramcontribution-value", "dfnText": "value", "refSections": [{"refs": [{"id": "ref-for-dom-pahistogramcontribution-value"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-value\u2460"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-value\u2461"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-value\u2462"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-dom-pahistogramcontribution-value\u2463"}], "title": "11.4. New algorithms"}], "external": false};
 window.dfnpanelData['dictdef-padebugmodeoptions'] = {"dfnID": "dictdef-padebugmodeoptions", "url": "#dictdef-padebugmodeoptions", "dfnText": "PADebugModeOptions", "refSections": [{"refs": [{"id": "ref-for-dictdef-padebugmodeoptions"}], "title": "2. Exposed interface"}], "external": false};
 window.dfnpanelData['dom-padebugmodeoptions-debugkey'] = {"dfnID": "dom-padebugmodeoptions-debugkey", "url": "#dom-padebugmodeoptions-debugkey", "dfnText": "debugKey", "refSections": [{"refs": [{"id": "ref-for-dom-padebugmodeoptions-debugkey"}, {"id": "ref-for-dom-padebugmodeoptions-debugkey\u2460"}], "title": "2. Exposed interface"}], "external": false};
 window.dfnpanelData['privateaggregation-scoping-details'] = {"dfnID": "privateaggregation-scoping-details", "url": "#privateaggregation-scoping-details", "dfnText": "scoping details", "refSections": [{"refs": [{"id": "ref-for-privateaggregation-scoping-details"}, {"id": "ref-for-privateaggregation-scoping-details\u2460"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-privateaggregation-scoping-details\u2461"}, {"id": "ref-for-privateaggregation-scoping-details\u2462"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-privateaggregation-scoping-details\u2463"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-privateaggregation-scoping-details\u2464"}], "title": "10. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-privateaggregation-scoping-details\u2465"}], "title": "11.1. WebIDL"}, {"refs": [{"id": "ref-for-privateaggregation-scoping-details\u2466"}], "title": "11.3. Algorithm modifications"}], "external": false};
