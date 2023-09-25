@@ -383,7 +383,10 @@ Strawman limit: 20 contributions per report.
 
 The size of the encrypted payload may reveal information about the number of
 contributions embedded in the aggregatable report. This can be mitigated by
-padding the plaintext payload (e.g. to a fixed size).
+padding the plaintext payload (e.g. to a fixed size). In the shorter term, we
+plan to pad the payload by adding 'null' contributions (i.e. with value 0) to
+a fixed length. In the future, we plan to instead append bytes to a fixed
+length, but this will require updating the payload version.
 
 ## Privacy and security
 
