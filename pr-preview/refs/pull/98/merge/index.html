@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-UD" rel="stylesheet">
   <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="563773065c2d3dcd179defd58a57eb2df64b693d" name="document-revision">
+  <meta content="ea988a1daa3cff48e77b1eb7d2b63a06b54e1242" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -1379,19 +1379,19 @@ perform the following steps. They return an <a data-link-type="dfn" href="#aggre
 They return a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment⑧">moment</a>.</p>
    <ol>
     <li data-md>
-     <p>Let <var>reportTriggeredTime</var> be <var>currentTime</var>.</p>
+     <p>If <var>timeout</var> is not null:</p>
+     <ol>
+      <li data-md>
+       <p>Return <var>timeout</var>.</p>
+     </ol>
     <li data-md>
-     <p>If <var>timeout</var> is not null, set <var>reportTriggeredTime</var> to <var>timeout</var>.
-Issue(80): Reduce the delay when a <var>timeout</var> is provided, i.e. when a
-    context ID is set.</p>
-    <li data-md>
-     <p>If <a data-link-type="dfn" href="#automation-local-testing-mode-enabled" id="ref-for-automation-local-testing-mode-enabled">automation local testing mode enabled</a> is true, return <var>reportTriggeredTime</var>.</p>
+     <p>If <a data-link-type="dfn" href="#automation-local-testing-mode-enabled" id="ref-for-automation-local-testing-mode-enabled">automation local testing mode enabled</a> is true, return <var>currentTime</var>.</p>
     <li data-md>
      <p>Let <var>r</var> be a random double between 0 (inclusive) and 1 (exclusive) with
 uniform probability.</p>
     <li data-md>
-     <p>Return <var>reportTriggeredTime</var> + <a data-link-type="dfn" href="#minimum-report-delay" id="ref-for-minimum-report-delay①">minimum report delay</a> + <var>r</var> * <a data-link-type="dfn" href="#randomized-report-delay" id="ref-for-randomized-report-delay">randomized
-report delay</a>.</p>
+     <p>Return <var>currentTime</var> + <a data-link-type="dfn" href="#minimum-report-delay" id="ref-for-minimum-report-delay①">minimum report delay</a> + <var>r</var> * <a data-link-type="dfn" href="#randomized-report-delay" id="ref-for-randomized-report-delay">randomized report
+delay</a>.</p>
    </ol>
    <h3 class="heading settled" data-level="8.3" id="sending-reports"><span class="secno">8.3. </span><span class="content">Sending reports</span><a class="self-link" href="#sending-reports"></a></h3>
    <p class="note" role="note"><span class="marker">Note:</span> This section is largely copied from the <a href="https://wicg.github.io/attribution-reporting-api/">Attribution
