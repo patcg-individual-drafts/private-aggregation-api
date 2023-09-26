@@ -436,12 +436,11 @@ To <dfn algorithm export>append an entry to the contribution cache</dfn> given a
 1. [=list/Append=] |entry| to the [=contribution cache=].
 
 To <dfn algorithm export>get a debug details</dfn> given a [=debug scope=]
-|debugScope|:
+|debugScope|, perform the following steps. They return a [=debug details=].
 1. Let |debugScopeMap| be the [=debug scope map=].
-1. [=Assert=]: |debugScopeMap|[|debugScope|] [=map/exists=].
-
-    Issue: This should return a default when the scope does not exist.
-1. Return |debugScopeMap|[|debugScope|].
+1. If |debugScopeMap|[|debugScope|] [=map/exists=], return
+    |debugScopeMap|[|debugScope|].
+1. Otherwise, return a new [=debug details=].
 
 To <dfn algorithm export>mark a debug scope complete</dfn> given a [=debug
 scope=] |debugScope|:
