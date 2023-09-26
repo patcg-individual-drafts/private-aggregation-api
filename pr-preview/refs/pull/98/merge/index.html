@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-UD" rel="stylesheet">
   <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="ec7ca6765eba2a79b702672a3c5bd3b0bb77aa75" name="document-revision">
+  <meta content="563773065c2d3dcd179defd58a57eb2df64b693d" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -669,7 +669,7 @@ var.selected6 { background-color: #FFBCF2; box-shadow: 0 0 0 2px #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2023-09-13">13 September 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2023-09-26">26 September 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -972,6 +972,10 @@ steps</a>.</p>
        <p><var>debugKey</var></p>
      </dl>
     <li data-md>
+     <p>Optionally, set <var>debugDetails</var> to a new <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details①">debug details</a>.</p>
+     <p class="note" role="note"><span class="marker">Note:</span> This allows the user agent to make debug mode unavailable globally or
+    just for certain callers.</p>
+    <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-set" id="ref-for-map-set">Set</a> <var>debugScopeMap</var>[<var>debugScope</var>] to <var>debugDetails</var>.</p>
    </ol>
    <p class="issue" id="issue-2f48ed07①"><a class="self-link" href="#issue-2f48ed07①"></a> Ensure errors are of an appropriate type, e.g. <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidaccesserror" id="ref-for-invalidaccesserror①">InvalidAccessError</a></code> is
@@ -1002,8 +1006,8 @@ privateAggregation<c- p>.</c->contributeToHistogram<c- p>(...)</c->  <c- c1>// T
    <p>For any <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope">batching scope</a> returned by the <a data-link-type="dfn" href="#scoping-details-get-batching-scope-steps" id="ref-for-scoping-details-get-batching-scope-steps①">get batching scope
 steps</a>, the <a data-link-type="dfn" href="#process-contributions-for-a-batching-scope" id="ref-for-process-contributions-for-a-batching-scope">process contributions for a batching scope</a> steps should later
 be performed given that same batching scope, the global scope’s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object" id="ref-for-relevant-settings-object">relevant
-settings object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin" id="ref-for-concept-settings-object-origin">origin</a> and some <a data-link-type="dfn" href="#context-type" id="ref-for-context-type">context
-type</a>.</p>
+settings object</a>'s <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin" id="ref-for-concept-settings-object-origin">origin</a>, some <a data-link-type="dfn" href="#context-type" id="ref-for-context-type">context
+type</a> and a timeout (or null).</p>
    <p class="note" role="note"><span class="marker">Note:</span> This last requirement means that global scopes with different origins
     cannot share the same batching scope, see <a href="#same-origin-policy">Same-origin
     policy</a> discussion.</p>
@@ -1020,7 +1024,7 @@ which <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontri
 report</a> unless their <a data-link-type="dfn" href="#aggregatable-report-debug-details" id="ref-for-aggregatable-report-debug-details">debug details</a> differ. 
    <p class="issue" id="issue-24767e0c"><a class="self-link" href="#issue-24767e0c"></a> Unique internal value is not an exported definition. See <a href="https://github.com/whatwg/infra/issues/583">infra/583</a>.</p>
    <h3 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="4.2" data-lt="Debug scope" data-noexport id="debug-scope"><span class="secno">4.2. </span><span class="content">Debug scope</span><a class="self-link" href="#debug-scope" id="ref-for-debug-scope①④"></a></h3>
-    A debug scope is a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#unique-internal-value" id="ref-for-unique-internal-value①">unique internal value</a> that identifies which <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution③">PAHistogramContribution</a></code>s should have their <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details①">debug details</a> affected by the
+    A debug scope is a <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#unique-internal-value" id="ref-for-unique-internal-value①">unique internal value</a> that identifies which <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution③">PAHistogramContribution</a></code>s should have their <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details②">debug details</a> affected by the
 presence or absence of a call to <code class="idl"><a data-link-type="idl" href="#dom-privateaggregation-enabledebugmode" id="ref-for-dom-privateaggregation-enabledebugmode①">enableDebugMode()</a></code> in the
 same period of execution. 
    <h3 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="4.3" data-lt="Scoping details" data-noexport id="scoping-details"><span class="secno">4.3. </span><span class="content">Scoping details</span><a class="self-link" href="#scoping-details" id="ref-for-scoping-details③"></a></h3>
@@ -1033,7 +1037,7 @@ same period of execution.
     <dd data-md>
      <p>An algorithm returning a <a data-link-type="dfn" href="#debug-scope" id="ref-for-debug-scope③">debug scope</a></p>
    </dl>
-   <h3 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="4.4" data-lt="Debug details" data-noexport id="debug-details"><span class="secno">4.4. </span><span class="content">Debug details</span><a class="self-link" href="#debug-details" id="ref-for-debug-details①①"></a></h3>
+   <h3 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="4.4" data-lt="Debug details" data-noexport id="debug-details"><span class="secno">4.4. </span><span class="content">Debug details</span><a class="self-link" href="#debug-details" id="ref-for-debug-details①④"></a></h3>
     A debug details is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#struct" id="ref-for-struct①">struct</a> with the following items: 
    <dl>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="debug details" data-dfn-type="dfn" data-noexport id="debug-details-enabled">enabled</dfn> (default false)
@@ -1057,7 +1061,7 @@ same period of execution.
      <p>A <a data-link-type="dfn" href="#debug-scope" id="ref-for-debug-scope④">debug scope</a></p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="contribution cache entry" data-dfn-type="dfn" data-noexport id="contribution-cache-entry-debug-details">debug details</dfn> (default null)
     <dd data-md>
-     <p>A <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details②">debug details</a> or null</p>
+     <p>A <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details③">debug details</a> or null</p>
    </dl>
    <h3 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="4.6" data-lt="Aggregatable report" data-noexport id="aggregatable-report"><span class="secno">4.6. </span><span class="content">Aggregatable report</span><a class="self-link" href="#aggregatable-report" id="ref-for-aggregatable-report①⑤"></a></h3>
    <p>An aggregatable report is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#struct" id="ref-for-struct③">struct</a> with the following items:</p>
@@ -1082,7 +1086,7 @@ same period of execution.
      <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string">string</a></p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="aggregatable report" data-dfn-type="dfn" data-noexport id="aggregatable-report-debug-details">debug details</dfn>
     <dd data-md>
-     <p>A <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details③">debug details</a></p>
+     <p>A <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details④">debug details</a></p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="aggregatable report" data-dfn-type="dfn" data-noexport id="aggregatable-report-context-id">context ID</dfn>
     <dd data-md>
      <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string①">string</a> or null</p>
@@ -1097,7 +1101,7 @@ Aggregation should pick a unique string (or multiple) for this.
    <p>A user agent holds an <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="aggregatable-report-cache">aggregatable report cache</dfn>, which is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①">list</a> of <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report②">aggregatable reports</a>.</p>
    <p>A user agent holds a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="context-id-map">context ID map</dfn>, which is an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map">ordered map</a> from <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope③">batching scopes</a> to <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③">strings</a>.</p>
    <p>A user agent holds a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="contribution-cache">contribution cache</dfn>, which is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list②">list</a> of <a data-link-type="dfn" href="#contribution-cache-entry" id="ref-for-contribution-cache-entry②">contribution cache entries</a>.</p>
-   <p>A user agent holds a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="debug-scope-map">debug scope map</dfn>, which is an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map①">ordered map</a> from <a data-link-type="dfn" href="#debug-scope" id="ref-for-debug-scope⑤">debug scopes</a> to <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details④">debug details</a>.</p>
+   <p>A user agent holds a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="debug-scope-map">debug scope map</dfn>, which is an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map①">ordered map</a> from <a data-link-type="dfn" href="#debug-scope" id="ref-for-debug-scope⑤">debug scopes</a> to <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details⑤">debug details</a>.</p>
    <h3 class="heading settled" data-level="5.1" id="clearing-storage"><span class="secno">5.1. </span><span class="content">Clearing storage</span><a class="self-link" href="#clearing-storage"></a></h3>
    <p>The user agent must expose controls that allow the user to delete data from
 the <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache">aggregatable report cache</a> as well as any contribution history data
@@ -1107,7 +1111,7 @@ stored for the <a data-link-type="dfn" href="#consume-budget-if-permitted" id="r
    <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="maximum-report-contributions">Maximum report contributions</dfn> is a positive integer that controls how
 many contributions can be present in a single report.</p>
    <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="minimum-report-delay">Minimum report delay</dfn> is a non-negative <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-duration" id="ref-for-dfn-duration">duration</a> that controls the
-minimum delay to deliver an <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report③">aggregatable report</a></p>
+minimum delay to deliver an <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report③">aggregatable report</a>.</p>
    <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="randomized-report-delay">Randomized report delay</dfn> is a positive <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-duration" id="ref-for-dfn-duration①">duration</a> that controls the
 random delay to deliver an <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report④">aggregatable report</a>. This delay is additional to
 the <a data-link-type="dfn" href="#minimum-report-delay" id="ref-for-minimum-report-delay">minimum report delay</a>.</p>
@@ -1145,20 +1149,20 @@ possible decimal number.</p>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append">Append</a> <var>entry</var> to the <a data-link-type="dfn" href="#contribution-cache" id="ref-for-contribution-cache③">contribution cache</a>.</p>
    </ol>
-   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="get a debug details" data-dfn-type="dfn" data-export id="get-a-debug-details">get a debug details</dfn> given a <a data-link-type="dfn" href="#debug-scope" id="ref-for-debug-scope⑥">debug scope</a> <var>debugScope</var>:</p>
+   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="get a debug details" data-dfn-type="dfn" data-export id="get-a-debug-details">get a debug details</dfn> given a <a data-link-type="dfn" href="#debug-scope" id="ref-for-debug-scope⑥">debug scope</a> <var>debugScope</var>, perform the following steps. They return a <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details⑥">debug details</a>.</p>
    <ol>
     <li data-md>
      <p>Let <var>debugScopeMap</var> be the <a data-link-type="dfn" href="#debug-scope-map" id="ref-for-debug-scope-map②">debug scope map</a>.</p>
     <li data-md>
-     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①">Assert</a>: <var>debugScopeMap</var>[<var>debugScope</var>] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①">exists</a>.</p>
+     <p>If <var>debugScopeMap</var>[<var>debugScope</var>] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①">exists</a>, return <var>debugScopeMap</var>[<var>debugScope</var>].</p>
     <li data-md>
-     <p>Return <var>debugScopeMap</var>[<var>debugScope</var>].</p>
+     <p>Otherwise, return a new <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details⑦">debug details</a>.</p>
    </ol>
    <p>To <dfn class="dfn-paneled algorithm" data-algorithm="mark a debug scope complete" data-dfn-type="dfn" data-export id="mark-a-debug-scope-complete">mark a debug scope complete</dfn> given a <a data-link-type="dfn" href="#debug-scope" id="ref-for-debug-scope⑦">debug
 scope</a> <var>debugScope</var>:</p>
    <ol>
     <li data-md>
-     <p>Let <var>debugDetails</var> be a new <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details⑤">debug details</a>.</p>
+     <p>Let <var>debugDetails</var> be a new <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details⑧">debug details</a>.</p>
     <li data-md>
      <p>Let <var>debugScopeMap</var> be the <a data-link-type="dfn" href="#debug-scope-map" id="ref-for-debug-scope-map③">debug scope map</a>.</p>
     <li data-md>
@@ -1169,7 +1173,7 @@ scope</a> <var>debugScope</var>:</p>
       <li data-md>
        <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-remove" id="ref-for-map-remove">Remove</a> <var>debugScopeMap</var>[<var>debugScope</var>].</p>
       <li data-md>
-       <p>If <var>debugDetails</var>’s <a data-link-type="dfn" href="#debug-details-key" id="ref-for-debug-details-key①">key</a> is not null, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert②">assert</a>: <var>debugDetails</var>’s <a data-link-type="dfn" href="#debug-details-enabled" id="ref-for-debug-details-enabled②">enabled</a> is true.</p>
+       <p>If <var>debugDetails</var>’s <a data-link-type="dfn" href="#debug-details-key" id="ref-for-debug-details-key①">key</a> is not null, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①">assert</a>: <var>debugDetails</var>’s <a data-link-type="dfn" href="#debug-details-enabled" id="ref-for-debug-details-enabled②">enabled</a> is true.</p>
      </ol>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate">For each</a> <var>entry</var> of the <a data-link-type="dfn" href="#contribution-cache" id="ref-for-contribution-cache④">contribution cache</a>:</p>
@@ -1180,7 +1184,7 @@ set <var>entry</var>’s <a data-link-type="dfn" href="#contribution-cache-entry
      </ol>
    </ol>
    <p>To <dfn class="dfn-paneled algorithm" data-algorithm="process contributions for a batching scope" data-dfn-type="dfn" data-export id="process-contributions-for-a-batching-scope">process contributions for a batching scope</dfn> given
-a <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope④">batching scope</a> <var>batchingScope</var>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin①">origin</a> <var>reportingOrigin</var> and a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type②">context type</a> <var>contextType</var>:</p>
+a <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope④">batching scope</a> <var>batchingScope</var>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin①">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type②">context type</a> <var>contextType</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment②">moment</a> or null <var>timeout</var>:</p>
    <ol>
     <li data-md>
      <p>Let <var>batchEntries</var> be a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list③">list</a>.</p>
@@ -1191,7 +1195,7 @@ a <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope④">
        <p>If <var>entry</var>’s <a data-link-type="dfn" href="#contribution-cache-entry-batching-scope" id="ref-for-contribution-cache-entry-batching-scope②">batching scope</a> is <var>batchingScope</var>:</p>
        <ol>
         <li data-md>
-         <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert③">Assert</a>: <var>entry</var>’s <a data-link-type="dfn" href="#contribution-cache-entry-debug-details" id="ref-for-contribution-cache-entry-debug-details①">debug details</a> is
+         <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert②">Assert</a>: <var>entry</var>’s <a data-link-type="dfn" href="#contribution-cache-entry-debug-details" id="ref-for-contribution-cache-entry-debug-details①">debug details</a> is
 not null.</p>
          <p class="note" role="note"><span class="marker">Note:</span> This asserts that the <a data-link-type="dfn" href="#mark-a-debug-scope-complete" id="ref-for-mark-a-debug-scope-complete②">mark a debug scope complete</a> steps
     were run before the <a data-link-type="dfn" href="#process-contributions-for-a-batching-scope" id="ref-for-process-contributions-for-a-batching-scope②">process contributions for a batching
@@ -1212,6 +1216,9 @@ not null.</p>
       <li data-md>
        <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-remove" id="ref-for-map-remove①">Remove</a> <var>contextIdMap</var>[<var>batchingScope</var>].</p>
      </ol>
+    <li data-md>
+     <p>Otherwise, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert③">assert</a>: <var>timeout</var> is null.</p>
+     <p class="note" role="note"><span class="marker">Note:</span> Timeouts can only be used for deterministic reports.</p>
     <li data-md>
      <p>If <var>batchEntries</var> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-is-empty" id="ref-for-list-is-empty">is empty</a> and <var>contextId</var> is null, return.</p>
      <p class="note" role="note"><span class="marker">Note:</span> If a context ID was specified, a report is sent, even if there are no
@@ -1240,7 +1247,7 @@ details</a>.</p>
      <p>If <var>batchedContributions</var> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-is-empty" id="ref-for-map-is-empty">is empty</a>:</p>
      <ol>
       <li data-md>
-       <p>Let <var>debugDetails</var> be a new <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details⑥">debug details</a>.</p>
+       <p>Let <var>debugDetails</var> be a new <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details⑨">debug details</a>.</p>
       <li data-md>
        <p>Set <var>batchedContributions</var>[<var>debugDetails</var>] to a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑤">list</a>.</p>
      </ol>
@@ -1248,10 +1255,10 @@ details</a>.</p>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-iterate" id="ref-for-map-iterate">For each</a> <var>debugDetails</var> → <var>contributions</var> of <var>batchedContributions</var>:</p>
      <ol>
       <li data-md>
-       <p>Perform the <a data-link-type="dfn" href="#report-creation-and-scheduling-steps" id="ref-for-report-creation-and-scheduling-steps">report creation and scheduling steps</a> with <var>reportingOrigin</var>, <var>contextType</var>, <var>contributions</var>, <var>debugDetails</var> and <var>contextId</var>.</p>
+       <p>Perform the <a data-link-type="dfn" href="#report-creation-and-scheduling-steps" id="ref-for-report-creation-and-scheduling-steps">report creation and scheduling steps</a> with <var>reportingOrigin</var>, <var>contextType</var>, <var>contributions</var>, <var>debugDetails</var>, <var>contextId</var> and <var>timeout</var>.</p>
      </ol>
    </ol>
-   <p class="note" role="note"><span class="marker">Note:</span> These steps break up the contributions based on their <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details⑦">debug details</a> as
+   <p class="note" role="note"><span class="marker">Note:</span> These steps break up the contributions based on their <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details①⓪">debug details</a> as
     each report can only have one set of metadata.</p>
    <p>To <dfn class="dfn-paneled algorithm" data-algorithm="set the context ID for a batching scope" data-dfn-type="dfn" data-export id="set-the-context-id-for-a-batching-scope">set the context ID for a batching scope</dfn> given
 a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string⑤">string</a> <var>contextId</var> and a <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope⑤">batching scope</a> <var>batchingScope</var>:</p>
@@ -1264,7 +1271,7 @@ a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-f
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-set" id="ref-for-map-set②">Set</a> <var>contextIdMap</var>[<var>batchingScope</var>] to <var>contextId</var>.</p>
    </ol>
    <h3 class="heading settled" data-level="8.2" id="scheduling-reports"><span class="secno">8.2. </span><span class="content">Scheduling reports</span><a class="self-link" href="#scheduling-reports"></a></h3>
-   <p>To perform the <dfn class="dfn-paneled algorithm" data-algorithm="report creation and scheduling steps" data-dfn-type="dfn" data-noexport id="report-creation-and-scheduling-steps">report creation and scheduling steps</dfn> with an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin②">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type③">context type</a> <var>api</var>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑥">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑥">PAHistogramContribution</a></code>s <var>contributions</var>, a <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details⑧">debug details</a> <var>debugDetails</var> and a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string⑥">string</a> or null <var>contextId</var>:</p>
+   <p>To perform the <dfn class="dfn-paneled algorithm" data-algorithm="report creation and scheduling steps" data-dfn-type="dfn" data-noexport id="report-creation-and-scheduling-steps">report creation and scheduling steps</dfn> with an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin②">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type③">context type</a> <var>api</var>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑥">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑥">PAHistogramContribution</a></code>s <var>contributions</var>, a <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details①①">debug details</a> <var>debugDetails</var>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string⑥">string</a> or null <var>contextId</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment③">moment</a> or null <var>timeout</var>:</p>
    <ol>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑤">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin">potentially trustworthy origin</a>.</p>
@@ -1316,24 +1323,24 @@ report contributions</a>, exclusive:</p>
     reports</a>.</p>
      </ol>
     <li data-md>
-     <p>Let <var>report</var> be the result of <a data-link-type="dfn" href="#obtain-an-aggregatable-report" id="ref-for-obtain-an-aggregatable-report">obtaining an aggregatable report</a> given <var>reportingOrigin</var>, <var>api</var>, <var>truncatedContributions</var>, <var>debugDetails</var>, <var>contextId</var> and <var>currentWallTime</var>.</p>
+     <p>Let <var>report</var> be the result of <a data-link-type="dfn" href="#obtain-an-aggregatable-report" id="ref-for-obtain-an-aggregatable-report">obtaining an aggregatable report</a> given <var>reportingOrigin</var>, <var>api</var>, <var>truncatedContributions</var>, <var>debugDetails</var>, <var>contextId</var>, <var>timeout</var> and <var>currentWallTime</var>.</p>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append①">Append</a> <var>report</var> to the user agent’s <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache①">aggregatable report cache</a>.</p>
    </ol>
-   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="consume budget if permitted" data-dfn-type="dfn" data-noexport id="consume-budget-if-permitted">consume budget if permitted</dfn> given a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long①">long</a></code> <var>value</var>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin③">origin</a> <var>origin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type④">context type</a> <var>api</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment②">moment</a> <var>currentTime</var>, perform <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined②">implementation-defined</a> steps. They return
+   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="consume budget if permitted" data-dfn-type="dfn" data-noexport id="consume-budget-if-permitted">consume budget if permitted</dfn> given a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long①">long</a></code> <var>value</var>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin③">origin</a> <var>origin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type④">context type</a> <var>api</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment④">moment</a> <var>currentTime</var>, perform <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined②">implementation-defined</a> steps. They return
 a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#boolean" id="ref-for-boolean③">boolean</a>, which indicates whether there is sufficient 'contribution budget'
 left to send the requested contribution <var>value</var>. This budget should be bound to
 usage over time, e.g. the contribution sum over the last 24 hours. The algorithm
 should assume that the contribution will be sent if and only if true is
 returned, i.e. it should consume the budget in that case. If <var>value</var> is zero,
 this algorithm should return true.</p>
-   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="obtain-an-aggregatable-report">obtain an aggregatable report</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin④">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type⑤">context type</a> <var>api</var>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑧">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑦">PAHistogramContribution</a></code>s <var>contributions</var>, a <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details⑨">debug details</a> <var>debugDetails</var>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string⑦">string</a> or null <var>contextId</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment③">moment</a> <var>currentTime</var>,
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="obtain-an-aggregatable-report">obtain an aggregatable report</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin④">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type⑤">context type</a> <var>api</var>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑧">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑦">PAHistogramContribution</a></code>s <var>contributions</var>, a <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details①②">debug details</a> <var>debugDetails</var>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string⑦">string</a> or null <var>contextId</var>, a [=moment] or null <var>timeout</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment⑤">moment</a> <var>currentTime</var>,
 perform the following steps. They return an <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report⑤">aggregatable report</a>.</p>
    <ol>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑦">Assert</a>: <var>reportingOrigin</var> is a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin①">potentially trustworthy origin</a>.</p>
     <li data-md>
-     <p>Let <var>reportTime</var> be the result of running <a data-link-type="dfn" href="#obtain-a-report-delivery-time" id="ref-for-obtain-a-report-delivery-time">obtain a report delivery time</a> given <var>currentTime</var>.</p>
+     <p>Let <var>reportTime</var> be the result of running <a data-link-type="dfn" href="#obtain-a-report-delivery-time" id="ref-for-obtain-a-report-delivery-time">obtain a report delivery time</a> given <var>currentTime</var> and <var>timeout</var>.</p>
     <li data-md>
      <p>Let <var>report</var> be a new <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report⑥">aggregatable report</a> with the items:</p>
      <dl>
@@ -1368,16 +1375,23 @@ perform the following steps. They return an <a data-link-type="dfn" href="#aggre
     <li data-md>
      <p>Return <var>report</var>.</p>
    </ol>
-   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="obtain a report delivery time" data-dfn-type="dfn" data-noexport id="obtain-a-report-delivery-time">obtain a report delivery time</dfn> given a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment④">moment</a> <var>currentTime</var>, perform the following steps. They return a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment⑤">moment</a>.</p>
+   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="obtain a report delivery time" data-dfn-type="dfn" data-noexport id="obtain-a-report-delivery-time">obtain a report delivery time</dfn> given a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment⑥">moment</a> <var>currentTime</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment⑦">moment</a> or null <var>timeout</var>, perform the following steps.
+They return a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment⑧">moment</a>.</p>
    <ol>
     <li data-md>
-     <p>If <a data-link-type="dfn" href="#automation-local-testing-mode-enabled" id="ref-for-automation-local-testing-mode-enabled">automation local testing mode enabled</a> is true, return <var>currentTime</var>.</p>
+     <p>Let <var>reportTriggeredTime</var> be <var>currentTime</var>.</p>
+    <li data-md>
+     <p>If <var>timeout</var> is not null, set <var>reportTriggeredTime</var> to <var>timeout</var>.
+Issue(80): Reduce the delay when a <var>timeout</var> is provided, i.e. when a
+    context ID is set.</p>
+    <li data-md>
+     <p>If <a data-link-type="dfn" href="#automation-local-testing-mode-enabled" id="ref-for-automation-local-testing-mode-enabled">automation local testing mode enabled</a> is true, return <var>reportTriggeredTime</var>.</p>
     <li data-md>
      <p>Let <var>r</var> be a random double between 0 (inclusive) and 1 (exclusive) with
 uniform probability.</p>
     <li data-md>
-     <p>Return <var>currentTime</var> + <a data-link-type="dfn" href="#minimum-report-delay" id="ref-for-minimum-report-delay①">minimum report delay</a> + <var>r</var> * <a data-link-type="dfn" href="#randomized-report-delay" id="ref-for-randomized-report-delay">randomized report
-delay</a>.</p>
+     <p>Return <var>reportTriggeredTime</var> + <a data-link-type="dfn" href="#minimum-report-delay" id="ref-for-minimum-report-delay①">minimum report delay</a> + <var>r</var> * <a data-link-type="dfn" href="#randomized-report-delay" id="ref-for-randomized-report-delay">randomized
+report delay</a>.</p>
    </ol>
    <h3 class="heading settled" data-level="8.3" id="sending-reports"><span class="secno">8.3. </span><span class="content">Sending reports</span><a class="self-link" href="#sending-reports"></a></h3>
    <p class="note" role="note"><span class="marker">Note:</span> This section is largely copied from the <a href="https://wicg.github.io/attribution-reporting-api/">Attribution
@@ -1785,7 +1799,7 @@ null.</p>
      <p>Return <var>contextId</var>.</p>
    </ol>
    <p>The <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/shared-storage/#windowsharedstorage" id="ref-for-windowsharedstorage">WindowSharedStorage</a></code>'s <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/shared-storage/#dom-windowsharedstorage-run" id="ref-for-dom-windowsharedstorage-run">run()</a></code> method steps are
-modified in three ways. First, add the following steps just after step 2 ("If <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/worklets.html#dom-worklet-addmodule" id="ref-for-dom-worklet-addmodule">addModule()</a></code> has not yet been called, ..."), renumbering later steps
+modified in four ways. First, add the following steps just after step 2 ("If <code class="idl"><a data-link-type="idl" href="https://html.spec.whatwg.org/multipage/worklets.html#dom-worklet-addmodule" id="ref-for-dom-worklet-addmodule">addModule()</a></code> has not yet been called, ..."), renumbering later steps
 as appropriate:</p>
    <div class="algorithm" data-algorithm="shared-storage-run-monkey-patch-1">
     <ol start="3">
@@ -1803,20 +1817,65 @@ as appropriate:</p>
      <li data-md>
       <p>Let <var>debugScope</var> be a new <a data-link-type="dfn" href="#debug-scope" id="ref-for-debug-scope⑧">debug scope</a>.</p>
      <li data-md>
-      <p>If <var>contextId</var> is not null, <a data-link-type="dfn" href="#set-the-context-id-for-a-batching-scope" id="ref-for-set-the-context-id-for-a-batching-scope">set the context ID for a batching scope</a> given <var>contextId</var> and <var>batchingScope</var>.</p>
+      <p>Let <var>privateAggregationTimeout</var> be null.</p>
+     <li data-md>
+      <p>If <var>contextId</var> is not null:</p>
+      <ol>
+       <li data-md>
+        <p>Set <var>privateAggregationTimeout</var> to the <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-current-wall-time" id="ref-for-dfn-current-wall-time④">current wall time</a> plus a
+non-negative <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑧">implementation-defined</a> <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-duration" id="ref-for-dfn-duration⑤">duration</a>.</p>
+       <li data-md>
+        <p><a data-link-type="dfn" href="#set-the-context-id-for-a-batching-scope" id="ref-for-set-the-context-id-for-a-batching-scope">Set the context ID for a batching scope</a> given <var>contextId</var> and <var>batchingScope</var>.</p>
+      </ol>
     </ol>
    </div>
-    Finally, at the end of the same nested scope, add the following step: 
+   <p>Third, add the following steps in the same nested scope just before the current
+last step ("Otherwise, <a data-link-type="dfn" href="https://tc39.es/ecma262/#sec-call" id="ref-for-sec-call">call</a> operation without any arguments list",
+renumbering the last step as appropriate):</p>
    <div class="algorithm" data-algorithm="shared-storage-run-monkey-patch-3">
-    <ol start="6">
+    <ol>
      <li data-md>
-      <p>When the above <a data-link-type="dfn" href="https://tc39.es/ecma262/#sec-call" id="ref-for-sec-call">call</a> returns, perform the following steps:</p>
+      <p>Let <var>hasRunPrivateAggregationCompletionTask</var> be false.</p>
+     <li data-md>
+      <p>Let <var>privateAggregationCompletionTask</var> be an algorithm to perform the
+following steps:</p>
       <ol>
+       <li data-md>
+        <p>If <var>hasRunPrivateAggregationCompletionTask</var>, return.</p>
+       <li data-md>
+        <p>Set <var>hasRunPrivateAggregationCompletionTask</var> to true.</p>
        <li data-md>
         <p><a data-link-type="dfn" href="#mark-a-debug-scope-complete" id="ref-for-mark-a-debug-scope-complete③">Mark a debug scope complete</a> given <var>debugScope</var>.</p>
        <li data-md>
-        <p><a data-link-type="dfn" href="#process-contributions-for-a-batching-scope" id="ref-for-process-contributions-for-a-batching-scope③">Process contributions for a batching scope</a> given <var>batchingScope</var>, <var>outsideSettings</var>’ <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin" id="ref-for-concept-settings-object-origin①">origin</a> and
-"<code>shared-storage</code>".</p>
+        <p><a data-link-type="dfn" href="#process-contributions-for-a-batching-scope" id="ref-for-process-contributions-for-a-batching-scope③">Process contributions for a batching scope</a> given <var>batchingScope</var>, <var>outsideSettings</var>’ <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin" id="ref-for-concept-settings-object-origin①">origin</a>, "<code>shared-storage</code>" and <var>privateAggregationTimeout</var>.</p>
+      </ol>
+     <li data-md>
+      <p>If <var>contextId</var> is not null:</p>
+      <ol>
+       <li data-md>
+        <p>Set <var>privateAggregationTimeout</var> to the <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-current-wall-time" id="ref-for-dfn-current-wall-time⑤">current wall time</a> plus a
+non-negative <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑨">implementation-defined</a> <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-duration" id="ref-for-dfn-duration⑥">duration</a>.</p>
+       <li data-md>
+        <p><a data-link-type="dfn" href="#set-the-context-id-for-a-batching-scope" id="ref-for-set-the-context-id-for-a-batching-scope①">Set the context ID for a batching scope</a> given <var>contextId</var> and <var>batchingScope</var>.</p>
+       <li data-md>
+        <p>Run the following steps <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel①">in parallel</a>:</p>
+        <ol>
+         <li data-md>
+          <p>Wait until <var>privateAggregationTimeout</var>.</p>
+         <li data-md>
+          <p>Run <var>privateAggregationCompletionTask</var>.</p>
+        </ol>
+      </ol>
+    </ol>
+   </div>
+   <p>Finally, at the end of the same nested scope, add the following step:</p>
+   <div class="algorithm" data-algorithm="shared-storage-run-monkey-patch-4">
+    <ol start="9">
+     <li data-md>
+      <p>When the above <a data-link-type="dfn" href="https://tc39.es/ecma262/#sec-call" id="ref-for-sec-call①">call</a> returns, perform the following steps:</p>
+      <ol>
+       <li data-md>
+        <p>Run <var>privateAggregationCompletionTask</var>.</p>
       </ol>
     </ol>
    </div>
@@ -1840,16 +1899,47 @@ steps:</p>
      <li data-md>
       <p>Let <var>debugScope</var> be a new <a data-link-type="dfn" href="#debug-scope" id="ref-for-debug-scope⑨">debug scope</a>.</p>
      <li data-md>
-      <p>If <var>contextId</var> is not null, <a data-link-type="dfn" href="#set-the-context-id-for-a-batching-scope" id="ref-for-set-the-context-id-for-a-batching-scope①">set the context ID for a batching scope</a> given <var>contextId</var> and <var>batchingScope</var>.</p>
+      <p>Let <var>privateAggregationTimeout</var> be null.</p>
+     <li data-md>
+      <p>Let <var>hasRunPrivateAggregationCompletionTask</var> be false.</p>
+     <li data-md>
+      <p>Let <var>privateAggregationCompletionTask</var> be an algorithm to perform the
+following steps:</p>
+      <ol>
+       <li data-md>
+        <p>If <var>hasRunPrivateAggregationCompletionTask</var>, return.</p>
+       <li data-md>
+        <p>Set <var>hasRunPrivateAggregationCompletionTask</var> to true.</p>
+       <li data-md>
+        <p><a data-link-type="dfn" href="#mark-a-debug-scope-complete" id="ref-for-mark-a-debug-scope-complete④">Mark a debug scope complete</a> given <var>debugScope</var>.</p>
+       <li data-md>
+        <p><a data-link-type="dfn" href="#process-contributions-for-a-batching-scope" id="ref-for-process-contributions-for-a-batching-scope④">Process contributions for a batching scope</a> given <var>batchingScope</var>, <var>outsideSettings</var>’ <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin" id="ref-for-concept-settings-object-origin②">origin</a>, "<code>shared-storage</code>"
+and <var>privateAggregationTimeout</var>.</p>
+      </ol>
+     <li data-md>
+      <p>If <var>contextId</var> is not null:</p>
+      <ol>
+       <li data-md>
+        <p>Set <var>privateAggregationTimeout</var> to the <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-current-wall-time" id="ref-for-dfn-current-wall-time⑥">current wall time</a> plus a
+non-negative <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined①⓪">implementation-defined</a> <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-duration" id="ref-for-dfn-duration⑦">duration</a>.</p>
+       <li data-md>
+        <p><a data-link-type="dfn" href="#set-the-context-id-for-a-batching-scope" id="ref-for-set-the-context-id-for-a-batching-scope②">Set the context ID for a batching scope</a> given <var>contextId</var> and <var>batchingScope</var>.</p>
+       <li data-md>
+        <p>Run the following steps <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel②">in parallel</a>:</p>
+        <ol>
+         <li data-md>
+          <p>Wait until <var>privateAggregationTimeout</var>.</p>
+         <li data-md>
+          <p>Run <var>privateAggregationCompletionTask</var>.</p>
+        </ol>
+      </ol>
     </ol>
    </div>
     Finally, at the end of the same nested scope, add the following steps: 
    <div class="algorithm" data-algorithm="shared-storage-selecturl-monkey-patch-3">
-    <ol start="9">
+    <ol start="13">
      <li data-md>
-      <p><a data-link-type="dfn" href="#mark-a-debug-scope-complete" id="ref-for-mark-a-debug-scope-complete④">Mark a debug scope complete</a> given <var>debugScope</var>.</p>
-     <li data-md>
-      <p><a data-link-type="dfn" href="#process-contributions-for-a-batching-scope" id="ref-for-process-contributions-for-a-batching-scope④">Process contributions for a batching scope</a> given <var>batchingScope</var>, <var>outsideSettings</var>’ <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin" id="ref-for-concept-settings-object-origin②">origin</a> and "<code>shared-storage</code>".</p>
+      <p>Run <var>privateAggregationCompletionTask</var>.</p>
     </ol>
    </div>
    <p class="issue" id="issue-be3d1d22"><a class="self-link" href="#issue-be3d1d22"></a> Once <a href="https://github.com/wicg/shared-storage/issues/88"> shared-storage/88</a> is resolved, align the above monkey patches with how <code>keepAlive</code> is handled at operation completion.</p>
@@ -2088,7 +2178,7 @@ bidding or scoring signals fetch to complete, when called from <code>generateBid
      <p>A <a data-link-type="dfn" href="#debug-scope" id="ref-for-debug-scope①①">debug scope</a></p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="on event contribution cache entry" data-dfn-type="dfn" data-noexport id="on-event-contribution-cache-entry-debug-details">debug details</dfn>
     <dd data-md>
-     <p>A <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details①⓪">debug details</a> or null (default null)</p>
+     <p>A <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details①③">debug details</a> or null (default null)</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="on event contribution cache entry" data-dfn-type="dfn" data-noexport id="on-event-contribution-cache-entry-worklet-function">worklet function</dfn>
     <dd data-md>
      <p>A <a data-link-type="dfn" href="#worklet-function" id="ref-for-worklet-function①">worklet function</a></p>
@@ -2357,7 +2447,7 @@ the <a data-link-type="dfn" href="#contribution-cache" id="ref-for-contribution-
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate①⓪">For each</a> <var>origin</var> → <var>batchingScope</var> of <var>auctionConfig</var>’s <a data-link-type="dfn" href="#auction-config-batching-scope-map" id="ref-for-auction-config-batching-scope-map②">batching scope map</a>:</p>
      <ol>
       <li data-md>
-       <p><a data-link-type="dfn" href="#process-contributions-for-a-batching-scope" id="ref-for-process-contributions-for-a-batching-scope⑥">Process contributions for a batching scope</a> given <var>batchingScope</var>, <var>origin</var> and "<code>protected-audience</code>".</p>
+       <p><a data-link-type="dfn" href="#process-contributions-for-a-batching-scope" id="ref-for-process-contributions-for-a-batching-scope⑥">Process contributions for a batching scope</a> given <var>batchingScope</var>, <var>origin</var>, "<code>protected-audience</code>" and null.</p>
      </ol>
    </ol>
    <p class="issue" id="issue-c1e53695"><a class="self-link" href="#issue-c1e53695"></a> Verify interaction with component auctions.</p>
@@ -2575,7 +2665,7 @@ communicate information cross-site.</p>
 parameters used (e.g. contribution limits and the noise distribution used in the
 aggregation service). While we aim to minimize the amount of information
 exposed, we also aim to support a wide range of use cases. The privacy
-parameters are left <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑧">implementation-defined</a> to allow different and evolving
+parameters are left <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined①①">implementation-defined</a> to allow different and evolving
 choices in the tradeoffs between information exposure and utility.</p>
    <h3 class="heading settled" data-level="12.2" id="clearing-site-data"><span class="secno">12.2. </span><span class="content">Clearing site data</span><a class="self-link" href="#clearing-site-data"></a></h3>
    <p>The <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache⑤">aggregatable report cache</a> as well as any contribution history data
@@ -2660,7 +2750,7 @@ their online-offline presence from the reporting origin.</p>
 cache</a> and <a data-link-type="dfn" href="#debug-scope-map" id="ref-for-debug-scope-map⑤">debug scope map</a> are separated by the reporting <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑦">origin</a> and
 the data included in any report with a given reporting <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑧">origin</a> are generated
 with only data from that <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑨">origin</a>.</p>
-   <p>One notable exception is the <a data-link-type="dfn" href="#consume-budget-if-permitted" id="ref-for-consume-budget-if-permitted③">consume budget if permitted</a> algorithm which is <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined⑨">implementation-defined</a> and can consider contribution history from other <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin①⓪">origins</a>. For example, the algorithm could consider all history from a
+   <p>One notable exception is the <a data-link-type="dfn" href="#consume-budget-if-permitted" id="ref-for-consume-budget-if-permitted③">consume budget if permitted</a> algorithm which is <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined①②">implementation-defined</a> and can consider contribution history from other <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin①⓪">origins</a>. For example, the algorithm could consider all history from a
 particular <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#site" id="ref-for-site">site</a>. This would be an explicit relaxation of the same-origin
 policy as multiple origins would be able to influence the API’s behavior. One
 particular risk of these kinds of shared limits is the introduction of denial of
@@ -3572,17 +3662,17 @@ window.dfnpanelData['6d1db60d'] = {"dfnID": "6d1db60d", "url": "https://fetch.sp
 window.dfnpanelData['6f7f62df'] = {"dfnID": "6f7f62df", "url": "https://fetch.spec.whatwg.org/#unsafe-request-flag", "dfnText": "unsafe-request flag", "refSections": [{"refs": [{"id": "ref-for-unsafe-request-flag"}], "title": "8.3. Sending reports"}], "external": true};
 window.dfnpanelData['dc1cd39b'] = {"dfnID": "dc1cd39b", "url": "https://fetch.spec.whatwg.org/#concept-request-url", "dfnText": "url", "refSections": [{"refs": [{"id": "ref-for-concept-request-url"}], "title": "8.3. Sending reports"}], "external": true};
 window.dfnpanelData['1ab127d6'] = {"dfnID": "1ab127d6", "url": "https://fetch.spec.whatwg.org/#concept-request-window", "dfnText": "window", "refSections": [{"refs": [{"id": "ref-for-concept-request-window"}], "title": "8.3. Sending reports"}], "external": true};
-window.dfnpanelData['a09bfce2'] = {"dfnID": "a09bfce2", "url": "https://w3c.github.io/hr-time/#dfn-current-wall-time", "dfnText": "current wall time", "refSections": [{"refs": [{"id": "ref-for-dfn-current-wall-time"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-dfn-current-wall-time\u2460"}, {"id": "ref-for-dfn-current-wall-time\u2461"}, {"id": "ref-for-dfn-current-wall-time\u2462"}], "title": "8.3. Sending reports"}], "external": true};
-window.dfnpanelData['4b2c8c72'] = {"dfnID": "4b2c8c72", "url": "https://w3c.github.io/hr-time/#dfn-duration", "dfnText": "duration", "refSections": [{"refs": [{"id": "ref-for-dfn-duration"}, {"id": "ref-for-dfn-duration\u2460"}], "title": "6. Implementation-defined values"}, {"refs": [{"id": "ref-for-dfn-duration\u2461"}, {"id": "ref-for-dfn-duration\u2462"}, {"id": "ref-for-dfn-duration\u2463"}], "title": "8.3. Sending reports"}], "external": true};
+window.dfnpanelData['a09bfce2'] = {"dfnID": "a09bfce2", "url": "https://w3c.github.io/hr-time/#dfn-current-wall-time", "dfnText": "current wall time", "refSections": [{"refs": [{"id": "ref-for-dfn-current-wall-time"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-dfn-current-wall-time\u2460"}, {"id": "ref-for-dfn-current-wall-time\u2461"}, {"id": "ref-for-dfn-current-wall-time\u2462"}], "title": "8.3. Sending reports"}, {"refs": [{"id": "ref-for-dfn-current-wall-time\u2463"}, {"id": "ref-for-dfn-current-wall-time\u2464"}, {"id": "ref-for-dfn-current-wall-time\u2465"}], "title": "10. Shared Storage API monkey patches"}], "external": true};
+window.dfnpanelData['4b2c8c72'] = {"dfnID": "4b2c8c72", "url": "https://w3c.github.io/hr-time/#dfn-duration", "dfnText": "duration", "refSections": [{"refs": [{"id": "ref-for-dfn-duration"}, {"id": "ref-for-dfn-duration\u2460"}], "title": "6. Implementation-defined values"}, {"refs": [{"id": "ref-for-dfn-duration\u2461"}, {"id": "ref-for-dfn-duration\u2462"}, {"id": "ref-for-dfn-duration\u2463"}], "title": "8.3. Sending reports"}, {"refs": [{"id": "ref-for-dfn-duration\u2464"}, {"id": "ref-for-dfn-duration\u2465"}, {"id": "ref-for-dfn-duration\u2466"}], "title": "10. Shared Storage API monkey patches"}], "external": true};
 window.dfnpanelData['c9a0df83'] = {"dfnID": "c9a0df83", "url": "https://w3c.github.io/hr-time/#dfn-duration-from", "dfnText": "duration from", "refSections": [{"refs": [{"id": "ref-for-dfn-duration-from"}], "title": "8.4. Serializing reports"}], "external": true};
-window.dfnpanelData['1e2edd5b'] = {"dfnID": "1e2edd5b", "url": "https://w3c.github.io/hr-time/#dfn-moment", "dfnText": "moment", "refSections": [{"refs": [{"id": "ref-for-dfn-moment"}, {"id": "ref-for-dfn-moment\u2460"}], "title": "4.6. Aggregatable report"}, {"refs": [{"id": "ref-for-dfn-moment\u2461"}, {"id": "ref-for-dfn-moment\u2462"}, {"id": "ref-for-dfn-moment\u2463"}, {"id": "ref-for-dfn-moment\u2464"}], "title": "8.2. Scheduling reports"}], "external": true};
+window.dfnpanelData['1e2edd5b'] = {"dfnID": "1e2edd5b", "url": "https://w3c.github.io/hr-time/#dfn-moment", "dfnText": "moment", "refSections": [{"refs": [{"id": "ref-for-dfn-moment"}, {"id": "ref-for-dfn-moment\u2460"}], "title": "4.6. Aggregatable report"}, {"refs": [{"id": "ref-for-dfn-moment\u2461"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-dfn-moment\u2462"}, {"id": "ref-for-dfn-moment\u2463"}, {"id": "ref-for-dfn-moment\u2464"}, {"id": "ref-for-dfn-moment\u2465"}, {"id": "ref-for-dfn-moment\u2466"}, {"id": "ref-for-dfn-moment\u2467"}], "title": "8.2. Scheduling reports"}], "external": true};
 window.dfnpanelData['be5dbc8c'] = {"dfnID": "be5dbc8c", "url": "https://w3c.github.io/hr-time/#dfn-unix-epoch", "dfnText": "unix epoch", "refSections": [{"refs": [{"id": "ref-for-dfn-unix-epoch"}], "title": "8.4. Serializing reports"}], "external": true};
 window.dfnpanelData['eec46e27'] = {"dfnID": "eec46e27", "url": "https://html.spec.whatwg.org/multipage/worklets.html#dom-worklet-addmodule", "dfnText": "addModule(moduleURL, options)", "refSections": [{"refs": [{"id": "ref-for-dom-worklet-addmodule"}, {"id": "ref-for-dom-worklet-addmodule\u2460"}, {"id": "ref-for-dom-worklet-addmodule\u2461"}, {"id": "ref-for-dom-worklet-addmodule\u2462"}, {"id": "ref-for-dom-worklet-addmodule\u2463"}], "title": "10. Shared Storage API monkey patches"}], "external": true};
 window.dfnpanelData['3610bd67'] = {"dfnID": "3610bd67", "url": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#allowed-to-use", "dfnText": "allowed to use", "refSections": [{"refs": [{"id": "ref-for-allowed-to-use"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-allowed-to-use\u2460"}], "title": "10. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-allowed-to-use\u2461"}], "title": "11.3. Algorithm modifications"}], "external": true};
 window.dfnpanelData['3349d69f'] = {"dfnID": "3349d69f", "url": "https://html.spec.whatwg.org/multipage/nav-history-apis.html#concept-document-window", "dfnText": "associated document", "refSections": [{"refs": [{"id": "ref-for-concept-document-window"}], "title": "10. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-concept-document-window\u2460"}], "title": "11.3. Algorithm modifications"}], "external": true};
-window.dfnpanelData['f1d11a13'] = {"dfnID": "f1d11a13", "url": "https://tc39.es/ecma262/#sec-call", "dfnText": "call", "refSections": [{"refs": [{"id": "ref-for-sec-call"}], "title": "10. Shared Storage API monkey patches"}], "external": true};
+window.dfnpanelData['f1d11a13'] = {"dfnID": "f1d11a13", "url": "https://tc39.es/ecma262/#sec-call", "dfnText": "call", "refSections": [{"refs": [{"id": "ref-for-sec-call"}, {"id": "ref-for-sec-call\u2460"}], "title": "10. Shared Storage API monkey patches"}], "external": true};
 window.dfnpanelData['6f738b30'] = {"dfnID": "6f738b30", "url": "https://html.spec.whatwg.org/multipage/worklets.html#concept-worklet-global-scopes", "dfnText": "global scopes", "refSections": [{"refs": [{"id": "ref-for-concept-worklet-global-scopes"}], "title": "10. Shared Storage API monkey patches"}], "external": true};
-window.dfnpanelData['a72449dd'] = {"dfnID": "a72449dd", "url": "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel", "dfnText": "in parallel", "refSections": [{"refs": [{"id": "ref-for-in-parallel"}], "title": "8.3. Sending reports"}], "external": true};
+window.dfnpanelData['a72449dd'] = {"dfnID": "a72449dd", "url": "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel", "dfnText": "in parallel", "refSections": [{"refs": [{"id": "ref-for-in-parallel"}], "title": "8.3. Sending reports"}, {"refs": [{"id": "ref-for-in-parallel\u2460"}, {"id": "ref-for-in-parallel\u2461"}], "title": "10. Shared Storage API monkey patches"}], "external": true};
 window.dfnpanelData['086e3aff'] = {"dfnID": "086e3aff", "url": "https://html.spec.whatwg.org/multipage/browsers.html#concept-origin", "dfnText": "origin", "refSections": [{"refs": [{"id": "ref-for-concept-origin"}], "title": "4.6. Aggregatable report"}, {"refs": [{"id": "ref-for-concept-origin\u2460"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-concept-origin\u2461"}, {"id": "ref-for-concept-origin\u2462"}, {"id": "ref-for-concept-origin\u2463"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-concept-origin\u2464"}], "title": "8.3. Sending reports"}, {"refs": [{"id": "ref-for-concept-origin\u2465"}], "title": "11.2.1. Extending auction config"}, {"refs": [{"id": "ref-for-concept-origin\u2466"}, {"id": "ref-for-concept-origin\u2467"}, {"id": "ref-for-concept-origin\u2468"}, {"id": "ref-for-concept-origin\u2460\u24ea"}], "title": "13.1. Same-origin policy"}], "external": true};
 window.dfnpanelData['43ac8374'] = {"dfnID": "43ac8374", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin", "dfnText": "origin (for environment settings object)", "refSections": [{"refs": [{"id": "ref-for-concept-settings-object-origin"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-concept-settings-object-origin\u2460"}, {"id": "ref-for-concept-settings-object-origin\u2461"}], "title": "10. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-concept-settings-object-origin\u2462"}], "title": "11.3. Algorithm modifications"}], "external": true};
 window.dfnpanelData['9a517a7d'] = {"dfnID": "9a517a7d", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task", "dfnText": "queue a task", "refSections": [{"refs": [{"id": "ref-for-queue-a-task"}, {"id": "ref-for-queue-a-task\u2460"}], "title": "8.3. Sending reports"}], "external": true};
@@ -3606,7 +3696,7 @@ window.dfnpanelData['1243a891'] = {"dfnID": "1243a891", "url": "https://infra.sp
 window.dfnpanelData['16d07e10'] = {"dfnID": "16d07e10", "url": "https://infra.spec.whatwg.org/#list-iterate", "dfnText": "for each", "refSections": [{"refs": [{"id": "ref-for-list-iterate"}, {"id": "ref-for-list-iterate\u2460"}, {"id": "ref-for-list-iterate\u2461"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-list-iterate\u2462"}, {"id": "ref-for-list-iterate\u2463"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-list-iterate\u2464"}], "title": "8.3. Sending reports"}, {"refs": [{"id": "ref-for-list-iterate\u2465"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-list-iterate\u2466"}, {"id": "ref-for-list-iterate\u2467"}], "title": "11.3. Algorithm modifications"}, {"refs": [{"id": "ref-for-list-iterate\u2468"}, {"id": "ref-for-list-iterate\u2460\u24ea"}], "title": "11.4. New algorithms"}], "external": true};
 window.dfnpanelData['b012ccb2'] = {"dfnID": "b012ccb2", "url": "https://infra.spec.whatwg.org/#forgiving-base64-encode", "dfnText": "forgiving-base64 encode", "refSections": [{"refs": [{"id": "ref-for-forgiving-base64-encode"}, {"id": "ref-for-forgiving-base64-encode\u2460"}], "title": "8.4. Serializing reports"}], "external": true};
 window.dfnpanelData['715f22e4'] = {"dfnID": "715f22e4", "url": "https://infra.spec.whatwg.org/#if-aborted", "dfnText": "if aborted", "refSections": [{"refs": [{"id": "ref-for-if-aborted"}], "title": "8.3. Sending reports"}], "external": true};
-window.dfnpanelData['860300d4'] = {"dfnID": "860300d4", "url": "https://infra.spec.whatwg.org/#implementation-defined", "dfnText": "implementation-defined", "refSections": [{"refs": [{"id": "ref-for-implementation-defined"}], "title": "6. Implementation-defined values"}, {"refs": [{"id": "ref-for-implementation-defined\u2460"}, {"id": "ref-for-implementation-defined\u2461"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2462"}, {"id": "ref-for-implementation-defined\u2463"}, {"id": "ref-for-implementation-defined\u2464"}, {"id": "ref-for-implementation-defined\u2465"}], "title": "8.3. Sending reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2466"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2467"}], "title": "12.1.6. Privacy parameters"}, {"refs": [{"id": "ref-for-implementation-defined\u2468"}], "title": "13.1. Same-origin policy"}], "external": true};
+window.dfnpanelData['860300d4'] = {"dfnID": "860300d4", "url": "https://infra.spec.whatwg.org/#implementation-defined", "dfnText": "implementation-defined", "refSections": [{"refs": [{"id": "ref-for-implementation-defined"}], "title": "6. Implementation-defined values"}, {"refs": [{"id": "ref-for-implementation-defined\u2460"}, {"id": "ref-for-implementation-defined\u2461"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2462"}, {"id": "ref-for-implementation-defined\u2463"}, {"id": "ref-for-implementation-defined\u2464"}, {"id": "ref-for-implementation-defined\u2465"}], "title": "8.3. Sending reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2466"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-implementation-defined\u2467"}, {"id": "ref-for-implementation-defined\u2468"}, {"id": "ref-for-implementation-defined\u2460\u24ea"}], "title": "10. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-implementation-defined\u2460\u2460"}], "title": "12.1.6. Privacy parameters"}, {"refs": [{"id": "ref-for-implementation-defined\u2460\u2461"}], "title": "13.1. Same-origin policy"}], "external": true};
 window.dfnpanelData['6b815fdd'] = {"dfnID": "6b815fdd", "url": "https://infra.spec.whatwg.org/#list-is-empty", "dfnText": "is empty (for list)", "refSections": [{"refs": [{"id": "ref-for-list-is-empty"}], "title": "8.1. Exported algorithms"}], "external": true};
 window.dfnpanelData['dc3369de'] = {"dfnID": "dc3369de", "url": "https://infra.spec.whatwg.org/#map-is-empty", "dfnText": "is empty (for map)", "refSections": [{"refs": [{"id": "ref-for-map-is-empty"}], "title": "8.1. Exported algorithms"}], "external": true};
 window.dfnpanelData['f02cd417'] = {"dfnID": "f02cd417", "url": "https://infra.spec.whatwg.org/#list-iterate", "dfnText": "iterate (for list)", "refSections": [{"refs": [{"id": "ref-for-list-iterate"}, {"id": "ref-for-list-iterate\u2460"}, {"id": "ref-for-list-iterate\u2461"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-list-iterate\u2462"}, {"id": "ref-for-list-iterate\u2463"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-list-iterate\u2464"}], "title": "8.3. Sending reports"}, {"refs": [{"id": "ref-for-list-iterate\u2465"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-list-iterate\u2466"}, {"id": "ref-for-list-iterate\u2467"}], "title": "11.3. Algorithm modifications"}, {"refs": [{"id": "ref-for-list-iterate\u2468"}, {"id": "ref-for-list-iterate\u2460\u24ea"}], "title": "11.4. New algorithms"}], "external": true};
@@ -3705,7 +3795,7 @@ window.dfnpanelData['debug-scope'] = {"dfnID": "debug-scope", "url": "#debug-sco
 window.dfnpanelData['scoping-details'] = {"dfnID": "scoping-details", "url": "#scoping-details", "dfnText": "4.3. Scoping details", "refSections": [{"refs": [{"id": "ref-for-scoping-details"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-scoping-details"}], "title": "4.3. Scoping details"}, {"refs": [{"id": "ref-for-scoping-details\u2460"}], "title": "10. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-scoping-details\u2461"}], "title": "11.3. Algorithm modifications"}], "external": false};
 window.dfnpanelData['scoping-details-get-batching-scope-steps'] = {"dfnID": "scoping-details-get-batching-scope-steps", "url": "#scoping-details-get-batching-scope-steps", "dfnText": "get batching scope steps", "refSections": [{"refs": [{"id": "ref-for-scoping-details-get-batching-scope-steps"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-scoping-details-get-batching-scope-steps\u2460"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-scoping-details-get-batching-scope-steps\u2461"}], "title": "10. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-scoping-details-get-batching-scope-steps\u2462"}], "title": "11.1. WebIDL"}, {"refs": [{"id": "ref-for-scoping-details-get-batching-scope-steps\u2463"}], "title": "11.3. Algorithm modifications"}], "external": false};
 window.dfnpanelData['scoping-details-get-debug-scope-steps'] = {"dfnID": "scoping-details-get-debug-scope-steps", "url": "#scoping-details-get-debug-scope-steps", "dfnText": "get debug scope steps", "refSections": [{"refs": [{"id": "ref-for-scoping-details-get-debug-scope-steps"}, {"id": "ref-for-scoping-details-get-debug-scope-steps\u2460"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-scoping-details-get-debug-scope-steps\u2461"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-scoping-details-get-debug-scope-steps\u2462"}], "title": "10. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-scoping-details-get-debug-scope-steps\u2463"}], "title": "11.1. WebIDL"}, {"refs": [{"id": "ref-for-scoping-details-get-debug-scope-steps\u2464"}], "title": "11.3. Algorithm modifications"}], "external": false};
-window.dfnpanelData['debug-details'] = {"dfnID": "debug-details", "url": "#debug-details", "dfnText": "4.4. Debug details", "refSections": [{"refs": [{"id": "ref-for-debug-details"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-debug-details\u2460"}], "title": "4.2. Debug scope"}, {"refs": [{"id": "ref-for-debug-details"}], "title": "4.4. Debug details"}, {"refs": [{"id": "ref-for-debug-details\u2461"}], "title": "4.5. Contribution cache entry"}, {"refs": [{"id": "ref-for-debug-details\u2462"}], "title": "4.6. Aggregatable report"}, {"refs": [{"id": "ref-for-debug-details\u2463"}], "title": "5. Storage"}, {"refs": [{"id": "ref-for-debug-details\u2464"}, {"id": "ref-for-debug-details\u2465"}, {"id": "ref-for-debug-details\u2466"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-debug-details\u2467"}, {"id": "ref-for-debug-details\u2468"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-debug-details\u2460\u24ea"}], "title": "11.2.5. On event contribution cache entry"}], "external": false};
+window.dfnpanelData['debug-details'] = {"dfnID": "debug-details", "url": "#debug-details", "dfnText": "4.4. Debug details", "refSections": [{"refs": [{"id": "ref-for-debug-details"}, {"id": "ref-for-debug-details\u2460"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-debug-details\u2461"}], "title": "4.2. Debug scope"}, {"refs": [{"id": "ref-for-debug-details"}], "title": "4.4. Debug details"}, {"refs": [{"id": "ref-for-debug-details\u2462"}], "title": "4.5. Contribution cache entry"}, {"refs": [{"id": "ref-for-debug-details\u2463"}], "title": "4.6. Aggregatable report"}, {"refs": [{"id": "ref-for-debug-details\u2464"}], "title": "5. Storage"}, {"refs": [{"id": "ref-for-debug-details\u2465"}, {"id": "ref-for-debug-details\u2466"}, {"id": "ref-for-debug-details\u2467"}, {"id": "ref-for-debug-details\u2468"}, {"id": "ref-for-debug-details\u2460\u24ea"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-debug-details\u2460\u2460"}, {"id": "ref-for-debug-details\u2460\u2461"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-debug-details\u2460\u2462"}], "title": "11.2.5. On event contribution cache entry"}], "external": false};
 window.dfnpanelData['debug-details-enabled'] = {"dfnID": "debug-details-enabled", "url": "#debug-details-enabled", "dfnText": "enabled", "refSections": [{"refs": [{"id": "ref-for-debug-details-enabled"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-debug-details-enabled\u2460"}], "title": "4.4. Debug details"}, {"refs": [{"id": "ref-for-debug-details-enabled\u2461"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-debug-details-enabled\u2462"}], "title": "8.4. Serializing reports"}], "external": false};
 window.dfnpanelData['debug-details-key'] = {"dfnID": "debug-details-key", "url": "#debug-details-key", "dfnText": "key", "refSections": [{"refs": [{"id": "ref-for-debug-details-key"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-debug-details-key\u2460"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-debug-details-key\u2461"}], "title": "8.4. Serializing reports"}], "external": false};
 window.dfnpanelData['contribution-cache-entry'] = {"dfnID": "contribution-cache-entry", "url": "#contribution-cache-entry", "dfnText": "4.5. Contribution cache entry", "refSections": [{"refs": [{"id": "ref-for-contribution-cache-entry"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-contribution-cache-entry\u2460"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-contribution-cache-entry"}], "title": "4.5. Contribution cache entry"}, {"refs": [{"id": "ref-for-contribution-cache-entry\u2461"}], "title": "5. Storage"}, {"refs": [{"id": "ref-for-contribution-cache-entry\u2462"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-contribution-cache-entry\u2463"}], "title": "11.4. New algorithms"}], "external": false};
@@ -3738,7 +3828,7 @@ window.dfnpanelData['append-an-entry-to-the-contribution-cache'] = {"dfnID": "ap
 window.dfnpanelData['get-a-debug-details'] = {"dfnID": "get-a-debug-details", "url": "#get-a-debug-details", "dfnText": "get a debug details", "refSections": [{"refs": [{"id": "ref-for-get-a-debug-details"}], "title": "11.3. Algorithm modifications"}], "external": false};
 window.dfnpanelData['mark-a-debug-scope-complete'] = {"dfnID": "mark-a-debug-scope-complete", "url": "#mark-a-debug-scope-complete", "dfnText": "mark a debug scope complete", "refSections": [{"refs": [{"id": "ref-for-mark-a-debug-scope-complete"}, {"id": "ref-for-mark-a-debug-scope-complete\u2460"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-mark-a-debug-scope-complete\u2461"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-mark-a-debug-scope-complete\u2462"}, {"id": "ref-for-mark-a-debug-scope-complete\u2463"}, {"id": "ref-for-mark-a-debug-scope-complete\u2464"}], "title": "10. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-mark-a-debug-scope-complete\u2465"}], "title": "11.3. Algorithm modifications"}], "external": false};
 window.dfnpanelData['process-contributions-for-a-batching-scope'] = {"dfnID": "process-contributions-for-a-batching-scope", "url": "#process-contributions-for-a-batching-scope", "dfnText": "process contributions for a batching scope", "refSections": [{"refs": [{"id": "ref-for-process-contributions-for-a-batching-scope"}, {"id": "ref-for-process-contributions-for-a-batching-scope\u2460"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-process-contributions-for-a-batching-scope\u2461"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-process-contributions-for-a-batching-scope\u2462"}, {"id": "ref-for-process-contributions-for-a-batching-scope\u2463"}, {"id": "ref-for-process-contributions-for-a-batching-scope\u2464"}], "title": "10. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-process-contributions-for-a-batching-scope\u2465"}], "title": "11.4. New algorithms"}], "external": false};
-window.dfnpanelData['set-the-context-id-for-a-batching-scope'] = {"dfnID": "set-the-context-id-for-a-batching-scope", "url": "#set-the-context-id-for-a-batching-scope", "dfnText": "set the context ID for a batching scope", "refSections": [{"refs": [{"id": "ref-for-set-the-context-id-for-a-batching-scope"}, {"id": "ref-for-set-the-context-id-for-a-batching-scope\u2460"}], "title": "10. Shared Storage API monkey patches"}], "external": false};
+window.dfnpanelData['set-the-context-id-for-a-batching-scope'] = {"dfnID": "set-the-context-id-for-a-batching-scope", "url": "#set-the-context-id-for-a-batching-scope", "dfnText": "set the context ID for a batching scope", "refSections": [{"refs": [{"id": "ref-for-set-the-context-id-for-a-batching-scope"}, {"id": "ref-for-set-the-context-id-for-a-batching-scope\u2460"}, {"id": "ref-for-set-the-context-id-for-a-batching-scope\u2461"}], "title": "10. Shared Storage API monkey patches"}], "external": false};
 window.dfnpanelData['report-creation-and-scheduling-steps'] = {"dfnID": "report-creation-and-scheduling-steps", "url": "#report-creation-and-scheduling-steps", "dfnText": "report creation and scheduling steps", "refSections": [{"refs": [{"id": "ref-for-report-creation-and-scheduling-steps"}], "title": "8.1. Exported algorithms"}], "external": false};
 window.dfnpanelData['consume-budget-if-permitted'] = {"dfnID": "consume-budget-if-permitted", "url": "#consume-budget-if-permitted", "dfnText": "consume budget if permitted", "refSections": [{"refs": [{"id": "ref-for-consume-budget-if-permitted"}], "title": "5.1. Clearing storage"}, {"refs": [{"id": "ref-for-consume-budget-if-permitted\u2460"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-consume-budget-if-permitted\u2461"}], "title": "12.2. Clearing site data"}, {"refs": [{"id": "ref-for-consume-budget-if-permitted\u2462"}, {"id": "ref-for-consume-budget-if-permitted\u2463"}], "title": "13.1. Same-origin policy"}], "external": false};
 window.dfnpanelData['obtain-an-aggregatable-report'] = {"dfnID": "obtain-an-aggregatable-report", "url": "#obtain-an-aggregatable-report", "dfnText": "obtain an aggregatable report", "refSections": [{"refs": [{"id": "ref-for-obtain-an-aggregatable-report"}], "title": "8.2. Scheduling reports"}], "external": false};
