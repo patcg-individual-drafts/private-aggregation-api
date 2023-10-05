@@ -739,6 +739,11 @@ error.
 1. If |aggregationServicePayloads| is an error, return
     |aggregationServicePayloads|.
 1. Let |data| be an [=ordered map=] of the following key/value pairs:
+    : "`aggregation_coordinator_origin`"
+    :: An [=implementation-defined=] [=origin=], [=serialization of an
+        origin|serialized=].
+
+        Issue(78): Replace with the chosen (or default) aggregation coordinator.
     : "`aggregation_service_payloads`"
     :: |aggregationServicePayloads|
     : "`shared_info`"
