@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-UD" rel="stylesheet">
   <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="3d68e93dabccb6427e1ed14fb39f873892b99384" name="document-revision">
+  <meta content="401daa3823d7f6bd922aef0c298ab0b72c5cf23e" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -669,7 +669,7 @@ var.selected6 { background-color: #FFBCF2; box-shadow: 0 0 0 2px #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2023-10-11">11 October 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2023-10-13">13 October 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1108,16 +1108,21 @@ coordinator set</a> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/
 Aggregation should pick a unique string (or multiple) for this. 
    <h2 class="heading settled" data-level="5" id="storage"><span class="secno">5. </span><span class="content">Storage</span><a class="self-link" href="#storage"></a></h2>
    <p>A user agent holds an <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="aggregatable-report-cache">aggregatable report cache</dfn>, which is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①">list</a> of <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report②">aggregatable reports</a>.</p>
-   <p>A user agent holds an <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="aggregation-coordinator-map">aggregation coordinator map</dfn>, which is an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map">map</a> from <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope③">batching scopes</a> to <a data-link-type="dfn" href="#aggregation-coordinator" id="ref-for-aggregation-coordinator①">aggregation coordinators</a>.</p>
-   <p>A user agent holds a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="context-id-map">context ID map</dfn>, which is an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map①">map</a> from <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope④">batching scopes</a> to <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③">strings</a>.</p>
+   <p>A user agent holds an <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="aggregation-coordinator-map">aggregation coordinator map</dfn>, which is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map">map</a> from <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope③">batching scopes</a> to <a data-link-type="dfn" href="#aggregation-coordinator" id="ref-for-aggregation-coordinator①">aggregation coordinators</a>.</p>
+   <p>A user agent holds a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="context-id-map">context ID map</dfn>, which is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map①">map</a> from <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope④">batching scopes</a> to <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string③">strings</a>.</p>
    <p>A user agent holds a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="contribution-cache">contribution cache</dfn>, which is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list②">list</a> of <a data-link-type="dfn" href="#contribution-cache-entry" id="ref-for-contribution-cache-entry②">contribution cache entries</a>.</p>
-   <p>A user agent holds a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="debug-scope-map">debug scope map</dfn>, which is an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map②">map</a> from <a data-link-type="dfn" href="#debug-scope" id="ref-for-debug-scope⑤">debug scopes</a> to <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details⑤">debug details</a>.</p>
+   <p>A user agent holds a <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="debug-scope-map">debug scope map</dfn>, which is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map②">map</a> from <a data-link-type="dfn" href="#debug-scope" id="ref-for-debug-scope⑤">debug
+scopes</a> to <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details⑤">debug details</a>.</p>
    <h3 class="heading settled" data-level="5.1" id="clearing-storage"><span class="secno">5.1. </span><span class="content">Clearing storage</span><a class="self-link" href="#clearing-storage"></a></h3>
    <p>The user agent must expose controls that allow the user to delete data from
 the <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache">aggregatable report cache</a> as well as any contribution history data
 stored for the <a data-link-type="dfn" href="#consume-budget-if-permitted" id="ref-for-consume-budget-if-permitted">consume budget if permitted</a> algorithm.</p>
    <p>The user agent may expose controls that allow the user to delete data from the <a data-link-type="dfn" href="#context-id-map" id="ref-for-context-id-map">context ID map</a>, the <a data-link-type="dfn" href="#contribution-cache" id="ref-for-contribution-cache②">contribution cache</a> and the <a data-link-type="dfn" href="#debug-scope-map" id="ref-for-debug-scope-map①">debug scope map</a>.</p>
    <h2 class="heading settled" data-level="6" id="implementation-defined-values"><span class="secno">6. </span><span class="content"><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined">Implementation-defined</a> values</span><a class="self-link" href="#implementation-defined-values"></a></h2>
+   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="allowed-aggregation-coordinator-set">Allowed aggregation coordinator set</dfn> is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set">set</a> of <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin②">origins</a> that
+controls which origins are valid <a data-link-type="dfn" href="#aggregation-coordinator" id="ref-for-aggregation-coordinator②">aggregation coordinators</a>. Every element in
+this set must be a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin">potentially trustworthy origin</a>.</p>
+   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="default-aggregation-coordinator">Default aggregation coordinator</dfn> is an <a data-link-type="dfn" href="#aggregation-coordinator" id="ref-for-aggregation-coordinator③">aggregation coordinator</a> that controls which is used for a report if none is explicitly selected.</p>
    <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="maximum-report-contributions">Maximum report contributions</dfn> is a positive integer that controls how
 many contributions can be present in a single report.</p>
    <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="minimum-report-delay">Minimum report delay</dfn> is a non-negative <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-duration" id="ref-for-dfn-duration">duration</a> that controls the
@@ -1125,10 +1130,6 @@ minimum delay to deliver an <a data-link-type="dfn" href="#aggregatable-report" 
    <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="randomized-report-delay">Randomized report delay</dfn> is a positive <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-duration" id="ref-for-dfn-duration①">duration</a> that controls the
 random delay to deliver an <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report④">aggregatable report</a>. This delay is additional to
 the <a data-link-type="dfn" href="#minimum-report-delay" id="ref-for-minimum-report-delay">minimum report delay</a>.</p>
-   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="allowed-aggregation-coordinator-set">Allowed aggregation coordinator set</dfn> is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-set" id="ref-for-ordered-set">set</a> of <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin②">origins</a> that
-controls which origins are valid <a data-link-type="dfn" href="#aggregation-coordinator" id="ref-for-aggregation-coordinator②">aggregation coordinators</a>. Every element in
-this set must be a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin" id="ref-for-potentially-trustworthy-origin">potentially trustworthy origin</a>.</p>
-   <p><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="default-aggregation-coordinator">Default aggregation coordinator</dfn> is an <a data-link-type="dfn" href="#aggregation-coordinator" id="ref-for-aggregation-coordinator③">aggregation coordinator</a> that controls which is used for a report if none is explicitly selected.</p>
    <h2 class="heading settled" data-level="7" id="permissions-policy-integration"><span class="secno">7. </span><span class="content">Permissions Policy integration</span><a class="self-link" href="#permissions-policy-integration"></a></h2>
    <p>This specification defines a <a data-link-type="dfn" href="https://w3c.github.io/webappsec-permissions-policy/#policy-controlled-feature" id="ref-for-policy-controlled-feature①">policy-controlled feature</a> identified by the
 string "<code><dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="private-aggregation">private-aggregation</dfn></code>". Its <a data-link-type="dfn" href="https://w3c.github.io/webappsec-permissions-policy/#policy-controlled-feature-default-allowlist" id="ref-for-policy-controlled-feature-default-allowlist">default allowlist</a> is "<code>*</code>".</p>
@@ -1866,8 +1867,7 @@ does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists
     <li data-md>
      <p>If <var>url</var> is failure or null, return a new <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException⑤">DOMException</a></code> with name
 "<code>SyntaxError</code>".</p>
-    <li data-md>
-     <p>TODO: Do we want to disallow non-empty paths?</p>
+     <p class="issue" id="issue-5cfca5be"><a class="self-link" href="#issue-5cfca5be"></a> Consider throwing an error if the path is not empty.</p>
     <li data-md>
      <p>Let <var>origin</var> be <var>url</var>’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-origin" id="ref-for-concept-url-origin">origin</a>.</p>
     <li data-md>
@@ -2567,8 +2567,8 @@ coordinator</a> given <var>value</var>.</p>
 Abort update.</p>
        <li data-md>
         <p>Otherwise, set <var>ig</var>’s <a data-link-type="dfn" href="#interest-group-private-aggregation-coordinator" id="ref-for-interest-group-private-aggregation-coordinator③">Private
-Aggregation coordinator</a> to <var>aggregationCoordinator</var>. (TODO: Check impl
-for its handling here.)</p>
+Aggregation coordinator</a> to <var>aggregationCoordinator</var>.</p>
+        <p class="issue" id="issue-d32d5027"><a class="self-link" href="#issue-d32d5027"></a> Ensure that this matches the implementation.</p>
       </ol>
     </dl>
    </div>
@@ -2836,8 +2836,7 @@ a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org
     <li data-md>
      <p>If <var>url</var> is failure or null, return a new <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException①⑦">DOMException</a></code> with name
 "<code>SyntaxError</code>".</p>
-    <li data-md>
-     <p>TODO: Do we want to disallow non-empty paths?</p>
+     <p class="issue" id="issue-5cfca5be①"><a class="self-link" href="#issue-5cfca5be①"></a> Consider throwing an error if the path is not empty.</p>
     <li data-md>
      <p>Let <var>origin</var> be <var>url</var>’s <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-origin" id="ref-for-concept-url-origin①">origin</a>.</p>
     <li data-md>
@@ -2978,7 +2977,6 @@ reports</a>.</p>
 additional delay: This would effectively hide both the user’s IP address and
 their online-offline presence from the reporting origin.</p>
    </ol>
-   <p>TODO: Consider discussing aggregation coordinator choice.</p>
    <h2 class="heading settled" data-level="13" id="security-considerations"><span class="secno">13. </span><span class="content">Security considerations</span><a class="self-link" href="#security-considerations"></a></h2>
    <p><em>This section is non-normative.</em></p>
    <h3 class="heading settled" data-level="13.1" id="same-origin-policy"><span class="secno">13.1. </span><span class="content">Same-origin policy</span><a class="self-link" href="#same-origin-policy"></a></h3>
@@ -3585,6 +3583,7 @@ to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encry
    <div class="issue"> This should be moved to the Shared Storage spec. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/43">[Issue #43]</a> <a class="issue-return" href="#issue-03919572" title="Jump to section">↵</a></div>
    <div class="issue"> Go through all monkey patches and ensure every definition (including)
     structures that is needed is exported. <a class="issue-return" href="#issue-e413f917" title="Jump to section">↵</a></div>
+   <div class="issue"> Consider throwing an error if the path is not empty. <a class="issue-return" href="#issue-5cfca5be" title="Jump to section">↵</a></div>
    <div class="issue"> Once <a href="https://github.com/wicg/shared-storage/issues/88"> shared-storage/88</a> is resolved, align the above monkey patches with how <code>keepAlive</code> is handled at operation completion. <a class="issue-return" href="#issue-be3d1d22" title="Jump to section">↵</a></div>
    <div class="issue"> Consider adding an early return here (and equivalently for
     Protected Audience) if the permissions policy check is made first. <a class="issue-return" href="#issue-fccec62f" title="Jump to section">↵</a></div>
@@ -3605,6 +3604,7 @@ to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encry
    <div class="issue"> Once <a href="https://github.com/wicg/turtledove/issues/615"> protected-audience/615</a> is resolved, align the above monkey patch with
     how access to other functions is prevented in <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/turtledove/#interestgroupscriptrunnerglobalscope">InterestGroupScriptRunnerGlobalScope</a></code>s until the script’s initial
     execution is complete. <a class="issue-return" href="#issue-c0bfec19" title="Jump to section">↵</a></div>
+   <div class="issue"> Ensure that this matches the implementation. <a class="issue-return" href="#issue-d32d5027" title="Jump to section">↵</a></div>
    <div class="issue"> Once <a href="https://github.com/WICG/turtledove/issues/627"> protected-audience/627</a> is resolved, align 'filling in'
     logic with <code>forDebuggingOnly</code>. <a class="issue-return" href="#issue-72654077" title="Jump to section">↵</a></div>
    <div class="issue"> Once <a href="https://github.com/WICG/turtledove/issues/616"> protected-audience/616</a> and any successors are
@@ -3616,6 +3616,7 @@ to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encry
    <div class="issue"> Once <a href="https://github.com/WICG/turtledove/pull/594">protected-audience/594</a> lands, update this mapping to align. <a class="issue-return" href="#issue-6002541a" title="Jump to section">↵</a></div>
    <div class="issue"> Verify handling when the bid was not rejected. <a class="issue-return" href="#issue-d55586bb" title="Jump to section">↵</a></div>
    <div class="issue"> Consider disallowing this from reportWin() and reportResult(). <a class="issue-return" href="#issue-e5ce0922" title="Jump to section">↵</a></div>
+   <div class="issue"> Consider throwing an error if the path is not empty. <a class="issue-return" href="#issue-5cfca5be①" title="Jump to section">↵</a></div>
    <div class="issue"> Tie <code><code class="idl"><a data-link-type="idl" href="#dom-privateaggregation-enabledebugmode">enableDebugMode()</a></code></code> to
     third-party cookie eligibility. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/57">[Issue #57]</a> <a class="issue-return" href="#issue-d97fad0c" title="Jump to section">↵</a></div>
   </div>
@@ -4130,11 +4131,11 @@ window.dfnpanelData['aggregation-coordinator-map'] = {"dfnID": "aggregation-coor
 window.dfnpanelData['context-id-map'] = {"dfnID": "context-id-map", "url": "#context-id-map", "dfnText": "context ID map", "refSections": [{"refs": [{"id": "ref-for-context-id-map"}], "title": "5.1. Clearing storage"}, {"refs": [{"id": "ref-for-context-id-map\u2460"}, {"id": "ref-for-context-id-map\u2461"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-context-id-map\u2462"}], "title": "12.2. Clearing site data"}, {"refs": [{"id": "ref-for-context-id-map\u2463"}], "title": "13.1. Same-origin policy"}], "external": false};
 window.dfnpanelData['contribution-cache'] = {"dfnID": "contribution-cache", "url": "#contribution-cache", "dfnText": "contribution cache", "refSections": [{"refs": [{"id": "ref-for-contribution-cache"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-contribution-cache\u2460"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-contribution-cache\u2461"}], "title": "5.1. Clearing storage"}, {"refs": [{"id": "ref-for-contribution-cache\u2462"}, {"id": "ref-for-contribution-cache\u2463"}, {"id": "ref-for-contribution-cache\u2464"}, {"id": "ref-for-contribution-cache\u2465"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-contribution-cache\u2466"}], "title": "11.5. New algorithms"}, {"refs": [{"id": "ref-for-contribution-cache\u2467"}], "title": "12.2. Clearing site data"}, {"refs": [{"id": "ref-for-contribution-cache\u2468"}], "title": "13.1. Same-origin policy"}], "external": false};
 window.dfnpanelData['debug-scope-map'] = {"dfnID": "debug-scope-map", "url": "#debug-scope-map", "dfnText": "debug scope map", "refSections": [{"refs": [{"id": "ref-for-debug-scope-map"}], "title": "2. Exposed interface"}, {"refs": [{"id": "ref-for-debug-scope-map\u2460"}], "title": "5.1. Clearing storage"}, {"refs": [{"id": "ref-for-debug-scope-map\u2461"}, {"id": "ref-for-debug-scope-map\u2462"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-debug-scope-map\u2463"}], "title": "12.2. Clearing site data"}, {"refs": [{"id": "ref-for-debug-scope-map\u2464"}], "title": "13.1. Same-origin policy"}], "external": false};
+window.dfnpanelData['allowed-aggregation-coordinator-set'] = {"dfnID": "allowed-aggregation-coordinator-set", "url": "#allowed-aggregation-coordinator-set", "dfnText": "Allowed aggregation coordinator set", "refSections": [{"refs": [{"id": "ref-for-allowed-aggregation-coordinator-set"}], "title": "4.7. Aggregation coordinator"}], "external": false};
+window.dfnpanelData['default-aggregation-coordinator'] = {"dfnID": "default-aggregation-coordinator", "url": "#default-aggregation-coordinator", "dfnText": "Default aggregation coordinator", "refSections": [{"refs": [{"id": "ref-for-default-aggregation-coordinator"}], "title": "8.1. Exported algorithms"}], "external": false};
 window.dfnpanelData['maximum-report-contributions'] = {"dfnID": "maximum-report-contributions", "url": "#maximum-report-contributions", "dfnText": "Maximum report contributions", "refSections": [{"refs": [{"id": "ref-for-maximum-report-contributions"}, {"id": "ref-for-maximum-report-contributions\u2460"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-maximum-report-contributions\u2461"}, {"id": "ref-for-maximum-report-contributions\u2462"}], "title": "8.4. Serializing reports"}], "external": false};
 window.dfnpanelData['minimum-report-delay'] = {"dfnID": "minimum-report-delay", "url": "#minimum-report-delay", "dfnText": "Minimum report delay", "refSections": [{"refs": [{"id": "ref-for-minimum-report-delay"}], "title": "6. Implementation-defined values"}, {"refs": [{"id": "ref-for-minimum-report-delay\u2460"}], "title": "8.2. Scheduling reports"}], "external": false};
 window.dfnpanelData['randomized-report-delay'] = {"dfnID": "randomized-report-delay", "url": "#randomized-report-delay", "dfnText": "Randomized report delay", "refSections": [{"refs": [{"id": "ref-for-randomized-report-delay"}], "title": "8.2. Scheduling reports"}], "external": false};
-window.dfnpanelData['allowed-aggregation-coordinator-set'] = {"dfnID": "allowed-aggregation-coordinator-set", "url": "#allowed-aggregation-coordinator-set", "dfnText": "Allowed aggregation coordinator set", "refSections": [{"refs": [{"id": "ref-for-allowed-aggregation-coordinator-set"}], "title": "4.7. Aggregation coordinator"}], "external": false};
-window.dfnpanelData['default-aggregation-coordinator'] = {"dfnID": "default-aggregation-coordinator", "url": "#default-aggregation-coordinator", "dfnText": "Default aggregation coordinator", "refSections": [{"refs": [{"id": "ref-for-default-aggregation-coordinator"}], "title": "8.1. Exported algorithms"}], "external": false};
 window.dfnpanelData['private-aggregation'] = {"dfnID": "private-aggregation", "url": "#private-aggregation", "dfnText": "private-aggregation", "refSections": [{"refs": [{"id": "ref-for-private-aggregation"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-private-aggregation\u2460"}], "title": "10. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-private-aggregation\u2461"}], "title": "11.4. Algorithm modifications"}], "external": false};
 window.dfnpanelData['serialize-an-integer'] = {"dfnID": "serialize-an-integer", "url": "#serialize-an-integer", "dfnText": "serialize an integer", "refSections": [{"refs": [{"id": "ref-for-serialize-an-integer"}], "title": "8.4. Serializing reports"}], "external": false};
 window.dfnpanelData['get-the-privateaggregation'] = {"dfnID": "get-the-privateaggregation", "url": "#get-the-privateaggregation", "dfnText": "get the privateAggregation", "refSections": [{"refs": [{"id": "ref-for-get-the-privateaggregation"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-get-the-privateaggregation\u2460"}], "title": "10. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-get-the-privateaggregation\u2461"}], "title": "11.1. New WebIDL"}], "external": false};
