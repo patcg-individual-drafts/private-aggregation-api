@@ -362,17 +362,17 @@ Storage {#storage}
 A user agent holds an <dfn>aggregatable report cache</dfn>, which is a [=list=]
 of [=aggregatable reports=].
 
-A user agent holds an <dfn>aggregation coordinator map</dfn>, which is an
-[=map=] from [=batching scopes=] to [=aggregation coordinators=].
+A user agent holds an <dfn>aggregation coordinator map</dfn>, which is a [=map=]
+from [=batching scopes=] to [=aggregation coordinators=].
 
-A user agent holds a <dfn>context ID map</dfn>, which is an [=map=] from
+A user agent holds a <dfn>context ID map</dfn>, which is a [=map=] from
 [=batching scopes=] to [=strings=].
 
 A user agent holds a <dfn>contribution cache</dfn>, which is a [=list=] of
 [=contribution cache entries=].
 
-A user agent holds a <dfn>debug scope map</dfn>, which is an [=map=] from
-[=debug scopes=] to [=debug details=].
+A user agent holds a <dfn>debug scope map</dfn>, which is a [=map=] from [=debug
+scopes=] to [=debug details=].
 
 Clearing storage {#clearing-storage}
 ----------------------------------------
@@ -387,6 +387,13 @@ The user agent may expose controls that allow the user to delete data from the
 [=Implementation-defined=] values {#implementation-defined-values}
 ==================================================================
 
+<dfn>Allowed aggregation coordinator set</dfn> is a [=set=] of [=origins=] that
+controls which origins are valid [=aggregation coordinators=]. Every element in
+this set must be a [=potentially trustworthy origin=].
+
+<dfn>Default aggregation coordinator</dfn> is an [=aggregation coordinator=]
+that controls which is used for a report if none is explicitly selected.
+
 <dfn>Maximum report contributions</dfn> is a positive integer that controls how
 many contributions can be present in a single report.
 
@@ -396,13 +403,6 @@ minimum delay to deliver an [=aggregatable report=].
 <dfn>Randomized report delay</dfn> is a positive [=duration=] that controls the
 random delay to deliver an [=aggregatable report=]. This delay is additional to
 the [=minimum report delay=].
-
-<dfn>Allowed aggregation coordinator set</dfn> is a [=set=] of [=origins=] that
-controls which origins are valid [=aggregation coordinators=]. Every element in
-this set must be a [=potentially trustworthy origin=].
-
-<dfn>Default aggregation coordinator</dfn> is an [=aggregation coordinator=]
-that controls which is used for a report if none is explicitly selected.
 
 Permissions Policy integration {#permissions-policy-integration}
 ================================================================
