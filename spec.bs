@@ -1013,7 +1013,8 @@ steps. They return an [=aggregation coordinator=], null or a {{DOMException}}:
     |options|["`privateAggregationConfig`"]["`aggregatonCoordinatorOrigin`"].
 1. If |url| is failure or null, return a new {{DOMException}} with name
     "`SyntaxError`".
-1. TODO: Do we want to disallow non-empty paths?
+
+    Issue: Consider throwing an error if the path is not empty.
 1. Let |origin| be |url|'s [=url/origin=].
 1. If the result of [=determining if an origin is an aggregation coordinator=]
     given |origin| is false, return a new {{DOMException}} with name
@@ -1663,8 +1664,9 @@ steps are modified to add the following case at the end of the "Switch on
     1. If |aggregationCoordinator| is failure or null, jump to the step labaled
         Abort update.
     1. Otherwise, set <var ignore>ig</var>'s [=interest group/Private
-        Aggregation coordinator=] to |aggregationCoordinator|. (TODO: Check impl
-        for its handling here.)
+        Aggregation coordinator=] to |aggregationCoordinator|.
+
+        Issue: Ensure that this matches the implementation.
 
 </dl>
 
@@ -1892,7 +1894,8 @@ a {{DOMException}}.
 1. Let |url| be the result of running the [=URL parser=] on |originString|.
 1. If |url| is failure or null, return a new {{DOMException}} with name
     "`SyntaxError`".
-1. TODO: Do we want to disallow non-empty paths?
+
+    Issue: Consider throwing an error if the path is not empty.
 1. Let |origin| be |url|'s [=url/origin=].
 1. If the result of [=determining if an origin is an aggregation coordinator=]
     given |origin| is false, return a new {{DOMException}} with name
@@ -2061,8 +2064,6 @@ Possible mitigations include:
 1. Send reports immediately to a trusted proxy server, which would itself apply
     additional delay: This would effectively hide both the user’s IP address and
     their online-offline presence from the reporting origin.
-
-TODO: Consider discussing aggregation coordinator choice.
 
 Security considerations {#security-considerations}
 ================================================
