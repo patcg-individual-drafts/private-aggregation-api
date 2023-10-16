@@ -351,6 +351,9 @@ An aggregatable report is a [=struct=] with the following items:
 An aggregation coordinator is an [=origin=] that the [=allowed aggregation
 coordinator set=] [=set/contains=].
 
+Issue: Consider switching to the <a spec="attribution-reporting-api">suitable
+origin</a> concept used by the Attribution Reporting API here and elsewhere.
+
 <h3 dfn-type=dfn>Context type</h3>
 A context type is a [=string=] indicating what kind of global scope the
 {{PrivateAggregation}} object was exposed in. Each API exposing Private
@@ -388,8 +391,8 @@ The user agent may expose controls that allow the user to delete data from the
 ==================================================================
 
 <dfn>Allowed aggregation coordinator set</dfn> is a [=set=] of [=origins=] that
-controls which origins are valid [=aggregation coordinators=]. Every element in
-this set must be a [=potentially trustworthy origin=].
+controls which [=origins=] are valid [=aggregation coordinators=]. Every
+[=set/item=] in this [=set=] must be a [=potentially trustworthy origin=].
 
 <dfn>Default aggregation coordinator</dfn> is an [=aggregation coordinator=]
 that controls which is used for a report if none is explicitly selected.
@@ -530,7 +533,7 @@ Note: These steps break up the contributions based on their [=debug details=] as
 
 To <dfn algorithm export>determine if an origin is an aggregation
 coordinator</dfn> given an [=origin=] |origin|, perform the following steps.
-They return a boolean.
+They return a [=boolean=].
 
 1. Return whether |origin| is an [=aggregation coordinator=].
 
@@ -1661,8 +1664,8 @@ steps are modified to add the following case at the end of the "Switch on
     1. Let |aggregationCoordinator| be the result of [=obtain the Private
         Aggregation coordinator from a string|obtaining the Private Aggregation
         coordinator=] given <var ignore>value</var>.
-    1. If |aggregationCoordinator| is failure or null, jump to the step labaled
-        Abort update.
+    1. If |aggregationCoordinator| is a {{DOMException}}, jump to the step
+        labeled Abort update.
     1. Otherwise, set <var ignore>ig</var>'s [=interest group/Private
         Aggregation coordinator=] to |aggregationCoordinator|.
 
@@ -1888,8 +1891,8 @@ steps. They return an [=aggregation coordinator=], null or a {{DOMException}}.
 
 To <dfn lt="obtain the Private Aggregation coordinator from a string">obtain the
 Private Aggregation coordinator</dfn> given a {{USVString}} |originString|,
-perform the following steps. They return an [=aggregation coordinator=], null or
-a {{DOMException}}.
+perform the following steps. They return an [=aggregation coordinator=] or a
+{{DOMException}}.
 
 1. Let |url| be the result of running the [=URL parser=] on |originString|.
 1. If |url| is failure or null, return a new {{DOMException}} with name
