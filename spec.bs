@@ -1659,17 +1659,21 @@ steps are modified to add the following case at the end of the "Switch on
 <var ignore>key</var>" step.
 <div algorithm="protected-audience-update-interest-groups-monkey-patch">
 <dl class="switch">
-: "`aggregationCoordinatorOrigin`"
+: "`privateAggregationConfig`"
 ::
-    1. Let |aggregationCoordinator| be the result of [=obtain the Private
-        Aggregation coordinator from a string|obtaining the Private Aggregation
-        coordinator=] given <var ignore>value</var>.
-    1. If |aggregationCoordinator| is a {{DOMException}}, jump to the step
-        labeled Abort update.
-    1. Otherwise, set <var ignore>ig</var>'s [=interest group/Private
-        Aggregation coordinator=] to |aggregationCoordinator|.
-
-        Issue: Ensure that this matches the implementation.
+    1. If |value| is not a [=map=] whose [=map/keys=] are [=strings=], jump to
+        the step labeled Abort update.
+    1. If |value|["`aggregationCoordinatorOrigin`"] [=map/exists=]:
+        1. If |value|["`aggregationCoordinatorOrigin`"] is not a [=string=],
+            jump to the step labeled Abort update.
+        1. Let |aggregationCoordinator| be the result of [=obtain the Private
+            Aggregation coordinator from a string|obtaining the Private
+            Aggregation coordinator=] given
+            |value|["`aggregationCoordinatorOrigin`"].
+        1. If |aggregationCoordinator| is a {{DOMException}}, jump to the step
+            labeled Abort update.
+        1. Otherwise, set <var ignore>ig</var>'s [=interest group/Private
+            Aggregation coordinator=] to |aggregationCoordinator|.
 
 </dl>
 
