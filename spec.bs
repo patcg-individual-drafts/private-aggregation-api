@@ -347,12 +347,17 @@ An aggregatable report is a [=struct=] with the following items:
 
 </dl>
 
-<h3 dfn-type=dfn>Aggregation coordinator</h3>
-An aggregation coordinator is an [=origin=] that the [=allowed aggregation
-coordinator set=] [=set/contains=].
+Aggregation coordinator {#aggregation-coordinator-structure}
+------------------------------------------------------------
+
+An <dfn>aggregation coordinator</dfn> is an [=origin=] that the [=allowed
+aggregation coordinator set=] [=set/contains=].
 
 Issue: Consider switching to the <a spec="attribution-reporting-api">suitable
 origin</a> concept used by the Attribution Reporting API here and elsewhere.
+
+Issue: Move other structures to be defined inline instead of via a header.
+    Consider also removing all the subheadings.
 
 <h3 dfn-type=dfn>Context type</h3>
 A context type is a [=string=] indicating what kind of global scope the
