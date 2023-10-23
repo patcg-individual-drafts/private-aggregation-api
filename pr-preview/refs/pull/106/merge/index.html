@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-UD" rel="stylesheet">
   <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="e6454118f29255afb32b6bfec9909981655864c3" name="document-revision">
+  <meta content="702e6f64c3df0d0b637a05d4411a21a85cc389a9" name="document-revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -730,7 +730,7 @@ Learn more about <a href="http://www.w3.org/community/">W3C Community and Busine
       <li><a href="#debug-details"><span class="secno">4.4</span> <span class="content">Debug details</span></a>
       <li><a href="#contribution-cache-entry"><span class="secno">4.5</span> <span class="content">Contribution cache entry</span></a>
       <li><a href="#aggregatable-report"><span class="secno">4.6</span> <span class="content">Aggregatable report</span></a>
-      <li><a href="#aggregation-coordinator"><span class="secno">4.7</span> <span class="content">Aggregation coordinator</span></a>
+      <li><a href="#aggregation-coordinator-structure"><span class="secno">4.7</span> <span class="content">Aggregation coordinator</span></a>
       <li><a href="#context-type"><span class="secno">4.8</span> <span class="content">Context type</span></a>
      </ol>
     <li>
@@ -1100,11 +1100,13 @@ same period of execution.
     <dd data-md>
      <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#boolean" id="ref-for-boolean②">boolean</a></p>
    </dl>
-   <h3 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="4.7" data-lt="Aggregation coordinator" data-noexport id="aggregation-coordinator"><span class="secno">4.7. </span><span class="content">Aggregation coordinator</span><a class="self-link" href="#aggregation-coordinator" id="ref-for-aggregation-coordinator①⑤"></a></h3>
-    An aggregation coordinator is an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin①">origin</a> that the <a data-link-type="dfn" href="#allowed-aggregation-coordinator-set" id="ref-for-allowed-aggregation-coordinator-set">allowed aggregation
-coordinator set</a> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-contain" id="ref-for-list-contain">contains</a>. 
+   <h3 class="heading settled" data-level="4.7" id="aggregation-coordinator-structure"><span class="secno">4.7. </span><span class="content">Aggregation coordinator</span><a class="self-link" href="#aggregation-coordinator-structure"></a></h3>
+   <p>An <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="aggregation-coordinator">aggregation coordinator</dfn> is an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin①">origin</a> that the <a data-link-type="dfn" href="#allowed-aggregation-coordinator-set" id="ref-for-allowed-aggregation-coordinator-set">allowed
+aggregation coordinator set</a> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-contain" id="ref-for-list-contain">contains</a>.</p>
    <p class="issue" id="issue-d61741c5"><a class="self-link" href="#issue-d61741c5"></a> Consider switching to the <a data-link-type="dfn" href="https://wicg.github.io/attribution-reporting-api/#suitable-origin" id="ref-for-suitable-origin">suitable
 origin</a> concept used by the Attribution Reporting API here and elsewhere.</p>
+   <p class="issue" id="issue-eb41e1cd"><a class="self-link" href="#issue-eb41e1cd"></a> Move other structures to be defined inline instead of via a header.
+    Consider also removing all the subheadings.</p>
    <h3 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="4.8" data-lt="Context type" data-noexport id="context-type"><span class="secno">4.8. </span><span class="content">Context type</span><a class="self-link" href="#context-type" id="ref-for-context-type⑦"></a></h3>
     A context type is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string②">string</a> indicating what kind of global scope the <code class="idl"><a data-link-type="idl" href="#privateaggregation" id="ref-for-privateaggregation④">PrivateAggregation</a></code> object was exposed in. Each API exposing Private
 Aggregation should pick a unique string (or multiple) for this. 
@@ -3055,8 +3057,12 @@ to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encry
   <ul class="index">
    <li><a href="#aggregatable-report">Aggregatable report</a><span>, in § 4.5</span>
    <li><a href="#aggregatable-report-cache">aggregatable report cache</a><span>, in § 5</span>
-   <li><a href="#aggregation-coordinator">Aggregation coordinator</a><span>, in § 4.6</span>
-   <li><a href="#aggregatable-report-aggregation-coordinator">aggregation coordinator</a><span>, in § 4.6</span>
+   <li>
+    aggregation coordinator
+    <ul>
+     <li><a href="#aggregation-coordinator">definition of</a><span>, in § 4.7</span>
+     <li><a href="#aggregatable-report-aggregation-coordinator">dfn for aggregatable report</a><span>, in § 4.6</span>
+    </ul>
    <li><a href="#aggregation-coordinator-map">aggregation coordinator map</a><span>, in § 5</span>
    <li>
     aggregationCoordinatorOrigin
@@ -3597,6 +3603,8 @@ to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encry
    <div class="issue"> Unique internal value is not an exported definition. See <a href="https://github.com/whatwg/infra/issues/583">infra/583</a>. <a class="issue-return" href="#issue-24767e0c" title="Jump to section">↵</a></div>
    <div class="issue"> Consider switching to the <a data-link-type="dfn" href="https://wicg.github.io/attribution-reporting-api/#suitable-origin">suitable
 origin</a> concept used by the Attribution Reporting API here and elsewhere. <a class="issue-return" href="#issue-d61741c5" title="Jump to section">↵</a></div>
+   <div class="issue"> Move other structures to be defined inline instead of via a header.
+    Consider also removing all the subheadings. <a class="issue-return" href="#issue-eb41e1cd" title="Jump to section">↵</a></div>
    <div class="issue"> Elsewhere, link to definition when using <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent">user agent</a>. <a class="issue-return" href="#issue-34950ed5" title="Jump to section">↵</a></div>
    <div class="issue"> This would ideally be replaced by a more descriptive algorithm in Infra.
     See <a href="https://github.com/whatwg/infra/issues/201">infra/201</a>. <a class="issue-return" href="#issue-6b252736" title="Jump to section">↵</a></div>
@@ -4159,7 +4167,7 @@ window.dfnpanelData['aggregatable-report-debug-details'] = {"dfnID": "aggregatab
 window.dfnpanelData['aggregatable-report-aggregation-coordinator'] = {"dfnID": "aggregatable-report-aggregation-coordinator", "url": "#aggregatable-report-aggregation-coordinator", "dfnText": "aggregation coordinator", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-aggregation-coordinator"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-aggregation-coordinator\u2460"}, {"id": "ref-for-aggregatable-report-aggregation-coordinator\u2461"}], "title": "8.4. Serializing reports"}], "external": false};
 window.dfnpanelData['aggregatable-report-context-id'] = {"dfnID": "aggregatable-report-context-id", "url": "#aggregatable-report-context-id", "dfnText": "context ID", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-context-id"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-context-id\u2460"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-aggregatable-report-context-id\u2461"}], "title": "12.1.3. Protecting against leaks via the number of reports"}], "external": false};
 window.dfnpanelData['aggregatable-report-queued'] = {"dfnID": "aggregatable-report-queued", "url": "#aggregatable-report-queued", "dfnText": "queued", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-queued"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-queued\u2460"}, {"id": "ref-for-aggregatable-report-queued\u2461"}, {"id": "ref-for-aggregatable-report-queued\u2462"}, {"id": "ref-for-aggregatable-report-queued\u2463"}], "title": "8.3. Sending reports"}], "external": false};
-window.dfnpanelData['aggregation-coordinator'] = {"dfnID": "aggregation-coordinator", "url": "#aggregation-coordinator", "dfnText": "4.7. Aggregation coordinator", "refSections": [{"refs": [{"id": "ref-for-aggregation-coordinator"}], "title": "4.6. Aggregatable report"}, {"refs": [{"id": "ref-for-aggregation-coordinator"}], "title": "4.7. Aggregation coordinator"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2460"}], "title": "5. Storage"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2461"}, {"id": "ref-for-aggregation-coordinator\u2462"}], "title": "6. Implementation-defined values"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2463"}, {"id": "ref-for-aggregation-coordinator\u2464"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2465"}, {"id": "ref-for-aggregation-coordinator\u2466"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2467"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2468"}], "title": "10. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2460\u24ea"}, {"id": "ref-for-aggregation-coordinator\u2460\u2460"}], "title": "11.3.1. Extending auction config"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2460\u2461"}], "title": "11.3.2. Extending interest group"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2460\u2462"}, {"id": "ref-for-aggregation-coordinator\u2460\u2463"}], "title": "11.5. New algorithms"}], "external": false};
+window.dfnpanelData['aggregation-coordinator'] = {"dfnID": "aggregation-coordinator", "url": "#aggregation-coordinator", "dfnText": "aggregation coordinator", "refSections": [{"refs": [{"id": "ref-for-aggregation-coordinator"}], "title": "4.6. Aggregatable report"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2460"}], "title": "5. Storage"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2461"}, {"id": "ref-for-aggregation-coordinator\u2462"}], "title": "6. Implementation-defined values"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2463"}, {"id": "ref-for-aggregation-coordinator\u2464"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2465"}, {"id": "ref-for-aggregation-coordinator\u2466"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2467"}], "title": "8.4. Serializing reports"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2468"}], "title": "10. Shared Storage API monkey patches"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2460\u24ea"}, {"id": "ref-for-aggregation-coordinator\u2460\u2460"}], "title": "11.3.1. Extending auction config"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2460\u2461"}], "title": "11.3.2. Extending interest group"}, {"refs": [{"id": "ref-for-aggregation-coordinator\u2460\u2462"}, {"id": "ref-for-aggregation-coordinator\u2460\u2463"}], "title": "11.5. New algorithms"}], "external": false};
 window.dfnpanelData['context-type'] = {"dfnID": "context-type", "url": "#context-type", "dfnText": "4.8. Context type", "refSections": [{"refs": [{"id": "ref-for-context-type"}], "title": "3. Exposing to global scopes"}, {"refs": [{"id": "ref-for-context-type\u2460"}], "title": "4.6. Aggregatable report"}, {"refs": [{"id": "ref-for-context-type"}], "title": "4.8. Context type"}, {"refs": [{"id": "ref-for-context-type\u2461"}], "title": "8.1. Exported algorithms"}, {"refs": [{"id": "ref-for-context-type\u2462"}, {"id": "ref-for-context-type\u2463"}, {"id": "ref-for-context-type\u2464"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-context-type\u2465"}], "title": "8.3. Sending reports"}], "external": false};
 window.dfnpanelData['aggregatable-report-cache'] = {"dfnID": "aggregatable-report-cache", "url": "#aggregatable-report-cache", "dfnText": "aggregatable report cache", "refSections": [{"refs": [{"id": "ref-for-aggregatable-report-cache"}], "title": "5.1. Clearing storage"}, {"refs": [{"id": "ref-for-aggregatable-report-cache\u2460"}], "title": "8.2. Scheduling reports"}, {"refs": [{"id": "ref-for-aggregatable-report-cache\u2461"}, {"id": "ref-for-aggregatable-report-cache\u2462"}, {"id": "ref-for-aggregatable-report-cache\u2463"}], "title": "8.3. Sending reports"}, {"refs": [{"id": "ref-for-aggregatable-report-cache\u2464"}], "title": "12.2. Clearing site data"}, {"refs": [{"id": "ref-for-aggregatable-report-cache\u2465"}], "title": "13.1. Same-origin policy"}], "external": false};
 window.dfnpanelData['aggregation-coordinator-map'] = {"dfnID": "aggregation-coordinator-map", "url": "#aggregation-coordinator-map", "dfnText": "aggregation coordinator map", "refSections": [{"refs": [{"id": "ref-for-aggregation-coordinator-map"}, {"id": "ref-for-aggregation-coordinator-map\u2460"}], "title": "8.1. Exported algorithms"}], "external": false};
