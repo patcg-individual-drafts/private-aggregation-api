@@ -362,20 +362,22 @@ Aggregation should pick a unique string (or multiple) for this.
 Storage {#storage}
 ==================
 
-A user agent holds an <dfn>aggregatable report cache</dfn>, which is a [=list=]
-of [=aggregatable reports=].
+A [=user agent=] holds an <dfn>aggregatable report cache</dfn>, which is a
+[=list=] of [=aggregatable reports=].
 
-A user agent holds an <dfn>aggregation coordinator map</dfn>, which is a [=map=]
-from [=batching scopes=] to [=aggregation coordinators=].
+A [=user agent=] holds an <dfn>aggregation coordinator map</dfn>, which is a
+[=map=] from [=batching scopes=] to [=aggregation coordinators=].
 
-A user agent holds a <dfn>context ID map</dfn>, which is a [=map=] from
+A [=user agent=] holds a <dfn>context ID map</dfn>, which is a [=map=] from
 [=batching scopes=] to [=strings=].
 
-A user agent holds a <dfn>contribution cache</dfn>, which is a [=list=] of
+A [=user agent=] holds a <dfn>contribution cache</dfn>, which is a [=list=] of
 [=contribution cache entries=].
 
-A user agent holds a <dfn>debug scope map</dfn>, which is a [=map=] from [=debug
-scopes=] to [=debug details=].
+A [=user agent=] holds a <dfn>debug scope map</dfn>, which is a [=map=] from
+[=debug scopes=] to [=debug details=].
+
+Issue: Elsewhere, link to definition when using [=user agent=].
 
 Clearing storage {#clearing-storage}
 ----------------------------------------
@@ -531,19 +533,27 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a
 Note: These steps break up the contributions based on their [=debug details=] as
     each report can only have one set of metadata.
 
-To <dfn algorithm export>determine if an origin is an aggregation
-coordinator</dfn> given an [=origin=] |origin|, perform the following steps.
-They return a [=boolean=].
+<div algorithm>
+To <dfn export>determine if an origin is an aggregation coordinator</dfn> given
+an [=origin=] |origin|, perform the following steps. They return a [=boolean=].
 
 1. Return whether |origin| is an [=aggregation coordinator=].
 
-To <dfn algorithm export>set the aggregation coordinator for a batching
-scope</dfn> given an [=origin=] |origin| and a [=batching scope=]
-|batchingScope|:
+</div>
+
+<div algorithm>
+To <dfn export>set the aggregation coordinator for a batching scope</dfn> given
+an [=origin=] |origin| and a [=batching scope=] |batchingScope|:
 
 1. [=Assert=]: |origin| is an [=aggregation coordinator=].
 1. Let |aggregationCoordinatorMap| be the [=aggregation coordinator map=].
 1. [=map/Set=] |aggregationCoordinatorMap|[|batchingScope|] to |origin|.
+
+</div>
+
+Issue: Elsewhere, surround algorithms in a `<div algorithm>` block to match, and
+    add styling for all algorithms per
+    [bikeshed/1472](https://github.com/speced/bikeshed/issues/1472).
 
 To <dfn algorithm export>set the context ID for a batching scope</dfn> given
 a [=string=] |contextId| and a [=batching scope=] |batchingScope|:
@@ -841,7 +851,8 @@ a [=tuple=] consisting of a public key and a [=string=], or an error.
     in the event that the user agent failed to obtain the public key from |url|,
     an error. This step may be asynchronous.
 
-Issue: Specify this in terms of [=fetch=].
+Issue: Specify this in terms of [=fetch=]. Add details about which encryption
+    standards to use, length requirements, etc.
 
 Note: The user agent is encouraged to enforce regular key rotation. If there are
     multiple keys, the user agent can independently pick a key uniformly at
@@ -1524,14 +1535,14 @@ renumbering later steps as appropriate:
 1. Let |debugScope| be a new [=debug scope=].
 1. Set |global|'s {{InterestGroupScriptRunnerGlobalScope/privateAggregation}}'s
     [=PrivateAggregation/scoping details=] to a new [=scoping details=] with the
-    items:
+    [=struct/items=]:
     : [=scoping details/get batching scope steps=]
     :: An algorithm that performs the following steps:
-        1. Let |origin| be |scope|'s [=relevant settings object=]'s
-            [=environment settings object/origin=].
+        1. Let |origin| be |realm|'s [=realm/settings object=]'s [=environment
+            settings object/origin=].
         1. Let |ig| be the result of [=maybe obtain an interest group|maybe
-            obtaining an interest group=] given |scope|'s [=relevant settings
-            object=]'s [=environment settings object/realm=].
+            obtaining an interest group=] given |realm|'s [=realm/global
+            object=].
         1. Let |aggregationCoordinator| be null.
         1. If |ig| is not null, set |aggregationCoordinator| to |ig|'s
             [=interest group/Private Aggregation coordinator=].
