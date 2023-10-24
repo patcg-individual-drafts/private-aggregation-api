@@ -338,12 +338,26 @@ An aggregatable report is a [=struct=] with the following items:
 :: A [=string=]
 : <dfn>debug details</dfn>
 :: A [=debug details=]
+: <dfn>aggregation coordinator</dfn>
+:: An [=aggregation coordinator=]
 : <dfn>context ID</dfn>
 :: A [=string=] or null
 : <dfn>queued</dfn>
 :: A [=boolean=]
 
 </dl>
+
+Aggregation coordinator {#aggregation-coordinator-structure}
+------------------------------------------------------------
+
+An <dfn>aggregation coordinator</dfn> is an [=origin=] that the [=allowed
+aggregation coordinator set=] [=set/contains=].
+
+Issue: Consider switching to the <a spec="attribution-reporting-api">suitable
+origin</a> concept used by the Attribution Reporting API here and elsewhere.
+
+Issue: Move other structures to be defined inline instead of via a header.
+    Consider also removing all the subheadings.
 
 <h3 dfn-type=dfn>Context type</h3>
 A context type is a [=string=] indicating what kind of global scope the
@@ -353,17 +367,22 @@ Aggregation should pick a unique string (or multiple) for this.
 Storage {#storage}
 ==================
 
-A user agent holds an <dfn>aggregatable report cache</dfn>, which is a [=list=]
-of [=aggregatable reports=].
+A [=user agent=] holds an <dfn>aggregatable report cache</dfn>, which is a
+[=list=] of [=aggregatable reports=].
 
-A user agent holds a <dfn>context ID map</dfn>, which is an [=ordered map=] from
+A [=user agent=] holds an <dfn>aggregation coordinator map</dfn>, which is a
+[=map=] from [=batching scopes=] to [=aggregation coordinators=].
+
+A [=user agent=] holds a <dfn>context ID map</dfn>, which is a [=map=] from
 [=batching scopes=] to [=strings=].
 
-A user agent holds a <dfn>contribution cache</dfn>, which is a [=list=] of
+A [=user agent=] holds a <dfn>contribution cache</dfn>, which is a [=list=] of
 [=contribution cache entries=].
 
-A user agent holds a <dfn>debug scope map</dfn>, which is an [=ordered map=]
-from [=debug scopes=] to [=debug details=].
+A [=user agent=] holds a <dfn>debug scope map</dfn>, which is a [=map=] from
+[=debug scopes=] to [=debug details=].
+
+Issue: Elsewhere, link to definition when using [=user agent=].
 
 Clearing storage {#clearing-storage}
 ----------------------------------------
@@ -377,6 +396,13 @@ The user agent may expose controls that allow the user to delete data from the
 
 [=Implementation-defined=] values {#implementation-defined-values}
 ==================================================================
+
+<dfn>Allowed aggregation coordinator set</dfn> is a [=set=] of [=origins=] that
+controls which [=origins=] are valid [=aggregation coordinators=]. Every
+[=set/item=] in this [=set=] must be a [=potentially trustworthy origin=].
+
+<dfn>Default aggregation coordinator</dfn> is an [=aggregation coordinator=]
+that controls which is used for a report if none is explicitly selected.
 
 <dfn>Maximum report contributions</dfn> is a positive integer that controls how
 many contributions can be present in a single report.
@@ -472,6 +498,12 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a
                 scope=] steps.
 
         1. [=list/Append=] |entry| to |batchEntries|.
+1. Let |aggregationCoordinator| be the [=default aggregation coordinator=].
+1. Let |aggregationCoordinatorMap| be the [=aggregation coordinator map=].
+1. If |aggregationCoordinatorMap|[|batchingScope|] [=map/exists=]:
+    1. Set |aggregationCoordinator| to
+        |aggregationCoordinatorMap|[|batchingScope|].
+    1. [=map/Remove=] |aggregationCoordinatorMap|[|batchingScope|].
 1. Let |contextId| be null.
 1. Let |contextIdMap| be the [=context ID map=].
 1. If |contextIdMap|[|batchingScope|] [=map/exists=]:
@@ -501,10 +533,32 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a
     |batchedContributions|:
     1. Perform the [=report creation and scheduling steps=] with
         |reportingOrigin|, |contextType|, |contributions|, |debugDetails|,
-        |contextId| and |timeout|.
+        |aggregationCoordinator|, |contextId| and |timeout|.
 
 Note: These steps break up the contributions based on their [=debug details=] as
     each report can only have one set of metadata.
+
+<div algorithm>
+To <dfn export>determine if an origin is an aggregation coordinator</dfn> given
+an [=origin=] |origin|, perform the following steps. They return a [=boolean=].
+
+1. Return whether |origin| is an [=aggregation coordinator=].
+
+</div>
+
+<div algorithm>
+To <dfn export>set the aggregation coordinator for a batching scope</dfn> given
+an [=origin=] |origin| and a [=batching scope=] |batchingScope|:
+
+1. [=Assert=]: |origin| is an [=aggregation coordinator=].
+1. Let |aggregationCoordinatorMap| be the [=aggregation coordinator map=].
+1. [=map/Set=] |aggregationCoordinatorMap|[|batchingScope|] to |origin|.
+
+</div>
+
+Issue: Elsewhere, surround algorithms in a `<div algorithm>` block to match, and
+    add styling for all algorithms per
+    [bikeshed/1472](https://github.com/speced/bikeshed/issues/1472).
 
 To <dfn algorithm export>set the context ID for a batching scope</dfn> given
 a [=string=] |contextId| and a [=batching scope=] |batchingScope|:
@@ -519,8 +573,8 @@ Scheduling reports {#scheduling-reports}
 To perform the <dfn algorithm>report creation and scheduling steps</dfn> with an
 [=origin=] |reportingOrigin|, a [=context type=] |api|, a [=list=] of
 {{PAHistogramContribution}}s |contributions|, a [=debug details=]
-|debugDetails|, a [=string=] or null |contextId| and a [=moment=] or null
-|timeout|:
+|debugDetails|, an [=aggregation coordinator=] |aggregationCoordinator|, a
+[=string=] or null |contextId| and a [=moment=] or null |timeout|:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Optionally, return.
 
@@ -553,7 +607,7 @@ To perform the <dfn algorithm>report creation and scheduling steps</dfn> with an
             reports](#protecting-against-leaks-via-the-number-of-reports).
 1. Let |report| be the result of [=obtaining an aggregatable report=] given
     |reportingOrigin|, |api|, |truncatedContributions|, |debugDetails|,
-    |contextId|, |timeout| and |currentWallTime|.
+    |aggregationCoordinator|, |contextId|, |timeout| and |currentWallTime|.
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
 To <dfn algorithm>consume budget if permitted</dfn> given a {{long}} |value|, an
@@ -569,8 +623,9 @@ this algorithm should return true.
 To <dfn>obtain an aggregatable report</dfn> given an [=origin=]
 |reportingOrigin|, a [=context type=] |api|, a [=list=] of
 {{PAHistogramContribution}}s |contributions|, a [=debug details=]
-|debugDetails|, a [=string=] or null |contextId|, a [=moment] or null |timeout|
-and a [=moment=] |currentTime|,
+|debugDetails|, an [=aggregation coordinator=] |aggregationCoordinator|, a
+[=string=] or null |contextId|, a [=moment] or null |timeout| and a [=moment=]
+|currentTime|,
 perform the following steps. They return an [=aggregatable report=].
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |reportTime| be the result of running [=obtain a report delivery time=]
@@ -590,6 +645,8 @@ perform the following steps. They return an [=aggregatable report=].
     :: The result of [=generating a random UUID=].
     : [=aggregatable report/debug details=]
     :: |debugDetails|
+    : [=aggregatable report/aggregation coordinator=]
+    :: |aggregationCoordinator|
     : [=aggregatable report/context ID=]
     :: |contextId|
     : [=aggregatable report/queued=]
@@ -740,10 +797,8 @@ error.
     |aggregationServicePayloads|.
 1. Let |data| be an [=ordered map=] of the following key/value pairs:
     : "`aggregation_coordinator_origin`"
-    :: An [=implementation-defined=] [=origin=], [=serialization of an
-        origin|serialized=].
-
-        Issue(78): Replace with the chosen (or default) aggregation coordinator.
+    :: |report|'s [=aggregatable report/aggregation coordinator=],
+        [=serialization of an origin|serialized=].
     : "`aggregation_service_payloads`"
     :: |aggregationServicePayloads|
     : "`shared_info`"
@@ -761,7 +816,8 @@ To <dfn>obtain the aggregation service payloads</dfn> given an [=aggregatable
 report=] |report|, perform the following steps. They return a [=list=] of
 [=maps=] or an error.
 1. Let |publicKeyTuple| be the result of [=obtaining the public key for
-    encryption=].
+    encryption=] given |report|'s [=aggregatable report/aggregation
+    coordinator=].
 1. If |publicKeyTuple| is an error, return |publicKeyTuple|.
 1. Let (|pkR|, |keyId|) be |publicKeyTuple|.
 1. Let |plaintextPayload| be the result of [=obtaining the plaintext payload=]
@@ -785,11 +841,23 @@ report=] |report|, perform the following steps. They return a [=list=] of
 1. [=list/Append=] |aggregationServicePayload| to |aggregationServicePayloads|.
 1. Return |aggregationServicePayloads|.
 
-To <dfn>obtain the public key for encryption</dfn>, perform an
-[=implementation-defined=] sequence of steps. They return a [=tuple=] consisting
-of a public key and a [=string=] (which should uniquely identify the public
-key), or an error in the event that the [=user agent=] failed to obtain the
-public key.
+To <dfn>obtain the public key for encryption</dfn> given an [=aggregation
+coordinator=] |aggregationCoordinator|, perform the following steps. They return
+a [=tuple=] consisting of a public key and a [=string=], or an error.
+
+1. Let |url| be a new [=URL record=].
+1. Set |url|'s [=url/scheme=] to |aggregationCoordinator|'s [=origin/scheme=].
+1. Set |url|'s [=url/host=] to |aggregationCoordinator|'s [=origin/host=].
+1. Set |url|'s [=url/port=] to |aggregationCoordinator|'s [=origin/port=].
+1. Set |url|'s [=url/path=]  to «"`.well-known`", "`aggregation-service`",
+    "`v1`", "`public-keys`"».
+1. Return an [=implementation-defined=] [=tuple=] consisting of a public key
+    from |url| and a [=string=] that should uniquely identify the public key or,
+    in the event that the user agent failed to obtain the public key from |url|,
+    an error. This step may be asynchronous.
+
+Issue: Specify this in terms of [=fetch=]. Add details about which encryption
+    standards to use, length requirements, etc.
 
 Note: The user agent is encouraged to enforce regular key rotation. If there are
     multiple keys, the user agent can independently pick a key uniformly at
@@ -936,6 +1004,7 @@ partial interface SharedStorageWorkletGlobalScope {
 };
 
 dictionary SharedStoragePrivateAggregationConfig {
+  USVString aggregationCoordinatorOrigin;
   USVString contextId;
 };
 
@@ -950,6 +1019,26 @@ to [=get the privateAggregation=] given [=this=].
 Add the following algorithm in the subsection
 "<a href="https://wicg.github.io/shared-storage/#run-op">Run Operation
 Methods</a>":
+
+To <dfn algorithm>obtain the aggregation coordinator</dfn> given a
+{{SharedStorageRunOperationMethodOptions}} |options|, perform the following
+steps. They return an [=aggregation coordinator=], null or a {{DOMException}}:
+
+1. If |options|["`privateAggregationConfig`"] does not [=map/exist=], return
+    null.
+1. If |options|["`privateAggregationConfig`"]["`aggregatonCoordinatorOrigin`"]
+    does not [=map/exist=], return null.
+1. Let |url| be the result of running the [=URL parser=] on
+    |options|["`privateAggregationConfig`"]["`aggregatonCoordinatorOrigin`"].
+1. If |url| is failure or null, return a new {{DOMException}} with name
+    "`SyntaxError`".
+
+    Issue: Consider throwing an error if the path is not empty.
+1. Let |origin| be |url|'s [=url/origin=].
+1. If the result of [=determining if an origin is an aggregation coordinator=]
+    given |origin| is false, return a new {{DOMException}} with name
+    "`DataError`".
+1. Return |origin|.
 
 To <dfn algorithm>obtain the context ID</dfn> given a
 {{SharedStorageRunOperationMethodOptions}} |options|, perform the following
@@ -970,9 +1059,13 @@ modified in four ways. First, add the following steps just after step 2 ("If
 as appropriate:
 <div algorithm="shared-storage-run-monkey-patch-1">
 3. Let |contextId| be the result of [=obtaining the context ID=] given
-    <var ignore>options</var>.
+    |options|.
 1. If |contextId| is a {{DOMException}}, return [=a promise rejected with=]
     |contextId|.
+1. Let |aggregationCoordinator| be the result of [=obtaining the aggregation
+    coordinator=] given |options|.
+1. If |aggregationCoordinator| is a {{DOMException}}, return [=a promise
+    rejected with=] |aggregationCoordinator|.
 
 </div>
 Second, add the following steps in the nested scope just after "Let |operation|
@@ -986,6 +1079,8 @@ be |operationMap|[|name|]." (renumbering later steps as appropriate):
         non-negative [=implementation-defined=] [=duration=].
     1. [=Set the context ID for a batching scope=] given |contextId| and
         |batchingScope|.
+1. If |aggregationCoordinator| is not null, [=set the aggregation coordinator
+    for a batching scope=] given |aggregationCoordinator| and |batchingScope|.
 
 </div>
 
@@ -1027,9 +1122,13 @@ are modified in three ways. First, add the following steps just after step 5
 steps:
 <div algorithm="shared-storage-selecturl-monkey-patch-1">
 6. Let |contextId| be the result of [=obtaining the context ID=] given
-    <var ignore>options</var>.
+    |options|.
 1. If |contextId| is a {{DOMException}}, return [=a promise rejected with=]
     |contextId|.
+1. Let |aggregationCoordinator| be the result of [=obtaining the aggregation
+    coordinator=] given |options|.
+1. If |aggregationCoordinator| is a {{DOMException}}, return [=a promise
+    rejected with=] |aggregationCoordinator|.
 
 </div>
 Second, add the following steps in the nested scope just after "Let |operation|
@@ -1048,6 +1147,8 @@ be |operationMap|[|name|]." (renumbering later steps as appropriate):
         |batchingScope|, <var ignore>outsideSettings</var>'
         [=environment settings object/origin=], "<code>shared-storage</code>"
         and |privateAggregationTimeout|.
+1. If |aggregationCoordinator| is not null, [=set the aggregation coordinator
+    for a batching scope=] given |aggregationCoordinator| and |batchingScope|.
 1. If |contextId| is not null:
     1. Set |privateAggregationTimeout| to the [=current wall time=] plus a
         non-negative [=implementation-defined=] [=duration=].
@@ -1118,8 +1219,8 @@ Protected Audience API monkey patches {#protected-audience-api-monkey-patches}
 Issue(43): This should be moved to the Protected Audience spec, along with any
     other Protected Audience-specific details.
 
-WebIDL {#protected-audience-api-specific-webidl}
-------------------------------------------------
+New WebIDL {#protected-audience-api-specific-webidl}
+----------------------------------------------------
 
 <xmp class="idl">
 partial interface InterestGroupScriptRunnerGlobalScope {
@@ -1209,6 +1310,25 @@ Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
 
 Issue(44): Consider accepting an array of contributions.
 
+WebIDL modifications {#protected-audience-api-webidl-modifications}
+-------------------------------------------------------------------
+
+The {{AuctionAdConfig}} and {{AuctionAdInterestGroup}} dictionaries are
+modified to add a new field:
+<xmp class="idl">
+dictionary ProtectedAudiencePrivateAggregationConfig {
+  USVString aggregationCoordinatorOrigin;
+};
+
+partial dictionary AuctionAdConfig {
+  ProtectedAudiencePrivateAggregationConfig privateAggregationConfig;
+};
+
+partial dictionary AuctionAdInterestGroup {
+  ProtectedAudiencePrivateAggregationConfig privateAggregationConfig;
+};
+</xmp>
+
 Structures {#protected-audience-api-specific-structures}
 --------------------------------------------------------
 
@@ -1222,12 +1342,28 @@ Extend the <a spec="turtledove">auction config</a> [=struct=] to add new fields:
 
     Note: a null key represents the seller.
 : <dfn>batching scope map</dfn>
-:: A [=map=] from [=origin=] to [=batching scope=].
+:: A [=map=] from a [=tuple=] consisting of an <dfn ignore>origin</dfn> (an
+    [=origin=]) and a <dfn ignore>coordinator</dfn> (an [=aggregation
+    coordinator=] or null) to a [=batching scope=].
 
     Note: Does not include [=batching scopes=] for contributions conditional on
         non-reserved events.
 : <dfn>permissions policy state</dfn>
 :: A [=permissions policy state=].
+: <dfn>seller Private Aggregation coordinator</dfn> (default null)
+:: An [=aggregation coordinator=] or null.
+
+</dl>
+
+<h4 id="extending-interest-group">Extending interest group</h4>
+
+Extend the <a spec="turtledove">interest group</a> [=struct=] to add a new
+field:
+<dl dfn-for="interest group">
+: <dfn>Private Aggregation coordinator</dfn>
+:: An [=aggregation coordinator=] or null.
+
+    Note: a null value specifies the default coordinator.
 
 </dl>
 
@@ -1333,6 +1469,22 @@ subsection to add an extra field to the end of the list beginning
 Algorithm modifications {#protected-audience-api-algorithm-modifications}
 -------------------------------------------------------------------------
 
+The {{Navigator/joinAdInterestGroup()}} method steps are modified to add the
+following steps at the end of the scope nested under step 5 ("Validate the given
+<var ignore>group</var> and ..."):
+<div algorithm="protected-audience-joinadig-monkey-patch">
+17. If |group|[{{AuctionAdInterestGroup/privateAggregationConfig}}]
+    [=map/exists=]:
+    1. Let |aggregationCoordinator| be the result of [=obtaining the Private
+        Aggregation coordinator=] given
+        |group|[{{AuctionAdInterestGroup/privateAggregationConfig}}].
+    1. If |aggregationCoordinator| is a {{DOMException}}, then
+        [=exception/throw=] |aggregationCoordinator|.
+    1. Set <var ignore>interestGroup</var>'s [=interest group/Private
+        Aggregation coordinator=] to |aggregationCoordinator|.
+
+</div>
+
 The {{Navigator/runAdAuction()}} method steps are modified to add the
 following step just after step 5 ("If <var ignore>auctionConfig</var> is a
 failure, then..."), renumbering the later steps as appropriate:
@@ -1350,18 +1502,18 @@ The <a spec="turtledove">validate and convert auction ad config</a> steps are
 modified to add the following steps just before the last step ("Return
 <var ignore>auctionConfig</var>"), renumbering the later step as appropriate:
 <div algorithm="protected-audience-validate-config-monkey-patch">
-7. Let |batchingScopeMap| be |auctionConfig|'s [=auction config/batching scope
-    map=].
-1. [=list/iterate|For each=] |bidderOrigin| of |auctionConfig|'s
-    <a spec="turtledove" for="auction config">interest group buyers</a>:
-    1. [=map/Set=] |batchingScopeMap|[|bidderOrigin|] to a new [=batching
-        scope=].
-1. Let |sellerOrigin| be |auctionConfig|'s
-    <a spec="turtledove" for="auction config">seller</a>.
-1. [=map/Set=] |batchingScopeMap|[|sellerOrigin|] to a new [=batching scope=].
+7. If |config|[{{AuctionAdConfig/privateAggregationConfig}}] [=map/exists=]:
+    1. Let |aggregationCoordinator| be the result of [=obtaining the Private
+        Aggregation coordinator=] given
+        |config|[{{AuctionAdConfig/privateAggregationConfig}}].
+    1. If |aggregationCoordinator| is a {{DOMException}}, return failure.
+    1. Set <var ignore>auctionConfig</var>'s [=auction config/seller Private
+        Aggregation coordinator=] to |aggregationCoordinator|.
+
+Issue: Make all map indexing links (throughout the spec) where possible, i.e.
+    matching this section.
 
 </div>
-
 
 The <a spec="turtledove">generate and score bids</a> algorithm is modified by
 inserting the following step before each of the two "Return |leadingBidInfo|'s
@@ -1386,16 +1538,30 @@ renumbering later steps as appropriate:
     permissions policy state=]'s [=permissions policy state/private aggregation
     enabled=].
 1. Let |debugScope| be a new [=debug scope=].
-1. Set |global|'s {{InterestGroupScriptRunnerGlobalScope/
-    privateAggregation}}'s [=PrivateAggregation/scoping details=] to a new
-        [=scoping details=] with the items:
+1. Set |global|'s {{InterestGroupScriptRunnerGlobalScope/privateAggregation}}'s
+    [=PrivateAggregation/scoping details=] to a new [=scoping details=] with the
+    [=struct/items=]:
     : [=scoping details/get batching scope steps=]
     :: An algorithm that performs the following steps:
-        1. Let |origin| be <var ignore>scope</var>'s [=relevant settings
-            object=]'s [=environment settings object/origin=].
+        1. Let |origin| be |realm|'s [=realm/settings object=]'s [=environment
+            settings object/origin=].
+        1. Let |ig| be the result of [=maybe obtain an interest group|maybe
+            obtaining an interest group=] given |realm|'s [=realm/global
+            object=].
+        1. Let |aggregationCoordinator| be null.
+        1. If |ig| is not null, set |aggregationCoordinator| to |ig|'s
+            [=interest group/Private Aggregation coordinator=].
+        1. Otherwise, set |aggregationCoordinator| to |auctionConfig|'s
+            [=auction config/seller Private Aggregation coordinator=].
         1. Let |batchingScopeMap| be |auctionConfig|'s [=auction config/batching
             scope map=].
-        1. Return |batchingScopeMap|[|origin|].
+        1. Let |mapTuple| = (|origin|, |aggregationCoordinator|).
+        1. If |batchingScopeMap|[|mapTuple|] does not [=map/exist=]:
+            1. Set |batchingScopeMap|[|mapTuple|] to a new [=batching scope=].
+            1. If |aggregationCoordinator| is not null, [=set the aggregation
+                coordinator for a batching scope=] given
+                |aggregationCoordinator| and |batchingScopeMap|[|mapTuple|].
+        1. Return |batchingScopeMap|[|mapTuple|].
     : [=scoping details/get debug scope steps=]
     :: An algorithm that returns |debugScope|.
 
@@ -1495,6 +1661,40 @@ the arguments |auctionConfig| and <var ignore>winner</var>'s
 <a spec="turtledove" for="generated bid">interest group</a> to the invocation of
 <a spec="turtledove">evaluate a reporting script</a>.
 
+The <a spec="turtledove" for="interest group">estimated size</a> of an interest
+group algorithm is modified to add the following line at the end of the sum:
+<div algorithm="protected-audience-estimated-size-monkey-patch">
+16. The [=string/length=] of the [=serialization of an origin|serialization=] of
+    <var ignore>ig</var>'s [=interest group/Private Aggregation coordinator=] if
+    the field is not null.
+
+</div>
+
+The <a spec="turtledove" lt="interest group update">update interest groups</a>
+steps are modified to add the following case at the end of the "Switch on
+<var ignore>key</var>" step.
+<div algorithm="protected-audience-update-interest-groups-monkey-patch">
+<dl class="switch">
+: "`privateAggregationConfig`"
+::
+    1. If |value| is not a [=map=] whose [=map/keys=] are [=strings=], jump to
+        the step labeled Abort update.
+    1. If |value|["`aggregationCoordinatorOrigin`"] [=map/exists=]:
+        1. If |value|["`aggregationCoordinatorOrigin`"] is not a [=string=],
+            jump to the step labeled Abort update.
+        1. Let |aggregationCoordinator| be the result of [=obtain the Private
+            Aggregation coordinator from a string|obtaining the Private
+            Aggregation coordinator=] given
+            |value|["`aggregationCoordinatorOrigin`"].
+        1. If |aggregationCoordinator| is a {{DOMException}}, jump to the step
+            labeled Abort update.
+        1. Otherwise, set <var ignore>ig</var>'s [=interest group/Private
+            Aggregation coordinator=] to |aggregationCoordinator|.
+
+</dl>
+
+</div>
+
 New algorithms {#protected-audience-api-specific-new-algorithms}
 ----------------------------------------------------------------
 
@@ -1563,12 +1763,14 @@ an <a spec="turtledove">auction config</a> |auctionConfig| and a
             1. [=Append an entry to the contribution cache|Append=] |entry| to
                 the [=contribution cache=].
 
-1. [=list/iterate|For each=] |origin| → |batchingScope| of
+1. [=map/For each=] (|origin|, |aggregationCoordinator|) → |batchingScope| of
     |auctionConfig|'s [=auction config/batching scope map=]:
     1. [=Process contributions for a batching scope=] given |batchingScope|,
         |origin|, "<code>protected-audience</code>" and null.
 
 Issue: Verify interaction with component auctions.
+
+Issue: Use `[=map/For each=]` where possible.
 
 To <dfn>fill in the contribution</dfn> given a
 {{PAExtendedHistogramContribution}} |contribution| and a
@@ -1698,6 +1900,32 @@ They return an [=interest group=] or null:
         group=].
 
     </dl>
+
+To <dfn>obtain the Private Aggregation coordinator</dfn> given a
+{{ProtectedAudiencePrivateAggregationConfig}} |config|, perform the following
+steps. They return an [=aggregation coordinator=], null or a {{DOMException}}.
+
+1. If |config|["{{ProtectedAudiencePrivateAggregationConfig/aggregationCoordinatorOrigin}}"]
+    does not [=map/exist=], return null.
+1. Return the result of [=obtain the Private Aggregation coordinator from a
+    string|obtaining the Private Aggregation coordinator=] given
+    |config|["{{ProtectedAudiencePrivateAggregationConfig/aggregationCoordinatorOrigin}}"].
+
+To <dfn lt="obtain the Private Aggregation coordinator from a string">obtain the
+Private Aggregation coordinator</dfn> given a {{USVString}} |originString|,
+perform the following steps. They return an [=aggregation coordinator=] or a
+{{DOMException}}.
+
+1. Let |url| be the result of running the [=URL parser=] on |originString|.
+1. If |url| is failure or null, return a new {{DOMException}} with name
+    "`SyntaxError`".
+
+    Issue: Consider throwing an error if the path is not empty.
+1. Let |origin| be |url|'s [=url/origin=].
+1. If the result of [=determining if an origin is an aggregation coordinator=]
+    given |origin| is false, return a new {{DOMException}} with name
+    "`DataError`".
+1. Return |origin|.
 
 Privacy considerations {#privacy-considerations}
 ================================================
