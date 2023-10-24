@@ -1763,12 +1763,14 @@ an <a spec="turtledove">auction config</a> |auctionConfig| and a
             1. [=Append an entry to the contribution cache|Append=] |entry| to
                 the [=contribution cache=].
 
-1. [=list/iterate|For each=] (|origin|, |aggregationCoordinator|) →
-    |batchingScope| of |auctionConfig|'s [=auction config/batching scope map=]:
+1. [=map/For each=] (|origin|, |aggregationCoordinator|) → |batchingScope| of
+    |auctionConfig|'s [=auction config/batching scope map=]:
     1. [=Process contributions for a batching scope=] given |batchingScope|,
         |origin|, "<code>protected-audience</code>" and null.
 
 Issue: Verify interaction with component auctions.
+
+Issue: Use `[=map/For each=]` where possible.
 
 To <dfn>fill in the contribution</dfn> given a
 {{PAExtendedHistogramContribution}} |contribution| and a
