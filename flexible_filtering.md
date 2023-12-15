@@ -15,7 +15,7 @@ existing API functionalities to support core utility and compatibility needs._
 - [Proposal: filtering ID in the encrypted payload](#proposal-filtering-id-in-the-encrypted-payload)
   - [Use case examples](#use-case-examples)
     - [Processing contributions at different cadences](#processing-contributions-at-different-cadences-1)
-  - [Processing contributions by campaign ID](#processing-contributions-by-campaign-id-1)
+    - [Processing contributions by campaign ID](#processing-contributions-by-campaign-id-1)
   - [Details](#details)
     - [Small ID space by default, but configurable](#small-id-space-by-default-but-configurable)
     - [Backwards compatibility](#backwards-compatibility)
@@ -23,7 +23,7 @@ existing API functionalities to support core utility and compatibility needs._
 - [Possible future extension: batching ID in the shared_info](#possible-future-extension-batching-id-in-the-shared_info)
   - [Use case examples](#use-case-examples-1)
     - [Processing contributions at different cadences](#processing-contributions-at-different-cadences-2)
-  - [Processing contributions by campaign ID](#processing-contributions-by-campaign-id-2)
+    - [Processing contributions by campaign ID](#processing-contributions-by-campaign-id-2)
   - [Details](#details-1)
     - [Requires deterministic reports and specifying batching ID from a single-site context](#requires-deterministic-reports-and-specifying-batching-id-from-a-single-site-context)
     - [Backwards compatibility](#backwards-compatibility-1)
@@ -103,7 +103,7 @@ based on their IDs. In particular, each aggregation service query's parameters
 should provide a list of allowed filtering IDs and all contributions with other
 IDs will be filtered out. For example:
 
-```js
+```jsonc
 // ...
 "job_parameters": {
   "output_domain_blob_prefix": "domain/domain.avro",
@@ -230,7 +230,7 @@ introducing a new, optional field to an aggregatable
 [report](https://github.com/patcg-individual-drafts/private-aggregation-api#reports)'s
 shared\_info called a _batching ID_. For example:
 
-```
+```jsonc
 "shared_info": "{\"api\":\"shared-storage\",\"batching_id\":1234,\"report_id\":\"[UUID]\",\"reporting_origin\":\"https://reporter.example\",\"scheduled_report_time\":\"[timestamp in seconds]\",\"version\":\"[api version]\"}",
 ```
 
