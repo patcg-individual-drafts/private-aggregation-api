@@ -5,9 +5,9 @@
   <title>Private Aggregation API</title>
   <meta content="UD" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-UD" rel="stylesheet">
-  <meta content="Bikeshed version 82ce88815, updated Thu Sep 7 16:33:55 2023 -0700" name="generator">
+  <meta content="Bikeshed version aeadbad30, updated Thu Dec 14 13:20:22 2023 -0800" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="55019b5b57cf2d8e216ca812e89ac972027d7740" name="document-revision">
+  <meta content="43941faa137ffd739ae93e19238cfc1d382b7428" name="revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -333,11 +333,15 @@ figcaption:not(.no-marker)::before {
 :root {
     --dfnpanel-bg: #ddd;
     --dfnpanel-text: var(--text);
+    --dfnpanel-target-bg: #ffc;
+    --dfnpanel-target-outline: orange;
 }
 @media (prefers-color-scheme: dark) {
     :root {
         --dfnpanel-bg: #222;
         --dfnpanel-text: var(--text);
+        --dfnpanel-target-bg: #333;
+        --dfnpanel-target-outline: silver;
     }
 }
 .dfn-panel {
@@ -360,11 +364,13 @@ figcaption:not(.no-marker)::before {
 .dfn-panel > b { display: block; }
 .dfn-panel a { color: var(--dfnpanel-text); }
 .dfn-panel a:not(:hover) { text-decoration: none !important; border-bottom: none !important; }
+.dfn-panel a:focus {
+    outline: 5px auto Highlight;
+    outline: 5px auto -webkit-focus-ring-color;
+}
 .dfn-panel > b + b { margin-top: 0.25em; }
 .dfn-panel ul { padding: 0 0 0 1em; list-style: none; }
 .dfn-panel li a {
-    white-space: pre;
-    display: inline-block;
     max-width: calc(300px - 1.5em - 1em);
     overflow: hidden;
     text-overflow: ellipsis;
@@ -373,67 +379,79 @@ figcaption:not(.no-marker)::before {
 .dfn-panel.activated {
     display: inline-block;
     position: fixed;
-    left: .5em;
+    left: 8px;
     bottom: 2em;
     margin: 0 auto;
     max-width: calc(100vw - 1.5em - .4em - .5em);
     max-height: 30vh;
+    transition: left 1s ease-out, bottom 1s ease-out;
 }
 
-.dfn-paneled[role="button"] { cursor: pointer; }
-</style>
-<style>/* Boilerplate: style-dfn-panel */
-:root {
-    --dfnpanel-bg: #ddd;
-    --dfnpanel-text: var(--text);
+.dfn-panel .link-item:hover {
+    text-decoration: underline;
 }
-@media (prefers-color-scheme: dark) {
-    :root {
-        --dfnpanel-bg: #222;
-        --dfnpanel-text: var(--text);
+.dfn-panel .link-item .copy-icon {
+    opacity: 0;
+}
+.dfn-panel .link-item:hover .copy-icon,
+.dfn-panel .link-item .copy-icon:focus {
+    opacity: 1;
+}
+
+.dfn-panel .copy-icon {
+    display: inline-block;
+    margin-right: 0.5em;
+    width: 0.85em;
+    height: 1em;
+    border-radius: 3px;
+    background-color: #ccc;
+    cursor: pointer;
+}
+
+.dfn-panel .copy-icon .icon {
+    width: 100%;
+    height: 100%;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.dfn-panel .copy-icon .icon::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 1px solid black;
+    background-color: #ccc;
+    opacity: 0.25;
+    transform: translate(3px, -3px);
+}
+
+.dfn-panel .copy-icon:active .icon::before {
+    opacity: 1;
+}
+
+.dfn-paneled[role="button"] { cursor: help; }
+
+.highlighted {
+    animation: target-fade 3s;
+}
+
+@keyframes target-fade {
+    from {
+        background-color: var(--dfnpanel-target-bg);
+        outline: 5px solid var(--dfnpanel-target-outline);
+    }
+    to {
+        color: var(--a-normal-text);
+        background-color: transparent;
+        outline: transparent;
     }
 }
-.dfn-panel {
-    position: absolute;
-    z-index: 35;
-    width: 20em;
-    width: 300px;
-    height: auto;
-    max-height: 500px;
-    overflow: auto;
-    padding: 0.5em 0.75em;
-    font: small Helvetica Neue, sans-serif, Droid Sans Fallback;
-    background: var(--dfnpanel-bg);
-    color: var(--dfnpanel-text);
-    border: outset 0.2em;
-    white-space: normal; /* in case it's moved into a pre */
-}
-.dfn-panel:not(.on) { display: none; }
-.dfn-panel * { margin: 0; padding: 0; text-indent: 0; }
-.dfn-panel > b { display: block; }
-.dfn-panel a { color: var(--dfnpanel-text); }
-.dfn-panel a:not(:hover) { text-decoration: none !important; border-bottom: none !important; }
-.dfn-panel > b + b { margin-top: 0.25em; }
-.dfn-panel ul { padding: 0 0 0 1em; list-style: none; }
-.dfn-panel li a {
-    white-space: pre;
-    display: inline-block;
-    max-width: calc(300px - 1.5em - 1em);
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.dfn-panel.activated {
-    display: inline-block;
-    position: fixed;
-    left: .5em;
-    bottom: 2em;
-    margin: 0 auto;
-    max-width: calc(100vw - 1.5em - .4em - .5em);
-    max-height: 30vh;
-}
-
-.dfn-paneled[role="button"] { cursor: pointer; }
 </style>
 <style>/* Boilerplate: style-issues */
 a[href].issue-return {
@@ -453,6 +471,43 @@ a[href].issue-return {
 [data-md] > :last-child {
     margin-bottom: 0;
 }
+</style>
+<style>/* Boilerplate: style-ref-hints */
+:root {
+    --ref-hint-bg: #ddd;
+    --ref-hint-text: var(--text);
+}
+@media (prefers-color-scheme: dark) {
+    :root {
+        --ref-hint-bg: #222;
+        --ref-hint-text: var(--text);
+    }
+}
+
+.ref-hint {
+    display: none;
+    position: absolute;
+    z-index: 35;
+    width: 20em;
+    width: 300px;
+    height: auto;
+    max-height: 500px;
+    overflow: auto;
+    padding: 0.5em 0.5em;
+    font: small Helvetica Neue, sans-serif, Droid Sans Fallback;
+    background: var(--ref-hint-bg);
+    color: var(--ref-hint-text);
+    border: outset 0.2em;
+    white-space: normal; /* in case it's moved into a pre */
+}
+
+.ref-hint.on {
+    display: inline-block;
+}
+
+.ref-hint * { margin: 0; padding: 0; text-indent: 0; }
+
+.ref-hint ul { padding: 0 0 0 1em; list-style: none; }
 </style>
 <style>/* Boilerplate: style-selflinks */
 
@@ -513,13 +568,6 @@ dfn > a.self-link:hover {
 a.self-link::before            { content: "¶"; }
 .heading > a.self-link::before { content: "§"; }
 dfn > a.self-link::before      { content: "#"; }
-</style>
-<style>/* Boilerplate: style-syntax-highlighting */
-
-            pre.idl.highlight {
-                background: var(--borderedblock-bg, var(--def-bg));
-            }
-            
 </style>
 <style>/* Boilerplate: style-syntax-highlighting */
 
@@ -669,7 +717,7 @@ var.selected6 { background-color: #FFBCF2; box-shadow: 0 0 0 2px #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2023-10-24">24 October 2023</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2023-12-15">15 December 2023</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -685,7 +733,7 @@ var.selected6 { background-color: #FFBCF2; box-shadow: 0 0 0 2px #FFBCF2; }
     </div>
    </details>
    <div data-fill-with="warning"></div>
-   <p class="copyright" data-fill-with="copyright"><a href="http://www.w3.org/Consortium/Legal/ipr-notice#Copyright">Copyright</a> © 2023 the Contributors to “Private Aggregation API”.
+   <p class="copyright" data-fill-with="copyright"><a href="https://www.w3.org/policies/#copyright">Copyright</a> © 2023 the Contributors to “Private Aggregation API”.
 
 This document is licensed under the <a href="https://www.w3.org/copyright/software-license/">W3C Software License</a>.
 
@@ -695,12 +743,11 @@ Contributions to this document are made under the <a href="https://www.w3.org/co
   <div class="p-summary" data-fill-with="abstract">
    <h2 class="no-num no-toc no-ref heading settled" id="abstract"><span class="content">Abstract</span></h2>
    <p>A generic API for measuring aggregate, cross-site data in a privacy
-
-    preserving manner. The potentially identifying cross-site data is
-    encapsulated into <em>aggregatable reports</em>. To prevent leakage, this
-    data is encrypted, ensuring it can only be processed by an <em>aggregation
-    service</em>. During processing, this service will add noise and impose
-    limits on how many queries can be performed.</p>
+preserving manner. The potentially identifying cross-site data is
+encapsulated into <em>aggregatable reports</em>. To prevent leakage, this
+data is encrypted, ensuring it can only be processed by an <em>aggregation
+service</em>. During processing, this service will add noise and impose
+limits on how many queries can be performed.</p>
   </div>
   <h2 class="no-num no-toc no-ref heading settled" id="sotd"><span class="content">Status of this document</span></h2>
   <div data-fill-with="status">
@@ -2711,9 +2758,8 @@ value</a>.</p>
      <p>If <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-scale" id="ref-for-dom-pasignalvalue-scale">scale</a></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⑥">exists</a>, set <var>returnValue</var> to
 the result of multiplying <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-scale" id="ref-for-dom-pasignalvalue-scale①">scale</a></code>"] with <var>returnValue</var>.</p>
     <li data-md>
-     <p>Set <var>returnValue</var> to the integer result of rounding <var>returnValue</var> to the
-nearest integer. If two integers are equally close, the result should be the
-integer closer to negative infinity.</p>
+     <p>Set <var>returnValue</var> to the result of converting <var>returnValue</var> to an integer by
+truncating its fractional part.</p>
     <li data-md>
      <p>If <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset②">offset</a></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⑦">exists</a>, set <var>returnValue</var> to
 the result of adding <var>returnValue</var> to <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset③">offset</a></code>"].</p>
@@ -3664,10 +3710,179 @@ origin</a> concept used by the Attribution Reporting API here and elsewhere. <a 
 <script>/* Boilerplate: script-dfn-panel */
 "use strict";
 {
-    const dfnsJson = window.dfnsJson || {};
+    // Functions, divided by link type, that wrap an autolink's
+    // contents with the appropriate outer syntax.
+    // Alternately, a string naming another type they format
+    // the same as.
+    const typeFormatters = {
+        'dfn': (text) => `[=${text}=]`,
+        'abstract-op': (text) => `[\$${text}\$]`,
+        'value': (text) => `''${text}''`,
+        'http-header': (text) => `[:${text}:]`,
+        'idl': (text) => `{{${text}}}`,
+        'interface': 'idl',
+        'constructor': 'idl',
+        'method': 'idl',
+        'argument': 'idl',
+        'attribute': 'idl',
+        'callback': 'idl',
+        'dictionary': 'idl',
+        'dict-member': 'idl',
+        'enum': 'idl',
+        'enum-value': 'idl',
+        'exception': 'idl',
+        'const': 'idl',
+        'typedef': 'idl',
+        'stringifier': 'idl',
+        'serializer': 'idl',
+        'iterator': 'idl',
+        'maplike': 'idl',
+        'setlike': 'idl',
+        'extended-attribute': 'idl',
+        'event': 'idl',
+        'element': (element) => `<{${element}}>`,
+        'element-state': 'element',
+        'element-attr': 'element',
+        'attr-value': 'element',
+        'scheme': 'dfn',
+        'permission': 'dfn',
+        'grammar': (text) => `${text} (within a <pre class=prod>)`,
+        'type': (text)=> `<<${text}>>`,
+        'property': (text) => `'${text}'`,
+        'descriptor': 'property',
+        'function': 'value',
+        'at-rule': 'value',
+        'selector': 'value',
+    };
+    const typesUsingFor = new Set(
+        [
+            "descriptor",
+            "value",
+            "element-attr",
+            "attr-value",
+            "element-state",
+            "method",
+            "constructor",
+            "argument",
+            "attribute",
+            "const",
+            "dict-member",
+            "event",
+            "enum-value",
+            "stringifier",
+            "serializer",
+            "iterator",
+            "maplike",
+            "setlike",
+            "state",
+            "mode",
+            "context",
+            "facet",
+        ],
+    )
+    const typesNotUsingFor = new Set(
+        [
+            "property",
+            "element",
+            "interface",
+            "namespace",
+            "callback",
+            "dictionary",
+            "enum",
+            "exception",
+            "typedef",
+            "http-header",
+            "permission",
+        ],
+    )
+    function linkFormatterFromType(type) {
+        const fnOrType = typeFormatters[type];
+        if(typeof fnOrType === 'string') {
+            // follow the alias
+            return linkFormatterFromType(fnOrType);
+        }
+        return fnOrType;
+    };
 
-    function genDfnPanel({dfnID, url, dfnText, refSections, external}) {
-        return mk.aside({
+    function genLinkingSyntaxes(dfn) {
+        if(dfn.tagName != "DFN") return;
+
+        const type = dfn.getAttribute('data-dfn-type');
+        if(!type) {
+            console.log(`<dfn> doesn't have a data-dfn-type:`, dfn);
+            return [];
+        }
+
+        // Return a function that wraps link text based on the type
+        const linkFormatter = linkFormatterFromType(type);
+        if(!linkFormatter) {
+            console.log(`<dfn> has an unknown data-dfn-type:`, dfn);
+            return [];
+        }
+
+        let ltAlts;
+        if(dfn.hasAttribute('data-lt')) {
+            ltAlts = dfn.getAttribute('data-lt')
+                .split("|")
+                .map(x=>x.trim());
+        } else {
+            ltAlts = [dfn.textContent.trim()];
+        }
+        if(type == "type") {
+            // lt of "<foo>", but "foo" is the interior;
+            // <<foo/bar>> is how you write it with a for,
+            // not <foo/<bar>> or whatever.
+            for(var i = 0; i < ltAlts.length; i++) {
+                const lt = ltAlts[i];
+                const match = /<(.*)>/.exec(lt);
+                if(match) { ltAlts[i] = match[1]; }
+            }
+        }
+
+        let forAlts;
+        if(dfn.hasAttribute('data-dfn-for')) {
+            forAlts = dfn.getAttribute('data-dfn-for')
+                .split(",")
+                .map(x=>x.trim());
+        } else {
+            forAlts = [''];
+        }
+
+        let linkingSyntaxes = [];
+        if(!typesUsingFor.has(type)) {
+            for(const lt of ltAlts) {
+                linkingSyntaxes.push(linkFormatter(lt));
+            }
+        }
+        if(!typesNotUsingFor.has(type)) {
+            for(const f of forAlts) {
+                linkingSyntaxes.push(linkFormatter(`${f}/${ltAlts[0]}`))
+            }
+        }
+        return [
+            mk.b({}, 'Possible linking syntaxes:'),
+            mk.ul({},
+                ...linkingSyntaxes.map(link => {
+                    const copyLink = async () =>
+                        await navigator.clipboard.writeText(link);
+                    return mk.li({},
+                        mk.div({ class: 'link-item' },
+                            mk.button({
+                                class: 'copy-icon', title: 'Copy',
+                                type: 'button',
+                                _onclick: copyLink,
+                                tabindex: 0,
+                            }, mk.span({ class: 'icon' }) ),
+                            mk.span({}, link)
+                        )
+                    );
+                })
+            )
+        ];
+    }
+
+    function genDfnPanel({ dfn, dfnID, url, dfnText, refSections, external }) {
+        const dfnPanel = mk.aside({
             class: "dfn-panel",
             id: `infopanel-for-${dfnID}`,
             "data-for": dfnID,
@@ -3675,16 +3890,14 @@ origin</a> concept used by the Attribution Reporting API here and elsewhere. <a 
             },
             mk.span({id:`infopaneltitle-for-${dfnID}`, style:"display:none"},
                 `Info about the '${dfnText}' ${external?"external":""} reference.`),
-            mk.a({href:url}, url),
+            mk.a({href:url, class:"dfn-link"}, url),
             mk.b({}, "Referenced in:"),
             mk.ul({},
                 ...refSections.map(section=>
                     mk.li({},
                         ...section.refs.map((ref, refI)=>
                             [
-                                mk.a({
-                                    href: `#${ref.id}`
-                                    },
+                                mk.a({ href: `#${ref.id}` },
                                     (refI == 0) ? section.title : `(${refI + 1})`
                                 ),
                                 " ",
@@ -3693,7 +3906,11 @@ origin</a> concept used by the Attribution Reporting API here and elsewhere. <a 
                     ),
                 ),
             ),
+            genLinkingSyntaxes(dfn),
         );
+        dfnPanel.forDfn = dfn;
+        if(!dfn) { console.log(dfnPanel); }
+        return dfnPanel;
     }
 
     function genAllDfnPanels() {
@@ -3702,20 +3919,16 @@ origin</a> concept used by the Attribution Reporting API here and elsewhere. <a 
             const dfn = document.getElementById(dfnID);
             if(!dfn) {
                 console.log(`Can't find dfn#${dfnID}.`, panelData);
-            } else {
-                const panel = genDfnPanel(panelData);
-                append(document.body, panel);
-                insertDfnPopupAction(dfn, panel)
+                continue;
             }
+            const panel = genDfnPanel({ ...panelData, dfn });
+            append(document.body, panel);
+            insertDfnPopupAction(panel)
         }
     }
 
     document.addEventListener("DOMContentLoaded", ()=>{
         genAllDfnPanels();
-
-        // Add popup behavior to all dfns to show the corresponding dfn-panel.
-        var dfns = queryAll('.dfn-paneled');
-        for(let dfn of dfns) { ; }
 
         document.body.addEventListener("click", (e) => {
             // If not handled already, just hide all dfn panels.
@@ -3723,75 +3936,84 @@ origin</a> concept used by the Attribution Reporting API here and elsewhere. <a 
         });
     })
 
-
     function hideAllDfnPanels() {
         // Turn off any currently "on" or "activated" panels.
         queryAll(".dfn-panel.on, .dfn-panel.activated").forEach(el=>hideDfnPanel(el));
     }
 
-    function showDfnPanel(dfnPanel, dfn) {
+    function showDfnPanel(dfnPanel) {
         hideAllDfnPanels(); // Only display one at this time.
+
+        const dfn = dfnPanel.forDfn;
         dfn.setAttribute("aria-expanded", "true");
+
         dfnPanel.classList.add("on");
-        dfnPanel.style.left = "5px";
-        dfnPanel.style.top = "0px";
-        const panelRect = dfnPanel.getBoundingClientRect();
-        const panelWidth = panelRect.right - panelRect.left;
-        if (panelRect.right > document.body.scrollWidth) {
-            // Panel's overflowing the screen.
-            // Just drop it below the dfn and flip it rightward instead.
-            // This still wont' fix things if the screen is *really* wide,
-            // but fixing that's a lot harder without 'anchor()'.
-            dfnPanel.style.top = "1.5em";
-            dfnPanel.style.left = "auto";
-            dfnPanel.style.right = "0px";
+        positionDfnPanel(dfnPanel);
+
+        let tabIndex = 100;
+        dfn.tabIndex = tabIndex++;
+        // Increment tabindex for each anchor and button tags in panel
+        const tabbable = dfnPanel.querySelectorAll(":is(a, button)");
+        for (const el of tabbable) {
+            el.tabIndex = tabIndex++;
         }
     }
+
+    function positionDfnPanel(dfnPanel) {
+        const dfn = dfnPanel.forDfn;
+        const dfnPos = getRootLevelAbsolutePosition(dfn);
+        dfnPanel.style.top = dfnPos.bottom + "px";
+        dfnPanel.style.left = dfnPos.left + "px";
+
+        const panelPos = dfnPanel.getBoundingClientRect();
+        const panelMargin = 8;
+        const maxRight = document.body.parentNode.clientWidth - panelMargin;
+        if (panelPos.right > maxRight) {
+            const overflowAmount = panelPos.right - maxRight;
+            const newLeft = Math.max(panelMargin, dfnPos.left - overflowAmount);
+            dfnPanel.style.left = newLeft + "px";
+        }}
 
     function pinDfnPanel(dfnPanel) {
         // Switch it to "activated" state, which pins it.
         dfnPanel.classList.add("activated");
+        dfnPanel.style.position = "fixed";
         dfnPanel.style.left = null;
         dfnPanel.style.top = null;
     }
 
-    function hideDfnPanel(dfnPanel, dfn) {
-        if(!dfn) {
-            dfn = document.getElementById(dfnPanel.getAttribute("data-for"));
-        }
-        dfn.setAttribute("aria-expanded", "false")
+    function hideDfnPanel(dfnPanel) {
+        const dfn = dfnPanel.forDfn;
+        dfn.setAttribute("aria-expanded", "false");
+        dfn.tabIndex = undefined;
+        dfnPanel.style.position = "absolute"; // unfix it
         dfnPanel.classList.remove("on");
         dfnPanel.classList.remove("activated");
     }
 
-    function toggleDfnPanel(dfnPanel, dfn) {
+    function toggleDfnPanel(dfnPanel) {
         if(dfnPanel.classList.contains("on")) {
-            hideDfnPanel(dfnPanel, dfn);
+            hideDfnPanel(dfnPanel);
         } else {
-            showDfnPanel(dfnPanel, dfn);
+            showDfnPanel(dfnPanel);
         }
     }
 
-    function insertDfnPopupAction(dfn, dfnPanel) {
-        // Find dfn panel
-        const panelWrapper = document.createElement('span');
-        panelWrapper.appendChild(dfnPanel);
-        panelWrapper.style.position = "relative";
-        panelWrapper.style.height = "0px";
-        dfn.insertAdjacentElement("afterend", panelWrapper);
+    function insertDfnPopupAction(dfnPanel) {
+        const dfn = dfnPanel.forDfn;
         dfn.setAttribute('role', 'button');
         dfn.setAttribute('aria-expanded', 'false')
         dfn.tabIndex = 0;
         dfn.classList.add('has-dfn-panel');
         dfn.addEventListener('click', (event) => {
-            showDfnPanel(dfnPanel, dfn);
+            showDfnPanel(dfnPanel);
             event.stopPropagation();
         });
         dfn.addEventListener('keypress', (event) => {
             const kc = event.keyCode;
             // 32->Space, 13->Enter
             if(kc == 32 || kc == 13) {
-                toggleDfnPanel(dfnPanel, dfn);
+                toggleDfnPanel(dfnPanel);
                 event.stopPropagation();
                 event.preventDefault();
             }
@@ -3799,9 +4021,11 @@ origin</a> concept used by the Attribution Reporting API here and elsewhere. <a 
 
         dfnPanel.addEventListener('click', (event) => {
             if (event.target.nodeName == 'A') {
+                scrollToTargetAndHighlight(event);
                 pinDfnPanel(dfnPanel);
             }
             event.stopPropagation();
+            refocusOnTarget(event);
         });
 
         dfnPanel.addEventListener('keydown', (event) => {
@@ -3812,159 +4036,72 @@ origin</a> concept used by the Attribution Reporting API here and elsewhere. <a 
             }
         })
     }
-}
-</script>
-<script>/* Boilerplate: script-dfn-panel */
-"use strict";
-{
-    const dfnsJson = window.dfnsJson || {};
 
-    function genDfnPanel({dfnID, url, dfnText, refSections, external}) {
-        return mk.aside({
-            class: "dfn-panel",
-            id: `infopanel-for-${dfnID}`,
-            "data-for": dfnID,
-            "aria-labelled-by":`infopaneltitle-for-${dfnID}`,
-            },
-            mk.span({id:`infopaneltitle-for-${dfnID}`, style:"display:none"},
-                `Info about the '${dfnText}' ${external?"external":""} reference.`),
-            mk.a({href:url}, url),
-            mk.b({}, "Referenced in:"),
-            mk.ul({},
-                ...refSections.map(section=>
-                    mk.li({},
-                        ...section.refs.map((ref, refI)=>
-                            [
-                                mk.a({
-                                    href: `#${ref.id}`
-                                    },
-                                    (refI == 0) ? section.title : `(${refI + 1})`
-                                ),
-                                " ",
-                            ]
-                        ),
-                    ),
-                ),
-            ),
+    function refocusOnTarget(event) {
+        const target = event.target;
+        setTimeout(() => {
+            // Refocus on the event.target element.
+            // This is needed after browser scrolls to the destination.
+            target.focus();
+        });
+    }
+
+    // Returns the root-level absolute position {left and top} of element.
+    function getRootLevelAbsolutePosition(el) {
+        const boundsRect = el.getBoundingClientRect();
+        let xPos = 0;
+        let yPos = 0;
+
+        while (el) {
+            let xScroll = el.scrollLeft;
+            let yScroll = el.scrollTop;
+
+            // Ignore scrolling of body.
+            if (el.tagName === "BODY") {
+                xScroll = 0;
+                yScroll = 0;
+            }
+            xPos += (el.offsetLeft - xScroll + el.clientLeft);
+            yPos += (el.offsetTop - yScroll + el.clientTop);
+
+            el = el.offsetParent;
+        }
+        return {
+            left: xPos,
+            top: yPos,
+            right: xPos + boundsRect.width,
+            bottom: yPos + boundsRect.height,
+        };
+    }
+
+    function scrolledIntoView(element) {
+        const rect = element.getBoundingClientRect();
+        return (
+            rect.top > 0 &&
+            rect.bottom < window.innerHeight
         );
     }
 
-    function genAllDfnPanels() {
-        for(const panelData of Object.values(window.dfnpanelData)) {
-            const dfnID = panelData.dfnID;
-            const dfn = document.getElementById(dfnID);
-            if(!dfn) {
-                console.log(`Can't find dfn#${dfnID}.`, panelData);
-            } else {
-                const panel = genDfnPanel(panelData);
-                append(document.body, panel);
-                insertDfnPopupAction(dfn, panel)
+    function scrollToTargetAndHighlight(event) {
+        let hash = event.target.hash;
+        if (hash) {
+            hash = decodeURIComponent(hash.substring(1));
+            const dest = document.getElementById(hash);
+            if (dest) {
+                // Maybe prevent default scroll.
+                if (scrolledIntoView(dest)) {
+                    event.preventDefault();
+                }
+                dest.classList.add('highlighted');
+                setTimeout(() => dest.classList.remove('highlighted'), 1000);
             }
         }
     }
 
-    document.addEventListener("DOMContentLoaded", ()=>{
-        genAllDfnPanels();
-
-        // Add popup behavior to all dfns to show the corresponding dfn-panel.
-        var dfns = queryAll('.dfn-paneled');
-        for(let dfn of dfns) { ; }
-
-        document.body.addEventListener("click", (e) => {
-            // If not handled already, just hide all dfn panels.
-            hideAllDfnPanels();
-        });
-    })
-
-
-    function hideAllDfnPanels() {
-        // Turn off any currently "on" or "activated" panels.
-        queryAll(".dfn-panel.on, .dfn-panel.activated").forEach(el=>hideDfnPanel(el));
-    }
-
-    function showDfnPanel(dfnPanel, dfn) {
-        hideAllDfnPanels(); // Only display one at this time.
-        dfn.setAttribute("aria-expanded", "true");
-        dfnPanel.classList.add("on");
-        dfnPanel.style.left = "5px";
-        dfnPanel.style.top = "0px";
-        const panelRect = dfnPanel.getBoundingClientRect();
-        const panelWidth = panelRect.right - panelRect.left;
-        if (panelRect.right > document.body.scrollWidth) {
-            // Panel's overflowing the screen.
-            // Just drop it below the dfn and flip it rightward instead.
-            // This still wont' fix things if the screen is *really* wide,
-            // but fixing that's a lot harder without 'anchor()'.
-            dfnPanel.style.top = "1.5em";
-            dfnPanel.style.left = "auto";
-            dfnPanel.style.right = "0px";
-        }
-    }
-
-    function pinDfnPanel(dfnPanel) {
-        // Switch it to "activated" state, which pins it.
-        dfnPanel.classList.add("activated");
-        dfnPanel.style.left = null;
-        dfnPanel.style.top = null;
-    }
-
-    function hideDfnPanel(dfnPanel, dfn) {
-        if(!dfn) {
-            dfn = document.getElementById(dfnPanel.getAttribute("data-for"));
-        }
-        dfn.setAttribute("aria-expanded", "false")
-        dfnPanel.classList.remove("on");
-        dfnPanel.classList.remove("activated");
-    }
-
-    function toggleDfnPanel(dfnPanel, dfn) {
-        if(dfnPanel.classList.contains("on")) {
-            hideDfnPanel(dfnPanel, dfn);
-        } else {
-            showDfnPanel(dfnPanel, dfn);
-        }
-    }
-
-    function insertDfnPopupAction(dfn, dfnPanel) {
-        // Find dfn panel
-        const panelWrapper = document.createElement('span');
-        panelWrapper.appendChild(dfnPanel);
-        panelWrapper.style.position = "relative";
-        panelWrapper.style.height = "0px";
-        dfn.insertAdjacentElement("afterend", panelWrapper);
-        dfn.setAttribute('role', 'button');
-        dfn.setAttribute('aria-expanded', 'false')
-        dfn.tabIndex = 0;
-        dfn.classList.add('has-dfn-panel');
-        dfn.addEventListener('click', (event) => {
-            showDfnPanel(dfnPanel, dfn);
-            event.stopPropagation();
-        });
-        dfn.addEventListener('keypress', (event) => {
-            const kc = event.keyCode;
-            // 32->Space, 13->Enter
-            if(kc == 32 || kc == 13) {
-                toggleDfnPanel(dfnPanel, dfn);
-                event.stopPropagation();
-                event.preventDefault();
-            }
-        });
-
-        dfnPanel.addEventListener('click', (event) => {
-            if (event.target.nodeName == 'A') {
-                pinDfnPanel(dfnPanel);
-            }
-            event.stopPropagation();
-        });
-
-        dfnPanel.addEventListener('keydown', (event) => {
-            if(event.keyCode == 27) { // Escape key
-                hideDfnPanel(dfnPanel, dfn);
-                event.stopPropagation();
-                event.preventDefault();
-            }
-        })
-    }
+    window.addEventListener("resize", () => {
+        // Pin any visible dfn panel
+        queryAll(".dfn-panel.on, .dfn-panel.activated").forEach(el=>positionDfnPanel(el));
+    });
 }
 </script>
 <script>/* Boilerplate: script-dfn-panel-json */
@@ -4456,6 +4593,505 @@ function parseHTML(markup) {
 		return el.content;
 	}
 }
+</script>
+<script>/* Boilerplate: script-ref-hints */
+"use strict";
+{
+    function genRefHint(link, ref) {
+        const linkText = link.textContent;
+        let dfnTextElements = '';
+        if (ref.text != linkText) {
+            dfnTextElements =
+                mk.li({},
+                    mk.b({}, "DFN: "),
+                    mk.code({ class: "dfn-text" }, ref.text)
+                );
+        }
+        const forList = ref.for_;
+        const forListElements = forList.length === 0 ? '' : mk.li({},
+            mk.b({}, "For: "),
+            mk.ul({},
+                ...forList.map(forItem =>
+                    mk.li({},
+                        mk.span({}, `${forItem}`)
+                    ),
+                ),
+            ),
+        );
+        const url = ref.url;
+        const safeUrl = encodeURIComponent(url);
+        const hintPanel = mk.aside({
+            class: "ref-hint",
+            id: `ref-hint-for-${safeUrl}`,
+            "data-for": url,
+            "aria-labelled-by": `ref-hint-for-${safeUrl}`,
+        },
+            mk.ul({},
+                dfnTextElements,
+                mk.li({},
+                    mk.b({}, "URL: "),
+                    mk.a({ href: url, class: "ref" }, url),
+                ),
+                mk.li({},
+                    mk.b({}, "Type: "),
+                    mk.span({}, `${ref.type}`),
+                ),
+                mk.li({},
+                    mk.b({}, "Spec: "),
+                    mk.span({}, `${ref.spec ? ref.spec : ''}`),
+                ),
+                forListElements
+            ),
+        );
+        hintPanel.forLink = link;
+        return hintPanel;
+    }
+    function genAllRefHints() {
+        for(const refData of Object.values(window.refsData)) {
+            const refUrl = refData.url;
+            const links = document.querySelectorAll(`a[href="${refUrl}"]`);
+            if (links.length == 0) {
+                console.log(`Can't find link href="${refUrl}".`, refData);
+                continue;
+            }
+            for (let i = 0; i < links.length; i++) {
+                const link = links[i];
+                const hint = genRefHint(link, refData);
+                append(document.body, hint);
+                insertLinkPopupAction(hint)
+            }
+        }
+    }
+
+    function hideAllRefHints() {
+        queryAll(".ref-hint.on").forEach(el=>hideRefHint(el));
+    }
+
+    function hideRefHint(refHint) {
+        const link = refHint.forLink;
+        link.setAttribute("aria-expanded", "false");
+        refHint.style.position = "absolute"; // unfix it
+        refHint.classList.remove("on");
+        const teardown = refHint.teardownEventListeners;
+        if (teardown) {
+            refHint.teardownEventListeners = undefined;
+            teardown();
+        }
+    }
+
+    function showRefHint(refHint) {
+        hideAllRefHints(); // Only display one at this time.
+
+        const link = refHint.forLink;
+        link.setAttribute("aria-expanded", "true");
+        refHint.classList.add("on");
+        positionRefHint(refHint);
+        setupRefHintEventListeners(refHint);
+    }
+
+    function setupRefHintEventListeners(refHint) {
+        if (refHint.teardownEventListeners) return;
+        const link = refHint.forLink;
+        // Add event handlers to hide the refHint after the user moves away
+        // from both the link and refHint, if not hovering either within one second.
+        let timeout = null;
+        const startHidingRefHint = (event) => {
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            timeout = setTimeout(() => {
+                hideRefHint(refHint);
+            }, 1000);
+        }
+        const resetHidingRefHint = (event) => {
+            if (timeout) clearTimeout(timeout);
+            timeout = null;
+        };
+        link.addEventListener("mouseleave", startHidingRefHint);
+        link.addEventListener("mouseenter", resetHidingRefHint);
+        link.addEventListener("blur", startHidingRefHint);
+        link.addEventListener("focus", resetHidingRefHint);
+        refHint.addEventListener("mouseleave", startHidingRefHint);
+        refHint.addEventListener("mouseenter", resetHidingRefHint);
+        refHint.addEventListener("blur", startHidingRefHint);
+        refHint.addEventListener("focus", resetHidingRefHint);
+
+        refHint.teardownEventListeners = () => {
+            // remove event listeners
+            resetHidingRefHint();
+            link.removeEventListener("mouseleave", startHidingRefHint);
+            link.removeEventListener("mouseenter", resetHidingRefHint);
+            link.removeEventListener("blur", startHidingRefHint);
+            link.removeEventListener("focus", resetHidingRefHint);
+            refHint.removeEventListener("mouseleave", startHidingRefHint);
+            refHint.removeEventListener("mouseenter", resetHidingRefHint);
+            refHint.removeEventListener("blur", startHidingRefHint);
+            refHint.removeEventListener("focus", resetHidingRefHint);
+        };
+    }
+
+    function positionRefHint(refHint) {
+        const link = refHint.forLink;
+        const linkPos = getRootLevelAbsolutePosition(link);
+        refHint.style.top = linkPos.bottom + "px";
+        refHint.style.left = linkPos.left + "px";
+
+        const panelPos = refHint.getBoundingClientRect();
+        const panelMargin = 8;
+        const maxRight = document.body.parentNode.clientWidth - panelMargin;
+        if (panelPos.right > maxRight) {
+            const overflowAmount = panelPos.right - maxRight;
+            const newLeft = Math.max(panelMargin, linkPos.left - overflowAmount);
+            refHint.style.left = newLeft + "px";
+        }
+    }
+
+    // TODO: shared util
+    // Returns the root-level absolute position {left and top} of element.
+    function getRootLevelAbsolutePosition(el) {
+        const boundsRect = el.getBoundingClientRect();
+        let xPos = 0;
+        let yPos = 0;
+
+        while (el) {
+            let xScroll = el.scrollLeft;
+            let yScroll = el.scrollTop;
+
+            // Ignore scrolling of body.
+            if (el.tagName === "BODY") {
+                xScroll = 0;
+                yScroll = 0;
+            }
+            xPos += (el.offsetLeft - xScroll + el.clientLeft);
+            yPos += (el.offsetTop - yScroll + el.clientTop);
+
+            el = el.offsetParent;
+        }
+        return {
+            left: xPos,
+            top: yPos,
+            right: xPos + boundsRect.width,
+            bottom: yPos + boundsRect.height,
+        };
+    }
+
+    function insertLinkPopupAction(refHint) {
+        const link = refHint.forLink;
+        // link.setAttribute('role', 'button');
+        link.setAttribute('aria-expanded', 'false')
+        link.classList.add('has-ref-hint');
+        link.addEventListener('mouseover', (event) => {
+            showRefHint(refHint);
+        });
+        link.addEventListener('focus', (event) => {
+            showRefHint(refHint);
+        })
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        genAllRefHints();
+
+        document.body.addEventListener("click", (e) => {
+            // If not handled already, just hide all link panels.
+            hideAllRefHints();
+        });
+    });
+
+    window.addEventListener("resize", () => {
+        // Hide any open ref hint.
+        hideAllRefHints();
+    });
+}
+</script>
+<script>/* Boilerplate: script-ref-hints-json */
+window.refsData = {};
+window.refsData['https://fetch.spec.whatwg.org/#dom-global-fetch'] = {"text": "fetch(input)", "type": "method", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#dom-global-fetch", "export": true, "normative": true, "for_": ["WindowOrWorkerGlobalScope"]};
+window.refsData['#aggregatable-report'] = {"text": "aggregatable report", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#aggregatable-report", "export": true, "normative": true, "for_": []};
+window.refsData['#dictdef-pahistogramcontribution'] = {"text": "PAHistogramContribution", "type": "dictionary", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dictdef-pahistogramcontribution", "export": true, "normative": true, "for_": []};
+window.refsData['https://webidl.spec.whatwg.org/#Exposed'] = {"text": "Exposed", "type": "extended-attribute", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#Exposed", "export": true, "normative": true, "for_": []};
+window.refsData['https://webidl.spec.whatwg.org/#SecureContext'] = {"text": "SecureContext", "type": "extended-attribute", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#SecureContext", "export": true, "normative": true, "for_": []};
+window.refsData['https://webidl.spec.whatwg.org/#idl-undefined'] = {"text": "undefined", "type": "interface", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#idl-undefined", "export": true, "normative": true, "for_": []};
+window.refsData['#dom-privateaggregation-contributetohistogram'] = {"text": "contributeToHistogram(contribution)", "type": "method", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dom-privateaggregation-contributetohistogram", "export": true, "normative": true, "for_": ["PrivateAggregation"]};
+window.refsData['#dom-privateaggregation-enabledebugmode'] = {"text": "enableDebugMode(options)", "type": "method", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dom-privateaggregation-enabledebugmode", "export": true, "normative": true, "for_": ["PrivateAggregation"]};
+window.refsData['#dictdef-padebugmodeoptions'] = {"text": "PADebugModeOptions", "type": "dictionary", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dictdef-padebugmodeoptions", "export": true, "normative": true, "for_": []};
+window.refsData['https://webidl.spec.whatwg.org/#idl-bigint'] = {"text": "bigint", "type": "interface", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#idl-bigint", "export": true, "normative": true, "for_": []};
+window.refsData['https://webidl.spec.whatwg.org/#idl-long'] = {"text": "long", "type": "interface", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#idl-long", "export": true, "normative": true, "for_": []};
+window.refsData['#privateaggregation'] = {"text": "PrivateAggregation", "type": "interface", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#privateaggregation", "export": true, "normative": true, "for_": []};
+window.refsData['#scoping-details'] = {"text": "scoping details", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#scoping-details", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#boolean'] = {"text": "boolean", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#boolean", "export": true, "normative": true, "for_": []};
+window.refsData['#dom-pahistogramcontribution-bucket'] = {"text": "bucket", "type": "dict-member", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dom-pahistogramcontribution-bucket", "export": true, "normative": true, "for_": ["PAHistogramContribution"]};
+window.refsData['https://webidl.spec.whatwg.org/#dfn-throw'] = {"text": "throw", "type": "dfn", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#dfn-throw", "export": true, "normative": true, "for_": ["exception"]};
+window.refsData['https://webidl.spec.whatwg.org/#exceptiondef-rangeerror'] = {"text": "RangeError", "type": "exception", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#exceptiondef-rangeerror", "export": true, "normative": true, "for_": []};
+window.refsData['#dom-pahistogramcontribution-value'] = {"text": "value", "type": "dict-member", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dom-pahistogramcontribution-value", "export": true, "normative": true, "for_": ["PAHistogramContribution"]};
+window.refsData['https://webidl.spec.whatwg.org/#this'] = {"text": "this", "type": "dfn", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#this", "export": true, "normative": true, "for_": []};
+window.refsData['#privateaggregation-scoping-details'] = {"text": "scoping details", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#privateaggregation-scoping-details", "export": true, "normative": true, "for_": ["PrivateAggregation"]};
+window.refsData['#contribution-cache-entry'] = {"text": "contribution cache entry", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#contribution-cache-entry", "export": true, "normative": true, "for_": []};
+window.refsData['#contribution-cache-entry-contribution'] = {"text": "contribution", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#contribution-cache-entry-contribution", "export": true, "normative": true, "for_": ["contribution cache entry"]};
+window.refsData['#contribution-cache-entry-batching-scope'] = {"text": "batching scope", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#contribution-cache-entry-batching-scope", "export": true, "normative": true, "for_": ["contribution cache entry"]};
+window.refsData['#scoping-details-get-batching-scope-steps'] = {"text": "get batching scope steps", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#scoping-details-get-batching-scope-steps", "export": true, "normative": true, "for_": ["scoping details"]};
+window.refsData['#contribution-cache-entry-debug-scope'] = {"text": "debug scope", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#contribution-cache-entry-debug-scope", "export": true, "normative": true, "for_": ["contribution cache entry"]};
+window.refsData['#scoping-details-get-debug-scope-steps'] = {"text": "get debug scope steps", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#scoping-details-get-debug-scope-steps", "export": true, "normative": true, "for_": ["scoping details"]};
+window.refsData['#append-an-entry-to-the-contribution-cache'] = {"text": "append an entry to the contribution cache", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#append-an-entry-to-the-contribution-cache", "export": true, "normative": true, "for_": []};
+window.refsData['#contribution-cache'] = {"text": "contribution cache", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#contribution-cache", "export": true, "normative": true, "for_": []};
+window.refsData['https://webidl.spec.whatwg.org/#invalidaccesserror'] = {"text": "InvalidAccessError", "type": "exception", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#invalidaccesserror", "export": true, "normative": true, "for_": []};
+window.refsData['#debug-scope-map'] = {"text": "debug scope map", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#debug-scope-map", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#map-exists'] = {"text": "exist", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#map-exists", "export": true, "normative": true, "for_": ["map"]};
+window.refsData['https://webidl.spec.whatwg.org/#dataerror'] = {"text": "DataError", "type": "exception", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#dataerror", "export": true, "normative": true, "for_": []};
+window.refsData['https://webidl.spec.whatwg.org/#idl-DOMException'] = {"text": "DOMException", "type": "interface", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#idl-DOMException", "export": true, "normative": true, "for_": []};
+window.refsData['#debug-scope'] = {"text": "debug scope", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#debug-scope", "export": true, "normative": true, "for_": []};
+window.refsData['#dom-padebugmodeoptions-debugkey'] = {"text": "debugKey", "type": "dict-member", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dom-padebugmodeoptions-debugkey", "export": true, "normative": true, "for_": ["PADebugModeOptions"]};
+window.refsData['#debug-details'] = {"text": "debug details", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#debug-details", "export": true, "normative": true, "for_": []};
+window.refsData['#debug-details-enabled'] = {"text": "enabled", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#debug-details-enabled", "export": true, "normative": true, "for_": ["debug details"]};
+window.refsData['#debug-details-key'] = {"text": "key", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#debug-details-key", "export": true, "normative": true, "for_": ["debug details"]};
+window.refsData['https://infra.spec.whatwg.org/#map-set'] = {"text": "set", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#map-set", "export": true, "normative": true, "for_": ["map"]};
+window.refsData['https://webidl.spec.whatwg.org/#dfn-read-only'] = {"text": "read only", "type": "dfn", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#dfn-read-only", "export": true, "normative": true, "for_": []};
+window.refsData['https://webidl.spec.whatwg.org/#dfn-attribute'] = {"text": "attribute", "type": "dfn", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#dfn-attribute", "export": true, "normative": true, "for_": []};
+window.refsData['https://webidl.spec.whatwg.org/#getter-steps'] = {"text": "getter steps", "type": "dfn", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#getter-steps", "export": true, "normative": true, "for_": []};
+window.refsData['#get-the-privateaggregation'] = {"text": "get the privateaggregation", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#get-the-privateaggregation", "export": true, "normative": true, "for_": []};
+window.refsData['#privateaggregation-allowed-to-use'] = {"text": "allowed to use", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#privateaggregation-allowed-to-use", "export": true, "normative": true, "for_": ["PrivateAggregation"]};
+window.refsData['https://dom.spec.whatwg.org/#concept-document'] = {"text": "document", "type": "dfn", "spec": "dom", "shortname": "dom", "level": "1", "status": "current", "url": "https://dom.spec.whatwg.org/#concept-document", "export": true, "normative": true, "for_": []};
+window.refsData['https://html.spec.whatwg.org/multipage/iframe-embed-object.html#allowed-to-use'] = {"text": "allowed to use", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/iframe-embed-object.html#allowed-to-use", "export": true, "normative": true, "for_": []};
+window.refsData['#private-aggregation'] = {"text": "private-aggregation", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#private-aggregation", "export": true, "normative": true, "for_": []};
+window.refsData['https://w3c.github.io/webappsec-permissions-policy/#policy-controlled-feature'] = {"text": "policy-controlled feature", "type": "dfn", "spec": "permissions-policy-1", "shortname": "permissions-policy", "level": "1", "status": "current", "url": "https://w3c.github.io/webappsec-permissions-policy/#policy-controlled-feature", "export": true, "normative": true, "for_": []};
+window.refsData['#batching-scope'] = {"text": "batching scope", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#batching-scope", "export": true, "normative": true, "for_": []};
+window.refsData['#process-contributions-for-a-batching-scope'] = {"text": "process contributions for a batching scope", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#process-contributions-for-a-batching-scope", "export": true, "normative": true, "for_": []};
+window.refsData['https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object'] = {"text": "relevant settings object", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#relevant-settings-object", "export": true, "normative": true, "for_": []};
+window.refsData['https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin'] = {"text": "origin", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin", "export": true, "normative": true, "for_": ["environment settings object"]};
+window.refsData['#context-type'] = {"text": "context type", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#context-type", "export": true, "normative": true, "for_": []};
+window.refsData['#mark-a-debug-scope-complete'] = {"text": "mark a debug scope complete", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#mark-a-debug-scope-complete", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#assert'] = {"text": "assert", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#assert", "export": true, "normative": true, "for_": []};
+window.refsData['https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#unique-internal-value'] = {"text": "unique internal value", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/common-microsyntaxes.html#unique-internal-value", "export": false, "normative": true, "for_": []};
+window.refsData['#aggregatable-report-debug-details'] = {"text": "debug details", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#aggregatable-report-debug-details", "export": true, "normative": true, "for_": ["aggregatable report"]};
+window.refsData['https://infra.spec.whatwg.org/#struct'] = {"text": "struct", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#struct", "export": true, "normative": true, "for_": []};
+window.refsData['https://html.spec.whatwg.org/multipage/browsers.html#concept-origin'] = {"text": "origin", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/browsers.html#concept-origin", "export": true, "normative": true, "for_": []};
+window.refsData['https://w3c.github.io/hr-time/#dfn-moment'] = {"text": "moment", "type": "dfn", "spec": "hr-time", "shortname": "hr-time", "level": "", "status": "anchor-block", "url": "https://w3c.github.io/hr-time/#dfn-moment", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#list'] = {"text": "list", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#list", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#string'] = {"text": "string", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#string", "export": true, "normative": true, "for_": []};
+window.refsData['#aggregation-coordinator'] = {"text": "aggregation coordinator", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#aggregation-coordinator", "export": true, "normative": true, "for_": []};
+window.refsData['#allowed-aggregation-coordinator-set'] = {"text": "allowed aggregation coordinator set", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#allowed-aggregation-coordinator-set", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#list-contain'] = {"text": "contain", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#list-contain", "export": true, "normative": true, "for_": ["list", "stack", "queue", "set"]};
+window.refsData['https://wicg.github.io/attribution-reporting-api/#suitable-origin'] = {"text": "suitable origin", "type": "dfn", "spec": "attribution-reporting-api", "shortname": "attribution-reporting-api", "level": "1", "status": "current", "url": "https://wicg.github.io/attribution-reporting-api/#suitable-origin", "export": false, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#user-agent'] = {"text": "user agent", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#user-agent", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#ordered-map'] = {"text": "map", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#ordered-map", "export": true, "normative": true, "for_": []};
+window.refsData['#aggregatable-report-cache'] = {"text": "aggregatable report cache", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#aggregatable-report-cache", "export": true, "normative": true, "for_": []};
+window.refsData['#consume-budget-if-permitted'] = {"text": "consume budget if permitted", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#consume-budget-if-permitted", "export": true, "normative": true, "for_": []};
+window.refsData['#context-id-map'] = {"text": "context id map", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#context-id-map", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#implementation-defined'] = {"text": "implementation-defined", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#implementation-defined", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#ordered-set'] = {"text": "set", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#ordered-set", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#list-item'] = {"text": "item", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#list-item", "export": true, "normative": true, "for_": ["list", "stack", "queue", "set"]};
+window.refsData['https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin'] = {"text": "potentially trustworthy origin", "type": "dfn", "spec": "secure-contexts", "shortname": "secure-contexts", "level": "1", "status": "current", "url": "https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin", "export": true, "normative": true, "for_": []};
+window.refsData['https://w3c.github.io/hr-time/#dfn-duration'] = {"text": "duration", "type": "dfn", "spec": "hr-time", "shortname": "hr-time", "level": "", "status": "anchor-block", "url": "https://w3c.github.io/hr-time/#dfn-duration", "export": true, "normative": true, "for_": []};
+window.refsData['#minimum-report-delay'] = {"text": "minimum report delay", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#minimum-report-delay", "export": true, "normative": true, "for_": []};
+window.refsData['https://w3c.github.io/webappsec-permissions-policy/#policy-controlled-feature-default-allowlist'] = {"text": "default allowlist", "type": "dfn", "spec": "permissions-policy-1", "shortname": "permissions-policy", "level": "1", "status": "current", "url": "https://w3c.github.io/webappsec-permissions-policy/#policy-controlled-feature-default-allowlist", "export": true, "normative": true, "for_": ["policy-controlled feature"]};
+window.refsData['https://webidl.spec.whatwg.org/#notallowederror'] = {"text": "NotAllowedError", "type": "exception", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#notallowederror", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#list-append'] = {"text": "append", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#list-append", "export": true, "normative": true, "for_": ["list"]};
+window.refsData['https://infra.spec.whatwg.org/#map-remove'] = {"text": "remove", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#map-remove", "export": true, "normative": true, "for_": ["map"]};
+window.refsData['https://infra.spec.whatwg.org/#list-iterate'] = {"text": "iterate", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#list-iterate", "export": true, "normative": true, "for_": ["list", "set"]};
+window.refsData['#contribution-cache-entry-debug-details'] = {"text": "debug details", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#contribution-cache-entry-debug-details", "export": true, "normative": true, "for_": ["contribution cache entry"]};
+window.refsData['#default-aggregation-coordinator'] = {"text": "default aggregation coordinator", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#default-aggregation-coordinator", "export": true, "normative": true, "for_": []};
+window.refsData['#aggregation-coordinator-map'] = {"text": "aggregation coordinator map", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#aggregation-coordinator-map", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#list-is-empty'] = {"text": "is empty", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#list-is-empty", "export": true, "normative": true, "for_": ["list", "stack", "queue", "set"]};
+window.refsData['https://infra.spec.whatwg.org/#list-remove'] = {"text": "remove", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#list-remove", "export": true, "normative": true, "for_": ["list", "set"]};
+window.refsData['https://infra.spec.whatwg.org/#map-is-empty'] = {"text": "is empty", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#map-is-empty", "export": true, "normative": true, "for_": ["map"]};
+window.refsData['https://infra.spec.whatwg.org/#map-iterate'] = {"text": "iterate", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#map-iterate", "export": true, "normative": true, "for_": ["map"]};
+window.refsData['#report-creation-and-scheduling-steps'] = {"text": "report creation and scheduling steps", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#report-creation-and-scheduling-steps", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#string-length'] = {"text": "length", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#string-length", "export": true, "normative": true, "for_": ["string", "JavaScript string", "scalar value string"]};
+window.refsData['https://infra.spec.whatwg.org/#list-size'] = {"text": "size", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#list-size", "export": true, "normative": true, "for_": ["list", "stack", "queue", "set"]};
+window.refsData['#maximum-report-contributions'] = {"text": "maximum report contributions", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#maximum-report-contributions", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#the-exclusive-range'] = {"text": "the exclusive range", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#the-exclusive-range", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#set-append'] = {"text": "append", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#set-append", "export": true, "normative": true, "for_": ["set"]};
+window.refsData['https://w3c.github.io/hr-time/#dfn-current-wall-time'] = {"text": "current wall time", "type": "dfn", "spec": "hr-time", "shortname": "hr-time", "level": "", "status": "anchor-block", "url": "https://w3c.github.io/hr-time/#dfn-current-wall-time", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#list-empty'] = {"text": "empty", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#list-empty", "export": true, "normative": true, "for_": ["list", "stack", "queue", "set"]};
+window.refsData['#obtain-an-aggregatable-report'] = {"text": "obtain an aggregatable report", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#obtain-an-aggregatable-report", "export": true, "normative": true, "for_": []};
+window.refsData['#obtain-a-report-delivery-time'] = {"text": "obtain a report delivery time", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#obtain-a-report-delivery-time", "export": true, "normative": true, "for_": []};
+window.refsData['#aggregatable-report-reporting-origin'] = {"text": "reporting origin", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#aggregatable-report-reporting-origin", "export": true, "normative": true, "for_": ["aggregatable report"]};
+window.refsData['#aggregatable-report-original-report-time'] = {"text": "original report time", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#aggregatable-report-original-report-time", "export": true, "normative": true, "for_": ["aggregatable report"]};
+window.refsData['#aggregatable-report-report-time'] = {"text": "report time", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#aggregatable-report-report-time", "export": true, "normative": true, "for_": ["aggregatable report"]};
+window.refsData['#aggregatable-report-contributions'] = {"text": "contributions", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#aggregatable-report-contributions", "export": true, "normative": true, "for_": ["aggregatable report"]};
+window.refsData['#aggregatable-report-api'] = {"text": "api", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#aggregatable-report-api", "export": true, "normative": true, "for_": ["aggregatable report"]};
+window.refsData['#aggregatable-report-report-id'] = {"text": "report id", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#aggregatable-report-report-id", "export": true, "normative": true, "for_": ["aggregatable report"]};
+window.refsData['https://w3c.github.io/webcrypto/#dfn-generate-a-random-uuid'] = {"text": "generate a random uuid", "type": "dfn", "spec": "webcryptoapi", "shortname": "webcryptoapi", "level": "1", "status": "current", "url": "https://w3c.github.io/webcrypto/#dfn-generate-a-random-uuid", "export": true, "normative": true, "for_": []};
+window.refsData['#aggregatable-report-aggregation-coordinator'] = {"text": "aggregation coordinator", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#aggregatable-report-aggregation-coordinator", "export": true, "normative": true, "for_": ["aggregatable report"]};
+window.refsData['#aggregatable-report-context-id'] = {"text": "context id", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#aggregatable-report-context-id", "export": true, "normative": true, "for_": ["aggregatable report"]};
+window.refsData['#aggregatable-report-queued'] = {"text": "queued", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#aggregatable-report-queued", "export": true, "normative": true, "for_": ["aggregatable report"]};
+window.refsData['#automation-local-testing-mode-enabled'] = {"text": "automation local testing mode enabled", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#automation-local-testing-mode-enabled", "export": true, "normative": true, "for_": []};
+window.refsData['#randomized-report-delay'] = {"text": "randomized report delay", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#randomized-report-delay", "export": true, "normative": true, "for_": []};
+window.refsData['https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task'] = {"text": "queue a task", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task", "export": true, "normative": true, "for_": []};
+window.refsData['#attempt-to-queue-reports-for-sending'] = {"text": "attempt to queue reports for sending", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#attempt-to-queue-reports-for-sending", "export": true, "normative": true, "for_": []};
+window.refsData['https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel'] = {"text": "in parallel", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#abort-when'] = {"text": "abort when", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#abort-when", "export": true, "normative": true, "for_": []};
+window.refsData['#attempt-to-deliver-a-report'] = {"text": "attempt to deliver a report", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#attempt-to-deliver-a-report", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#if-aborted'] = {"text": "if aborted", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#if-aborted", "export": true, "normative": true, "for_": []};
+window.refsData['#obtain-a-reporting-endpoint'] = {"text": "obtain a reporting endpoint", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#obtain-a-reporting-endpoint", "export": true, "normative": true, "for_": []};
+window.refsData['#serialize-an-aggregatable-report'] = {"text": "serialize an aggregatable report", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#serialize-an-aggregatable-report", "export": true, "normative": true, "for_": []};
+window.refsData['#create-a-report-request'] = {"text": "create a report request", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#create-a-report-request", "export": true, "normative": true, "for_": []};
+window.refsData['https://fetch.spec.whatwg.org/#concept-fetch'] = {"text": "fetch", "type": "dfn", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#concept-fetch", "export": true, "normative": true, "for_": []};
+window.refsData['https://fetch.spec.whatwg.org/#process-response'] = {"text": "processresponse", "type": "dfn", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#process-response", "export": true, "normative": true, "for_": ["fetch"]};
+window.refsData['https://url.spec.whatwg.org/#concept-url'] = {"text": "url", "type": "dfn", "spec": "url", "shortname": "url", "level": "1", "status": "current", "url": "https://url.spec.whatwg.org/#concept-url", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#string-concatenate'] = {"text": "concatenation", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#string-concatenate", "export": true, "normative": true, "for_": ["string"]};
+window.refsData['https://url.spec.whatwg.org/#concept-url-parser'] = {"text": "url parser", "type": "dfn", "spec": "url", "shortname": "url", "level": "1", "status": "current", "url": "https://url.spec.whatwg.org/#concept-url-parser", "export": true, "normative": true, "for_": []};
+window.refsData['https://html.spec.whatwg.org/multipage/browsers.html#ascii-serialisation-of-an-origin'] = {"text": "serialization of an origin", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/browsers.html#ascii-serialisation-of-an-origin", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#byte-sequence'] = {"text": "byte sequence", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#byte-sequence", "export": true, "normative": true, "for_": []};
+window.refsData['https://fetch.spec.whatwg.org/#concept-request'] = {"text": "request", "type": "dfn", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#concept-request", "export": true, "normative": true, "for_": []};
+window.refsData['https://fetch.spec.whatwg.org/#concept-request-method'] = {"text": "method", "type": "dfn", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#concept-request-method", "export": true, "normative": true, "for_": ["request"]};
+window.refsData['https://fetch.spec.whatwg.org/#concept-request-url'] = {"text": "url", "type": "dfn", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#concept-request-url", "export": true, "normative": true, "for_": ["request"]};
+window.refsData['https://fetch.spec.whatwg.org/#concept-request-header-list'] = {"text": "header list", "type": "dfn", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#concept-request-header-list", "export": true, "normative": true, "for_": ["request"]};
+window.refsData['https://fetch.spec.whatwg.org/#unsafe-request-flag'] = {"text": "unsafe-request flag", "type": "dfn", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#unsafe-request-flag", "export": true, "normative": true, "for_": ["request"]};
+window.refsData['https://fetch.spec.whatwg.org/#concept-request-body'] = {"text": "body", "type": "dfn", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#concept-request-body", "export": true, "normative": true, "for_": ["request"]};
+window.refsData['https://fetch.spec.whatwg.org/#concept-request-client'] = {"text": "client", "type": "dfn", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#concept-request-client", "export": true, "normative": true, "for_": ["request"]};
+window.refsData['https://fetch.spec.whatwg.org/#concept-request-window'] = {"text": "window", "type": "dfn", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#concept-request-window", "export": true, "normative": true, "for_": ["request"]};
+window.refsData['https://fetch.spec.whatwg.org/#request-service-workers-mode'] = {"text": "service-workers mode", "type": "dfn", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#request-service-workers-mode", "export": true, "normative": true, "for_": ["request"]};
+window.refsData['https://fetch.spec.whatwg.org/#concept-request-initiator'] = {"text": "initiator", "type": "dfn", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#concept-request-initiator", "export": true, "normative": true, "for_": ["request"]};
+window.refsData['https://fetch.spec.whatwg.org/#concept-request-referrer'] = {"text": "referrer", "type": "dfn", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#concept-request-referrer", "export": true, "normative": true, "for_": ["request"]};
+window.refsData['https://fetch.spec.whatwg.org/#concept-request-mode'] = {"text": "mode", "type": "dfn", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#concept-request-mode", "export": true, "normative": true, "for_": ["request"]};
+window.refsData['https://fetch.spec.whatwg.org/#concept-request-credentials-mode'] = {"text": "credentials mode", "type": "dfn", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#concept-request-credentials-mode", "export": true, "normative": true, "for_": ["request"]};
+window.refsData['https://fetch.spec.whatwg.org/#concept-request-cache-mode'] = {"text": "cache mode", "type": "dfn", "spec": "fetch", "shortname": "fetch", "level": "1", "status": "current", "url": "https://fetch.spec.whatwg.org/#concept-request-cache-mode", "export": true, "normative": true, "for_": ["request"]};
+window.refsData['#obtain-the-aggregation-service-payloads'] = {"text": "obtain the aggregation service payloads", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#obtain-the-aggregation-service-payloads", "export": true, "normative": true, "for_": []};
+window.refsData['#obtain-a-reports-shared-info'] = {"text": "obtain a report's shared info", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#obtain-a-reports-shared-info", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#serialize-an-infra-value-to-json-bytes'] = {"text": "serialize an infra value to json bytes", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#serialize-an-infra-value-to-json-bytes", "export": true, "normative": true, "for_": []};
+window.refsData['#obtain-the-public-key-for-encryption'] = {"text": "obtain the public key for encryption", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#obtain-the-public-key-for-encryption", "export": true, "normative": true, "for_": []};
+window.refsData['#obtain-the-plaintext-payload'] = {"text": "obtain the plaintext payload", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#obtain-the-plaintext-payload", "export": true, "normative": true, "for_": []};
+window.refsData['#encrypt-the-payload'] = {"text": "encrypt the payload", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#encrypt-the-payload", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#forgiving-base64-encode'] = {"text": "forgiving-base64 encode", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#forgiving-base64-encode", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#tuple'] = {"text": "tuple", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#tuple", "export": true, "normative": true, "for_": []};
+window.refsData['https://url.spec.whatwg.org/#concept-url-scheme'] = {"text": "scheme", "type": "dfn", "spec": "url", "shortname": "url", "level": "1", "status": "current", "url": "https://url.spec.whatwg.org/#concept-url-scheme", "export": true, "normative": true, "for_": ["url"]};
+window.refsData['https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-scheme'] = {"text": "scheme", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-scheme", "export": true, "normative": true, "for_": ["origin"]};
+window.refsData['https://url.spec.whatwg.org/#concept-url-host'] = {"text": "host", "type": "dfn", "spec": "url", "shortname": "url", "level": "1", "status": "current", "url": "https://url.spec.whatwg.org/#concept-url-host", "export": true, "normative": true, "for_": ["url"]};
+window.refsData['https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-host'] = {"text": "host", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-host", "export": true, "normative": true, "for_": ["origin"]};
+window.refsData['https://url.spec.whatwg.org/#concept-url-port'] = {"text": "port", "type": "dfn", "spec": "url", "shortname": "url", "level": "1", "status": "current", "url": "https://url.spec.whatwg.org/#concept-url-port", "export": true, "normative": true, "for_": ["url"]};
+window.refsData['https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-port'] = {"text": "port", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/browsers.html#concept-origin-port", "export": true, "normative": true, "for_": ["origin"]};
+window.refsData['https://url.spec.whatwg.org/#concept-url-path'] = {"text": "path", "type": "dfn", "spec": "url", "shortname": "url", "level": "1", "status": "current", "url": "https://url.spec.whatwg.org/#concept-url-path", "export": true, "normative": true, "for_": ["url"]};
+window.refsData['https://infra.spec.whatwg.org/#iteration-while'] = {"text": "while", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#iteration-while", "export": true, "normative": true, "for_": ["iteration"]};
+window.refsData['#encode-an-integer-for-the-payload'] = {"text": "encode an integer for the payload", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#encode-an-integer-for-the-payload", "export": true, "normative": true, "for_": []};
+window.refsData['https://encoding.spec.whatwg.org/#utf-8-encode'] = {"text": "utf-8 encode", "type": "dfn", "spec": "encoding", "shortname": "encoding", "level": "1", "status": "current", "url": "https://encoding.spec.whatwg.org/#utf-8-encode", "export": true, "normative": true, "for_": []};
+window.refsData['https://w3c.github.io/hr-time/#dfn-duration-from'] = {"text": "duration from", "type": "dfn", "spec": "hr-time", "shortname": "hr-time", "level": "", "status": "anchor-block", "url": "https://w3c.github.io/hr-time/#dfn-duration-from", "export": true, "normative": true, "for_": []};
+window.refsData['https://w3c.github.io/hr-time/#dfn-unix-epoch'] = {"text": "unix epoch", "type": "dfn", "spec": "hr-time", "shortname": "hr-time", "level": "", "status": "anchor-block", "url": "https://w3c.github.io/hr-time/#dfn-unix-epoch", "export": true, "normative": true, "for_": []};
+window.refsData['#serialize-an-integer'] = {"text": "serialize an integer", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#serialize-an-integer", "export": true, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#serialize-an-infra-value-to-a-json-string'] = {"text": "serializing an infra value to a json string", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#serialize-an-infra-value-to-a-json-string", "export": true, "normative": true, "for_": []};
+window.refsData['https://w3c.github.io/webdriver/#dfn-extension-commands'] = {"text": "extension commands", "type": "dfn", "spec": "webdriver2", "shortname": "webdriver", "level": "2", "status": "current", "url": "https://w3c.github.io/webdriver/#dfn-extension-commands", "export": true, "normative": true, "for_": []};
+window.refsData['https://w3c.github.io/webdriver/#dfn-remote-end-steps'] = {"text": "remote end steps", "type": "dfn", "spec": "webdriver2", "shortname": "webdriver", "level": "2", "status": "current", "url": "https://w3c.github.io/webdriver/#dfn-remote-end-steps", "export": true, "normative": true, "for_": []};
+window.refsData['https://w3c.github.io/webdriver/#dfn-error'] = {"text": "error", "type": "dfn", "spec": "webdriver2", "shortname": "webdriver", "level": "2", "status": "current", "url": "https://w3c.github.io/webdriver/#dfn-error", "export": true, "normative": true, "for_": []};
+window.refsData['https://w3c.github.io/webdriver/#dfn-error-code'] = {"text": "error code", "type": "dfn", "spec": "webdriver", "shortname": "webdriver", "level": "", "status": "anchor-block", "url": "https://w3c.github.io/webdriver/#dfn-error-code", "export": true, "normative": true, "for_": []};
+window.refsData['https://w3c.github.io/webdriver/#dfn-invalid-argument'] = {"text": "invalid argument", "type": "dfn", "spec": "webdriver2", "shortname": "webdriver", "level": "2", "status": "current", "url": "https://w3c.github.io/webdriver/#dfn-invalid-argument", "export": true, "normative": true, "for_": []};
+window.refsData['https://w3c.github.io/webdriver/#dfn-getting-properties'] = {"text": "getting a property", "type": "dfn", "spec": "webdriver", "shortname": "webdriver", "level": "", "status": "anchor-block", "url": "https://w3c.github.io/webdriver/#dfn-getting-properties", "export": true, "normative": true, "for_": []};
+window.refsData['https://w3c.github.io/webdriver/#dfn-success'] = {"text": "success", "type": "dfn", "spec": "webdriver2", "shortname": "webdriver", "level": "2", "status": "current", "url": "https://w3c.github.io/webdriver/#dfn-success", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope'] = {"text": "SharedStorageWorkletGlobalScope", "type": "interface", "spec": "", "shortname": "private-aggregation-api", "level": "1", "status": "anchor-block", "url": "https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope", "export": true, "normative": true, "for_": []};
+window.refsData['https://webidl.spec.whatwg.org/#idl-USVString'] = {"text": "USVString", "type": "interface", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#idl-USVString", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/shared-storage/#dictdef-sharedstoragerunoperationmethodoptions'] = {"text": "SharedStorageRunOperationMethodOptions", "type": "dictionary", "spec": "shared-storage", "shortname": "shared-storage", "level": "1", "status": "current", "url": "https://wicg.github.io/shared-storage/#dictdef-sharedstoragerunoperationmethodoptions", "export": true, "normative": true, "for_": []};
+window.refsData['#dictdef-sharedstorageprivateaggregationconfig'] = {"text": "SharedStoragePrivateAggregationConfig", "type": "dictionary", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dictdef-sharedstorageprivateaggregationconfig", "export": true, "normative": true, "for_": []};
+window.refsData['#dom-sharedstorageworkletglobalscope-privateaggregation'] = {"text": "privateAggregation", "type": "attribute", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dom-sharedstorageworkletglobalscope-privateaggregation", "export": true, "normative": true, "for_": ["SharedStorageWorkletGlobalScope"]};
+window.refsData['https://url.spec.whatwg.org/#concept-url-origin'] = {"text": "origin", "type": "dfn", "spec": "url", "shortname": "url", "level": "1", "status": "current", "url": "https://url.spec.whatwg.org/#concept-url-origin", "export": true, "normative": true, "for_": ["url"]};
+window.refsData['#determine-if-an-origin-is-an-aggregation-coordinator'] = {"text": "determine if an origin is an aggregation coordinator", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#determine-if-an-origin-is-an-aggregation-coordinator", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/shared-storage/#windowsharedstorage'] = {"text": "WindowSharedStorage", "type": "interface", "spec": "shared-storage", "shortname": "shared-storage", "level": "1", "status": "current", "url": "https://wicg.github.io/shared-storage/#windowsharedstorage", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/shared-storage/#dom-windowsharedstorage-run'] = {"text": "run(name)", "type": "method", "spec": "shared-storage", "shortname": "shared-storage", "level": "1", "status": "current", "url": "https://wicg.github.io/shared-storage/#dom-windowsharedstorage-run", "export": true, "normative": true, "for_": ["WindowSharedStorage"]};
+window.refsData['https://html.spec.whatwg.org/multipage/worklets.html#dom-worklet-addmodule'] = {"text": "addModule(moduleURL, options)", "type": "method", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/worklets.html#dom-worklet-addmodule", "export": true, "normative": true, "for_": ["Worklet"]};
+window.refsData['#obtain-the-context-id'] = {"text": "obtain the context id", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#obtain-the-context-id", "export": true, "normative": true, "for_": []};
+window.refsData['https://webidl.spec.whatwg.org/#a-promise-rejected-with'] = {"text": "a promise rejected with", "type": "dfn", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#a-promise-rejected-with", "export": true, "normative": true, "for_": []};
+window.refsData['#obtain-the-aggregation-coordinator'] = {"text": "obtain the aggregation coordinator", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#obtain-the-aggregation-coordinator", "export": true, "normative": true, "for_": []};
+window.refsData['#set-the-context-id-for-a-batching-scope'] = {"text": "set the context id for a batching scope", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#set-the-context-id-for-a-batching-scope", "export": true, "normative": true, "for_": []};
+window.refsData['#set-the-aggregation-coordinator-for-a-batching-scope'] = {"text": "set the aggregation coordinator for a batching scope", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#set-the-aggregation-coordinator-for-a-batching-scope", "export": true, "normative": true, "for_": []};
+window.refsData['https://tc39.es/ecma262/#sec-call'] = {"text": "call", "type": "dfn", "spec": "html", "shortname": "html", "level": "", "status": "anchor-block", "url": "https://tc39.es/ecma262/#sec-call", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/shared-storage/#dom-windowsharedstorage-selecturl'] = {"text": "selectURL(name, urls)", "type": "method", "spec": "shared-storage", "shortname": "shared-storage", "level": "1", "status": "current", "url": "https://wicg.github.io/shared-storage/#dom-windowsharedstorage-selecturl", "export": true, "normative": true, "for_": ["WindowSharedStorage"]};
+window.refsData['https://wicg.github.io/shared-storage/#sharedstorageworklet'] = {"text": "SharedStorageWorklet", "type": "interface", "spec": "", "shortname": "private-aggregation-api", "level": "1", "status": "anchor-block", "url": "https://wicg.github.io/shared-storage/#sharedstorageworklet", "export": true, "normative": true, "for_": []};
+window.refsData['https://webidl.spec.whatwg.org/#upon-fulfillment'] = {"text": "upon fulfillment", "type": "dfn", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#upon-fulfillment", "export": true, "normative": true, "for_": []};
+window.refsData['https://webidl.spec.whatwg.org/#upon-rejection'] = {"text": "upon rejection", "type": "dfn", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#upon-rejection", "export": true, "normative": true, "for_": []};
+window.refsData['https://html.spec.whatwg.org/multipage/worklets.html#concept-worklet-global-scopes'] = {"text": "global scopes", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/worklets.html#concept-worklet-global-scopes", "export": true, "normative": true, "for_": ["Worklet"]};
+window.refsData['https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global'] = {"text": "relevant global object", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global", "export": true, "normative": true, "for_": []};
+window.refsData['https://html.spec.whatwg.org/multipage/nav-history-apis.html#concept-document-window'] = {"text": "associated document", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/nav-history-apis.html#concept-document-window", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#interestgroupscriptrunnerglobalscope'] = {"text": "InterestGroupScriptRunnerGlobalScope", "type": "interface", "spec": "", "shortname": "private-aggregation-api", "level": "1", "status": "anchor-block", "url": "https://wicg.github.io/turtledove/#interestgroupscriptrunnerglobalscope", "export": true, "normative": true, "for_": []};
+window.refsData['https://webidl.spec.whatwg.org/#idl-DOMString'] = {"text": "DOMString", "type": "interface", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#idl-DOMString", "export": true, "normative": true, "for_": []};
+window.refsData['https://webidl.spec.whatwg.org/#idl-double'] = {"text": "double", "type": "interface", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#idl-double", "export": true, "normative": true, "for_": []};
+window.refsData['#dictdef-pasignalvalue'] = {"text": "PASignalValue", "type": "dictionary", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dictdef-pasignalvalue", "export": true, "normative": true, "for_": []};
+window.refsData['#dom-privateaggregation-contributetohistogramonevent'] = {"text": "contributeToHistogramOnEvent(event, contribution)", "type": "method", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dom-privateaggregation-contributetohistogramonevent", "export": true, "normative": true, "for_": ["PrivateAggregation"]};
+window.refsData['#dictdef-paextendedhistogramcontribution'] = {"text": "PAExtendedHistogramContribution", "type": "dictionary", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dictdef-paextendedhistogramcontribution", "export": true, "normative": true, "for_": []};
+window.refsData['#dom-interestgroupscriptrunnerglobalscope-privateaggregation'] = {"text": "privateAggregation", "type": "attribute", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dom-interestgroupscriptrunnerglobalscope-privateaggregation", "export": true, "normative": true, "for_": ["InterestGroupScriptRunnerGlobalScope"]};
+window.refsData['https://infra.spec.whatwg.org/#string-starts-with'] = {"text": "starts with", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#string-starts-with", "export": true, "normative": true, "for_": ["string"]};
+window.refsData['#dom-paextendedhistogramcontribution-bucket'] = {"text": "bucket", "type": "dict-member", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dom-paextendedhistogramcontribution-bucket", "export": true, "normative": true, "for_": ["PAExtendedHistogramContribution"]};
+window.refsData['#dom-pasignalvalue-basevalue'] = {"text": "baseValue", "type": "dict-member", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dom-pasignalvalue-basevalue", "export": true, "normative": true, "for_": ["PASignalValue"]};
+window.refsData['#signal-base-value'] = {"text": "signal base value", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#signal-base-value", "export": true, "normative": true, "for_": []};
+window.refsData['https://webidl.spec.whatwg.org/#exceptiondef-typeerror'] = {"text": "TypeError", "type": "exception", "spec": "webidl", "shortname": "webidl", "level": "1", "status": "current", "url": "https://webidl.spec.whatwg.org/#exceptiondef-typeerror", "export": true, "normative": true, "for_": []};
+window.refsData['#dom-pasignalvalue-offset'] = {"text": "offset", "type": "dict-member", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dom-pasignalvalue-offset", "export": true, "normative": true, "for_": ["PASignalValue"]};
+window.refsData['#dom-paextendedhistogramcontribution-value'] = {"text": "value", "type": "dict-member", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dom-paextendedhistogramcontribution-value", "export": true, "normative": true, "for_": ["PAExtendedHistogramContribution"]};
+window.refsData['#on-event-contribution-cache-entry'] = {"text": "on event contribution cache entry", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#on-event-contribution-cache-entry", "export": true, "normative": true, "for_": []};
+window.refsData['#on-event-contribution-cache-entry-contribution'] = {"text": "contribution", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#on-event-contribution-cache-entry-contribution", "export": true, "normative": true, "for_": ["on event contribution cache entry"]};
+window.refsData['#on-event-contribution-cache-entry-batching-scope'] = {"text": "batching scope", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#on-event-contribution-cache-entry-batching-scope", "export": true, "normative": true, "for_": ["on event contribution cache entry"]};
+window.refsData['#on-event-contribution-cache-entry-debug-scope'] = {"text": "debug scope", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#on-event-contribution-cache-entry-debug-scope", "export": true, "normative": true, "for_": ["on event contribution cache entry"]};
+window.refsData['#on-event-contribution-cache-entry-worklet-function'] = {"text": "worklet function", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#on-event-contribution-cache-entry-worklet-function", "export": true, "normative": true, "for_": ["on event contribution cache entry"]};
+window.refsData['#worklet-function'] = {"text": "worklet function", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#worklet-function", "export": true, "normative": true, "for_": []};
+window.refsData['#interestgroupscriptrunnerglobalscope-auction-config'] = {"text": "auction config", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#interestgroupscriptrunnerglobalscope-auction-config", "export": true, "normative": true, "for_": ["InterestGroupScriptRunnerGlobalScope"]};
+window.refsData['#maybe-obtain-an-interest-group'] = {"text": "maybe obtain an interest group", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#maybe-obtain-an-interest-group", "export": true, "normative": true, "for_": []};
+window.refsData['#auction-config-per-bid-or-seller-on-event-contribution-cache'] = {"text": "per-bid or seller on event contribution cache", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#auction-config-per-bid-or-seller-on-event-contribution-cache", "export": true, "normative": true, "for_": ["auction config"]};
+window.refsData['#on-event-contribution-cache'] = {"text": "on event contribution cache", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#on-event-contribution-cache", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#dictdef-auctionadconfig'] = {"text": "AuctionAdConfig", "type": "dictionary", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#dictdef-auctionadconfig", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#dictdef-auctionadinterestgroup'] = {"text": "AuctionAdInterestGroup", "type": "dictionary", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#dictdef-auctionadinterestgroup", "export": true, "normative": true, "for_": []};
+window.refsData['#dictdef-protectedaudienceprivateaggregationconfig'] = {"text": "ProtectedAudiencePrivateAggregationConfig", "type": "dictionary", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dictdef-protectedaudienceprivateaggregationconfig", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#auction-config'] = {"text": "auction config", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#auction-config", "export": false, "normative": true, "for_": []};
+window.refsData['https://www.w3.org/Consortium/Process/#GroupsIG'] = {"text": "interest groups", "type": "dfn", "spec": "w3c-process", "shortname": "w3c-process", "level": "1", "status": "current", "url": "https://www.w3.org/Consortium/Process/#GroupsIG", "export": true, "normative": true, "for_": []};
+window.refsData['#permissions-policy-state'] = {"text": "permissions policy state", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#permissions-policy-state", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#interest-group'] = {"text": "interest group", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#interest-group", "export": false, "normative": true, "for_": []};
+window.refsData['#determine-a-signals-numeric-value'] = {"text": "determine a signal's numeric value", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#determine-a-signals-numeric-value", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#interestgroupreportingscriptrunnerglobalscope'] = {"text": "InterestGroupReportingScriptRunnerGlobalScope", "type": "interface", "spec": "", "shortname": "private-aggregation-api", "level": "1", "status": "anchor-block", "url": "https://wicg.github.io/turtledove/#interestgroupreportingscriptrunnerglobalscope", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#dom-navigator-joinadinterestgroup'] = {"text": "joinAdInterestGroup(group)", "type": "method", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#dom-navigator-joinadinterestgroup", "export": true, "normative": true, "for_": ["Navigator"]};
+window.refsData['#dom-auctionadinterestgroup-privateaggregationconfig'] = {"text": "privateAggregationConfig", "type": "dict-member", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dom-auctionadinterestgroup-privateaggregationconfig", "export": true, "normative": true, "for_": ["AuctionAdInterestGroup"]};
+window.refsData['#obtain-the-private-aggregation-coordinator'] = {"text": "obtain the private aggregation coordinator", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#obtain-the-private-aggregation-coordinator", "export": true, "normative": true, "for_": []};
+window.refsData['#interest-group-private-aggregation-coordinator'] = {"text": "private aggregation coordinator", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#interest-group-private-aggregation-coordinator", "export": true, "normative": true, "for_": ["interest group"]};
+window.refsData['https://wicg.github.io/turtledove/#dom-navigator-runadauction'] = {"text": "runAdAuction(config)", "type": "method", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#dom-navigator-runadauction", "export": true, "normative": true, "for_": ["Navigator"]};
+window.refsData['#auction-config-permissions-policy-state'] = {"text": "permissions policy state", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#auction-config-permissions-policy-state", "export": true, "normative": true, "for_": ["auction config"]};
+window.refsData['#permissions-policy-state-private-aggregation-enabled'] = {"text": "private aggregation enabled", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#permissions-policy-state-private-aggregation-enabled", "export": true, "normative": true, "for_": ["permissions policy state"]};
+window.refsData['https://wicg.github.io/turtledove/#validate-and-convert-auction-ad-config'] = {"text": "validate and convert auction ad config", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#validate-and-convert-auction-ad-config", "export": false, "normative": true, "for_": []};
+window.refsData['#dom-auctionadconfig-privateaggregationconfig'] = {"text": "privateAggregationConfig", "type": "dict-member", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dom-auctionadconfig-privateaggregationconfig", "export": true, "normative": true, "for_": ["AuctionAdConfig"]};
+window.refsData['#auction-config-seller-private-aggregation-coordinator'] = {"text": "seller private aggregation coordinator", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#auction-config-seller-private-aggregation-coordinator", "export": true, "normative": true, "for_": ["auction config"]};
+window.refsData['https://wicg.github.io/turtledove/#generate-and-score-bids'] = {"text": "generate and score bids", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#generate-and-score-bids", "export": false, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#leading-bid-info-leading-bid'] = {"text": "leading bid", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#leading-bid-info-leading-bid", "export": false, "normative": true, "for_": ["leading bid info"]};
+window.refsData['#process-the-private-aggregation-contributions-for-an-auction'] = {"text": "process the private aggregation contributions for an auction", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#process-the-private-aggregation-contributions-for-an-auction", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#evaluate-a-script'] = {"text": "evaluate a script", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#evaluate-a-script", "export": false, "normative": true, "for_": []};
+window.refsData['https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-completion-record-specification-type'] = {"text": "abrupt completion", "type": "dfn", "spec": "ecmascript", "shortname": "ecmascript", "level": "1", "status": "current", "url": "https://tc39.es/ecma262/multipage/ecmascript-data-types-and-values.html#sec-completion-record-specification-type", "export": true, "normative": true, "for_": ["ECMAScript"]};
+window.refsData['https://infra.spec.whatwg.org/#struct-item'] = {"text": "item", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#struct-item", "export": true, "normative": true, "for_": ["struct", "tuple"]};
+window.refsData['https://html.spec.whatwg.org/multipage/webappapis.html#concept-realm-settings-object'] = {"text": "settings object", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#concept-realm-settings-object", "export": true, "normative": true, "for_": ["realm"]};
+window.refsData['https://html.spec.whatwg.org/multipage/webappapis.html#concept-realm-global'] = {"text": "global object", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/webappapis.html#concept-realm-global", "export": true, "normative": true, "for_": ["realm"]};
+window.refsData['#auction-config-batching-scope-map'] = {"text": "batching scope map", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#auction-config-batching-scope-map", "export": true, "normative": true, "for_": ["auction config"]};
+window.refsData['#get-a-debug-details'] = {"text": "get a debug details", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#get-a-debug-details", "export": true, "normative": true, "for_": []};
+window.refsData['#on-event-contribution-cache-entry-debug-details'] = {"text": "debug details", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#on-event-contribution-cache-entry-debug-details", "export": true, "normative": true, "for_": ["on event contribution cache entry"]};
+window.refsData['https://wicg.github.io/turtledove/#evaluate-a-bidding-script'] = {"text": "evaluate a bidding script", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#evaluate-a-bidding-script", "export": false, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#interestgroupbiddingscriptrunnerglobalscope-interest-group'] = {"text": "interest group", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#interestgroupbiddingscriptrunnerglobalscope-interest-group", "export": false, "normative": true, "for_": ["InterestGroupBiddingScriptRunnerGlobalScope"]};
+window.refsData['https://wicg.github.io/turtledove/#evaluate-a-scoring-script'] = {"text": "evaluate a scoring script", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#evaluate-a-scoring-script", "export": false, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#interestgroupscoringscriptrunnerglobalscope'] = {"text": "InterestGroupScoringScriptRunnerGlobalScope", "type": "interface", "spec": "", "shortname": "private-aggregation-api", "level": "1", "status": "anchor-block", "url": "https://wicg.github.io/turtledove/#interestgroupscoringscriptrunnerglobalscope", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#evaluate-a-reporting-script'] = {"text": "evaluate a reporting script", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#evaluate-a-reporting-script", "export": false, "normative": true, "for_": []};
+window.refsData['#interestgroupreportingscriptrunnerglobalscope-interest-group'] = {"text": "interest group", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#interestgroupreportingscriptrunnerglobalscope-interest-group", "export": true, "normative": true, "for_": ["InterestGroupReportingScriptRunnerGlobalScope"]};
+window.refsData['https://wicg.github.io/turtledove/#generate-a-bid'] = {"text": "generate a bid", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#generate-a-bid", "export": false, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#score-and-rank-a-bid'] = {"text": "score and rank a bid", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#score-and-rank-a-bid", "export": false, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#report-result'] = {"text": "report result", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#report-result", "export": false, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#report-win'] = {"text": "report win", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#report-win", "export": false, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#generated-bid-interest-group'] = {"text": "interest group", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#generated-bid-interest-group", "export": false, "normative": true, "for_": ["generated bid"]};
+window.refsData['https://wicg.github.io/turtledove/#interest-group-estimated-size'] = {"text": "estimated size", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#interest-group-estimated-size", "export": false, "normative": true, "for_": ["interest group"]};
+window.refsData['https://wicg.github.io/turtledove/#interest-group-update'] = {"text": "interest group update", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#interest-group-update", "export": false, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#map-getting-the-keys'] = {"text": "keys", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#map-getting-the-keys", "export": true, "normative": true, "for_": ["map"]};
+window.refsData['#obtain-the-private-aggregation-coordinator-from-a-string'] = {"text": "obtain the private aggregation coordinator from a string", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#obtain-the-private-aggregation-coordinator-from-a-string", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#leading-bid-info'] = {"text": "leading bid info", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#leading-bid-info", "export": false, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#interest-group-owner'] = {"text": "owner", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#interest-group-owner", "export": false, "normative": true, "for_": ["interest group"]};
+window.refsData['https://wicg.github.io/turtledove/#auction-config-seller'] = {"text": "seller", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#auction-config-seller", "export": false, "normative": true, "for_": ["auction config"]};
+window.refsData['#fill-in-the-contribution'] = {"text": "fill in the contribution", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#fill-in-the-contribution", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/fenced-frame/#fencedframeconfig'] = {"text": "FencedFrameConfig", "type": "interface", "spec": "fenced-frame", "shortname": "fenced-frame", "level": "1", "status": "current", "url": "https://wicg.github.io/fenced-frame/#fencedframeconfig", "export": true, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/fenced-frame/#report-a-private-aggregation-event'] = {"text": "report a private aggregation event", "type": "dfn", "spec": "fenced-frame", "shortname": "fenced-frame", "level": "1", "status": "current", "url": "https://wicg.github.io/fenced-frame/#report-a-private-aggregation-event", "export": false, "normative": true, "for_": []};
+window.refsData['https://infra.spec.whatwg.org/#iteration-continue'] = {"text": "continue", "type": "dfn", "spec": "infra", "shortname": "infra", "level": "1", "status": "current", "url": "https://infra.spec.whatwg.org/#iteration-continue", "export": true, "normative": true, "for_": ["iteration"]};
+window.refsData['#fill-in-the-signal-value'] = {"text": "fill in the signal value", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#fill-in-the-signal-value", "export": true, "normative": true, "for_": []};
+window.refsData['#dom-pasignalvalue-scale'] = {"text": "scale", "type": "dict-member", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dom-pasignalvalue-scale", "export": true, "normative": true, "for_": ["PASignalValue"]};
+window.refsData['#signal-base-value-winning-bid'] = {"text": "winning-bid", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#signal-base-value-winning-bid", "export": true, "normative": true, "for_": ["signal base value"]};
+window.refsData['https://wicg.github.io/turtledove/#generated-bid-bid'] = {"text": "bid", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#generated-bid-bid", "export": false, "normative": true, "for_": ["generated bid"]};
+window.refsData['#signal-base-value-highest-scoring-other-bid'] = {"text": "highest-scoring-other-bid", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#signal-base-value-highest-scoring-other-bid", "export": true, "normative": true, "for_": ["signal base value"]};
+window.refsData['https://wicg.github.io/turtledove/#leading-bid-info-highest-scoring-other-bid'] = {"text": "highest scoring other bid", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#leading-bid-info-highest-scoring-other-bid", "export": false, "normative": true, "for_": ["leading bid info"]};
+window.refsData['#signal-base-value-script-run-time'] = {"text": "script-run-time", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#signal-base-value-script-run-time", "export": true, "normative": true, "for_": ["signal base value"]};
+window.refsData['#signal-base-value-signals-fetch-time'] = {"text": "signals-fetch-time", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#signal-base-value-signals-fetch-time", "export": true, "normative": true, "for_": ["signal base value"]};
+window.refsData['#worklet-function-generate-bid'] = {"text": "generate-bid", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#worklet-function-generate-bid", "export": true, "normative": true, "for_": ["worklet function"]};
+window.refsData['#worklet-function-score-ad'] = {"text": "score-ad", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#worklet-function-score-ad", "export": true, "normative": true, "for_": ["worklet function"]};
+window.refsData['#worklet-function-report-result'] = {"text": "report-result", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#worklet-function-report-result", "export": true, "normative": true, "for_": ["worklet function"]};
+window.refsData['#worklet-function-report-win'] = {"text": "report-win", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#worklet-function-report-win", "export": true, "normative": true, "for_": ["worklet function"]};
+window.refsData['#signal-base-value-bid-reject-reason'] = {"text": "bid-reject-reason", "type": "dfn", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#signal-base-value-bid-reject-reason", "export": true, "normative": true, "for_": ["signal base value"]};
+window.refsData['https://wicg.github.io/turtledove/#k-anonymity-threshold'] = {"text": "k-anonymity threshold", "type": "dfn", "spec": "turtledove", "shortname": "turtledove", "level": "1", "status": "current", "url": "https://wicg.github.io/turtledove/#k-anonymity-threshold", "export": false, "normative": true, "for_": []};
+window.refsData['https://wicg.github.io/turtledove/#interestgroupbiddingscriptrunnerglobalscope'] = {"text": "InterestGroupBiddingScriptRunnerGlobalScope", "type": "interface", "spec": "", "shortname": "private-aggregation-api", "level": "1", "status": "anchor-block", "url": "https://wicg.github.io/turtledove/#interestgroupbiddingscriptrunnerglobalscope", "export": true, "normative": true, "for_": []};
+window.refsData['#dom-protectedaudienceprivateaggregationconfig-aggregationcoordinatororigin'] = {"text": "aggregationCoordinatorOrigin", "type": "dict-member", "spec": "private-aggregation-api-1", "shortname": "private-aggregation-api", "level": "1", "status": "local", "url": "#dom-protectedaudienceprivateaggregationconfig-aggregationcoordinatororigin", "export": true, "normative": true, "for_": ["ProtectedAudiencePrivateAggregationConfig"]};
+window.refsData['https://html.spec.whatwg.org/multipage/browsers.html#site'] = {"text": "site", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/browsers.html#site", "export": true, "normative": true, "for_": []};
+window.refsData['https://html.spec.whatwg.org/multipage/browsers.html#same-site'] = {"text": "same site", "type": "dfn", "spec": "html", "shortname": "html", "level": "1", "status": "current", "url": "https://html.spec.whatwg.org/multipage/browsers.html#same-site", "export": true, "normative": true, "for_": []};
 </script>
 <script>/* Boilerplate: script-var-click-highlighting */
 /*
