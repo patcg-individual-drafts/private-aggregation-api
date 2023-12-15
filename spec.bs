@@ -1798,9 +1798,8 @@ integer |maxAllowed| and a <a spec="turtledove">leading bid info</a>
 1. If |value|["{{PASignalValue/scale}}"] [=map/exists=], set |returnValue| to
     the result of multiplying |value|["{{PASignalValue/scale}}"] with
     |returnValue|.
-1. Set |returnValue| to the integer result of rounding |returnValue| to the
-    nearest integer. If two integers are equally close, the result should be the
-    integer closer to negative infinity.
+1. Set |returnValue| to the result of converting |returnValue| to an integer by
+    truncating its fractional part.
 1. If |value|["{{PASignalValue/offset}}"] [=map/exists=], set |returnValue| to
     the result of adding |returnValue| to |value|["{{PASignalValue/offset}}"].
 1. Clamp |returnValue| to the range [0, |maxAllowed|] and return the result.
