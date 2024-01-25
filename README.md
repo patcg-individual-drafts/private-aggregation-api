@@ -309,7 +309,7 @@ deprecated.
 Though the debug mode is tied to third-party cookie availability, browsers may
 temporarily allow debug mode without third-party cookies in order to support
 testing, such as the browsers in the [Mode
-B](https://developers.google.com/privacy-sandbox/setup/web/chrome-facilitated-testing#mode-b)
+B](https://developers.google.com/privacy-sandbox/setup/web/chrome-facilitated-testing#mode_b_disable_1_of_third-party_cookies)
 group of Chrome-facilitated testing.
 
 #### Enabling
