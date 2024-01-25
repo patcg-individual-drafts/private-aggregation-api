@@ -306,6 +306,12 @@ generally or for a particular site/context; note that this also means debug
 mode will automatically become deprecated when third-party cookies are
 deprecated.
 
+Though the debug mode is tied to third-party cookie availability, browsers may
+temporarily allow debug mode without third-party cookies in order to support
+testing, such as the browsers in the [Mode
+B](https://developers.google.com/privacy-sandbox/setup/web/chrome-facilitated-testing#mode-b)
+group of Chrome-facilitated testing.
+
 #### Enabling
 
 The following javascript call will then enable debug mode for all future reports
