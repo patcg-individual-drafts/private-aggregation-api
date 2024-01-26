@@ -454,6 +454,9 @@ This setting would be able to be overridden via the typical interest group
 mechanisms. For example, the update mechanism could support a new
 `privateAggregationConfig` key matching the call to `joinAdInterestGroup()`.
 
+See [allowlist](https://github.com/WICG/attribution-reporting-api/blob/main/aggregation_coordinator_origin_allowlist.md)
+of the aggregation service coordinator origins.
+
 ## Privacy and security
 
 ### Metadata readable by the reporting origin
