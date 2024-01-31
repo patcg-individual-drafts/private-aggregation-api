@@ -414,6 +414,8 @@ service deployed on AWS, GCP, and other platforms in the future. The specified
 origin would need to be on an allowlist maintained by the browser. If none is
 specified, a default will be used.
 
+This allowlist matches the Attribution Reporting API's, available [here](https://github.com/WICG/attribution-reporting-api/blob/main/aggregation_coordinator_origin_allowlist.md).
+
 Shared Storage callers would specify this field when calling the `run()` or
 `selectURL()` APIs, e.g.
 
@@ -453,9 +455,6 @@ const auctionResultPromise = navigator.joinAdInterestGroup(interestGroup);
 This setting would be able to be overridden via the typical interest group
 mechanisms. For example, the update mechanism could support a new
 `privateAggregationConfig` key matching the call to `joinAdInterestGroup()`.
-
-See [allowlist](https://github.com/WICG/attribution-reporting-api/blob/main/aggregation_coordinator_origin_allowlist.md)
-of the aggregation service coordinator origins.
 
 ## Privacy and security
 
