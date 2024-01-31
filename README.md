@@ -414,7 +414,8 @@ service deployed on AWS, GCP, and other platforms in the future. The specified
 origin would need to be on an allowlist maintained by the browser. If none is
 specified, a default will be used.
 
-This allowlist matches the Attribution Reporting API's, available [here](https://github.com/WICG/attribution-reporting-api/blob/main/aggregation_coordinator_origin_allowlist.md).
+This allowlist matches the Attribution Reporting API's, available 
+[here](https://github.com/WICG/attribution-reporting-api/blob/main/aggregation_coordinator_origin_allowlist.md).
 
 Shared Storage callers would specify this field when calling the `run()` or
 `selectURL()` APIs, e.g.
