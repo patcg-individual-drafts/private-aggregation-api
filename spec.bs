@@ -469,15 +469,20 @@ To <dfn algorithm export>get a debug details</dfn> given a [=debug scope=]
 1. Otherwise, return a new [=debug details=].
 
 To <dfn algorithm export>mark a debug scope complete</dfn> given a [=debug
-scope=] |debugScope|:
-
-1. Let |debugDetails| be a new [=debug details=].
+scope=] |debugScope| and an optional [=debug details=] or null
+|debugDetailsOverride| (default null):
+1. Let |debugDetails| be |debugDetailsOverride|.
 1. Let |debugScopeMap| be the [=debug scope map=].
 1. If |debugScopeMap|[|debugScope|] [=map/exists=]:
-    1. Set |debugDetails| to  |debugScopeMap|[|debugScope|].
+    1. [=Assert=]: |debugDetailsOverride| is null.
+
+        Note: The override can be provided if the debug details have not been
+            set otherwise.
+    1. Set |debugDetails| to |debugScopeMap|[|debugScope|].
     1. [=map/Remove=] |debugScopeMap|[|debugScope|].
     1. If |debugDetails|'s [=debug details/key=] is not null, [=assert=]:
         |debugDetails|'s [=debug details/enabled=] is true.
+1. If |debugDetails| is null, set |debugDetails| to a new [=debug details=].
 1. [=list/iterate|For each=] |entry| of the [=contribution cache=]:
     1. If |entry|'s [=contribution cache entry/debug scope=] is |debugScope|,
         set |entry|'s [=contribution cache entry/debug details=] to
@@ -1249,9 +1254,17 @@ dictionary AuctionReportBuyersConfig {
   required double scale;
 };
 
+dictionary AuctionReportBuyerDebugModeConfig {
+  boolean enabled = false;
+
+  // Must only be provided if `enabled` is true.
+  bigint? debugKey;
+};
+
 partial dictionary AuctionAdConfig {
   sequence<bigint> auctionReportBuyerKeys;
   record<DOMString, AuctionReportBuyersConfig> auctionReportBuyers;
+  AuctionReportBuyerDebugModeConfig auctionReportBuyerDebugModeConfig;
 };
 </xmp>
 
@@ -1375,6 +1388,8 @@ Extend the <a spec="turtledove">auction config</a> [=struct=] to add new fields:
 :: A [=map=] from buyer [=origins=] to {{bigint}}s.
 : <dfn>auction report buyers</dfn>
 :: A [=map=] from [=strings=] to {{AuctionReportBuyersConfig}}s.
+: <dfn>auction report buyer debug details</dfn>
+:: A [=debug details=].
 
     Issue: Consider replacing the strings above with specific enum types.
 
@@ -1576,7 +1591,26 @@ modified to add the following steps just before the last step ("Return
         1. [=map/Set=] |auctionConfig|'s [=auction config/auction report
             buyers=][|reportType|] to |reportBuyerConfig|.
 
-    Issue: Handle `auctionReportBuyerDebugModeConfig` here.
+1. Let |auctionConfig|'s [=auction config/auction report buyer debug details=]
+    be a new [=debug details=].
+1. If |config|[{{AuctionAdConfig/auctionReportBuyerDebugModeConfig}}]
+    [=map/exists=]:
+    1. Let |debugModeConfig| be
+        |config|[{{AuctionAdConfig/auctionReportBuyerDebugModeConfig}}].
+    1. |enabled| be
+        |debugModeConfig|[{{AuctionReportBuyerDebugModeConfig/enabled}}].
+    1. Let |debugKey| be
+        |debugModeConfig|[{{AuctionReportBuyerDebugModeConfig/debugKey}}].
+    1. If |debugKey| is not null:
+        1. If |debugKey| is not in the range [0, 2<sup>64</sup>−1], [=exception/
+            throw=] a {{TypeError}}.
+        1. If |enabled| is false, [=exception/throw=] a {{TypeError}}.
+    1. Set |auctionConfig|'s [=auction config/auction report buyer debug
+        details=] to a new [=debug details=] with the items:
+        : [=debug details/enabled=]
+        :: |enabled|
+        : [=debug details/key=]
+        :: |debugKey|
 1. If |config|[{{AuctionAdConfig/privateAggregationConfig}}] [=map/exists=]:
     1. Let |aggregationCoordinator| be the result of [=obtaining the Private
         Aggregation coordinator=] given
@@ -1908,11 +1942,8 @@ an <a spec="turtledove">auction config</a> |auctionConfig| and a
                 :: |auctionReportBuyersDebugScope|
             1. [=Append an entry to the contribution cache|Append=] |entry| to
                 the [=contribution cache=].
-
-    Issue: Handle `auctionReportBuyerDebugModeConfig` here, may need to pass an
-        override to [=mark a debug scope complete=] and possibly refactor to merge
-        handling with {{PrivateAggregation/enableDebugMode()}}.
-1. [=Mark a debug scope complete=] given |auctionReportBuyersDebugScope|.
+1. [=Mark a debug scope complete=] given |auctionReportBuyersDebugScope| and
+    |auctionConfig|'s [=auction config/auction report buyer debug details=].
 1. [=map/For each=] (|origin|, |aggregationCoordinator|) → |batchingScope| of
     |auctionConfig|'s [=auction config/batching scope map=]:
     1. [=Process contributions for a batching scope=] given |batchingScope|,
