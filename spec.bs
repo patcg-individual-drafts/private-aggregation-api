@@ -1373,7 +1373,7 @@ Extend the <a spec="turtledove">auction config</a> [=struct=] to add new fields:
 : <dfn>required seller capabilities</dfn>
 :: A [=list=] of [=strings=].
 
-Issue: Consider replacing the strings above with specific enum types.
+    Issue: Consider replacing the strings above with specific enum types.
 
 </dl>
 
