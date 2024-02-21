@@ -1252,9 +1252,10 @@ dictionary AuctionReportBuyersConfig {
 partial dictionary AuctionAdConfig {
   sequence<bigint> auctionReportBuyerKeys;
   record<DOMString, AuctionReportBuyersConfig> auctionReportBuyers;
-  sequence<DOMString> requiredSellerCapabilities;
 };
 </xmp>
+
+Note: `requiredSellerCapabilities` is defined in the Protected Audience spec.
 
 Issue: Do we want to align naming with implementation?
 
@@ -1340,7 +1341,7 @@ partial dictionary AuctionAdInterestGroup {
 };
 </xmp>
 
-Issue: Add `sellerCapabilities` to {{AuctionAdInterestGroup}}.
+Note: `sellerCapabilities` is defined in the Protected Audience spec.
 
 Structures {#protected-audience-api-specific-structures}
 --------------------------------------------------------
@@ -1363,15 +1364,13 @@ Extend the <a spec="turtledove">auction config</a> [=struct=] to add new fields:
         non-reserved events.
 : <dfn>permissions policy state</dfn>
 :: A [=permissions policy state=].
-: <dfn>seller Private Aggregation coordinator</dfn> (default: the [=default
-    aggregation coordinator=])
-:: An [=aggregation coordinator=].
+: <dfn>seller Private Aggregation coordinator</dfn>
+:: An [=aggregation coordinator=]. Defaults to the [=default aggregation
+    coordinator=].
 : <dfn>auction report buyer keys</dfn>
-:: A [=map=] from [=origins=] to {{bigint}}s.
+:: A [=map=] from buyer [=origins=] to {{bigint}}s.
 : <dfn>auction report buyers</dfn>
 :: A [=map=] from [=strings=] to {{AuctionReportBuyersConfig}}s.
-: <dfn>required seller capabilities</dfn>
-:: A [=list=] of [=strings=].
 
     Issue: Consider replacing the strings above with specific enum types.
 
@@ -1535,10 +1534,13 @@ modified to add the following steps just before the last step ("Return
         [=list/size=], exclusive:
         1. Let |key| be
             |config|["<code>{{AuctionAdConfig/auctionReportBuyerKeys}}</code>"][|index|].
-        1. If |key|["{{PAHistogramContribution/bucket}}"] is not in the range
-            [0, 2<sup>128</sup>−1], [=exception/throw=] a {{TypeError}}.
+        1. If |key| is not in the range [0, 2<sup>128</sup>−1],
+            [=exception/throw=] a {{TypeError}}.
         1. If |index| is equal to or greater than |interestGroupBuyers|' [=list/
-            size=], [=iteration/break=].
+            size=], [=iteration/continue=].
+
+            Note: [=iteration/Continue=] is used (instead of [=iteration/
+                break=]) to match validation logic for all given buyer keys.
         1. Let |origin| be |interestGroupBuyers|[|index|].
         1. [=map/Set=] |auctionConfig|'s [=auction config/auction report buyer
             keys=][|origin|] to |key|.
@@ -1547,7 +1549,7 @@ modified to add the following steps just before the last step ("Return
                 {{AuctionAdConfig/interestGroupBuyers}}.
 1. If |config|["<code>{{AuctionAdConfig/auctionReportBuyers}}</code>"] [=map/
     exists=]:
-    1. [=map/iterate|For each=] |reportType| → |reportBuyerConfig| of
+    1. [=map/For each=] |reportType| → |reportBuyerConfig| of
         |config|["<code>{{AuctionAdConfig/auctionReportBuyers}}</code>"]:
         1. If « "`interestGroupCount`", "`bidCount`",
             "`totalGenerateBidLatency`", "`totalSignalsFetchLatency`" » does not
@@ -1569,22 +1571,6 @@ modified to add the following steps just before the last step ("Return
                 protected-audience/1040</a>.
         1. [=map/Set=] |auctionConfig|'s [=auction config/auction report
             buyers=][|reportType|] to |reportBuyerConfig|.
-1. If |config|["<code>{{AuctionAdConfig/requiredSellerCapabilities}}</code>"]
-    [=map/exists=]:
-    1. [=list/iterate|For each=] |capability| of
-        |config|["<code>{{AuctionAdConfig/requiredSellerCapabilities}}</code>"]:
-        1. If « "`interest-group-counts`", "`latency-stats`" » does not [=list/
-            contain=] |capability|, [=iteration/continue=].
-
-            Note: No error is thrown to allow forward compatibility if
-                additional report types are added later.
-
-            Note: The older versions of these enums ("`interestGroupCounts`" and
-                "`latencyStats`") are deprecated.
-        1. [=list/Append=] |capability| to |auctionConfig|'s [=auction config/
-            required seller capabilities=].
-
-        Issue: Ignore bids that do not allow these required capabilities.
 
     Issue: Handle `auctionReportBuyerDebugModeConfig` here.
 1. If |config|[{{AuctionAdConfig/privateAggregationConfig}}] [=map/exists=]:
@@ -1906,7 +1892,9 @@ an <a spec="turtledove">auction config</a> |auctionConfig| and a
             1. If seller capabilities don't allow this reporting, [=iteration/
                 continue=].
 
-                Issue: Spec seller capabilities handling more formally.
+                Issue: Align behavior with seller capabilities handling once <a
+                    href="https://github.com/WICG/turtledove/issues/966">
+                    protected-audience/966</a> is resolved.
             1. Let |entry| be a new [=contribution cache entry=] with the items:
                 : [=contribution cache entry/contribution=]
                 :: |contribution|
