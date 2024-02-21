@@ -1834,7 +1834,8 @@ an <a spec="turtledove">auction config</a> |auctionConfig| and a
 1. Let |auctionReportBuyersDebugScope| be a new [=debug scope=].
 1. [=map/For each=] |reportType| → |reportBuyerConfig| of |auctionConfig|'s
     [=auction config/auction report buyers=]:
-    1. [=map/For each=] |buyerOrigin| → |buyerOffset|:
+    1. [=map/For each=] |buyerOrigin| → |buyerOffset| of |auctionConfig|'s
+        [=auction config/auction report buyer keys=]:
         1. Let |bucket| be the sum of |buyerOffset| and |reportBuyerConfig|'s
             {{AuctionReportBuyersConfig/bucket}}.
 
