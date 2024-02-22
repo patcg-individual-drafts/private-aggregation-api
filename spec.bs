@@ -1597,7 +1597,7 @@ modified to add the following steps just before the last step ("Return
     [=map/exists=]:
     1. Let |debugModeConfig| be
         |config|[{{AuctionAdConfig/auctionReportBuyerDebugModeConfig}}].
-    1. |enabled| be
+    1. Let |enabled| be
         |debugModeConfig|[{{AuctionReportBuyerDebugModeConfig/enabled}}].
     1. Let |debugKey| be
         |debugModeConfig|[{{AuctionReportBuyerDebugModeConfig/debugKey}}].
