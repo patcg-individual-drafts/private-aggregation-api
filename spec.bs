@@ -1243,7 +1243,21 @@ partial interface PrivateAggregation {
   undefined contributeToHistogramOnEvent(
       DOMString event, PAExtendedHistogramContribution contribution);
 };
+
+dictionary AuctionReportBuyersConfig {
+  required bigint bucket;
+  required double scale;
+};
+
+partial dictionary AuctionAdConfig {
+  sequence<bigint> auctionReportBuyerKeys;
+  record<DOMString, AuctionReportBuyersConfig> auctionReportBuyers;
+};
 </xmp>
+
+Note: `requiredSellerCapabilities` is defined in the <a
+    href="https://wicg.github.io/turtledove/#dictdef-auctionadconfig">Protected
+    Audience spec</a>.
 
 Issue: Do we want to align naming with implementation?
 
@@ -1329,6 +1343,10 @@ partial dictionary AuctionAdInterestGroup {
 };
 </xmp>
 
+Note: `sellerCapabilities` is defined in the <a
+    href="https://wicg.github.io/turtledove#dictdef-generatebidinterestgroup">Protected
+    Audience spec</a>
+
 Structures {#protected-audience-api-specific-structures}
 --------------------------------------------------------
 
@@ -1344,14 +1362,21 @@ Extend the <a spec="turtledove">auction config</a> [=struct=] to add new fields:
 : <dfn>batching scope map</dfn>
 :: A [=map=] from a [=tuple=] consisting of an <dfn ignore>origin</dfn> (an
     [=origin=]) and a <dfn ignore>coordinator</dfn> (an [=aggregation
-    coordinator=] or null) to a [=batching scope=].
+    coordinator=]) to a [=batching scope=].
 
     Note: Does not include [=batching scopes=] for contributions conditional on
         non-reserved events.
 : <dfn>permissions policy state</dfn>
 :: A [=permissions policy state=].
-: <dfn>seller Private Aggregation coordinator</dfn> (default null)
-:: An [=aggregation coordinator=] or null.
+: <dfn>seller Private Aggregation coordinator</dfn>
+:: An [=aggregation coordinator=]. Defaults to the [=default aggregation
+    coordinator=].
+: <dfn>auction report buyer keys</dfn>
+:: A [=map=] from buyer [=origins=] to {{bigint}}s.
+: <dfn>auction report buyers</dfn>
+:: A [=map=] from [=strings=] to {{AuctionReportBuyersConfig}}s.
+
+    Issue: Consider replacing the strings above with specific enum types.
 
 </dl>
 
@@ -1502,7 +1527,57 @@ The <a spec="turtledove">validate and convert auction ad config</a> steps are
 modified to add the following steps just before the last step ("Return
 <var ignore>auctionConfig</var>"), renumbering the later step as appropriate:
 <div algorithm="protected-audience-validate-config-monkey-patch">
-7. If |config|[{{AuctionAdConfig/privateAggregationConfig}}] [=map/exists=]:
+31. If |config|["<code>{{AuctionAdConfig/auctionReportBuyerKeys}}</code>"]
+    [=map/exists=]:
+    1. Let |interestGroupBuyers| be |auctionConfig|'s <a spec="turtledove"
+        for="auction config">interest group buyers</a>.
+    1. If |interestGroupBuyers| is null, set |interestGroupBuyers| to a new
+        [=list=].
+    1. [=list/For each=] |index| of [=the exclusive range|the range=] 0 to
+        |config|["<code>{{AuctionAdConfig/auctionReportBuyerKeys}}</code>"]'s
+        [=list/size=], exclusive:
+        1. Let |key| be
+            |config|["<code>{{AuctionAdConfig/auctionReportBuyerKeys}}</code>"][|index|].
+        1. If |key| is not in the range [0, 2<sup>128</sup>−1],
+            [=exception/throw=] a {{TypeError}}.
+        1. If |index| is equal to or greater than |interestGroupBuyers|' [=list/
+            size=], [=iteration/continue=].
+
+            Note: [=iteration/Continue=] is used (instead of [=iteration/
+                break=]) to match validation logic for all given buyer keys.
+        1. Let |origin| be |interestGroupBuyers|[|index|].
+        1. [=map/Set=] |auctionConfig|'s [=auction config/auction report buyer
+            keys=][|origin|] to |key|.
+
+            Issue: Check behavior when an origin is repeated in
+                {{AuctionAdConfig/interestGroupBuyers}}.
+1. If |config|["<code>{{AuctionAdConfig/auctionReportBuyers}}</code>"] [=map/
+    exists=]:
+    1. [=map/For each=] |reportType| → |reportBuyerConfig| of
+        |config|["<code>{{AuctionAdConfig/auctionReportBuyers}}</code>"]:
+        1. If « "`interestGroupCount`", "`bidCount`",
+            "`totalGenerateBidLatency`", "`totalSignalsFetchLatency`" » does not
+            [=list/contain=] |reportType|, [=iteration/continue=].
+
+            Note: No error is thrown to allow forward compatibility if
+                additional report types are added later.
+
+            Issue: Should these strings be dash delimited?
+
+        1. If |reportBuyerConfig|["<code>{{AuctionReportBuyersConfig
+            /bucket}}</code>"] is not in the range [0, 2<sup>128</sup>−1],
+            [=exception/throw=] a {{TypeError}}.
+
+            Issue: Consider validating the case where the bucket used (after
+                summing) is too large. Currently, the implementation appears to
+                overflow. See <a
+                href="https://github.com/WICG/turtledove/issues/1040">
+                protected-audience/1040</a>.
+        1. [=map/Set=] |auctionConfig|'s [=auction config/auction report
+            buyers=][|reportType|] to |reportBuyerConfig|.
+
+    Issue: Handle `auctionReportBuyerDebugModeConfig` here.
+1. If |config|[{{AuctionAdConfig/privateAggregationConfig}}] [=map/exists=]:
     1. Let |aggregationCoordinator| be the result of [=obtaining the Private
         Aggregation coordinator=] given
         |config|[{{AuctionAdConfig/privateAggregationConfig}}].
@@ -1524,9 +1599,6 @@ nested scope), renumbering this and later steps as necessary.
     <var ignore>auctionConfig</var> and <var ignore>leadingBidInfo</var>.
 
 </div>
-
-Issue: Need to handle `auctionReportBuyers` and `auctionReportBuyerKeys` here or
-    in the Protected Audience API spec.
 
 The <a spec="turtledove">evaluate a script</a> steps are modified in two ways.
 First, we add the following steps after step 11 ("If
@@ -1553,15 +1625,10 @@ renumbering later steps as appropriate:
             [=interest group/Private Aggregation coordinator=].
         1. Otherwise, set |aggregationCoordinator| to |auctionConfig|'s
             [=auction config/seller Private Aggregation coordinator=].
-        1. Let |batchingScopeMap| be |auctionConfig|'s [=auction config/batching
-            scope map=].
-        1. Let |mapTuple| = (|origin|, |aggregationCoordinator|).
-        1. If |batchingScopeMap|[|mapTuple|] does not [=map/exist=]:
-            1. Set |batchingScopeMap|[|mapTuple|] to a new [=batching scope=].
-            1. If |aggregationCoordinator| is not null, [=set the aggregation
-                coordinator for a batching scope=] given
-                |aggregationCoordinator| and |batchingScopeMap|[|mapTuple|].
-        1. Return |batchingScopeMap|[|mapTuple|].
+        1. If |aggregationCoordinator| is null, set |aggregationCoordinator| to
+            the [=default aggregation coordinator=].
+        1. Return the result of running [=get or create a batching scope=] given
+            |origin|, |aggregationCoordinator| and |auctionConfig|.
     : [=scoping details/get debug scope steps=]
     :: An algorithm that returns |debugScope|.
 
@@ -1762,7 +1829,90 @@ an <a spec="turtledove">auction config</a> |auctionConfig| and a
                     details=]
             1. [=Append an entry to the contribution cache|Append=] |entry| to
                 the [=contribution cache=].
+1. Let |sellerBatchingScope| be the result of [=get or create a batching
+    scope|getting or creating a batching scope=] given |auctionConfig|'s <a
+    spec="turtledove" for="auction config">seller</a>, |auctionConfig|'s
+    [=auction config/seller Private Aggregation coordinator=], and
+    |auctionConfig|.
+1. Let |auctionReportBuyersDebugScope| be a new [=debug scope=].
+1. [=map/For each=] |reportType| → |reportBuyerConfig| of |auctionConfig|'s
+    [=auction config/auction report buyers=]:
+    1. [=map/For each=] |buyerOrigin| → |buyerOffset| of |auctionConfig|'s
+        [=auction config/auction report buyer keys=]:
+        1. Let |bucket| be the sum of |buyerOffset| and |reportBuyerConfig|'s
+            {{AuctionReportBuyersConfig/bucket}}.
 
+            Issue: Handle overflow here or in validation. See <a
+                href="https://github.com/WICG/turtledove/issues/1040">
+                protected-audience/1040</a>.
+        1. Let |value| be the result (a {{double}}) of switching on
+            |reportType|:
+            <dl class="switch">
+            : "`interestGroupCount`"
+            :: The number of interest groups in the [=user agent=]'s <a
+                spec="turtledove">interest group set</a> whose <a
+                spec="turtledove" for="interest group">owner</a> is
+                |buyerOrigin|.
+            : "`bidCount`"
+            :: The number of valid bids generated by interest groups whose <a
+                spec="turtledove" for="interest group">owner</a> is
+                |buyerOrigin|.
+            : "`totalGenerateBidLatency`"
+            :: The sum of execution time in milliseconds for all `generateBid()`
+                calls in the auction for interest groups whose <a
+                spec="turtledove" for="interest group">owner</a> is
+                |buyerOrigin|.
+            : "`totalSignalsFetchLatency`"
+            :: The total time spent fetching trusted buyer signals in
+                milliseconds, or 0 if the interest group didn't fetch any
+                trusted signals.
+            : None of the above values
+            :: [=Assert=]: false
+
+                Note: This enum value is validated in <a
+                    spec="turtledove">validate and convert auction ad
+                    config</a>.
+
+            </dl>
+
+            Issue: More formally spec the values here.
+        1. Set |value| to the result of multiplying |reportBuyerConfig|'s
+            {{AuctionReportBuyersConfig/scale}} with |value|.
+        1. Set |value| to the maximum of 0.0 and |value|.
+        1. Set |value| to the result of converting |value| to an integer by
+            truncating its fractional part.
+        1. Set |value| to the minimum of |value| and 2<sup>31</sup>−1.
+        1. Let |contribution| be a new {{PAHistogramContribution}} with the
+            items:
+            : {{PAHistogramContribution/bucket}}
+            :: |bucket|
+            : {{PAHistogramContribution/value}}
+            :: |value|
+
+        1. [=map/For each=] |ig| of the [=user agent=]'s <a spec="turtledove">
+            interest group set</a> whose
+            <a spec="turtledove" for="interest group">owner</a> is
+            |buyerOrigin|:
+            1. If seller capabilities don't allow this reporting, [=iteration/
+                continue=].
+
+                Issue: Align behavior with seller capabilities handling once <a
+                    href="https://github.com/WICG/turtledove/issues/966">
+                    protected-audience/966</a> is resolved.
+            1. Let |entry| be a new [=contribution cache entry=] with the items:
+                : [=contribution cache entry/contribution=]
+                :: |contribution|
+                : [=contribution cache entry/batching scope=]
+                :: |sellerBatchingScope|
+                : [=contribution cache entry/debug scope=]
+                :: |auctionReportBuyersDebugScope|
+            1. [=Append an entry to the contribution cache|Append=] |entry| to
+                the [=contribution cache=].
+
+    Issue: Handle `auctionReportBuyerDebugModeConfig` here, may need to pass an
+        override to [=mark a debug scope complete=] and possibly refactor to merge
+        handling with {{PrivateAggregation/enableDebugMode()}}.
+1. [=Mark a debug scope complete=] given |auctionReportBuyersDebugScope|.
 1. [=map/For each=] (|origin|, |aggregationCoordinator|) → |batchingScope| of
     |auctionConfig|'s [=auction config/batching scope map=]:
     1. [=Process contributions for a batching scope=] given |batchingScope|,
@@ -1771,6 +1921,20 @@ an <a spec="turtledove">auction config</a> |auctionConfig| and a
 Issue: Verify interaction with component auctions.
 
 Issue: Use `[=map/For each=]` where possible.
+
+To <dfn>get or create a batching scope</dfn> given an [=origin=] |origin|, an
+[=aggregation coordinator=] |aggregationCoordinator| and an <a
+spec="turtledove">auction config</a> |auctionConfig|, perform the following
+steps. They return a [=batching scope=].
+1. Let |batchingScopeMap| be |auctionConfig|'s [=auction config/batching scope
+    map=].
+1. Let |tuple| be (|origin|, |aggregationCoordinator|).
+1. If |batchingScopeMap|[|tuple|] does not [=map/exist=]:
+    1. Set |batchingScopeMap|[|tuple|] to a new [=batching scope=].
+    1. If |aggregationCoordinator| is not null, [=set the aggregation
+        coordinator for a batching scope=] given |aggregationCoordinator| and
+        |batchingScopeMap|[|tuple|].
+1. Return |batchingScopeMap|[|tuple|].
 
 To <dfn>fill in the contribution</dfn> given a
 {{PAExtendedHistogramContribution}} |contribution| and a
