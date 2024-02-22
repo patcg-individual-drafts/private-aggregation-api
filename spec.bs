@@ -1255,7 +1255,9 @@ partial dictionary AuctionAdConfig {
 };
 </xmp>
 
-Note: `requiredSellerCapabilities` is defined in the Protected Audience spec.
+Note: `requiredSellerCapabilities` is defined in the <a
+    href="https://wicg.github.io/turtledove/#dictdef-auctionadconfig">Protected
+    Audience spec</a>.
 
 Issue: Do we want to align naming with implementation?
 
@@ -1341,7 +1343,9 @@ partial dictionary AuctionAdInterestGroup {
 };
 </xmp>
 
-Note: `sellerCapabilities` is defined in the Protected Audience spec.
+Note: `sellerCapabilities` is defined in the <a
+    href="https://wicg.github.io/turtledove#dictdef-generatebidinterestgroup">Protected
+    Audience spec</a>
 
 Structures {#protected-audience-api-specific-structures}
 --------------------------------------------------------
@@ -1623,9 +1627,8 @@ renumbering later steps as appropriate:
             [=auction config/seller Private Aggregation coordinator=].
         1. If |aggregationCoordinator| is null, set |aggregationCoordinator| to
             the [=default aggregation coordinator=].
-        1. Return the result of [=get or create a batching scope|getting or
-            creating a batching scope=] given |origin|, |aggregationCoordinator|
-            and |auctionConfig|.
+        1. Return the result of running [=get or create a batching scope=] given
+            |origin|, |aggregationCoordinator| and |auctionConfig|.
     : [=scoping details/get debug scope steps=]
     :: An algorithm that returns |debugScope|.
 
