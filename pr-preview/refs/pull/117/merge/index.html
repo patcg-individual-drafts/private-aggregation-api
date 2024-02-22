@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-UD" rel="stylesheet">
   <meta content="Bikeshed version d5d58a306, updated Fri Jan 26 16:12:28 2024 -0800" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="b0998c958ff6965f4448b2e2ced2e94480a0dcf6" name="revision">
+  <meta content="a7cf81a688ced291183aa19ae5303c40936b6f83" name="revision">
 <style>/* Boilerplate: style-autolinks */
 .css.css, .property.property, .descriptor.descriptor {
     color: var(--a-normal-text);
@@ -714,7 +714,7 @@ var[data-var-color="6"] { background-color: #FFBCF2; box-shadow: 0 0 0 2px #FFBC
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2024-02-21">21 February 2024</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2024-02-22">22 February 2024</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -2188,7 +2188,8 @@ only one can be currently executing.</p>
   <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#idl-record" id="ref-for-idl-record"><c- b>record</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString②"><c- b>DOMString</c-></a>, <a data-link-type="idl-name" href="#dictdef-auctionreportbuyersconfig" id="ref-for-dictdef-auctionreportbuyersconfig"><c- n>AuctionReportBuyersConfig</c-></a>> <dfn class="dfn-paneled idl-code" data-dfn-for="AuctionAdConfig" data-dfn-type="dict-member" data-export data-type="record<DOMString, AuctionReportBuyersConfig> " id="dom-auctionadconfig-auctionreportbuyers"><code><c- g>auctionReportBuyers</c-></code></dfn>;
 };
 </pre>
-   <p class="note" role="note"><span class="marker">Note:</span> <code>requiredSellerCapabilities</code> is defined in the Protected Audience spec.</p>
+   <p class="note" role="note"><span class="marker">Note:</span> <code>requiredSellerCapabilities</code> is defined in the <a href="https://wicg.github.io/turtledove/#dictdef-auctionadconfig" id="536688c80">Protected
+    Audience spec</a>.</p>
    <p class="issue" id="issue-6c6263d3"><a class="self-link" href="#issue-6c6263d3"></a> Do we want to align naming with implementation?</p>
    <p>The <code class="idl"><a data-link-type="idl" href="#dom-interestgroupscriptrunnerglobalscope-privateaggregation" id="ref-for-dom-interestgroupscriptrunnerglobalscope-privateaggregation">privateAggregation</a></code> <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#getter-steps" id="ref-for-getter-steps②">getter steps</a> are to <a data-link-type="dfn" href="#get-the-privateaggregation" id="ref-for-get-the-privateaggregation②">get the privateAggregation</a> given <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this⑤">this</a>.</p>
    <div class="algorithm" data-algorithm="contributeToHistogramOnEvent(DOMString event, PAExtendedHistogramContribution contribution)" data-algorithm-for="PrivateAggregation"> The <dfn class="dfn-paneled idl-code" data-dfn-for="PrivateAggregation" data-dfn-type="method" data-export data-lt="contributeToHistogramOnEvent(event, contribution)" id="dom-privateaggregation-contributetohistogramonevent"><code>contributeToHistogramOnEvent(DOMString
@@ -2286,7 +2287,8 @@ modified to add a new field:</p>
   <a data-link-type="idl-name" href="#dictdef-protectedaudienceprivateaggregationconfig" id="ref-for-dictdef-protectedaudienceprivateaggregationconfig①"><c- n>ProtectedAudiencePrivateAggregationConfig</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AuctionAdInterestGroup" data-dfn-type="dict-member" data-export data-type="ProtectedAudiencePrivateAggregationConfig " id="dom-auctionadinterestgroup-privateaggregationconfig"><code><c- g>privateAggregationConfig</c-></code></dfn>;
 };
 </pre>
-   <p class="note" role="note"><span class="marker">Note:</span> <code>sellerCapabilities</code> is defined in the Protected Audience spec.</p>
+   <p class="note" role="note"><span class="marker">Note:</span> <code>sellerCapabilities</code> is defined in the <a href="https://wicg.github.io/turtledove#dictdef-generatebidinterestgroup">Protected
+    Audience spec</a></p>
    <h3 class="heading settled" data-level="11.3" id="protected-audience-api-specific-structures"><span class="secno">11.3. </span><span class="content">Structures</span><a class="self-link" href="#protected-audience-api-specific-structures"></a></h3>
    <h4 class="heading settled" data-level="11.3.1" id="extending-auction-config"><span class="secno">11.3.1. </span><span class="content">Extending auction config</span><a class="self-link" href="#extending-auction-config"></a></h4>
    <p>Extend the <a data-link-type="dfn" href="https://wicg.github.io/turtledove/#auction-config" id="ref-for-auction-config">auction config</a> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#struct" id="ref-for-struct④">struct</a> to add new fields:</p>
@@ -2563,8 +2565,7 @@ object</a>.</p>
           <p>If <var>aggregationCoordinator</var> is null, set <var>aggregationCoordinator</var> to
 the <a data-link-type="dfn" href="#default-aggregation-coordinator" id="ref-for-default-aggregation-coordinator②">default aggregation coordinator</a>.</p>
          <li data-md>
-          <p>Return the result of <a data-link-type="dfn" href="#get-or-create-a-batching-scope" id="ref-for-get-or-create-a-batching-scope">getting or
-creating a batching scope</a> given <var>origin</var>, <var>aggregationCoordinator</var> and <var>auctionConfig</var>.</p>
+          <p>Return the result of running <a data-link-type="dfn" href="#get-or-create-a-batching-scope" id="ref-for-get-or-create-a-batching-scope">get or create a batching scope</a> given <var>origin</var>, <var>aggregationCoordinator</var> and <var>auctionConfig</var>.</p>
         </ol>
        <dt data-md><a data-link-type="dfn" href="#scoping-details-get-debug-scope-steps" id="ref-for-scoping-details-get-debug-scope-steps⑤">get debug scope steps</a>
        <dd data-md>
@@ -4341,7 +4342,7 @@ let dfnPanelData = {
 "dom-sharedstorageworkletglobalscope-privateaggregation": {"dfnID":"dom-sharedstorageworkletglobalscope-privateaggregation","dfnText":"privateAggregation","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-sharedstorageworkletglobalscope-privateaggregation"},{"id":"ref-for-dom-sharedstorageworkletglobalscope-privateaggregation\u2460"}],"title":"10. Shared Storage API monkey patches"}],"url":"#dom-sharedstorageworkletglobalscope-privateaggregation"},
 "e28ccd60": {"dfnID":"e28ccd60","dfnText":"concatenation","external":true,"refSections":[{"refs":[{"id":"ref-for-string-concatenate"}],"title":"8.3. Sending reports"},{"refs":[{"id":"ref-for-string-concatenate\u2460"}],"title":"8.4. Serializing reports"}],"url":"https://infra.spec.whatwg.org/#string-concatenate"},
 "e3258dae": {"dfnID":"e3258dae","dfnText":"evaluate a bidding script","external":true,"refSections":[{"refs":[{"id":"ref-for-evaluate-a-bidding-script"},{"id":"ref-for-evaluate-a-bidding-script\u2460"}],"title":"11.4. Algorithm modifications"}],"url":"https://wicg.github.io/turtledove/#evaluate-a-bidding-script"},
-"e77d2744": {"dfnID":"e77d2744","dfnText":"AuctionAdConfig","external":true,"refSections":[{"refs":[{"id":"ref-for-dictdef-auctionadconfig"}],"title":"11.1. New WebIDL"},{"refs":[{"id":"ref-for-dictdef-auctionadconfig\u2460"},{"id":"ref-for-dictdef-auctionadconfig\u2461"}],"title":"11.2. WebIDL modifications"}],"url":"https://wicg.github.io/turtledove/#dictdef-auctionadconfig"},
+"e77d2744": {"dfnID":"e77d2744","dfnText":"AuctionAdConfig","external":true,"refSections":[{"refs":[{"id":"ref-for-dictdef-auctionadconfig"},{"id":"536688c80"}],"title":"11.1. New WebIDL"},{"refs":[{"id":"ref-for-dictdef-auctionadconfig\u2460"},{"id":"ref-for-dictdef-auctionadconfig\u2461"}],"title":"11.2. WebIDL modifications"}],"url":"https://wicg.github.io/turtledove/#dictdef-auctionadconfig"},
 "e865646f": {"dfnID":"e865646f","dfnText":"owner","external":true,"refSections":[{"refs":[{"id":"ref-for-interest-group-owner"},{"id":"ref-for-interest-group-owner\u2460"},{"id":"ref-for-interest-group-owner\u2461"},{"id":"ref-for-interest-group-owner\u2462"},{"id":"ref-for-interest-group-owner\u2463"},{"id":"ref-for-interest-group-owner\u2464"}],"title":"11.5. New algorithms"}],"url":"https://wicg.github.io/turtledove/#interest-group-owner"},
 "e9211cfb": {"dfnID":"e9211cfb","dfnText":"run(name)","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-windowsharedstorage-run"}],"title":"10. Shared Storage API monkey patches"}],"url":"https://wicg.github.io/shared-storage/#dom-windowsharedstorage-run"},
 "e99bd18e": {"dfnID":"e99bd18e","dfnText":"relevant global object","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-relevant-global"}],"title":"10. Shared Storage API monkey patches"},{"refs":[{"id":"ref-for-concept-relevant-global\u2460"}],"title":"11.1. New WebIDL"}],"url":"https://html.spec.whatwg.org/multipage/webappapis.html#concept-relevant-global"},
