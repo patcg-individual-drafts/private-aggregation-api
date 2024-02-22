@@ -1591,8 +1591,8 @@ modified to add the following steps just before the last step ("Return
         1. [=map/Set=] |auctionConfig|'s [=auction config/auction report
             buyers=][|reportType|] to |reportBuyerConfig|.
 
-1. Let |auctionConfig|'s [=auction config/auction report buyer debug details=]
-    be a new [=debug details=].
+1. Set |auctionConfig|'s [=auction config/auction report buyer debug details=]
+    to a new [=debug details=].
 1. If |config|[{{AuctionAdConfig/auctionReportBuyerDebugModeConfig}}]
     [=map/exists=]:
     1. Let |debugModeConfig| be
