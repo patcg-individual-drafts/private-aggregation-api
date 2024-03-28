@@ -125,7 +125,7 @@ Exposed interface {#exposed-interface}
  SecureContext]
 interface PrivateAggregation {
   undefined contributeToHistogram(PAHistogramContribution contribution);
-  undefined enableDebugMode(optional PADebugModeOptions options);
+  undefined enableDebugMode(optional PADebugModeOptions options = {});
 };
 
 dictionary PAHistogramContribution {
@@ -141,6 +141,10 @@ dictionary PADebugModeOptions {
 Issue: Per the <a href=https://www.w3.org/TR/design-principles/#numeric-types>
   Web Platform Design Principles</a>, we should consider switching `long` to
   `[EnforceRange] long long`.
+
+Issue: {{PrivateAggregation/enableDebugMode(options)}}'s argument should not
+    have a default value of `{}`. Alternatively, {{PADebugModeOptions/debugKey}}
+    should not be required in {{PADebugModeOptions}}.
 
 Each {{PrivateAggregation}} object has the following fields:
 <dl dfn-for="PrivateAggregation">
@@ -1052,12 +1056,13 @@ steps. They return an [=aggregation coordinator=], null or a {{DOMException}}:
 To <dfn algorithm>obtain the context ID</dfn> given a
 {{SharedStorageRunOperationMethodOptions}} |options|, perform the following
 steps. They return a [=string=], null, or a {{DOMException}}:
-1. If |options|["`privateAggregationConfig`"] does not [=map/exist=], return
-    null.
-1. If |options|["`privateAggregationConfig`"]["`contextId`"] does not [=map/
-    exist=], return null.
+1. If |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]
+    does not [=map/exist=], return null.
+1. Let |contextId| be null.
+1. If |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]["{{SharedStoragePrivateAggregationConfig/contextId}}"]
+    does not [=map/exist=], return null.
 1. Set |contextId| to
-    |options|["`privateAggregationConfig`"]["`contextId`"].
+    |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]["{{SharedStoragePrivateAggregationConfig/contextId}}"].
 1. If |contextId|'s [=string/length=] is greater than 64, return a new
     {{DOMException}} with name "`DataError`".
 1. Return |contextId|.
