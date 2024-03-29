@@ -138,6 +138,14 @@ dictionary PADebugModeOptions {
 };
 </xmp>
 
+Issue: Per the <a href=https://www.w3.org/TR/design-principles/#numeric-types>
+  Web Platform Design Principles</a>, we should consider switching `long` to
+  `[EnforceRange] long long`.
+
+Issue: {{PrivateAggregation/enableDebugMode(options)}}'s argument should not
+    have a default value of `{}`. Alternatively, {{PADebugModeOptions/debugKey}}
+    should not be required in {{PADebugModeOptions}}.
+
 Each {{PrivateAggregation}} object has the following fields:
 <dl dfn-for="PrivateAggregation">
 : <dfn>scoping details</dfn> (default null)
@@ -1048,12 +1056,12 @@ steps. They return an [=aggregation coordinator=], null or a {{DOMException}}:
 To <dfn algorithm>obtain the context ID</dfn> given a
 {{SharedStorageRunOperationMethodOptions}} |options|, perform the following
 steps. They return a [=string=], null, or a {{DOMException}}:
-1. If |options|["`privateAggregationConfig`"] does not [=map/exist=], return
-    null.
-1. If |options|["`privateAggregationConfig`"]["`contextId`"] does not [=map/
-    exist=], return null.
-1. Set |contextId| to
-    |options|["`privateAggregationConfig`"]["`contextId`"].
+1. If |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]
+    does not [=map/exist=], return null.
+1. If |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]["{{SharedStoragePrivateAggregationConfig/contextId}}"]
+    does not [=map/exist=], return null.
+1. Let |contextId| be
+    |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]["{{SharedStoragePrivateAggregationConfig/contextId}}"].
 1. If |contextId|'s [=string/length=] is greater than 64, return a new
     {{DOMException}} with name "`DataError`".
 1. Return |contextId|.
@@ -1294,12 +1302,23 @@ event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
         value=], [=exception/throw=] a {{TypeError}}.
     1. If |bucket|["{{PASignalValue/offset}}"] is not a {{bigint}}, [=exception/
         throw=] a {{TypeError}}.
+1. Otherwise, if |contribution|["{{PAExtendedHistogramContribution/bucket}}"] is
+    not in the range [0, 2<sup>128</sup>−1], [=exception/throw=] a
+    {{TypeError}}.
+
+    Issue: Make the error type consistent with
+        {{PrivateAggregation/contributeToHistogram(contribution)}}.
 1. Let |value| be |contribution|["{{PAExtendedHistogramContribution/value}}"].
 1. If |value| is a {{PASignalValue}}:
     1. If |value|["{{PASignalValue/baseValue}}"] is not a valid [=signal base
         value=], [=exception/throw=] a {{TypeError}}.
     1. If |value|["{{PASignalValue/offset}}"] is a {{bigint}}, [=exception/
         throw=] a {{TypeError}}.
+1. Otherwise, if |contribution|["{{PAHistogramContribution/value}}"] is
+    negative, [=exception/throw=] a {{TypeError}}.
+
+    Issue: Make the error types on validation issues here and above consistent
+        with {{PrivateAggregation/contributeToHistogram(contribution)}}.
 1. Let |batchingScope| be null.
 1. If |event| [=string/starts with=] "`reserved.`", set |batchingScope| to the
     result of running |scopingDetails|' [=scoping details/get batching scope
@@ -1973,10 +1992,10 @@ To <dfn>fill in the contribution</dfn> given a
 following steps. They return a {{PAHistogramContribution}}.
 1. Let |bucket| be |contribution|["{{PAExtendedHistogramContribution/bucket}}"].
 1. If |bucket| is a {{PASignalValue}}, set |bucket| to the result of [=filling
-    in the signal value=] given |bucket|, 65535 and |leadingBidInfo|.
+    in the signal value=] given |bucket|, 2<sup>128</sup>−1 and |leadingBidInfo|.
 1. Let |value| be |contribution|["{{PAExtendedHistogramContribution/value}}"].
 1. If |value| is a {{PASignalValue}}, set |value| to the result of [=filling in
-    the signal value=] given |value|, 2<sup>128</sup>−1 and |leadingBidInfo|.
+    the signal value=] given |value|, 2<sup>31</sup>−1 and |leadingBidInfo|.
 1. Return a new {{PAHistogramContribution}} with the items:
     : {{PAHistogramContribution/bucket}}
     :: |bucket|
