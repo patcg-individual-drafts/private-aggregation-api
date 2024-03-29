@@ -1058,10 +1058,9 @@ To <dfn algorithm>obtain the context ID</dfn> given a
 steps. They return a [=string=], null, or a {{DOMException}}:
 1. If |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]
     does not [=map/exist=], return null.
-1. Let |contextId| be null.
 1. If |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]["{{SharedStoragePrivateAggregationConfig/contextId}}"]
     does not [=map/exist=], return null.
-1. Set |contextId| to
+1. Let |contextId| be
     |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]["{{SharedStoragePrivateAggregationConfig/contextId}}"].
 1. If |contextId|'s [=string/length=] is greater than 64, return a new
     {{DOMException}} with name "`DataError`".
@@ -1996,7 +1995,7 @@ following steps. They return a {{PAHistogramContribution}}.
     in the signal value=] given |bucket|, 2<sup>128</sup>−1 and |leadingBidInfo|.
 1. Let |value| be |contribution|["{{PAExtendedHistogramContribution/value}}"].
 1. If |value| is a {{PASignalValue}}, set |value| to the result of [=filling in
-    the signal value=] given |value|, 65535 and |leadingBidInfo|.
+    the signal value=] given |value|, 2<sup>31</sup>−1 and |leadingBidInfo|.
 1. Return a new {{PAHistogramContribution}} with the items:
     : {{PAHistogramContribution/bucket}}
     :: |bucket|
