@@ -20,6 +20,7 @@ existing API functionalities to support core utility and compatibility needs._
     - [Small ID space by default, but configurable](#small-id-space-by-default-but-configurable)
     - [Backwards compatibility](#backwards-compatibility)
     - [One ID per contribution](#one-id-per-contribution)
+    - [Initial launch requires debug mode](#initial-launch-requires-debug-mode)
 - [Possible future extension: batching ID in the shared_info](#possible-future-extension-batching-id-in-the-shared_info)
   - [Use case examples](#use-case-examples-1)
     - [Processing contributions at different cadences](#processing-contributions-at-different-cadences-2)
@@ -221,6 +222,29 @@ We plan to allow for a filtering ID to be set individually for each contribution
 in a report's payload. To reduce the impact on payload size, we could consider
 instead limiting the number of distinct filtering IDs per report to a smaller
 number. However, this may pose ergonomic difficulties.
+
+#### Initial launch requires debug mode
+
+In the initial version of this feature, the browser will only upgrade the report
+format/version (to the latest one that supports filtering IDs) when [debug
+mode](https://github.com/patcg-individual-drafts/private-aggregation-api/blob/main/README.md#temporary-debugging-mechanism)
+is enabled and a filtering ID is _explicitly_ set. If debug mode is not enabled,
+any filtering ID specified is ignored.
+
+This avoids a backwards compatibility concern when using older versions of the
+Aggregation Service. The Aggregation Service typically allows its releases to be
+used for up to six months. Currently, there are valid Aggregation Service
+releases that do not support the new report version/format. So, the browser will
+not upgrade the default report version so that existing flows remain unaffected.
+
+If developers explicitly specify filtering IDs, they will need to upgrade their
+Aggregation Service instance to process reports. To avoid any new privacy
+concerns, the browser will also only upgrade the report version if debug mode is
+enabled (for now).
+
+We are planning a later launch to change the default report version and remove
+the debug mode requirement. This will occur after all valid aggregation service
+versions support the new report version.
 
 ## Possible future extension: batching ID in the shared\_info
 
