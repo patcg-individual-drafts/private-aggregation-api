@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-UD" rel="stylesheet">
   <meta content="Bikeshed version d765c696b, updated Fri Mar 8 15:58:52 2024 -0800" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="9a96b2bc62a63cc5e1bc4b0570625caaf4edf6f7" name="revision">
+  <meta content="dbc7f19841efd227730f9731eb0d5904b0191629" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -716,7 +716,7 @@ var[data-var-color="6"] { background-color: #FFBCF2; box-shadow: 0 0 0 2px #FFBC
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2024-03-29">29 March 2024</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2024-04-15">15 April 2024</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -984,7 +984,7 @@ are: </div>
        <p>Set <var>filteringIdByteSize</var> to <var>preSpecifiedParamsMap</var>[<var>batchingScope</var>]'s <a data-link-type="dfn" href="#pre-specified-report-parameters-filtering-id-byte-size" id="ref-for-pre-specified-report-parameters-filtering-id-byte-size">filtering ID byte size</a>.</p>
      </ol>
     <li data-md>
-     <p>If <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid">filteringId</a></code>] is not in the
+     <p>If <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid">filteringId</a></code>"] is not in the
 range [0, 256<sup><var>filteringIdByteSize</var></sup>−1], <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw②">throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-rangeerror" id="ref-for-exceptiondef-rangeerror②">RangeError</a></code>.</p>
     <li data-md>
      <p>Let <var>entry</var> be a new <a data-link-type="dfn" href="#contribution-cache-entry" id="ref-for-contribution-cache-entry">contribution cache entry</a> with the items:</p>
@@ -1724,7 +1724,7 @@ error.</p>
        <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑥">For each</a> <var>contribution</var> of <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-contributions" id="ref-for-aggregatable-report-contributions①"> contributions</a>:</p>
        <ol>
         <li data-md>
-         <p>If <var>contribution</var>[<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid①">filteringId</a></code>] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists⑦"> exists</a>:</p>
+         <p>If <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid①">filteringId</a></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists⑦"> exists</a>:</p>
          <ol>
           <li data-md>
            <p>Set <var>shouldUseNewReportVersion</var> to true.</p>
@@ -1890,14 +1890,22 @@ pairs:</p>
       <li data-md>
        <p>Let <var>filteringIdBitSize</var> be the product of 8 and <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-filtering-id-byte-size" id="ref-for-aggregatable-report-filtering-id-byte-size①">filtering id byte size</a>.</p>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①⑤">Assert</a>: <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid③">filteringId</a></code>"] is
-in the range [0, 2<sup><var>filteringIdBitSize</var></sup>−1].</p>
+       <p>Let <var>filteringId</var> be 0.</p>
+      <li data-md>
+       <p>If <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid③">filteringId</a></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists⑧">exists</a>:</p>
+       <ol>
+        <li data-md>
+         <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①⑤">Assert</a>: <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid④">filteringId</a></code>"]
+is in the range [0, 2<sup><var>filteringIdBitSize</var></sup>−1].</p>
+        <li data-md>
+         <p>Set <var>filteringId</var> to <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid⑤">filteringId</a></code>"].</p>
+       </ol>
       <li data-md>
        <p>If <var>shouldUseNewReportVersion</var>:</p>
        <ol>
         <li data-md>
          <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-set" id="ref-for-map-set⑦">Set</a> <var>contributionData</var>["<code>id</code>"] to the result of <a data-link-type="dfn" href="#encode-an-integer-for-the-payload" id="ref-for-encode-an-integer-for-the-payload②">encoding an
-integer for the payload</a> given <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid④">filteringId</a></code>"] and <var>filteringIdBitSize</var>.</p>
+integer for the payload</a> given <var>filteringId</var> and <var>filteringIdBitSize</var>.</p>
          <p class="issue" id="issue-fda1ec2d"><a class="self-link" href="#issue-fda1ec2d"></a> Be consistent about bytes or bits as units here.</p>
        </ol>
        <p class="issue" id="issue-222c62f7"><a class="self-link" href="#issue-222c62f7"></a> Be consistent about if boolean vs if boolean is true.</p>
@@ -2028,11 +2036,11 @@ Methods</a>":</p>
 steps. They return an <a data-link-type="dfn" href="#aggregation-coordinator" id="ref-for-aggregation-coordinator⑨">aggregation coordinator</a>, null or a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException④">DOMException</a></code>:</p>
    <ol>
     <li data-md>
-     <p>If <var>options</var>["<code>privateAggregationConfig</code>"] does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists⑧">exist</a>, return
+     <p>If <var>options</var>["<code>privateAggregationConfig</code>"] does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists⑨">exist</a>, return
 null.</p>
     <li data-md>
      <p>If <var>options</var>["<code>privateAggregationConfig</code>"]["<code>aggregatonCoordinatorOrigin</code>"]
-does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists⑨">exist</a>, return null.</p>
+does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⓪">exist</a>, return null.</p>
     <li data-md>
      <p>Let <var>url</var> be the result of running the <a data-link-type="dfn" href="https://url.spec.whatwg.org/#concept-url-parser" id="ref-for-concept-url-parser②">URL parser</a> on <var>options</var>["<code>privateAggregationConfig</code>"]["<code>aggregatonCoordinatorOrigin</code>"].</p>
     <li data-md>
@@ -2052,17 +2060,17 @@ steps. They return a <a data-link-type="dfn" href="#pre-specified-report-paramet
    <ol>
     <li data-md>
      <p>If <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig" id="ref-for-dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig">privateAggregationConfig</a></code>"]
-does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⓪">exist</a>, return null.</p>
+does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①①">exist</a>, return null.</p>
     <li data-md>
      <p>Let <var>contextId</var> be null.</p>
     <li data-md>
-     <p>If <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig" id="ref-for-dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig①">privateAggregationConfig</a></code>"]["<code class="idl"><a data-link-type="idl" href="#dom-sharedstorageprivateaggregationconfig-contextid" id="ref-for-dom-sharedstorageprivateaggregationconfig-contextid">contextId</a></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①①">exists</a>, set <var>contextId</var> to <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig" id="ref-for-dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig②">privateAggregationConfig</a></code>"]["<code class="idl"><a data-link-type="idl" href="#dom-sharedstorageprivateaggregationconfig-contextid" id="ref-for-dom-sharedstorageprivateaggregationconfig-contextid①">contextId</a></code>"].</p>
+     <p>If <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig" id="ref-for-dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig①">privateAggregationConfig</a></code>"]["<code class="idl"><a data-link-type="idl" href="#dom-sharedstorageprivateaggregationconfig-contextid" id="ref-for-dom-sharedstorageprivateaggregationconfig-contextid">contextId</a></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①②">exists</a>, set <var>contextId</var> to <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig" id="ref-for-dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig②">privateAggregationConfig</a></code>"]["<code class="idl"><a data-link-type="idl" href="#dom-sharedstorageprivateaggregationconfig-contextid" id="ref-for-dom-sharedstorageprivateaggregationconfig-contextid①">contextId</a></code>"].</p>
     <li data-md>
      <p>If <var>contextId</var>’s <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string-length" id="ref-for-string-length①">length</a> is greater than 64, return a new <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException⑧">DOMException</a></code> with name "<code>DataError</code>".</p>
     <li data-md>
      <p>Let <var>filteringIdByteSize</var> be 1.</p>
     <li data-md>
-     <p>If <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig" id="ref-for-dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig③">privateAggregationConfig</a></code>"]["<code class="idl"><a data-link-type="idl" href="#dom-sharedstorageprivateaggregationconfig-filteringidbytesize" id="ref-for-dom-sharedstorageprivateaggregationconfig-filteringidbytesize">filteringIdByteSize</a></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①②">exists</a>, set <var>filteringIdByteSize</var> to <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig" id="ref-for-dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig④">privateAggregationConfig</a></code>"]["<code class="idl"><a data-link-type="idl" href="#dom-sharedstorageprivateaggregationconfig-filteringidbytesize" id="ref-for-dom-sharedstorageprivateaggregationconfig-filteringidbytesize①">filteringIdByteSize</a></code>"].</p>
+     <p>If <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig" id="ref-for-dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig③">privateAggregationConfig</a></code>"]["<code class="idl"><a data-link-type="idl" href="#dom-sharedstorageprivateaggregationconfig-filteringidbytesize" id="ref-for-dom-sharedstorageprivateaggregationconfig-filteringidbytesize">filteringIdByteSize</a></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①③">exists</a>, set <var>filteringIdByteSize</var> to <var>options</var>["<code class="idl"><a data-link-type="idl" href="#dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig" id="ref-for-dom-sharedstoragerunoperationmethodoptions-privateaggregationconfig④">privateAggregationConfig</a></code>"]["<code class="idl"><a data-link-type="idl" href="#dom-sharedstorageprivateaggregationconfig-filteringidbytesize" id="ref-for-dom-sharedstorageprivateaggregationconfig-filteringidbytesize①">filteringIdByteSize</a></code>"].</p>
     <li data-md>
      <p>If <var>filteringIdByteSize</var> is less than 1 or more than 8, return a new <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException⑨">DOMException</a></code> with name "<code>DataError</code>".</p>
     <li data-md>
@@ -2327,6 +2335,7 @@ only one can be currently executing.</p>
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-paextendedhistogramcontribution"><code><c- g>PAExtendedHistogramContribution</c-></code></dfn> {
   <c- b>required</c-> (<a data-link-type="idl-name" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue"><c- n>PASignalValue</c-></a> <c- b>or</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint④"><c- b>bigint</c-></a>) <dfn class="dfn-paneled idl-code" data-dfn-for="PAExtendedHistogramContribution" data-dfn-type="dict-member" data-export data-type="(PASignalValue or bigint)" id="dom-paextendedhistogramcontribution-bucket"><code><c- g>bucket</c-></code></dfn>;
   <c- b>required</c-> (<a data-link-type="idl-name" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue①"><c- n>PASignalValue</c-></a> <c- b>or</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long③"><c- b>long</c-></a>) <dfn class="dfn-paneled idl-code" data-dfn-for="PAExtendedHistogramContribution" data-dfn-type="dict-member" data-export data-type="(PASignalValue or long)" id="dom-paextendedhistogramcontribution-value"><code><c- g>value</c-></code></dfn>;
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint⑤"><c- b>bigint</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="PAExtendedHistogramContribution" data-dfn-type="dict-member" data-export data-type="bigint" id="dom-paextendedhistogramcontribution-filteringid"><code><c- g>filteringId</c-></code></dfn>;
 };
 
 [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed" id="ref-for-Exposed①"><c- g>Exposed</c-></a>=<c- n>InterestGroupScriptRunnerGlobalScope</c->, <a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#SecureContext" id="ref-for-SecureContext①"><c- g>SecureContext</c-></a>]
@@ -2336,7 +2345,7 @@ only one can be currently executing.</p>
 };
 
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-auctionreportbuyersconfig"><code><c- g>AuctionReportBuyersConfig</c-></code></dfn> {
-  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint⑤"><c- b>bigint</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AuctionReportBuyersConfig" data-dfn-type="dict-member" data-export data-type="bigint" id="dom-auctionreportbuyersconfig-bucket"><code><c- g>bucket</c-></code></dfn>;
+  <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint⑥"><c- b>bigint</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AuctionReportBuyersConfig" data-dfn-type="dict-member" data-export data-type="bigint" id="dom-auctionreportbuyersconfig-bucket"><code><c- g>bucket</c-></code></dfn>;
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-double" id="ref-for-idl-double①"><c- b>double</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AuctionReportBuyersConfig" data-dfn-type="dict-member" data-export data-type="double" id="dom-auctionreportbuyersconfig-scale"><code><c- g>scale</c-></code></dfn>;
 };
 
@@ -2344,11 +2353,11 @@ only one can be currently executing.</p>
   <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-boolean" id="ref-for-idl-boolean"><c- b>boolean</c-></a> <dfn class="dfn-paneled idl-code" data-default="false" data-dfn-for="AuctionReportBuyerDebugModeConfig" data-dfn-type="dict-member" data-export data-type="boolean" id="dom-auctionreportbuyerdebugmodeconfig-enabled"><code><c- g>enabled</c-></code></dfn> = <c- b>false</c->;
 
   // Must only be provided if `enabled` is true.
-  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint⑥"><c- b>bigint</c-></a>? <dfn class="dfn-paneled idl-code" data-dfn-for="AuctionReportBuyerDebugModeConfig" data-dfn-type="dict-member" data-export data-type="bigint?" id="dom-auctionreportbuyerdebugmodeconfig-debugkey"><code><c- g>debugKey</c-></code></dfn>;
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint⑦"><c- b>bigint</c-></a>? <dfn class="dfn-paneled idl-code" data-dfn-for="AuctionReportBuyerDebugModeConfig" data-dfn-type="dict-member" data-export data-type="bigint?" id="dom-auctionreportbuyerdebugmodeconfig-debugkey"><code><c- g>debugKey</c-></code></dfn>;
 };
 
 <c- b>partial</c-> <c- b>dictionary</c-> <a class="idl-code" data-link-type="dictionary" href="https://wicg.github.io/turtledove/#dictdef-auctionadconfig" id="ref-for-dictdef-auctionadconfig"><c- g>AuctionAdConfig</c-></a> {
-  <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#idl-sequence" id="ref-for-idl-sequence"><c- b>sequence</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint⑦"><c- b>bigint</c-></a>> <dfn class="dfn-paneled idl-code" data-dfn-for="AuctionAdConfig" data-dfn-type="dict-member" data-export data-type="sequence<bigint>" id="dom-auctionadconfig-auctionreportbuyerkeys"><code><c- g>auctionReportBuyerKeys</c-></code></dfn>;
+  <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#idl-sequence" id="ref-for-idl-sequence"><c- b>sequence</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint⑧"><c- b>bigint</c-></a>> <dfn class="dfn-paneled idl-code" data-dfn-for="AuctionAdConfig" data-dfn-type="dict-member" data-export data-type="sequence<bigint>" id="dom-auctionadconfig-auctionreportbuyerkeys"><code><c- g>auctionReportBuyerKeys</c-></code></dfn>;
   <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#idl-record" id="ref-for-idl-record"><c- b>record</c-></a>&lt;<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString②"><c- b>DOMString</c-></a>, <a data-link-type="idl-name" href="#dictdef-auctionreportbuyersconfig" id="ref-for-dictdef-auctionreportbuyersconfig"><c- n>AuctionReportBuyersConfig</c-></a>> <dfn class="dfn-paneled idl-code" data-dfn-for="AuctionAdConfig" data-dfn-type="dict-member" data-export data-type="record<DOMString, AuctionReportBuyersConfig>" id="dom-auctionadconfig-auctionreportbuyers"><code><c- g>auctionReportBuyers</c-></code></dfn>;
   <a data-link-type="idl-name" href="#dictdef-auctionreportbuyerdebugmodeconfig" id="ref-for-dictdef-auctionreportbuyerdebugmodeconfig"><c- n>AuctionReportBuyerDebugModeConfig</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="AuctionAdConfig" data-dfn-type="dict-member" data-export data-type="AuctionReportBuyerDebugModeConfig" id="dom-auctionadconfig-auctionreportbuyerdebugmodeconfig"><code><c- g>auctionReportBuyerDebugModeConfig</c-></code></dfn>;
 };
@@ -2377,7 +2386,7 @@ return.</p>
        <p>If <var>bucket</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-basevalue" id="ref-for-dom-pasignalvalue-basevalue">baseValue</a></code>"] is not a valid <a data-link-type="dfn" href="#signal-base-value" id="ref-for-signal-base-value">signal base
 value</a>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw⑦">throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror">TypeError</a></code>.</p>
       <li data-md>
-       <p>If <var>bucket</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset">offset</a></code>"] is not a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint⑧">bigint</a></code>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw⑧"> throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①">TypeError</a></code>.</p>
+       <p>If <var>bucket</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset">offset</a></code>"] is not a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint⑨">bigint</a></code>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw⑧"> throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror①">TypeError</a></code>.</p>
      </ol>
     <li data-md>
      <p>Otherwise, if <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-bucket" id="ref-for-dom-paextendedhistogramcontribution-bucket①">bucket</a></code>"] is
@@ -2392,14 +2401,14 @@ not in the range [0, 2<sup>128</sup>−1], <a data-link-type="dfn" href="https:/
        <p>If <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-basevalue" id="ref-for-dom-pasignalvalue-basevalue①">baseValue</a></code>"] is not a valid <a data-link-type="dfn" href="#signal-base-value" id="ref-for-signal-base-value①">signal base
 value</a>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw①⓪">throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror③">TypeError</a></code>.</p>
       <li data-md>
-       <p>If <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset①">offset</a></code>"] is a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint⑨">bigint</a></code>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw①①"> throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror④">TypeError</a></code>.</p>
+       <p>If <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset①">offset</a></code>"] is a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint①⓪">bigint</a></code>, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw①①"> throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror④">TypeError</a></code>.</p>
      </ol>
     <li data-md>
      <p>Otherwise, if <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value③">value</a></code>"] is
 negative, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw①②">throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror⑤">TypeError</a></code>.</p>
     <li data-md>
-     <p>If <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid⑤">filteringId</a></code>] is not in the
-range [0, 255], <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw①③">throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror⑥">TypeError</a></code>.</p>
+     <p>If <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-filteringid" id="ref-for-dom-paextendedhistogramcontribution-filteringid">filteringId</a></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①④">exists</a> and <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-filteringid" id="ref-for-dom-paextendedhistogramcontribution-filteringid①">filteringId</a></code>"] is not in
+the range [0, 255], <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw①③">throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror⑥">TypeError</a></code>.</p>
      <p class="issue" id="issue-3f41aae0"><a class="self-link" href="#issue-3f41aae0"></a> Make the error types on validation issues here and above consistent
     with <code class="idl"><a data-link-type="idl" href="#dom-privateaggregation-contributetohistogram" id="ref-for-dom-privateaggregation-contributetohistogram②">contributeToHistogram(contribution)</a></code>.</p>
      <p class="note" role="note"><span class="marker">Note:</span> It is not currently possible to set a non-default filtering ID byte
@@ -2439,12 +2448,12 @@ interest group</a> given <var>global</var>.</p>
      <p>Let <var>cacheMap</var> be <var>auctionConfig</var>’s <a data-link-type="dfn" href="#auction-config-per-bid-or-seller-on-event-contribution-cache" id="ref-for-auction-config-per-bid-or-seller-on-event-contribution-cache">per-bid or seller on
 event contribution cache</a>.</p>
     <li data-md>
-     <p>If <var>cacheMap</var>[<var>ig</var>] does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①③">exist</a>, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-set" id="ref-for-map-set⑧">set</a> <var>cacheMap</var>[<var>ig</var>] to
+     <p>If <var>cacheMap</var>[<var>ig</var>] does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⑤">exist</a>, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-set" id="ref-for-map-set⑧">set</a> <var>cacheMap</var>[<var>ig</var>] to
 a new <a data-link-type="dfn" href="#on-event-contribution-cache" id="ref-for-on-event-contribution-cache">on event contribution cache</a>.</p>
     <li data-md>
      <p>Let <var>onEventContributionCache</var> be <var>cacheMap</var>[<var>ig</var>].</p>
     <li data-md>
-     <p>If <var>onEventContributionCache</var>[<var>event</var>] does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①④">exist</a>, set <var>onEventContributionCache</var>[<var>event</var>] to a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①③">list</a>.</p>
+     <p>If <var>onEventContributionCache</var>[<var>event</var>] does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⑥">exist</a>, set <var>onEventContributionCache</var>[<var>event</var>] to a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①③">list</a>.</p>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append⑥">Append</a> <var>entry</var> to <var>onEventContributionCache</var>[<var>event</var>].</p>
    </ol>
@@ -2492,7 +2501,7 @@ coordinator</a>) to a <a data-link-type="dfn" href="#batching-scope" id="ref-for
 coordinator</a>.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="auction config" data-dfn-type="dfn" data-noexport id="auction-config-auction-report-buyer-keys">auction report buyer keys</dfn>
     <dd data-md>
-     <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map①②">map</a> from buyer <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin①②">origins</a> to <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint①⓪">bigint</a></code>s.</p>
+     <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map①②">map</a> from buyer <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin①②">origins</a> to <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint①①">bigint</a></code>s.</p>
     <dt data-md><dfn class="dfn-paneled" data-dfn-for="auction config" data-dfn-type="dfn" data-noexport id="auction-config-auction-report-buyers">auction report buyers</dfn>
     <dd data-md>
      <p>A <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map①③">map</a> from <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string⑨">strings</a> to <code class="idl"><a data-link-type="idl" href="#dictdef-auctionreportbuyersconfig" id="ref-for-dictdef-auctionreportbuyersconfig①">AuctionReportBuyersConfig</a></code>s.</p>
@@ -2607,7 +2616,7 @@ following steps at the end of the scope nested under step 5 ("Validate the given
    <div class="algorithm" data-algorithm="protected-audience-joinadig-monkey-patch">
     <ol start="17">
      <li data-md>
-      <p>If <var>group</var>[<code class="idl"><a data-link-type="idl" href="#dom-auctionadinterestgroup-privateaggregationconfig" id="ref-for-dom-auctionadinterestgroup-privateaggregationconfig">privateAggregationConfig</a></code>] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⑤">exists</a>:</p>
+      <p>If <var>group</var>[<code class="idl"><a data-link-type="idl" href="#dom-auctionadinterestgroup-privateaggregationconfig" id="ref-for-dom-auctionadinterestgroup-privateaggregationconfig">privateAggregationConfig</a></code>] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⑦">exists</a>:</p>
       <ol>
        <li data-md>
         <p>Let <var>aggregationCoordinator</var> be the result of <a data-link-type="dfn" href="#obtain-the-private-aggregation-coordinator" id="ref-for-obtain-the-private-aggregation-coordinator">obtaining the Private
@@ -2642,7 +2651,7 @@ modified to add the following steps just before the last step ("Return <var>auct
    <div class="algorithm" data-algorithm="protected-audience-validate-config-monkey-patch">
     <ol start="31">
      <li data-md>
-      <p>If <var>config</var>["<code><code class="idl"><a data-link-type="idl" href="#dom-auctionadconfig-auctionreportbuyerkeys" id="ref-for-dom-auctionadconfig-auctionreportbuyerkeys">auctionReportBuyerKeys</a></code></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⑥">exists</a>:</p>
+      <p>If <var>config</var>["<code><code class="idl"><a data-link-type="idl" href="#dom-auctionadconfig-auctionreportbuyerkeys" id="ref-for-dom-auctionadconfig-auctionreportbuyerkeys">auctionReportBuyerKeys</a></code></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⑧">exists</a>:</p>
       <ol>
        <li data-md>
         <p>Let <var>interestGroupBuyers</var> be <var>auctionConfig</var>’s <a data-link-type="dfn" href="https://wicg.github.io/turtledove/#auction-config-interest-group-buyers" id="ref-for-auction-config-interest-group-buyers">interest group buyers</a>.</p>
@@ -2667,7 +2676,7 @@ keys</a>[<var>origin</var>] to <var>key</var>.</p>
         </ol>
       </ol>
      <li data-md>
-      <p>If <var>config</var>["<code><code class="idl"><a data-link-type="idl" href="#dom-auctionadconfig-auctionreportbuyers" id="ref-for-dom-auctionadconfig-auctionreportbuyers">auctionReportBuyers</a></code></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⑦"> exists</a>:</p>
+      <p>If <var>config</var>["<code><code class="idl"><a data-link-type="idl" href="#dom-auctionadconfig-auctionreportbuyers" id="ref-for-dom-auctionadconfig-auctionreportbuyers">auctionReportBuyers</a></code></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⑨"> exists</a>:</p>
       <ol>
        <li data-md>
         <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-iterate" id="ref-for-map-iterate①">For each</a> <var>reportType</var> → <var>reportBuyerConfig</var> of <var>config</var>["<code><code class="idl"><a data-link-type="idl" href="#dom-auctionadconfig-auctionreportbuyers" id="ref-for-dom-auctionadconfig-auctionreportbuyers①">auctionReportBuyers</a></code></code>"]:</p>
@@ -2691,7 +2700,7 @@ buyers</a>[<var>reportType</var>] to <var>reportBuyerConfig</var>.</p>
      <li data-md>
       <p>Set <var>auctionConfig</var>’s <a data-link-type="dfn" href="#auction-config-auction-report-buyer-debug-details" id="ref-for-auction-config-auction-report-buyer-debug-details">auction report buyer debug details</a> to a new <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details①⑥">debug details</a>.</p>
      <li data-md>
-      <p>If <var>config</var>[<code class="idl"><a data-link-type="idl" href="#dom-auctionadconfig-auctionreportbuyerdebugmodeconfig" id="ref-for-dom-auctionadconfig-auctionreportbuyerdebugmodeconfig">auctionReportBuyerDebugModeConfig</a></code>] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⑧">exists</a>:</p>
+      <p>If <var>config</var>[<code class="idl"><a data-link-type="idl" href="#dom-auctionadconfig-auctionreportbuyerdebugmodeconfig" id="ref-for-dom-auctionadconfig-auctionreportbuyerdebugmodeconfig">auctionReportBuyerDebugModeConfig</a></code>] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②⓪">exists</a>:</p>
       <ol>
        <li data-md>
         <p>Let <var>debugModeConfig</var> be <var>config</var>[<code class="idl"><a data-link-type="idl" href="#dom-auctionadconfig-auctionreportbuyerdebugmodeconfig" id="ref-for-dom-auctionadconfig-auctionreportbuyerdebugmodeconfig①">auctionReportBuyerDebugModeConfig</a></code>].</p>
@@ -2720,7 +2729,7 @@ details</a> to a new <a data-link-type="dfn" href="#debug-details" id="ref-for-d
         </dl>
       </ol>
      <li data-md>
-      <p>If <var>config</var>[<code class="idl"><a data-link-type="idl" href="#dom-auctionadconfig-privateaggregationconfig" id="ref-for-dom-auctionadconfig-privateaggregationconfig">privateAggregationConfig</a></code>] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①⑨">exists</a>:</p>
+      <p>If <var>config</var>[<code class="idl"><a data-link-type="idl" href="#dom-auctionadconfig-privateaggregationconfig" id="ref-for-dom-auctionadconfig-privateaggregationconfig">privateAggregationConfig</a></code>] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②①">exists</a>:</p>
       <ol>
        <li data-md>
         <p>Let <var>aggregationCoordinator</var> be the result of <a data-link-type="dfn" href="#obtain-the-private-aggregation-coordinator" id="ref-for-obtain-the-private-aggregation-coordinator①">obtaining the Private
@@ -2884,7 +2893,7 @@ the field is not null.</p>
         <p>If <var>value</var> is not a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map①⑤">map</a> whose <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-getting-the-keys" id="ref-for-map-getting-the-keys">keys</a> are <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string①①">strings</a>, jump to
 the step labeled Abort update.</p>
        <li data-md>
-        <p>If <var>value</var>["<code>aggregationCoordinatorOrigin</code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②⓪">exists</a>:</p>
+        <p>If <var>value</var>["<code>aggregationCoordinatorOrigin</code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②②">exists</a>:</p>
         <ol>
          <li data-md>
           <p>If <var>value</var>["<code>aggregationCoordinatorOrigin</code>"] is not a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string①②">string</a>,
@@ -3035,7 +3044,11 @@ items:</p>
           <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value④">value</a></code>
           <dd data-md>
            <p><var>value</var></p>
+          <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid⑥">filteringId</a></code>
+          <dd data-md>
+           <p>0</p>
          </dl>
+         <p class="issue" id="issue-80f84688"><a class="self-link" href="#issue-80f84688"></a> Consider allowing the filtering ID to be set here.</p>
         <li data-md>
          <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-iterate" id="ref-for-map-iterate⑦">For each</a> <var>ig</var> of the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#user-agent" id="ref-for-user-agent①⓪">user agent</a>'s <a data-link-type="dfn" href="https://wicg.github.io/turtledove/#interest-group-set" id="ref-for-interest-group-set①"> interest group set</a> whose <a data-link-type="dfn" href="https://wicg.github.io/turtledove/#interest-group-owner" id="ref-for-interest-group-owner⑤">owner</a> is <var>buyerOrigin</var>:</p>
          <ol>
@@ -3081,7 +3094,7 @@ map</a>.</p>
     <li data-md>
      <p>Let <var>tuple</var> be (<var>origin</var>, <var>aggregationCoordinator</var>).</p>
     <li data-md>
-     <p>If <var>batchingScopeMap</var>[<var>tuple</var>] does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②①">exist</a>:</p>
+     <p>If <var>batchingScopeMap</var>[<var>tuple</var>] does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②③">exist</a>:</p>
      <ol>
       <li data-md>
        <p>Set <var>batchingScopeMap</var>[<var>tuple</var>] to a new <a data-link-type="dfn" href="#batching-scope" id="ref-for-batching-scope①⑦">batching scope</a>.</p>
@@ -3106,7 +3119,8 @@ in the signal value</a> given <var>bucket</var>, 2<sup>128</sup>−1 and <var>le
      <p>If <var>value</var> is a <code class="idl"><a data-link-type="idl" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue⑤">PASignalValue</a></code>, set <var>value</var> to the result of <a data-link-type="dfn" href="#fill-in-the-signal-value" id="ref-for-fill-in-the-signal-value①">filling in
 the signal value</a> given <var>value</var>, 2<sup>31</sup>−1 and <var>leadingBidInfo</var>.</p>
     <li data-md>
-     <p>Return a new <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution①①">PAHistogramContribution</a></code> with the items:</p>
+     <p>Let <var>filledInContribution</var> be a new <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution①①">PAHistogramContribution</a></code> with the
+items:</p>
      <dl>
       <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket④">bucket</a></code>
       <dd data-md>
@@ -3115,6 +3129,14 @@ the signal value</a> given <var>value</var>, 2<sup>31</sup>−1 and <var>leading
       <dd data-md>
        <p><var>value</var></p>
      </dl>
+    <li data-md>
+     <p>If <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-filteringid" id="ref-for-dom-paextendedhistogramcontribution-filteringid②">filteringId</a></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②④">exists</a>:</p>
+     <ol>
+      <li data-md>
+       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-set" id="ref-for-map-set①①">Set</a> <var>filledInContribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid⑦">filteringId</a></code>"] to <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-filteringid" id="ref-for-dom-paextendedhistogramcontribution-filteringid③">filteringId</a></code>"].</p>
+     </ol>
+    <li data-md>
+     <p>Return <var>filledInContribution</var>.</p>
    </ol>
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="fill-in-the-signal-value">fill in the signal value</dfn> given a <code class="idl"><a data-link-type="idl" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue⑥">PASignalValue</a></code> <var>value</var>, an
 integer <var>maxAllowed</var> and a <a data-link-type="dfn" href="https://wicg.github.io/turtledove/#leading-bid-info" id="ref-for-leading-bid-info②">leading bid info</a> <var>leadingBidInfo</var>, perform the following steps. They return an integer.</p>
@@ -3125,13 +3147,13 @@ value</a>.</p>
     <li data-md>
      <p>Let <var>returnValue</var> be the result of <a data-link-type="dfn" href="#determine-a-signals-numeric-value" id="ref-for-determine-a-signals-numeric-value①">determining a signal’s numeric value</a> given <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-basevalue" id="ref-for-dom-pasignalvalue-basevalue③">baseValue</a></code>"] and <var>leadingBidInfo</var>.</p>
     <li data-md>
-     <p>If <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-scale" id="ref-for-dom-pasignalvalue-scale">scale</a></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②②">exists</a>, set <var>returnValue</var> to
+     <p>If <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-scale" id="ref-for-dom-pasignalvalue-scale">scale</a></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②⑤">exists</a>, set <var>returnValue</var> to
 the result of multiplying <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-scale" id="ref-for-dom-pasignalvalue-scale①">scale</a></code>"] with <var>returnValue</var>.</p>
     <li data-md>
      <p>Set <var>returnValue</var> to the result of converting <var>returnValue</var> to an integer by
 truncating its fractional part.</p>
     <li data-md>
-     <p>If <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset②">offset</a></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②③">exists</a>, set <var>returnValue</var> to
+     <p>If <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset②">offset</a></code>"] <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②⑥">exists</a>, set <var>returnValue</var> to
 the result of adding <var>returnValue</var> to <var>value</var>["<code class="idl"><a data-link-type="idl" href="#dom-pasignalvalue-offset" id="ref-for-dom-pasignalvalue-offset③">offset</a></code>"].</p>
     <li data-md>
      <p>Clamp <var>returnValue</var> to the range [0, <var>maxAllowed</var>] and return the result.</p>
@@ -3256,7 +3278,7 @@ steps. They return an <a data-link-type="dfn" href="#aggregation-coordinator" id
    <ol>
     <li data-md>
      <p>If <var>config</var>["<code class="idl"><a data-link-type="idl" href="#dom-protectedaudienceprivateaggregationconfig-aggregationcoordinatororigin" id="ref-for-dom-protectedaudienceprivateaggregationconfig-aggregationcoordinatororigin">aggregationCoordinatorOrigin</a></code>"]
-does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②④">exist</a>, return null.</p>
+does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists②⑦">exist</a>, return null.</p>
     <li data-md>
      <p>Return the result of <a data-link-type="dfn" href="#obtain-the-private-aggregation-coordinator-from-a-string" id="ref-for-obtain-the-private-aggregation-coordinator-from-a-string①">obtaining the Private Aggregation coordinator</a> given <var>config</var>["<code class="idl"><a data-link-type="idl" href="#dom-protectedaudienceprivateaggregationconfig-aggregationcoordinatororigin" id="ref-for-dom-protectedaudienceprivateaggregationconfig-aggregationcoordinatororigin①">aggregationCoordinatorOrigin</a></code>"].</p>
    </ol>
@@ -3579,7 +3601,12 @@ to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encry
    <li><a href="#encrypt-the-payload">encrypt the payload</a><span>, in § 8.4</span>
    <li><a href="#fill-in-the-contribution">fill in the contribution</a><span>, in § 11.5</span>
    <li><a href="#fill-in-the-signal-value">fill in the signal value</a><span>, in § 11.5</span>
-   <li><a href="#dom-pahistogramcontribution-filteringid">filteringId</a><span>, in § 2</span>
+   <li>
+    filteringId
+    <ul>
+     <li><a href="#dom-paextendedhistogramcontribution-filteringid">dict-member for PAExtendedHistogramContribution</a><span>, in § 11.1</span>
+     <li><a href="#dom-pahistogramcontribution-filteringid">dict-member for PAHistogramContribution</a><span>, in § 2</span>
+    </ul>
    <li>
     filtering ID byte size
     <ul>
@@ -4041,6 +4068,7 @@ to be returned by <a data-link-type="dfn" href="#obtain-the-public-key-for-encry
 <c- b>dictionary</c-> <a href="#dictdef-paextendedhistogramcontribution"><code><c- g>PAExtendedHistogramContribution</c-></code></a> {
   <c- b>required</c-> (<a data-link-type="idl-name" href="#dictdef-pasignalvalue"><c- n>PASignalValue</c-></a> <c- b>or</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint"><c- b>bigint</c-></a>) <a data-type="(PASignalValue or bigint)" href="#dom-paextendedhistogramcontribution-bucket"><code><c- g>bucket</c-></code></a>;
   <c- b>required</c-> (<a data-link-type="idl-name" href="#dictdef-pasignalvalue"><c- n>PASignalValue</c-></a> <c- b>or</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-long"><c- b>long</c-></a>) <a data-type="(PASignalValue or long)" href="#dom-paextendedhistogramcontribution-value"><code><c- g>value</c-></code></a>;
+  <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint"><c- b>bigint</c-></a> <a data-type="bigint" href="#dom-paextendedhistogramcontribution-filteringid"><code><c- g>filteringId</c-></code></a>;
 };
 
 [<a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#Exposed"><c- g>Exposed</c-></a>=<c- n>InterestGroupScriptRunnerGlobalScope</c->, <a class="idl-code" data-link-type="extended-attribute" href="https://webidl.spec.whatwg.org/#SecureContext"><c- g>SecureContext</c-></a>]
@@ -4149,6 +4177,7 @@ origin</a> concept used by the Attribution Reporting API here and elsewhere. <a 
     event</a>. <a class="issue-return" href="#issue-c54b92f8" title="Jump to section">↵</a></div>
    <div class="issue"> Handle overflow here or in validation. See <a href="https://github.com/WICG/turtledove/issues/1040"> protected-audience/1040</a>. <a class="issue-return" href="#issue-2593d8e1" title="Jump to section">↵</a></div>
    <div class="issue"> More formally spec the values here. <a class="issue-return" href="#issue-af95efe2" title="Jump to section">↵</a></div>
+   <div class="issue"> Consider allowing the filtering ID to be set here. <a class="issue-return" href="#issue-80f84688" title="Jump to section">↵</a></div>
    <div class="issue"> Align behavior with seller capabilities handling once <a href="https://github.com/WICG/turtledove/issues/966"> protected-audience/966</a> is resolved. <a class="issue-return" href="#issue-c6ba2539" title="Jump to section">↵</a></div>
    <div class="issue"> Verify interaction with component auctions. <a class="issue-return" href="#issue-c1e53695" title="Jump to section">↵</a></div>
    <div class="issue"> Use <code>[=map/For each=]</code> where possible. <a class="issue-return" href="#issue-6c500be3" title="Jump to section">↵</a></div>
@@ -4370,10 +4399,10 @@ let dfnPanelData = {
 "079b4ff9": {"dfnID":"079b4ff9","dfnText":"bid","external":true,"refSections":[{"refs":[{"id":"ref-for-generated-bid-bid"},{"id":"ref-for-generated-bid-bid\u2460"}],"title":"11.5. New algorithms"}],"url":"https://wicg.github.io/turtledove/#generated-bid-bid"},
 "086e3aff": {"dfnID":"086e3aff","dfnText":"origin","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-origin"}],"title":"4.6. Aggregatable report"},{"refs":[{"id":"ref-for-concept-origin\u2460"}],"title":"4.7. Aggregation coordinator"},{"refs":[{"id":"ref-for-concept-origin\u2461"},{"id":"ref-for-concept-origin\u2462"}],"title":"6. Implementation-defined values"},{"refs":[{"id":"ref-for-concept-origin\u2463"},{"id":"ref-for-concept-origin\u2464"},{"id":"ref-for-concept-origin\u2465"}],"title":"8.1. Exported algorithms"},{"refs":[{"id":"ref-for-concept-origin\u2466"},{"id":"ref-for-concept-origin\u2467"},{"id":"ref-for-concept-origin\u2468"}],"title":"8.2. Scheduling reports"},{"refs":[{"id":"ref-for-concept-origin\u2460\u24ea"}],"title":"8.3. Sending reports"},{"refs":[{"id":"ref-for-concept-origin\u2460\u2460"},{"id":"ref-for-concept-origin\u2460\u2461"}],"title":"11.3.1. Extending auction config"},{"refs":[{"id":"ref-for-concept-origin\u2460\u2462"}],"title":"11.5. New algorithms"},{"refs":[{"id":"ref-for-concept-origin\u2460\u2463"},{"id":"ref-for-concept-origin\u2460\u2464"},{"id":"ref-for-concept-origin\u2460\u2465"},{"id":"ref-for-concept-origin\u2460\u2466"}],"title":"13.1. Same-origin policy"}],"url":"https://html.spec.whatwg.org/multipage/browsers.html#concept-origin"},
 "09daa25c": {"dfnID":"09daa25c","dfnText":"extension commands","external":true,"refSections":[{"refs":[{"id":"ref-for-dfn-extension-commands"}],"title":"9. User-agent automation"}],"url":"https://w3c.github.io/webdriver/#dfn-extension-commands"},
-"0e6b2056": {"dfnID":"0e6b2056","dfnText":"set (for map)","external":true,"refSections":[{"refs":[{"id":"ref-for-map-set"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-map-set\u2460"},{"id":"ref-for-map-set\u2461"},{"id":"ref-for-map-set\u2462"}],"title":"8.1. Exported algorithms"},{"refs":[{"id":"ref-for-map-set\u2463"},{"id":"ref-for-map-set\u2464"},{"id":"ref-for-map-set\u2465"},{"id":"ref-for-map-set\u2466"}],"title":"8.4. Serializing reports"},{"refs":[{"id":"ref-for-map-set\u2467"}],"title":"11.1. New WebIDL"},{"refs":[{"id":"ref-for-map-set\u2468"},{"id":"ref-for-map-set\u2460\u24ea"}],"title":"11.4. Algorithm modifications"}],"url":"https://infra.spec.whatwg.org/#map-set"},
+"0e6b2056": {"dfnID":"0e6b2056","dfnText":"set (for map)","external":true,"refSections":[{"refs":[{"id":"ref-for-map-set"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-map-set\u2460"},{"id":"ref-for-map-set\u2461"},{"id":"ref-for-map-set\u2462"}],"title":"8.1. Exported algorithms"},{"refs":[{"id":"ref-for-map-set\u2463"},{"id":"ref-for-map-set\u2464"},{"id":"ref-for-map-set\u2465"},{"id":"ref-for-map-set\u2466"}],"title":"8.4. Serializing reports"},{"refs":[{"id":"ref-for-map-set\u2467"}],"title":"11.1. New WebIDL"},{"refs":[{"id":"ref-for-map-set\u2468"},{"id":"ref-for-map-set\u2460\u24ea"}],"title":"11.4. Algorithm modifications"},{"refs":[{"id":"ref-for-map-set\u2460\u2460"}],"title":"11.5. New algorithms"}],"url":"https://infra.spec.whatwg.org/#map-set"},
 "0e8de730": {"dfnID":"0e8de730","dfnText":"tuple","external":true,"refSections":[{"refs":[{"id":"ref-for-tuple"},{"id":"ref-for-tuple\u2460"}],"title":"8.4. Serializing reports"},{"refs":[{"id":"ref-for-tuple\u2461"}],"title":"11.3.1. Extending auction config"}],"url":"https://infra.spec.whatwg.org/#tuple"},
 "0fa357c3": {"dfnID":"0fa357c3","dfnText":"length","external":true,"refSections":[{"refs":[{"id":"ref-for-string-length"}],"title":"8.1. Exported algorithms"},{"refs":[{"id":"ref-for-string-length\u2460"}],"title":"10. Shared Storage API monkey patches"},{"refs":[{"id":"ref-for-string-length\u2461"}],"title":"11.4. Algorithm modifications"}],"url":"https://infra.spec.whatwg.org/#string-length"},
-"1243a891": {"dfnID":"1243a891","dfnText":"exist","external":true,"refSections":[{"refs":[{"id":"ref-for-map-exists"},{"id":"ref-for-map-exists\u2460"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-map-exists\u2461"},{"id":"ref-for-map-exists\u2462"},{"id":"ref-for-map-exists\u2463"},{"id":"ref-for-map-exists\u2464"},{"id":"ref-for-map-exists\u2465"}],"title":"8.1. Exported algorithms"},{"refs":[{"id":"ref-for-map-exists\u2466"}],"title":"8.4. Serializing reports"},{"refs":[{"id":"ref-for-map-exists\u2467"},{"id":"ref-for-map-exists\u2468"},{"id":"ref-for-map-exists\u2460\u24ea"},{"id":"ref-for-map-exists\u2460\u2460"},{"id":"ref-for-map-exists\u2460\u2461"}],"title":"10. Shared Storage API monkey patches"},{"refs":[{"id":"ref-for-map-exists\u2460\u2462"},{"id":"ref-for-map-exists\u2460\u2463"}],"title":"11.1. New WebIDL"},{"refs":[{"id":"ref-for-map-exists\u2460\u2464"},{"id":"ref-for-map-exists\u2460\u2465"},{"id":"ref-for-map-exists\u2460\u2466"},{"id":"ref-for-map-exists\u2460\u2467"},{"id":"ref-for-map-exists\u2460\u2468"},{"id":"ref-for-map-exists\u2461\u24ea"}],"title":"11.4. Algorithm modifications"},{"refs":[{"id":"ref-for-map-exists\u2461\u2460"},{"id":"ref-for-map-exists\u2461\u2461"},{"id":"ref-for-map-exists\u2461\u2462"},{"id":"ref-for-map-exists\u2461\u2463"}],"title":"11.5. New algorithms"}],"url":"https://infra.spec.whatwg.org/#map-exists"},
+"1243a891": {"dfnID":"1243a891","dfnText":"exist","external":true,"refSections":[{"refs":[{"id":"ref-for-map-exists"},{"id":"ref-for-map-exists\u2460"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-map-exists\u2461"},{"id":"ref-for-map-exists\u2462"},{"id":"ref-for-map-exists\u2463"},{"id":"ref-for-map-exists\u2464"},{"id":"ref-for-map-exists\u2465"}],"title":"8.1. Exported algorithms"},{"refs":[{"id":"ref-for-map-exists\u2466"},{"id":"ref-for-map-exists\u2467"}],"title":"8.4. Serializing reports"},{"refs":[{"id":"ref-for-map-exists\u2468"},{"id":"ref-for-map-exists\u2460\u24ea"},{"id":"ref-for-map-exists\u2460\u2460"},{"id":"ref-for-map-exists\u2460\u2461"},{"id":"ref-for-map-exists\u2460\u2462"}],"title":"10. Shared Storage API monkey patches"},{"refs":[{"id":"ref-for-map-exists\u2460\u2463"},{"id":"ref-for-map-exists\u2460\u2464"},{"id":"ref-for-map-exists\u2460\u2465"}],"title":"11.1. New WebIDL"},{"refs":[{"id":"ref-for-map-exists\u2460\u2466"},{"id":"ref-for-map-exists\u2460\u2467"},{"id":"ref-for-map-exists\u2460\u2468"},{"id":"ref-for-map-exists\u2461\u24ea"},{"id":"ref-for-map-exists\u2461\u2460"},{"id":"ref-for-map-exists\u2461\u2461"}],"title":"11.4. Algorithm modifications"},{"refs":[{"id":"ref-for-map-exists\u2461\u2462"},{"id":"ref-for-map-exists\u2461\u2463"},{"id":"ref-for-map-exists\u2461\u2464"},{"id":"ref-for-map-exists\u2461\u2465"},{"id":"ref-for-map-exists\u2461\u2466"}],"title":"11.5. New algorithms"}],"url":"https://infra.spec.whatwg.org/#map-exists"},
 "1570624a": {"dfnID":"1570624a","dfnText":"default allowlist","external":true,"refSections":[{"refs":[{"id":"ref-for-policy-controlled-feature-default-allowlist"}],"title":"7. Permissions Policy integration"}],"url":"https://w3c.github.io/webappsec-permissions-policy/#policy-controlled-feature-default-allowlist"},
 "15e48c39": {"dfnID":"15e48c39","dfnText":"set","external":true,"refSections":[{"refs":[{"id":"ref-for-ordered-set"},{"id":"ref-for-ordered-set\u2460"}],"title":"6. Implementation-defined values"}],"url":"https://infra.spec.whatwg.org/#ordered-set"},
 "168f1b6e": {"dfnID":"168f1b6e","dfnText":"global object","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-realm-global"}],"title":"11.4. Algorithm modifications"}],"url":"https://html.spec.whatwg.org/multipage/webappapis.html#concept-realm-global"},
@@ -4522,7 +4551,7 @@ let dfnPanelData = {
 "batching-scope": {"dfnID":"batching-scope","dfnText":"4.1. Batching scope","external":false,"refSections":[{"refs":[{"id":"ref-for-batching-scope"}],"title":"3. Exposing to global scopes"},{"refs":[{"id":"ref-for-batching-scope"}],"title":"4.1. Batching scope"},{"refs":[{"id":"ref-for-batching-scope\u2460"}],"title":"4.3. Scoping details"},{"refs":[{"id":"ref-for-batching-scope\u2461"}],"title":"4.5. Contribution cache entry"},{"refs":[{"id":"ref-for-batching-scope\u2462"},{"id":"ref-for-batching-scope\u2463"}],"title":"5. Storage"},{"refs":[{"id":"ref-for-batching-scope\u2464"},{"id":"ref-for-batching-scope\u2465"},{"id":"ref-for-batching-scope\u2466"}],"title":"8.1. Exported algorithms"},{"refs":[{"id":"ref-for-batching-scope\u2467"},{"id":"ref-for-batching-scope\u2468"},{"id":"ref-for-batching-scope\u2460\u24ea"}],"title":"10. Shared Storage API monkey patches"},{"refs":[{"id":"ref-for-batching-scope\u2460\u2460"}],"title":"11.1. New WebIDL"},{"refs":[{"id":"ref-for-batching-scope\u2460\u2461"},{"id":"ref-for-batching-scope\u2460\u2462"}],"title":"11.3.1. Extending auction config"},{"refs":[{"id":"ref-for-batching-scope\u2460\u2463"}],"title":"11.3.6. On event contribution cache entry"},{"refs":[{"id":"ref-for-batching-scope\u2460\u2464"},{"id":"ref-for-batching-scope\u2460\u2465"},{"id":"ref-for-batching-scope\u2460\u2466"}],"title":"11.5. New algorithms"},{"refs":[{"id":"ref-for-batching-scope\u2460\u2467"}],"title":"12.2. Clearing site data"}],"url":"#batching-scope"},
 "bb4c269e": {"dfnID":"bb4c269e","dfnText":"error","external":true,"refSections":[{"refs":[{"id":"ref-for-dfn-error"},{"id":"ref-for-dfn-error\u2460"}],"title":"9.1. Set local testing mode"}],"url":"https://w3c.github.io/webdriver/#dfn-error"},
 "bd2fe71e": {"dfnID":"bd2fe71e","dfnText":"processresponse","external":true,"refSections":[{"refs":[{"id":"ref-for-process-response"}],"title":"8.3. Sending reports"}],"url":"https://fetch.spec.whatwg.org/#process-response"},
-"bdcd112d": {"dfnID":"bdcd112d","dfnText":"bigint","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-bigint"},{"id":"ref-for-idl-bigint\u2460"},{"id":"ref-for-idl-bigint\u2461"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-idl-bigint\u2462"},{"id":"ref-for-idl-bigint\u2463"},{"id":"ref-for-idl-bigint\u2464"},{"id":"ref-for-idl-bigint\u2465"},{"id":"ref-for-idl-bigint\u2466"},{"id":"ref-for-idl-bigint\u2467"},{"id":"ref-for-idl-bigint\u2468"}],"title":"11.1. New WebIDL"},{"refs":[{"id":"ref-for-idl-bigint\u2460\u24ea"}],"title":"11.3.1. Extending auction config"}],"url":"https://webidl.spec.whatwg.org/#idl-bigint"},
+"bdcd112d": {"dfnID":"bdcd112d","dfnText":"bigint","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-bigint"},{"id":"ref-for-idl-bigint\u2460"},{"id":"ref-for-idl-bigint\u2461"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-idl-bigint\u2462"},{"id":"ref-for-idl-bigint\u2463"},{"id":"ref-for-idl-bigint\u2464"},{"id":"ref-for-idl-bigint\u2465"},{"id":"ref-for-idl-bigint\u2466"},{"id":"ref-for-idl-bigint\u2467"},{"id":"ref-for-idl-bigint\u2468"},{"id":"ref-for-idl-bigint\u2460\u24ea"}],"title":"11.1. New WebIDL"},{"refs":[{"id":"ref-for-idl-bigint\u2460\u2460"}],"title":"11.3.1. Extending auction config"}],"url":"https://webidl.spec.whatwg.org/#idl-bigint"},
 "be5dbc8c": {"dfnID":"be5dbc8c","dfnText":"unix epoch","external":true,"refSections":[{"refs":[{"id":"ref-for-dfn-unix-epoch"}],"title":"8.4. Serializing reports"}],"url":"https://w3c.github.io/hr-time/#dfn-unix-epoch"},
 "bfc48225": {"dfnID":"bfc48225","dfnText":"read only","external":true,"refSections":[{"refs":[{"id":"ref-for-dfn-read-only"}],"title":"3. Exposing to global scopes"}],"url":"https://webidl.spec.whatwg.org/#dfn-read-only"},
 "c0199225": {"dfnID":"c0199225","dfnText":"AuctionAdInterestGroup","external":true,"refSections":[{"refs":[{"id":"ref-for-dictdef-auctionadinterestgroup"},{"id":"ref-for-dictdef-auctionadinterestgroup\u2460"}],"title":"11.2. WebIDL modifications"}],"url":"https://wicg.github.io/turtledove/#dictdef-auctionadinterestgroup"},
@@ -4584,9 +4613,10 @@ let dfnPanelData = {
 "dom-interestgroupscriptrunnerglobalscope-privateaggregation": {"dfnID":"dom-interestgroupscriptrunnerglobalscope-privateaggregation","dfnText":"privateAggregation","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-interestgroupscriptrunnerglobalscope-privateaggregation"}],"title":"11.1. New WebIDL"},{"refs":[{"id":"ref-for-dom-interestgroupscriptrunnerglobalscope-privateaggregation\u2460"},{"id":"ref-for-dom-interestgroupscriptrunnerglobalscope-privateaggregation\u2461"}],"title":"11.4. Algorithm modifications"}],"url":"#dom-interestgroupscriptrunnerglobalscope-privateaggregation"},
 "dom-padebugmodeoptions-debugkey": {"dfnID":"dom-padebugmodeoptions-debugkey","dfnText":"debugKey","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-padebugmodeoptions-debugkey"},{"id":"ref-for-dom-padebugmodeoptions-debugkey\u2460"},{"id":"ref-for-dom-padebugmodeoptions-debugkey\u2461"}],"title":"2. Exposed interface"}],"url":"#dom-padebugmodeoptions-debugkey"},
 "dom-paextendedhistogramcontribution-bucket": {"dfnID":"dom-paextendedhistogramcontribution-bucket","dfnText":"bucket","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-paextendedhistogramcontribution-bucket"},{"id":"ref-for-dom-paextendedhistogramcontribution-bucket\u2460"}],"title":"11.1. New WebIDL"},{"refs":[{"id":"ref-for-dom-paextendedhistogramcontribution-bucket\u2461"}],"title":"11.5. New algorithms"}],"url":"#dom-paextendedhistogramcontribution-bucket"},
+"dom-paextendedhistogramcontribution-filteringid": {"dfnID":"dom-paextendedhistogramcontribution-filteringid","dfnText":"filteringId","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-paextendedhistogramcontribution-filteringid"},{"id":"ref-for-dom-paextendedhistogramcontribution-filteringid\u2460"}],"title":"11.1. New WebIDL"},{"refs":[{"id":"ref-for-dom-paextendedhistogramcontribution-filteringid\u2461"},{"id":"ref-for-dom-paextendedhistogramcontribution-filteringid\u2462"}],"title":"11.5. New algorithms"}],"url":"#dom-paextendedhistogramcontribution-filteringid"},
 "dom-paextendedhistogramcontribution-value": {"dfnID":"dom-paextendedhistogramcontribution-value","dfnText":"value","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-paextendedhistogramcontribution-value"}],"title":"11.1. New WebIDL"},{"refs":[{"id":"ref-for-dom-paextendedhistogramcontribution-value\u2460"}],"title":"11.5. New algorithms"}],"url":"#dom-paextendedhistogramcontribution-value"},
 "dom-pahistogramcontribution-bucket": {"dfnID":"dom-pahistogramcontribution-bucket","dfnText":"bucket","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-pahistogramcontribution-bucket"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-bucket\u2460"},{"id":"ref-for-dom-pahistogramcontribution-bucket\u2461"}],"title":"8.4. Serializing reports"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-bucket\u2462"},{"id":"ref-for-dom-pahistogramcontribution-bucket\u2463"}],"title":"11.5. New algorithms"}],"url":"#dom-pahistogramcontribution-bucket"},
-"dom-pahistogramcontribution-filteringid": {"dfnID":"dom-pahistogramcontribution-filteringid","dfnText":"filteringId","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-pahistogramcontribution-filteringid"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2460"},{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2461"},{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2462"},{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2463"}],"title":"8.4. Serializing reports"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2464"}],"title":"11.1. New WebIDL"}],"url":"#dom-pahistogramcontribution-filteringid"},
+"dom-pahistogramcontribution-filteringid": {"dfnID":"dom-pahistogramcontribution-filteringid","dfnText":"filteringId","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-pahistogramcontribution-filteringid"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2460"},{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2461"},{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2462"},{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2463"},{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2464"}],"title":"8.4. Serializing reports"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2465"},{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2466"}],"title":"11.5. New algorithms"}],"url":"#dom-pahistogramcontribution-filteringid"},
 "dom-pahistogramcontribution-value": {"dfnID":"dom-pahistogramcontribution-value","dfnText":"value","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-pahistogramcontribution-value"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-value\u2460"},{"id":"ref-for-dom-pahistogramcontribution-value\u2461"}],"title":"8.4. Serializing reports"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-value\u2462"}],"title":"11.1. New WebIDL"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-value\u2463"},{"id":"ref-for-dom-pahistogramcontribution-value\u2464"}],"title":"11.5. New algorithms"}],"url":"#dom-pahistogramcontribution-value"},
 "dom-pasignalvalue-basevalue": {"dfnID":"dom-pasignalvalue-basevalue","dfnText":"baseValue","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-pasignalvalue-basevalue"},{"id":"ref-for-dom-pasignalvalue-basevalue\u2460"}],"title":"11.1. New WebIDL"},{"refs":[{"id":"ref-for-dom-pasignalvalue-basevalue\u2461"},{"id":"ref-for-dom-pasignalvalue-basevalue\u2462"}],"title":"11.5. New algorithms"}],"url":"#dom-pasignalvalue-basevalue"},
 "dom-pasignalvalue-offset": {"dfnID":"dom-pasignalvalue-offset","dfnText":"offset","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-pasignalvalue-offset"},{"id":"ref-for-dom-pasignalvalue-offset\u2460"}],"title":"11.1. New WebIDL"},{"refs":[{"id":"ref-for-dom-pasignalvalue-offset\u2461"},{"id":"ref-for-dom-pasignalvalue-offset\u2462"}],"title":"11.5. New algorithms"}],"url":"#dom-pasignalvalue-offset"},
@@ -5143,6 +5173,7 @@ let refsData = {
 "#dom-interestgroupscriptrunnerglobalscope-privateaggregation": {"export":true,"for_":["InterestGroupScriptRunnerGlobalScope"],"level":"1","normative":true,"shortname":"private-aggregation-api","spec":"private-aggregation-api-1","status":"local","text":"privateAggregation","type":"attribute","url":"#dom-interestgroupscriptrunnerglobalscope-privateaggregation"},
 "#dom-padebugmodeoptions-debugkey": {"export":true,"for_":["PADebugModeOptions"],"level":"1","normative":true,"shortname":"private-aggregation-api","spec":"private-aggregation-api-1","status":"local","text":"debugKey","type":"dict-member","url":"#dom-padebugmodeoptions-debugkey"},
 "#dom-paextendedhistogramcontribution-bucket": {"export":true,"for_":["PAExtendedHistogramContribution"],"level":"1","normative":true,"shortname":"private-aggregation-api","spec":"private-aggregation-api-1","status":"local","text":"bucket","type":"dict-member","url":"#dom-paextendedhistogramcontribution-bucket"},
+"#dom-paextendedhistogramcontribution-filteringid": {"export":true,"for_":["PAExtendedHistogramContribution"],"level":"1","normative":true,"shortname":"private-aggregation-api","spec":"private-aggregation-api-1","status":"local","text":"filteringId","type":"dict-member","url":"#dom-paextendedhistogramcontribution-filteringid"},
 "#dom-paextendedhistogramcontribution-value": {"export":true,"for_":["PAExtendedHistogramContribution"],"level":"1","normative":true,"shortname":"private-aggregation-api","spec":"private-aggregation-api-1","status":"local","text":"value","type":"dict-member","url":"#dom-paextendedhistogramcontribution-value"},
 "#dom-pahistogramcontribution-bucket": {"export":true,"for_":["PAHistogramContribution"],"level":"1","normative":true,"shortname":"private-aggregation-api","spec":"private-aggregation-api-1","status":"local","text":"bucket","type":"dict-member","url":"#dom-pahistogramcontribution-bucket"},
 "#dom-pahistogramcontribution-filteringid": {"export":true,"for_":["PAHistogramContribution"],"level":"1","normative":true,"shortname":"private-aggregation-api","spec":"private-aggregation-api-1","status":"local","text":"filteringId","type":"dict-member","url":"#dom-pahistogramcontribution-filteringid"},
