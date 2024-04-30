@@ -89,6 +89,8 @@ to the aggregation service for processing. The output of that process is a
 summary report containing the (approximate) result, which is dispatched back to
 the reporting origin.
 
+See [the Private Aggregation API specification](https://patcg-individual-drafts.github.io/private-aggregation-api/).
+
 ## Examples
 
 ### Protected Audience reporting
