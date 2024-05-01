@@ -1109,12 +1109,13 @@ be |operationMap|[|name|]." (renumbering later steps as appropriate):
 2. Let |batchingScope| be a new [=batching scope=].
 1. Let <var ignore>debugScope</var> be a new [=debug scope=].
 1. Let |privateAggregationTimeout| be null.
+1. Let |isDeterministicReport| be false.
 1. If |preSpecifiedParams| is not null:
-    1. Let |isDeterministicReport| be the result of [=determining if a report
+    1. Set |isDeterministicReport| be the result of [=determining if a report
         should be sent deterministically=] given |preSpecifiedParams|.
     1. If |isDeterministicReport|:
-        1. Set |privateAggregationTimeout| to the [=current wall time=] plus a
-            non-negative [=implementation-defined=] [=duration=].
+        1. Set |privateAggregationTimeout| to the [=current wall time=] plus the
+            [=deterministic operation timeout duration=].
     1. [=Set the pre-specified report parameters for a batching scope=] given
         |preSpecifiedParams| and |batchingScope|.
 1. If |aggregationCoordinator| is not null, [=set the aggregation coordinator
@@ -1123,8 +1124,8 @@ be |operationMap|[|name|]." (renumbering later steps as appropriate):
 </div>
 
 Third, add the following steps in the same nested scope just before the current
-last step ("Otherwise, [=call=] operation without any arguments list",
-renumbering the last step as appropriate):
+penultimate step ("If |options| [=map/contains=] |data|", renumbering the last
+step as appropriate):
 <div algorithm="shared-storage-run-monkey-patch-3">
 1. Let |hasRunPrivateAggregationCompletionTask| be false.
 1. Let |privateAggregationCompletionTask| be an algorithm to perform the
@@ -1133,20 +1134,13 @@ renumbering the last step as appropriate):
     1. Set |hasRunPrivateAggregationCompletionTask| to true.
     1. [=Mark a debug scope complete=] given <var ignore>debugScope</var>.
     1. [=Process contributions for a batching scope=] given
-        |batchingScope|, <var ignore>outsideSettings</var>' [=environment
-        settings object/origin=], "<code>shared-storage</code>" and
-        |privateAggregationTimeout|.
-1. If |preSpecifiedParams| is not null:
-    1. Let |isDeterministicReport| be the result of [=determining if a report
-        should be sent deterministically=] given |preSpecifiedParams|.
-    1. If |isDeterministicReport|:
-        1. Set |privateAggregationTimeout| to the [=current wall time=] plus a
-            non-negative [=implementation-defined=] [=duration=].
-    1. [=Set the pre-specified report parameters for a batching scope=] given
-        |preSpecifiedParams| and |batchingScope|.
-    1. If |isDeterministicReport|, run the following steps [=in parallel=]:
-        1. Wait until |privateAggregationTimeout|.
-        1. Run |privateAggregationCompletionTask|.
+        <var ignore>batchingScope</var>, <var ignore>outsideSettings</var>'
+        [=environment settings object/origin=], "<code>shared-storage</code>"
+        and |privateAggregationTimeout|.
+1. If <var ignore>isDeterministicReport</var>>, run the following steps [=in
+    parallel=]:
+    1. Wait until |privateAggregationTimeout|.
+    1. Run |privateAggregationCompletionTask|.
 
 </div>
 
@@ -1194,8 +1188,8 @@ be |operationMap|[|name|]." (renumbering later steps as appropriate):
     1. Let |isDeterministicReport| be the result of [=determining if a report
         should be sent deterministically=] given |preSpecifiedParams|.
     1. If |isDeterministicReport|:
-        1. Set |privateAggregationTimeout| to the [=current wall time=] plus a
-            non-negative [=implementation-defined=] [=duration=].
+        1. Set |privateAggregationTimeout| to the [=current wall time=] plus the
+            [=deterministic operation timeout duration=].
     1. [=Set the pre-specified report parameters for a batching scope=] given
         |preSpecifiedParams| and |batchingScope|.
     1. If |isDeterministicReport|, run the following steps [=in parallel=]:
@@ -1256,6 +1250,14 @@ Issue: Once <a href="https://github.com/wicg/shared-storage/issues/89">
 Note: This extends Shared Storage's existing {{Worklet/addModule()}}
     <a href="https://wicg.github.io/shared-storage/#worklet-monkey-patch">
     monkey patch</a>.
+
+[=Implementation-defined=] values {#shared-storage-implementation-defined-values}
+---------------------------------------------------------------------------------
+
+<dfn>Deterministic operation timeout duration</dfn> is a non-negative
+[=duration=] that controls how long a Shared Storage operation may make Private
+Aggregation contributions if it is triggering a deterministic report and,
+equivalently, when that report should be sent after the operation begins.
 
 Protected Audience API monkey patches {#protected-audience-api-monkey-patches}
 ==============================================================================
