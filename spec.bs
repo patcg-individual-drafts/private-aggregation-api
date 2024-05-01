@@ -194,8 +194,7 @@ enableDebugMode(optional PADebugModeOptions options)</dfn> method steps are:
 1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
 1. Let |debugScope| be the result of running |scopingDetails|' [=scoping
     details/get debug scope steps=].
-1. Let |debugScopeMap| be the [=debug scope map=].
-1. If |debugScopeMap|[|debugScope|] [=map/exists=], [=exception/throw=] a
+1. If [=debug scope map=][|debugScope|] [=map/exists=], [=exception/throw=] a
     "{{DataError}}" {{DOMException}}.
 
     Note: This would occur if `enableDebugMode()` has already been run for this
@@ -216,7 +215,7 @@ enableDebugMode(optional PADebugModeOptions options)</dfn> method steps are:
 
     Note: This allows the user agent to make debug mode unavailable globally or
         just for certain callers.
-1. [=map/Set=] |debugScopeMap|[|debugScope|] to |debugDetails|.
+1. [=map/Set=] [=debug scope map=][|debugScope|] to |debugDetails|.
 
 Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
     deprecated.
@@ -471,23 +470,21 @@ To <dfn algorithm export>append an entry to the contribution cache</dfn> given a
 
 To <dfn algorithm export>get a debug details</dfn> given a [=debug scope=]
 |debugScope|, perform the following steps. They return a [=debug details=].
-1. Let |debugScopeMap| be the [=debug scope map=].
-1. If |debugScopeMap|[|debugScope|] [=map/exists=], return
-    |debugScopeMap|[|debugScope|].
+1. If [=debug scope map=][|debugScope|] [=map/exists=], return
+    [=debug scope map=][|debugScope|].
 1. Otherwise, return a new [=debug details=].
 
 To <dfn algorithm export>mark a debug scope complete</dfn> given a [=debug
 scope=] |debugScope| and an optional [=debug details=] or null
 |debugDetailsOverride| (default null):
 1. Let |debugDetails| be |debugDetailsOverride|.
-1. Let |debugScopeMap| be the [=debug scope map=].
-1. If |debugScopeMap|[|debugScope|] [=map/exists=]:
+1. If [=debug scope map=][|debugScope|] [=map/exists=]:
     1. [=Assert=]: |debugDetailsOverride| is null.
 
         Note: The override can be provided if the debug details have not been
             set otherwise.
-    1. Set |debugDetails| to |debugScopeMap|[|debugScope|].
-    1. [=map/Remove=] |debugScopeMap|[|debugScope|].
+    1. Set |debugDetails| to [=debug scope map=][|debugScope|].
+    1. [=map/Remove=] [=debug scope map=][|debugScope|].
     1. If |debugDetails|'s [=debug details/key=] is not null, [=assert=]:
         |debugDetails|'s [=debug details/enabled=] is true.
 1. If |debugDetails| is null, set |debugDetails| to a new [=debug details=].
@@ -512,16 +509,14 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a
 
         1. [=list/Append=] |entry| to |batchEntries|.
 1. Let |aggregationCoordinator| be the [=default aggregation coordinator=].
-1. Let |aggregationCoordinatorMap| be the [=aggregation coordinator map=].
-1. If |aggregationCoordinatorMap|[|batchingScope|] [=map/exists=]:
-    1. Set |aggregationCoordinator| to
-        |aggregationCoordinatorMap|[|batchingScope|].
-    1. [=map/Remove=] |aggregationCoordinatorMap|[|batchingScope|].
+1. If [=aggregation coordinator map=][|batchingScope|] [=map/exists=]:
+    1. Set |aggregationCoordinator| to [=aggregation coordinator
+        map=][|batchingScope|].
+    1. [=map/Remove=] [=aggregation coordinator map=][|batchingScope|].
 1. Let |contextId| be null.
-1. Let |contextIdMap| be the [=context ID map=].
-1. If |contextIdMap|[|batchingScope|] [=map/exists=]:
-    1. Set |contextId| to |contextIdMap|[|batchingScope|].
-    1. [=map/Remove=] |contextIdMap|[|batchingScope|].
+1. If [=context ID map=][|batchingScope|] [=map/exists=]:
+    1. Set |contextId| to [=context ID map=][|batchingScope|].
+    1. [=map/Remove=] [=context ID map=][|batchingScope|].
 1. Otherwise, [=assert=]: |timeout| is null.
 
     Note: Timeouts can only be used for deterministic reports.
@@ -564,8 +559,7 @@ To <dfn export>set the aggregation coordinator for a batching scope</dfn> given
 an [=origin=] |origin| and a [=batching scope=] |batchingScope|:
 
 1. [=Assert=]: |origin| is an [=aggregation coordinator=].
-1. Let |aggregationCoordinatorMap| be the [=aggregation coordinator map=].
-1. [=map/Set=] |aggregationCoordinatorMap|[|batchingScope|] to |origin|.
+1. [=map/Set=] [=aggregation coordinator map=][|batchingScope|] to |origin|.
 
 </div>
 
@@ -577,8 +571,7 @@ To <dfn algorithm export>set the context ID for a batching scope</dfn> given
 a [=string=] |contextId| and a [=batching scope=] |batchingScope|:
 
 1. [=Assert=]: |contextId|'s [=string/length=] is not larger than 64.
-1. Let |contextIdMap| be the [=context ID map=].
-1. [=map/Set=] |contextIdMap|[|batchingScope|] to |contextId|.
+1. [=map/Set=] [=context ID map=][|batchingScope|] to |contextId|.
 
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
