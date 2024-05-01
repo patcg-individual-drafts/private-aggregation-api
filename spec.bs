@@ -172,12 +172,13 @@ are:
 1. Let |batchingScope| be the result of running |scopingDetails|' [=scoping
     details/get batching scope steps=].
 1. Let |filteringIdByteSize| be the [=default filtering ID byte size=].
-1. Let |preSpecifiedParamsMap| be the [=pre-specified report parameters map=].
-1. If |preSpecifiedParamsMap|[|batchingScope|] [=map/exists=]:
-    1. Set |filteringIdByteSize| to |preSpecifiedParamsMap|[|batchingScope|]'s
-        [=pre-specified report parameters/filtering ID byte size=].
-1. If |contribution|["{{PAHistogramContribution/filteringId}}"] is not in the
-    range [0, 256<sup>|filteringIdByteSize|</sup>−1], [=exception/throw=] a
+1. If [=pre-specified report parameters map=][|batchingScope|] [=map/exists=]:
+    1. Set |filteringIdByteSize| to [=pre-specified report parameters
+        map=][|batchingScope|]'s [=pre-specified report parameters/filtering ID
+        byte size=].
+1. If |contribution|["{{PAHistogramContribution/filteringId}}"] is not [=set/
+    contained=] in [=the exclusive range|the range=] 0 to
+    256<sup>|filteringIdByteSize|</sup>, exclusive, [=exception/throw=] a
     {{RangeError}}.
 1. Let |entry| be a new [=contribution cache entry=] with the items:
     : [=contribution cache entry/contribution=]
@@ -433,8 +434,9 @@ Constants {#constants}
 <dfn>Default filtering ID byte size</dfn> is a positive integer controlling the
 byte size used if none is explicitly chosen. Its value is 1.
 
-<dfn>Valid filtering ID byte size range</dfn> is a range of positive integers
-controlling the allowable byte sizes. Its value is [1, 8].
+<dfn>Valid filtering ID byte size range</dfn> is a [=set=] of positive integers
+controlling the allowable byte sizes. Its value is [=the inclusive range|the
+range=] 1 to 8, inclusive.
 
 Issue: Consider adding more constants.
 
@@ -536,7 +538,7 @@ steps. They return a [=boolean=]:
 1. If |preSpecifiedParams|' [=pre-specified report parameters/context ID=] is
     not null, return true.
 1. If |preSpecifiedParams|' [=pre-specified report parameters/filtering ID byte
-    size=] is not 1, return true.
+    size=] is not the [=default filtering ID byte size=], return true.
 1. Return false.
 
 Note: If a context ID or non-default filtering ID byte size was specified, a
@@ -627,8 +629,8 @@ scope</dfn> given a [=pre-specified report parameters=] |params| and a
     larger than 64.
 1. Let |filteringIdByteSize| be |params|' [=pre-specified report parameters/
     filtering ID byte size=].
-1. [=Assert=]: |filteringIdByteSize| is an integer in the [=valid filtering ID
-    byte size range=]
+1. [=Assert=]: |filteringIdByteSize| is [=set/contained=] in the [=valid
+    filtering ID byte size range=]
 1. [=map/Set=] [=pre-specified report parameters map=][|batchingScope|] to
     |params|.
 
@@ -952,26 +954,23 @@ To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=]
         [below](#protecting-against-leaks-via-payload-size).
 1. [=list/iterate|For each=] |contribution| of |report|'s [=aggregatable report/
     contributions=]:
-    1. Let |filteringIdBitSize| be the product of 8 and |report|'s
-        [=aggregatable report/filtering id byte size=].
+    1. Let |filteringIdByteSize| be |report|'s [=aggregatable report/filtering
+        id byte size=].
     1. [=Assert=]: |contribution|["{{PAHistogramContribution/filteringId}}"]
-        is in the range [0, 2<sup>|filteringIdBitSize|</sup>−1].
+        is [=set/contained=] in [=the exclusive range|the range=] 0 to
+        256<sup>|filteringIdByteSize|</sup>, exclusive.
     1. Let |contributionData| be an [=ordered map=] of the following key/value
         pairs:
         : "`bucket`"
         :: The result of [=encoding an integer for the payload=] given
-            |contribution|["{{PAHistogramContribution/bucket}}"] and 128.
+            |contribution|["{{PAHistogramContribution/bucket}}"] and 16.
         : "`value`"
         :: The result of [=encoding an integer for the payload=] given
-            |contribution|["{{PAHistogramContribution/value}}"] and 32.
+            |contribution|["{{PAHistogramContribution/value}}"] and 4.
         : "`id`"
         :: The result of [=encoding an integer for the payload=] given
-            |contribution|["{{PAHistogramContribution/filteringId}}"] and
-            |filteringIdBitSize|.
-
-            Issue: Be consistent about bytes or bits as units here.
-
-        Issue: Be consistent about if boolean vs if boolean is true.
+            |contribution|[="{{PAHistogramContribution/filteringId}}"] and
+            |filteringIdByteSize|.
     1. [=list/Append=] |contributionData| to |payloadData|.
 1. Let |payload| be an [=ordered map=] of the following key/value pairs:
     : "`data`"
@@ -1001,9 +1000,9 @@ They return a [=byte sequence=] or an error.
     with |hpkeContext| and |aad|.
 
 To <dfn>encode an integer for the payload</dfn> given an integer |intToEncode|
-and an integer |bitLength|, return the representation of |intToEncode| as a
-big-endian [=byte sequence=] of length |bitLength| / 8, left padding with zeroes
-as necessary.
+and an integer |byteLength|, return the representation of |intToEncode| as a
+big-endian [=byte sequence=] of length |byteLength|, left padding with zeroes as
+necessary.
 
 To <dfn>obtain a report's shared info</dfn> given an [=aggregatable report=]
 |report|, perform the following steps. They return a [=string=].
@@ -1127,18 +1126,20 @@ steps. They return a [=pre-specified report parameters=], null, or a
 {{DOMException}}:
 1. If |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]
     does not [=map/exist=], return null.
+1. Let |privateAggregationConfig| be
+    |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"].
 1. Let |contextId| be null.
-1. If |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]["{{SharedStoragePrivateAggregationConfig/contextId}}"]
+1. If |privateAggregationConfig|["{{SharedStoragePrivateAggregationConfig/contextId}}"]
     [=map/exists=], set |contextId| to
-    |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]["{{SharedStoragePrivateAggregationConfig/contextId}}"].
+    |privateAggregationConfig|["{{SharedStoragePrivateAggregationConfig/contextId}}"].
 1. If |contextId|'s [=string/length=] is greater than 64, return a new
     {{DOMException}} with name "`DataError`".
 1. Let |filteringIdByteSize| be the [=default filtering ID byte size=].
-1. If |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]["{{SharedStoragePrivateAggregationConfig/filteringIdByteSize}}"]
+1. If |privateAggregationConfig|["{{SharedStoragePrivateAggregationConfig/filteringIdByteSize}}"]
     [=map/exists=], set |filteringIdByteSize| to
-    |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]["{{SharedStoragePrivateAggregationConfig/filteringIdByteSize}}"].
-1. If |filteringIdByteSize| is not in the [=valid filtering ID byte size
-    range=], return a new {{DOMException}} with name "`DataError`".
+    |privateAggregationConfig|["{{SharedStoragePrivateAggregationConfig/filteringIdByteSize}}"].
+1. If |filteringIdByteSize| is not [=set/contained=] in the [=valid filtering ID
+    byte size range=], return a new {{DOMException}} with name "`DataError`".
 1. Return a new [=pre-specified report parameters=] with the items:
     : [=pre-specified report parameters/context ID=]
     :: |contextId|
@@ -1407,11 +1408,10 @@ event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
         throw=] a {{TypeError}}.
 1. Otherwise, if |contribution|["{{PAHistogramContribution/value}}"] is
     negative, [=exception/throw=] a {{TypeError}}.
-1. Let |defaultFilteringIdByteSize| be the [=default filtering ID byte
-    size=].
 1. If |contribution|["{{PAExtendedHistogramContribution/filteringId}}"] is
-    not in the range [0, 256<sup>|defaultFilteringIdByteSize|</sup>−1],
-    [=exception/throw=] a {{TypeError}}.
+    not [=set/contained=] in [=the exclusive range|the range=] 0 to
+    256<sup>[=default filtering ID byte size=]</sup>, exclusive, [=exception/
+    throw=] a {{TypeError}}.
 
     Issue: Make the error types on validation issues here and above consistent
         with {{PrivateAggregation/contributeToHistogram(contribution)}}.
