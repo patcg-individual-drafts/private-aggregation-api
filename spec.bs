@@ -371,6 +371,17 @@ A context type is a [=string=] indicating what kind of global scope the
 {{PrivateAggregation}} object was exposed in. Each API exposing Private
 Aggregation should pick a unique string (or multiple) for this.
 
+Pre-specified report parameters {#pre-specified-report-parameters-structure}
+----------------------------------------------------------------------------
+
+A <dfn>pre-specified report parameters</dfn> is a [=struct=] with the following
+items:
+<dl dfn-for="pre-specified report parameters">
+: <dfn>context ID</dfn> (default: null)
+:: A [=string=] or null
+
+</dl>
+
 Storage {#storage}
 ==================
 
@@ -380,8 +391,8 @@ A [=user agent=] holds an <dfn>aggregatable report cache</dfn>, which is a
 A [=user agent=] holds an <dfn>aggregation coordinator map</dfn>, which is a
 [=map=] from [=batching scopes=] to [=aggregation coordinators=].
 
-A [=user agent=] holds a <dfn>context ID map</dfn>, which is a [=map=] from
-[=batching scopes=] to [=strings=].
+A [=user agent=] holds a <dfn>pre-specified report parameters map</dfn>, which
+is a [=map=] from [=batching scopes=] to [=pre-specified report parameters=].
 
 A [=user agent=] holds a <dfn>contribution cache</dfn>, which is a [=list=] of
 [=contribution cache entries=].
@@ -399,7 +410,8 @@ the [=aggregatable report cache=] as well as any contribution history data
 stored for the [=consume budget if permitted=] algorithm.
 
 The user agent may expose controls that allow the user to delete data from the
-[=context ID map=], the [=contribution cache=] and the [=debug scope map=].
+[=contribution cache=], the [=debug scope map=] and the [=pre-specified report
+parameters map=].
 
 [=Implementation-defined=] values {#implementation-defined-values}
 ==================================================================
@@ -493,6 +505,18 @@ scope=] |debugScope| and an optional [=debug details=] or null
         set |entry|'s [=contribution cache entry/debug details=] to
         |debugDetails|.
 
+To <dfn>determine if a report should be sent deterministically</dfn> given a
+[=pre-specified report parameters=] |preSpecifiedParams|, perform the following
+steps. They return a [=boolean=]:
+1. If |preSpecifiedParams|' [=pre-specified report parameters/context ID=] is
+    not null, return true.
+1. Return false.
+
+Note: If a context ID was specified, a report is sent, even if there are no
+    contributions or there is insufficent budget for the requested
+    contributions. See [Protecting against leaks via the number of
+    reports](#protecting-against-leaks-via-the-number-of-reports).
+
 To <dfn algorithm export>process contributions for a batching scope</dfn> given
 a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a
 [=context type=] |contextType| and a [=moment=] or null |timeout|:
@@ -513,18 +537,18 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a
     1. Set |aggregationCoordinator| to [=aggregation coordinator
         map=][|batchingScope|].
     1. [=map/Remove=] [=aggregation coordinator map=][|batchingScope|].
-1. Let |contextId| be null.
-1. If [=context ID map=][|batchingScope|] [=map/exists=]:
-    1. Set |contextId| to [=context ID map=][|batchingScope|].
-    1. [=map/Remove=] [=context ID map=][|batchingScope|].
-1. Otherwise, [=assert=]: |timeout| is null.
+1. Let |preSpecifiedParams| be a new [=pre-specified report parameters=].
+1. If [=pre-specified report parameters map=][|batchingScope|] [=map/exists=]:
+    1. Set |preSpecifiedParams| to [=pre-specified report parameters
+        map=][|batchingScope|].
+    1. [=map/Remove=] [=pre-specified report parameters map=][|batchingScope|].
+1. Let |isDeterministicReport| be the result of [=determining if a report should
+    be sent deterministically=] given |preSpecifiedParams|.
+1. If |isDeterministicReport| is false, [=assert=]: |timeout| is null.
 
     Note: Timeouts can only be used for deterministic reports.
-1. If |batchEntries| [=list/is empty=] and |contextId| is null, return.
-
-    Note: If a context ID was specified, a report is sent, even if there are no
-        contributions. See [Protecting against leaks via the number of
-        reports](#protecting-against-leaks-via-the-number-of-reports).
+1. If |batchEntries| [=list/is empty=] and |isDeterministicReport| is false,
+    return.
 1. Let |batchedContributions| be a new [=ordered map=].
 1. [=list/iterate|For each=] |entry| of |batchEntries|:
     1. [=list/Remove=] |entry| from the [=contribution cache=].
@@ -541,7 +565,7 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a
     |batchedContributions|:
     1. Perform the [=report creation and scheduling steps=] with
         |reportingOrigin|, |contextType|, |contributions|, |debugDetails|,
-        |aggregationCoordinator|, |contextId| and |timeout|.
+        |aggregationCoordinator|, |preSpecifiedParams| and |timeout|.
 
 Note: These steps break up the contributions based on their [=debug details=] as
     each report can only have one set of metadata.
@@ -567,11 +591,15 @@ Issue: Elsewhere, surround algorithms in a `<div algorithm>` block to match, and
     add styling for all algorithms per
     [bikeshed/1472](https://github.com/speced/bikeshed/issues/1472).
 
-To <dfn algorithm export>set the context ID for a batching scope</dfn> given
-a [=string=] |contextId| and a [=batching scope=] |batchingScope|:
+To <dfn algorithm export>set the pre-specified report parameters for a batching
+scope</dfn> given a [=pre-specified report parameters=] |params| and a
+[=batching scope=] |batchingScope|:
 
-1. [=Assert=]: |contextId|'s [=string/length=] is not larger than 64.
-1. [=map/Set=] [=context ID map=][|batchingScope|] to |contextId|.
+1. Let |contextId| be |params|' [=pre-specified report parameters/context ID=].
+1. [=Assert=]: |contextId| is null or |contextId|'s [=string/length=] is not
+    larger than 64.
+1. [=map/Set=] [=pre-specified report parameters map=][|batchingScope|] to
+    |params|.
 
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
@@ -580,7 +608,8 @@ To perform the <dfn algorithm>report creation and scheduling steps</dfn> with an
 [=origin=] |reportingOrigin|, a [=context type=] |api|, a [=list=] of
 {{PAHistogramContribution}}s |contributions|, a [=debug details=]
 |debugDetails|, an [=aggregation coordinator=] |aggregationCoordinator|, a
-[=string=] or null |contextId| and a [=moment=] or null |timeout|:
+[=pre-specified report parameters=] |preSpecifiedParams| and a [=moment=] or
+null |timeout|:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Optionally, return.
 
@@ -603,17 +632,14 @@ To perform the <dfn algorithm>report creation and scheduling steps</dfn> with an
 1. Let |sufficientBudget| be the result of [=consuming budget if permitted=]
     given |contributionSum|, |reportingOrigin|, |api| and |currentWallTime|.
 1. If |sufficientBudget| is false:
-    1. If |contextId| is null, return.
+    1. Let |isDeterministicReport| be the result of [=determining if a report
+        should be sent deterministically=] given |preSpecifiedParams|.
+    1. If |isDeterministicReport| is false, return.
     1. [=list/Empty=] |truncatedContributions|.
-
-        Note:  If a context ID was specified, a report is sent, even if there is
-            insufficent budget for the requested contributions. In this case,
-            the contributions are dropped. See
-            [Protecting against leaks via the number of
-            reports](#protecting-against-leaks-via-the-number-of-reports).
 1. Let |report| be the result of [=obtaining an aggregatable report=] given
     |reportingOrigin|, |api|, |truncatedContributions|, |debugDetails|,
-    |aggregationCoordinator|, |contextId|, |timeout| and |currentWallTime|.
+    |aggregationCoordinator|, |preSpecifiedParams|, |timeout| and
+    |currentWallTime|.
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
 To <dfn algorithm>consume budget if permitted</dfn> given a {{long}} |value|, an
@@ -630,8 +656,8 @@ To <dfn>obtain an aggregatable report</dfn> given an [=origin=]
 |reportingOrigin|, a [=context type=] |api|, a [=list=] of
 {{PAHistogramContribution}}s |contributions|, a [=debug details=]
 |debugDetails|, an [=aggregation coordinator=] |aggregationCoordinator|, a
-[=string=] or null |contextId|, a [=moment] or null |timeout| and a [=moment=]
-|currentTime|,
+[=pre-specified report parameters=] |preSpecifiedParams|, a [=moment] or null
+|timeout| and a [=moment=] |currentTime|,
 perform the following steps. They return an [=aggregatable report=].
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Let |reportTime| be the result of running [=obtain a report delivery time=]
@@ -654,7 +680,7 @@ perform the following steps. They return an [=aggregatable report=].
     : [=aggregatable report/aggregation coordinator=]
     :: |aggregationCoordinator|
     : [=aggregatable report/context ID=]
-    :: |contextId|
+    :: |preSpecifiedParams|' [=pre-specified report parameters/context ID=]
     : [=aggregatable report/queued=]
     :: false
 1. Return |report|.
@@ -1046,28 +1072,31 @@ steps. They return an [=aggregation coordinator=], null or a {{DOMException}}:
     "`DataError`".
 1. Return |origin|.
 
-To <dfn algorithm>obtain the context ID</dfn> given a
+To <dfn algorithm>obtain the pre-specified report parameters</dfn> given a
 {{SharedStorageRunOperationMethodOptions}} |options|, perform the following
-steps. They return a [=string=], null, or a {{DOMException}}:
+steps. They return a [=pre-specified report parameters=], null, or a
+{{DOMException}}:
 1. If |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]
     does not [=map/exist=], return null.
+1. Let |contextId| be null.
 1. If |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]["{{SharedStoragePrivateAggregationConfig/contextId}}"]
-    does not [=map/exist=], return null.
-1. Let |contextId| be
+    [=map/exists=], set |contextId| to
     |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]["{{SharedStoragePrivateAggregationConfig/contextId}}"].
 1. If |contextId|'s [=string/length=] is greater than 64, return a new
     {{DOMException}} with name "`DataError`".
-1. Return |contextId|.
+1. Return a new [=pre-specified report parameters=] with the items:
+    : [=pre-specified report parameters/context ID=]
+    :: |contextId|
 
 The {{WindowSharedStorage}}'s {{WindowSharedStorage/run()}} method steps are
 modified in four ways. First, add the following steps just after step 2 ("If
 {{Worklet/addModule()}} has not yet been called, ..."), renumbering later steps
 as appropriate:
 <div algorithm="shared-storage-run-monkey-patch-1">
-3. Let |contextId| be the result of [=obtaining the context ID=] given
-    |options|.
-1. If |contextId| is a {{DOMException}}, return [=a promise rejected with=]
-    |contextId|.
+3. Let |preSpecifiedParams| be the result of [=obtaining the pre-specified
+    report parameters=] given |options|.
+1. If |preSpecifiedParams| is a {{DOMException}}, return [=a promise rejected
+    with=] |preSpecifiedParams|.
 1. Let |aggregationCoordinator| be the result of [=obtaining the aggregation
     coordinator=] given |options|.
 1. If |aggregationCoordinator| is a {{DOMException}}, return [=a promise
@@ -1080,19 +1109,23 @@ be |operationMap|[|name|]." (renumbering later steps as appropriate):
 2. Let |batchingScope| be a new [=batching scope=].
 1. Let <var ignore>debugScope</var> be a new [=debug scope=].
 1. Let |privateAggregationTimeout| be null.
-1. If |contextId| is not null:
-    1. Set |privateAggregationTimeout| to the [=current wall time=] plus a
-        non-negative [=implementation-defined=] [=duration=].
-    1. [=Set the context ID for a batching scope=] given |contextId| and
-        |batchingScope|.
+1. Let |isDeterministicReport| be false.
+1. If |preSpecifiedParams| is not null:
+    1. Set |isDeterministicReport| to the result of [=determining if a report
+        should be sent deterministically=] given |preSpecifiedParams|.
+    1. If |isDeterministicReport|:
+        1. Set |privateAggregationTimeout| to the [=current wall time=] plus the
+            [=deterministic operation timeout duration=].
+    1. [=Set the pre-specified report parameters for a batching scope=] given
+        |preSpecifiedParams| and |batchingScope|.
 1. If |aggregationCoordinator| is not null, [=set the aggregation coordinator
     for a batching scope=] given |aggregationCoordinator| and |batchingScope|.
 
 </div>
 
 Third, add the following steps in the same nested scope just before the current
-last step ("Otherwise, [=call=] operation without any arguments list",
-renumbering the last step as appropriate):
+penultimate step ("If |options| [=map/contains=] |data|", renumbering the last
+step as appropriate):
 <div algorithm="shared-storage-run-monkey-patch-3">
 1. Let |hasRunPrivateAggregationCompletionTask| be false.
 1. Let |privateAggregationCompletionTask| be an algorithm to perform the
@@ -1101,17 +1134,13 @@ renumbering the last step as appropriate):
     1. Set |hasRunPrivateAggregationCompletionTask| to true.
     1. [=Mark a debug scope complete=] given <var ignore>debugScope</var>.
     1. [=Process contributions for a batching scope=] given
-        |batchingScope|, <var ignore>outsideSettings</var>' [=environment
-        settings object/origin=], "<code>shared-storage</code>" and
-        |privateAggregationTimeout|.
-1. If |contextId| is not null:
-    1. Set |privateAggregationTimeout| to the [=current wall time=] plus a
-        non-negative [=implementation-defined=] [=duration=].
-    1. [=Set the context ID for a batching scope=] given |contextId| and
-        |batchingScope|.
-    1. Run the following steps [=in parallel=]:
-        1. Wait until |privateAggregationTimeout|.
-        1. Run |privateAggregationCompletionTask|.
+        <var ignore>batchingScope</var>, <var ignore>outsideSettings</var>'
+        [=environment settings object/origin=], "<code>shared-storage</code>"
+        and |privateAggregationTimeout|.
+1. If <var ignore>isDeterministicReport</var>>, run the following steps [=in
+    parallel=]:
+    1. Wait until |privateAggregationTimeout|.
+    1. Run |privateAggregationCompletionTask|.
 
 </div>
 
@@ -1127,10 +1156,10 @@ are modified in three ways. First, add the following steps just after step 5
 ("If {{Worklet/addModule()}} has not yet been called, ..."), renumbering later
 steps:
 <div algorithm="shared-storage-selecturl-monkey-patch-1">
-6. Let |contextId| be the result of [=obtaining the context ID=] given
-    |options|.
-1. If |contextId| is a {{DOMException}}, return [=a promise rejected with=]
-    |contextId|.
+6. Let |preSpecifiedParams| be the result of [=obtaining the pre-specified
+    report parameters=] given |options|.
+1. If |preSpecifiedParams| is a {{DOMException}}, return [=a promise rejected
+    with=] |preSpecifiedParams|.
 1. Let |aggregationCoordinator| be the result of [=obtaining the aggregation
     coordinator=] given |options|.
 1. If |aggregationCoordinator| is a {{DOMException}}, return [=a promise
@@ -1155,12 +1184,15 @@ be |operationMap|[|name|]." (renumbering later steps as appropriate):
         and |privateAggregationTimeout|.
 1. If |aggregationCoordinator| is not null, [=set the aggregation coordinator
     for a batching scope=] given |aggregationCoordinator| and |batchingScope|.
-1. If |contextId| is not null:
-    1. Set |privateAggregationTimeout| to the [=current wall time=] plus a
-        non-negative [=implementation-defined=] [=duration=].
-    1. [=Set the context ID for a batching scope=] given |contextId| and
-        |batchingScope|.
-    1. Run the following steps [=in parallel=]:
+1. If |preSpecifiedParams| is not null:
+    1. Let |isDeterministicReport| be the result of [=determining if a report
+        should be sent deterministically=] given |preSpecifiedParams|.
+    1. If |isDeterministicReport|:
+        1. Set |privateAggregationTimeout| to the [=current wall time=] plus the
+            [=deterministic operation timeout duration=].
+    1. [=Set the pre-specified report parameters for a batching scope=] given
+        |preSpecifiedParams| and |batchingScope|.
+    1. If |isDeterministicReport|, run the following steps [=in parallel=]:
         1. Wait until |privateAggregationTimeout|.
         1. Run |privateAggregationCompletionTask|.
 
@@ -1218,6 +1250,14 @@ Issue: Once <a href="https://github.com/wicg/shared-storage/issues/89">
 Note: This extends Shared Storage's existing {{Worklet/addModule()}}
     <a href="https://wicg.github.io/shared-storage/#worklet-monkey-patch">
     monkey patch</a>.
+
+[=Implementation-defined=] values {#shared-storage-implementation-defined-values}
+---------------------------------------------------------------------------------
+
+<dfn>Deterministic operation timeout duration</dfn> is a non-negative
+[=duration=] that controls how long a Shared Storage operation may make Private
+Aggregation contributions if it is triggering a deterministic report and,
+equivalently, when that report should be sent after the operation begins.
 
 Protected Audience API monkey patches {#protected-audience-api-monkey-patches}
 ==============================================================================
@@ -2220,9 +2260,10 @@ stored for the [=consume budget if permitted=] algorithm contain data about a
 user’s web activity. As such, user controls to delete this data are required,
 see [clearing storage](#clearing-storage).
 
-On the other hand, the [=context ID map=], the [=contribution cache=] and the
-[=debug scope map=] only contain short-lived data tied to particular [=batching
-scopes=] and [=debug scopes=], so controls are not required.
+On the other hand, the [=contribution cache=], the [=debug scope map=] and the
+[=pre-specified report parameters map=] only contain short-lived data tied to
+particular [=batching scopes=] and [=debug scopes=], so controls are not
+required.
 
 Reporting delay concerns {#reporting-delay-concerns}
 ----------------------------------------------------
@@ -2304,10 +2345,10 @@ Security considerations {#security-considerations}
 Same-origin policy {#same-origin-policy}
 ----------------------------------------
 
-Writes to the [=aggregatable report cache=], [=context ID map=], [=contribution
-cache=] and [=debug scope map=] are separated by the reporting [=origin=] and
-the data included in any report with a given reporting [=origin=] are generated
-with only data from that [=origin=].
+Writes to the [=aggregatable report cache=], [=contribution cache=], [=debug
+scope map=] and [=pre-specified report parameters map=] are attributed to the
+reporting [=origin=] and the data included in any report with a given reporting
+[=origin=] are generated with only data from that [=origin=].
 
 One notable exception is the [=consume budget if permitted=] algorithm which is
 [=implementation-defined=] and can consider contribution history from other
