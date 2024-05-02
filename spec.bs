@@ -1111,7 +1111,7 @@ be |operationMap|[|name|]." (renumbering later steps as appropriate):
 1. Let |privateAggregationTimeout| be null.
 1. Let |isDeterministicReport| be false.
 1. If |preSpecifiedParams| is not null:
-    1. Set |isDeterministicReport| be the result of [=determining if a report
+    1. Set |isDeterministicReport| to the result of [=determining if a report
         should be sent deterministically=] given |preSpecifiedParams|.
     1. If |isDeterministicReport|:
         1. Set |privateAggregationTimeout| to the [=current wall time=] plus the
