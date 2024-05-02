@@ -171,14 +171,14 @@ are:
 1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
 1. Let |batchingScope| be the result of running |scopingDetails|' [=scoping
     details/get batching scope steps=].
-1. Let |filteringIdByteSize| be the [=default filtering ID byte size=].
+1. Let |filteringIdMaxBytes| be the [=default filtering ID max bytes=].
 1. If [=pre-specified report parameters map=][|batchingScope|] [=map/exists=]:
-    1. Set |filteringIdByteSize| to [=pre-specified report parameters
+    1. Set |filteringIdMaxBytes| to [=pre-specified report parameters
         map=][|batchingScope|]'s [=pre-specified report parameters/filtering ID
-        byte size=].
+        max bytes=].
 1. If |contribution|["{{PAHistogramContribution/filteringId}}"] is not [=set/
     contained=] in [=the exclusive range|the range=] 0 to
-    256<sup>|filteringIdByteSize|</sup>, exclusive, [=exception/throw=] a
+    256<sup>|filteringIdMaxBytes|</sup>, exclusive, [=exception/throw=] a
     {{RangeError}}.
 1. Let |entry| be a new [=contribution cache entry=] with the items:
     : [=contribution cache entry/contribution=]
@@ -360,7 +360,7 @@ An aggregatable report is a [=struct=] with the following items:
 :: An [=aggregation coordinator=]
 : <dfn>context ID</dfn>
 :: A [=string=] or null
-: <dfn>filtering ID byte size</dfn>
+: <dfn>filtering ID max bytes</dfn>
 :: A positive integer
 : <dfn>queued</dfn>
 :: A [=boolean=]
@@ -392,7 +392,7 @@ items:
 <dl dfn-for="pre-specified report parameters">
 : <dfn>context ID</dfn> (default: null)
 :: A [=string=] or null
-: <dfn>filtering ID byte size</dfn> (default: [=default filtering ID byte size=])
+: <dfn>filtering ID max bytes</dfn> (default: [=default filtering ID max bytes=])
 :: A positive integer
 
 </dl>
@@ -431,12 +431,12 @@ parameters map=].
 Constants {#constants}
 ======================
 
-<dfn>Default filtering ID byte size</dfn> is a positive integer controlling the
-byte size used if none is explicitly chosen. Its value is 1.
+<dfn>Default filtering ID max bytes</dfn> is a positive integer controlling the
+max bytes used if none is explicitly chosen. Its value is 1.
 
-<dfn>Valid filtering ID byte size range</dfn> is a [=set=] of positive integers
-controlling the allowable byte sizes. Its value is [=the inclusive range|the
-range=] 1 to 8, inclusive.
+<dfn>Valid filtering ID max bytes range</dfn> is a [=set=] of positive integers
+controlling the allowable values of max bytes. Its value is [=the inclusive
+range|the range=] 1 to 8, inclusive.
 
 Issue: Consider adding more constants.
 
@@ -537,11 +537,11 @@ To <dfn>determine if a report should be sent deterministically</dfn> given a
 steps. They return a [=boolean=]:
 1. If |preSpecifiedParams|' [=pre-specified report parameters/context ID=] is
     not null, return true.
-1. If |preSpecifiedParams|' [=pre-specified report parameters/filtering ID byte
-    size=] is not the [=default filtering ID byte size=], return true.
+1. If |preSpecifiedParams|' [=pre-specified report parameters/filtering ID max
+    bytes=] is not the [=default filtering ID max bytes=], return true.
 1. Return false.
 
-Note: If a context ID or non-default filtering ID byte size was specified, a
+Note: If a context ID or non-default filtering ID max bytes was specified, a
     report is sent, even if there are no contributions or there is insufficent
     budget for the requested contributions. See [Protecting against leaks via
     the number of reports](#protecting-against-leaks-via-the-number-of-reports).
@@ -627,10 +627,10 @@ scope</dfn> given a [=pre-specified report parameters=] |params| and a
 1. Let |contextId| be |params|' [=pre-specified report parameters/context ID=].
 1. [=Assert=]: |contextId| is null or |contextId|'s [=string/length=] is not
     larger than 64.
-1. Let |filteringIdByteSize| be |params|' [=pre-specified report parameters/
-    filtering ID byte size=].
-1. [=Assert=]: |filteringIdByteSize| is [=set/contained=] in the [=valid
-    filtering ID byte size range=]
+1. Let |filteringIdMaxBytes| be |params|' [=pre-specified report parameters/
+    filtering ID max bytes=].
+1. [=Assert=]: |filteringIdMaxBytes| is [=set/contained=] in the [=valid
+    filtering ID max bytes range=]
 1. [=map/Set=] [=pre-specified report parameters map=][|batchingScope|] to
     |params|.
 
@@ -714,9 +714,9 @@ perform the following steps. They return an [=aggregatable report=].
     :: |aggregationCoordinator|
     : [=aggregatable report/context ID=]
     :: |preSpecifiedParams|' [=pre-specified report parameters/context ID=]
-    : [=aggregatable report/filtering ID byte size=]
-    :: |preSpecifiedParams|' [=pre-specified report parameters/filtering ID byte
-        size=]
+    : [=aggregatable report/filtering ID max bytes=]
+    :: |preSpecifiedParams|' [=pre-specified report parameters/filtering ID max
+        bytes=]
     : [=aggregatable report/queued=]
     :: false
 1. Return |report|.
@@ -954,11 +954,11 @@ To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=]
         [below](#protecting-against-leaks-via-payload-size).
 1. [=list/iterate|For each=] |contribution| of |report|'s [=aggregatable report/
     contributions=]:
-    1. Let |filteringIdByteSize| be |report|'s [=aggregatable report/filtering
-        id byte size=].
+    1. Let |filteringIdMaxBytes| be |report|'s [=aggregatable report/filtering
+        id max bytes=].
     1. [=Assert=]: |contribution|["{{PAHistogramContribution/filteringId}}"]
         is [=set/contained=] in [=the exclusive range|the range=] 0 to
-        256<sup>|filteringIdByteSize|</sup>, exclusive.
+        256<sup>|filteringIdMaxBytes|</sup>, exclusive.
     1. Let |contributionData| be an [=ordered map=] of the following key/value
         pairs:
         : "`bucket`"
@@ -970,7 +970,7 @@ To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=]
         : "`id`"
         :: The result of [=encoding an integer for the payload=] given
             |contribution|[="{{PAHistogramContribution/filteringId}}"] and
-            |filteringIdByteSize|.
+            |filteringIdMaxBytes|.
     1. [=list/Append=] |contributionData| to |payloadData|.
 1. Let |payload| be an [=ordered map=] of the following key/value pairs:
     : "`data`"
@@ -1085,7 +1085,7 @@ partial interface SharedStorageWorkletGlobalScope {
 dictionary SharedStoragePrivateAggregationConfig {
   USVString aggregationCoordinatorOrigin;
   USVString contextId;
-  [EnforceRange] unsigned long long filteringIdByteSize;
+  [EnforceRange] unsigned long long filteringIdMaxBytes;
 };
 
 partial dictionary SharedStorageRunOperationMethodOptions {
@@ -1134,17 +1134,17 @@ steps. They return a [=pre-specified report parameters=], null, or a
     |privateAggregationConfig|["{{SharedStoragePrivateAggregationConfig/contextId}}"].
 1. If |contextId|'s [=string/length=] is greater than 64, return a new
     {{DOMException}} with name "`DataError`".
-1. Let |filteringIdByteSize| be the [=default filtering ID byte size=].
-1. If |privateAggregationConfig|["{{SharedStoragePrivateAggregationConfig/filteringIdByteSize}}"]
-    [=map/exists=], set |filteringIdByteSize| to
-    |privateAggregationConfig|["{{SharedStoragePrivateAggregationConfig/filteringIdByteSize}}"].
-1. If |filteringIdByteSize| is not [=set/contained=] in the [=valid filtering ID
-    byte size range=], return a new {{DOMException}} with name "`DataError`".
+1. Let |filteringIdMaxBytes| be the [=default filtering ID max bytes=].
+1. If |privateAggregationConfig|["{{SharedStoragePrivateAggregationConfig/filteringIdMaxBytes}}"]
+    [=map/exists=], set |filteringIdMaxBytes| to
+    |privateAggregationConfig|["{{SharedStoragePrivateAggregationConfig/filteringIdMaxBytes}}"].
+1. If |filteringIdMaxBytes| is not [=set/contained=] in the [=valid filtering ID
+    max bytes range=], return a new {{DOMException}} with name "`DataError`".
 1. Return a new [=pre-specified report parameters=] with the items:
     : [=pre-specified report parameters/context ID=]
     :: |contextId|
-    : [=pre-specified report parameters/filtering ID byte size=]
-    :: |filteringIdByteSize|
+    : [=pre-specified report parameters/filtering ID max bytes=]
+    :: |filteringIdMaxBytes|
 
 The {{WindowSharedStorage}}'s {{WindowSharedStorage/run()}} method steps are
 modified in four ways. First, add the following steps just after step 2 ("If
@@ -1410,14 +1410,14 @@ event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
     negative, [=exception/throw=] a {{TypeError}}.
 1. If |contribution|["{{PAExtendedHistogramContribution/filteringId}}"] is
     not [=set/contained=] in [=the exclusive range|the range=] 0 to
-    256<sup>[=default filtering ID byte size=]</sup>, exclusive, [=exception/
+    256<sup>[=default filtering ID max bytes=]</sup>, exclusive, [=exception/
     throw=] a {{TypeError}}.
 
     Issue: Make the error types on validation issues here and above consistent
         with {{PrivateAggregation/contributeToHistogram(contribution)}}.
 
-    Note: It is not currently possible to set a non-default filtering ID byte
-        size for Protected Audience.
+    Note: It is not currently possible to set a non-default filtering ID max
+        bytes for Protected Audience.
 1. Let |batchingScope| be null.
 1. If |event| [=string/starts with=] "`reserved.`", set |batchingScope| to the
     result of running |scopingDetails|' [=scoping details/get batching scope
@@ -2292,7 +2292,7 @@ cross-site information. To protect against this, the API delays sending reports
 by a randomized amount of time to make it difficult to determine whether a
 report was sent or not from any particular event. In the case that a
 [=aggregatable report/context ID=] is supplied or a non-default [=aggregatable
-report/filtering ID byte size=] is specified, the API makes the number of
+report/filtering ID max bytes=] is specified, the API makes the number of
 reports sent deterministic (sending 'null reports' if necessary -- each
 containing only a contribution with a value of 0 in the payload). Additional
 mitigations may also be possible in the future, e.g. adding noise to the report
