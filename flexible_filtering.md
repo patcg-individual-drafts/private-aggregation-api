@@ -91,7 +91,8 @@ within a worklet/script runner — e.g. for a Protected Audience bidder — and
 could even be chosen based on cross-site data. For example:
 
 ```js
-privateAggregation.contributeToHistogram({bucket: 1234n, value: 56, filteringId: 3});
+privateAggregation.contributeToHistogram(
+    {bucket: 1234n, value: 56, filteringId: 3n});
 ```
 
 If no filtering ID is provided, a default ID of 0 will be used. (See also
@@ -163,10 +164,10 @@ number of IDs used can be much larger while keeping processing costs reasonable.
 
 #### Small ID space by default, but configurable
 
-The filtering ID would be an unsigned integer limited to a small number of bits
-(e.g. 8) by default. If no filtering ID is provided, a value of 0 will be used.
-We limit the size of the ID space to prevent unnecessarily increasing the
-payload size and thus storage and processing costs. As filtering IDs are not
+The filtering ID would be an unsigned integer limited to a small number of bytes
+(1 byte = 8 bits) by default. If no filtering ID is provided, a value of 0 will
+be used. We limit the size of the ID space to prevent unnecessarily increasing
+the payload size and thus storage and processing costs. As filtering IDs are not
 readable by the reporting endpoint, processing multiple filtering IDs separately
 would typically require reprocessing the same reports for each query (see [the
 first example use](#processing-contributions-at-different-cadences-1) above).
@@ -175,13 +176,13 @@ practical with this flow.
 
 However, other flows could make use of a larger ID space (see [the second
 example use case](#processing-contributions-by-campaign-id-1) above), so we plan
-to allow for the ID space to be configurable per-report, e.g. to 32 bits. To
-avoid amplifying a counting attack due to the different payload size, we plan to
-make the number of reports emitted with this custom label size deterministic.
-This will result in a null report being sent if no contributions are made. Note
-that this means the filtering ID _space_ for Private Aggregation reports must
-also be specified outside Shared Storage worklets/Protected Audience script
-runners.
+to allow for the ID space to be configurable per-report, up to 8 bytes (i.e. 64
+bits). To avoid amplifying a counting attack due to the different payload size,
+we plan to make the number of reports emitted with this custom label size
+deterministic. This will result in a null report being sent if no contributions
+are made. Note that this means the filtering ID _space_ for Private Aggregation
+reports must also be specified outside Shared Storage worklets/Protected
+Audience script runners.
 
 For Shared Storage and Protected Audience sellers, we propose reusing the
 `privateAggregationConfig` implemented/proposed for report verification, adding
@@ -191,7 +192,7 @@ a new field, e.g.
 sharedStorage.run('example-operation', {
   privateAggregationConfig: {
     contextId: 'example-id',
-    filteringIdBitSize: 32
+    filteringIdMaxBytes: 8  // i.e. allow up to a 64-bit integer
   }
 });
 ```
