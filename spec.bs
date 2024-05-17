@@ -1864,13 +1864,13 @@ renumbering the later step as appropriate:
 Then, we modify the invocations of the above algorithms to plumb the new
 parameters in:
 
-The <a spec="turtledove">generate a bid</a> algorithm is modified to add a new
-<a spec="turtledove">auction config</a> parameter |auctionConfig|. Additionally,
-its last step is modified by adding the argument |auctionConfig| to the
-invocation of <a spec="turtledove">evaluating a bidding script</a>. Further, the
-<a spec="turtledove">generate and score bids</a> algorithm is modified by
-adding the argument |auctionConfig| to both invocations of
-<a spec="turtledove">generate a bid</a>.
+The <a spec="turtledove">generate potentially multiple bids</a> algorithm is
+modified to add a new <a spec="turtledove">auction config</a> parameter
+|auctionConfig|. Additionally, its last step is modified by adding the argument
+|auctionConfig| to the invocation of <a spec="turtledove">evaluating a bidding
+script</a>. Further, the <a spec="turtledove">generate and score bids</a>
+algorithm is modified by adding the argument |auctionConfig| to both invocations
+of <a spec="turtledove">generate potentially multiple bids</a>.
 
 The <a spec="turtledove">score and rank a bid</a> algorithm is modified by
 adding the argument |auctionConfig| to the invocation of
