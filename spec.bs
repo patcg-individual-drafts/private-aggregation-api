@@ -164,8 +164,9 @@ contributeToHistogram(PAHistogramContribution contribution)</dfn> method steps
 are:
 </div>
 
-1. If |contribution|["{{PAHistogramContribution/bucket}}"] is not in the range
-    [0, 2<sup>128</sup>−1], [=exception/throw=] a {{RangeError}}.
+1. If |contribution|["{{PAHistogramContribution/bucket}}"] is not [=set/
+    contained=] in [=the exclusive range|the range=] 0 to 2<sup>128</sup>,
+    exclusive, [=exception/throw=] a {{RangeError}}.
 1. If |contribution|["{{PAHistogramContribution/value}}"] is negative,
     [=exception/throw=] a {{RangeError}}.
 1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
@@ -212,10 +213,10 @@ enableDebugMode(optional PADebugModeOptions options)</dfn> method steps are:
         [=debug scope=].
 1. Let |debugKey| be null.
 1. If |options| was given:
-    1. If |options|["{{PADebugModeOptions/debugKey}}] is not in the range
-        [0, 2<sup>64</sup>−1], [=exception/throw=] a "{{DataError}}"
-        {{DOMException}}.
-    1. Set |debugKey| to |options|["{{PADebugModeOptions/debugKey}}].
+    1. If |options|["{{PADebugModeOptions/debugKey}}"] is not [=set/contained=]
+        in [=the exclusive range|the range=] 0 to 2<sup>64</sup>, exclusive,
+        [=exception/throw=] a "{{DataError}}" {{DOMException}}.
+    1. Set |debugKey| to |options|["{{PADebugModeOptions/debugKey}}"].
 1. Let |debugDetails| be a new [=debug details=] with the items:
     : [=debug details/enabled=]
     :: true
@@ -659,8 +660,10 @@ null |timeout|:
 1. Otherwise, set |truncatedContributions| to |contributions|.
 1. Let |contributionSum| be 0.
 1. [=set/iterate|For each=] |contribution| of |truncatedContributions|:
-    1. [=Assert=]: |contribution|["|value|"] is non-negative.
-    1. Add |contribution|["|value|"] to |contributionSum|.
+    1. [=Assert=]: |contribution|["{{PAHistogramContribution/value}}"] is
+        non-negative.
+    1. Add |contribution|["{{PAHistogramContribution/value}}"] to
+        |contributionSum|.
 1. Let |currentWallTime| be the [=current wall time=].
 1. Let |sufficientBudget| be the result of [=consuming budget if permitted=]
     given |contributionSum|, |reportingOrigin|, |api| and |currentWallTime|.
@@ -1104,12 +1107,14 @@ To <dfn algorithm>obtain the aggregation coordinator</dfn> given a
 {{SharedStorageRunOperationMethodOptions}} |options|, perform the following
 steps. They return an [=aggregation coordinator=], null or a {{DOMException}}:
 
-1. If |options|["`privateAggregationConfig`"] does not [=map/exist=], return
-    null.
-1. If |options|["`privateAggregationConfig`"]["`aggregatonCoordinatorOrigin`"]
+1. If
+    |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]
+    does not [=map/exist=], return null.
+1. If
+    |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]["{{SharedStoragePrivateAggregationConfig/aggregationCoordinatorOrigin}}"]
     does not [=map/exist=], return null.
 1. Let |url| be the result of running the [=URL parser=] on
-    |options|["`privateAggregationConfig`"]["`aggregatonCoordinatorOrigin`"].
+    |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]["{{SharedStoragePrivateAggregationConfig/aggregationCoordinatorOrigin}}"].
 1. If |url| is failure or null, return a new {{DOMException}} with name
     "`SyntaxError`".
 
@@ -1395,8 +1400,8 @@ event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
     1. If |bucket|["{{PASignalValue/offset}}"] is not a {{bigint}}, [=exception/
         throw=] a {{TypeError}}.
 1. Otherwise, if |contribution|["{{PAExtendedHistogramContribution/bucket}}"] is
-    not in the range [0, 2<sup>128</sup>−1], [=exception/throw=] a
-    {{TypeError}}.
+    not [=set/contained=] in [=the exclusive range|the range=] 0 to
+    2<sup>128</sup>, exclusive, [=exception/throw=] a {{TypeError}}.
 
     Issue: Make the error type consistent with
         {{PrivateAggregation/contributeToHistogram(contribution)}}.
@@ -1406,7 +1411,7 @@ event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
         value=], [=exception/throw=] a {{TypeError}}.
     1. If |value|["{{PASignalValue/offset}}"] is a {{bigint}}, [=exception/
         throw=] a {{TypeError}}.
-1. Otherwise, if |contribution|["{{PAHistogramContribution/value}}"] is
+1. Otherwise, if |contribution|["{{PAExtendedHistogramContribution/value}}"] is
     negative, [=exception/throw=] a {{TypeError}}.
 1. If |contribution|["{{PAExtendedHistogramContribution/filteringId}}"] is
     not [=set/contained=] in [=the exclusive range|the range=] 0 to
@@ -1631,11 +1636,11 @@ The {{Navigator/joinAdInterestGroup()}} method steps are modified to add the
 following steps at the end of the scope nested under step 5 ("Validate the given
 <var ignore>group</var> and ..."):
 <div algorithm="protected-audience-joinadig-monkey-patch">
-17. If |group|[{{AuctionAdInterestGroup/privateAggregationConfig}}]
+17. If |group|["{{AuctionAdInterestGroup/privateAggregationConfig}}"]
     [=map/exists=]:
     1. Let |aggregationCoordinator| be the result of [=obtaining the Private
         Aggregation coordinator=] given
-        |group|[{{AuctionAdInterestGroup/privateAggregationConfig}}].
+        |group|["{{AuctionAdInterestGroup/privateAggregationConfig}}"].
     1. If |aggregationCoordinator| is a {{DOMException}}, then
         [=exception/throw=] |aggregationCoordinator|.
     1. Set <var ignore>interestGroup</var>'s [=interest group/Private
@@ -1660,19 +1665,19 @@ The <a spec="turtledove">validate and convert auction ad config</a> steps are
 modified to add the following steps just before the last step ("Return
 <var ignore>auctionConfig</var>"), renumbering the later step as appropriate:
 <div algorithm="protected-audience-validate-config-monkey-patch">
-31. If |config|["<code>{{AuctionAdConfig/auctionReportBuyerKeys}}</code>"]
-    [=map/exists=]:
+31. If |config|["{{AuctionAdConfig/auctionReportBuyerKeys}}"] [=map/exists=]:
     1. Let |interestGroupBuyers| be |auctionConfig|'s <a spec="turtledove"
         for="auction config">interest group buyers</a>.
     1. If |interestGroupBuyers| is null, set |interestGroupBuyers| to a new
         [=list=].
     1. [=list/For each=] |index| of [=the exclusive range|the range=] 0 to
-        |config|["<code>{{AuctionAdConfig/auctionReportBuyerKeys}}</code>"]'s
-        [=list/size=], exclusive:
+        |config|["{{AuctionAdConfig/auctionReportBuyerKeys}}"]'s [=list/size=],
+        exclusive:
         1. Let |key| be
-            |config|["<code>{{AuctionAdConfig/auctionReportBuyerKeys}}</code>"][|index|].
-        1. If |key| is not in the range [0, 2<sup>128</sup>−1],
-            [=exception/throw=] a {{TypeError}}.
+            |config|["{{AuctionAdConfig/auctionReportBuyerKeys}}"][|index|].
+        1. If |key| is not [=set/contained=] in [=the exclusive range|the
+            range=] 0 to 2<sup>128</sup>, exclusive, [=exception/throw=] a
+            {{TypeError}}.
         1. If |index| is equal to or greater than |interestGroupBuyers|' [=list/
             size=], [=iteration/continue=].
 
@@ -1684,10 +1689,9 @@ modified to add the following steps just before the last step ("Return
 
             Issue: Check behavior when an origin is repeated in
                 {{AuctionAdConfig/interestGroupBuyers}}.
-1. If |config|["<code>{{AuctionAdConfig/auctionReportBuyers}}</code>"] [=map/
-    exists=]:
+1. If |config|["{{AuctionAdConfig/auctionReportBuyers}}"] [=map/exists=]:
     1. [=map/For each=] |reportType| → |reportBuyerConfig| of
-        |config|["<code>{{AuctionAdConfig/auctionReportBuyers}}</code>"]:
+        |config|["{{AuctionAdConfig/auctionReportBuyers}}"]:
         1. If « "`interestGroupCount`", "`bidCount`",
             "`totalGenerateBidLatency`", "`totalSignalsFetchLatency`" » does not
             [=list/contain=] |reportType|, [=iteration/continue=].
@@ -1697,9 +1701,9 @@ modified to add the following steps just before the last step ("Return
 
             Issue: Should these strings be dash delimited?
 
-        1. If |reportBuyerConfig|["<code>{{AuctionReportBuyersConfig
-            /bucket}}</code>"] is not in the range [0, 2<sup>128</sup>−1],
-            [=exception/throw=] a {{TypeError}}.
+        1. If |reportBuyerConfig|["{{AuctionReportBuyersConfig/bucket}}"] is not
+            [=set/contained=] in [=the exclusive range|the range=] 0 to
+            2<sup>128</sup>, exclusive, [=exception/throw=] a {{TypeError}}.
 
             Issue: Consider validating the case where the bucket used (after
                 summing) is too large. Currently, the implementation appears to
@@ -1711,17 +1715,18 @@ modified to add the following steps just before the last step ("Return
 
 1. Set |auctionConfig|'s [=auction config/auction report buyer debug details=]
     to a new [=debug details=].
-1. If |config|[{{AuctionAdConfig/auctionReportBuyerDebugModeConfig}}]
+1. If |config|["{{AuctionAdConfig/auctionReportBuyerDebugModeConfig}}"]
     [=map/exists=]:
     1. Let |debugModeConfig| be
-        |config|[{{AuctionAdConfig/auctionReportBuyerDebugModeConfig}}].
+        |config|["{{AuctionAdConfig/auctionReportBuyerDebugModeConfig}}"].
     1. Let |enabled| be
-        |debugModeConfig|[{{AuctionReportBuyerDebugModeConfig/enabled}}].
+        |debugModeConfig|["{{AuctionReportBuyerDebugModeConfig/enabled}}"].
     1. Let |debugKey| be
-        |debugModeConfig|[{{AuctionReportBuyerDebugModeConfig/debugKey}}].
+        |debugModeConfig|["{{AuctionReportBuyerDebugModeConfig/debugKey}}"].
     1. If |debugKey| is not null:
-        1. If |debugKey| is not in the range [0, 2<sup>64</sup>−1], [=exception/
-            throw=] a {{TypeError}}.
+        1. If |debugKey| is not [=set/contained=] in [=the exclusive range|the
+            range=] 0 to 2<sup>64</sup>, exclusive, [=exception/throw=] a
+            {{TypeError}}.
         1. If |enabled| is false, [=exception/throw=] a {{TypeError}}.
     1. Set |auctionConfig|'s [=auction config/auction report buyer debug
         details=] to a new [=debug details=] with the items:
@@ -1729,10 +1734,10 @@ modified to add the following steps just before the last step ("Return
         :: |enabled|
         : [=debug details/key=]
         :: |debugKey|
-1. If |config|[{{AuctionAdConfig/privateAggregationConfig}}] [=map/exists=]:
+1. If |config|["{{AuctionAdConfig/privateAggregationConfig}}"] [=map/exists=]:
     1. Let |aggregationCoordinator| be the result of [=obtaining the Private
         Aggregation coordinator=] given
-        |config|[{{AuctionAdConfig/privateAggregationConfig}}].
+        |config|["{{AuctionAdConfig/privateAggregationConfig}}"].
     1. If |aggregationCoordinator| is a {{DOMException}}, return failure.
     1. Set <var ignore>auctionConfig</var>'s [=auction config/seller Private
         Aggregation coordinator=] to |aggregationCoordinator|.
@@ -1859,13 +1864,13 @@ renumbering the later step as appropriate:
 Then, we modify the invocations of the above algorithms to plumb the new
 parameters in:
 
-The <a spec="turtledove">generate a bid</a> algorithm is modified to add a new
-<a spec="turtledove">auction config</a> parameter |auctionConfig|. Additionally,
-its last step is modified by adding the argument |auctionConfig| to the
-invocation of <a spec="turtledove">evaluating a bidding script</a>. Further, the
-<a spec="turtledove">generate and score bids</a> algorithm is modified by
-adding the argument |auctionConfig| to both invocations of
-<a spec="turtledove">generate a bid</a>.
+The <a spec="turtledove">generate potentially multiple bids</a> algorithm is
+modified to add a new <a spec="turtledove">auction config</a> parameter
+|auctionConfig|. Additionally, its last step is modified by adding the argument
+|auctionConfig| to the invocation of <a spec="turtledove">evaluating a bidding
+script</a>. Further, the <a spec="turtledove">generate and score bids</a>
+algorithm is modified by adding the argument |auctionConfig| to both invocations
+of <a spec="turtledove">generate potentially multiple bids</a>.
 
 The <a spec="turtledove">score and rank a bid</a> algorithm is modified by
 adding the argument |auctionConfig| to the invocation of
@@ -2122,7 +2127,8 @@ integer |maxAllowed| and a <a spec="turtledove">leading bid info</a>
     truncating its fractional part.
 1. If |value|["{{PASignalValue/offset}}"] [=map/exists=], set |returnValue| to
     the result of adding |returnValue| to |value|["{{PASignalValue/offset}}"].
-1. Clamp |returnValue| to the range [0, |maxAllowed|] and return the result.
+1. Clamp |returnValue| to [=the inclusive range|the range=] 0 to |maxAllowed|,
+    inclusive, and return the result.
 
 To <dfn>determine a signal's numeric value</dfn> given a [=signal base value=]
 |signalBaseValue| and a <a spec="turtledove">leading bid info</a>
@@ -2305,8 +2311,8 @@ namely how many contributions are included. To protect against this, the payload
 is padded to a fixed number of contributions.
 ### Temporary debugging mechanism ### {#temporary-debugging-mechanism}
 
-The <code>{{PrivateAggregation/enableDebugMode()}}</code> method allows for many
-of the protections of this API to be bypassed to ease testing and integration.
+The {{PrivateAggregation/enableDebugMode()}} method allows for many of the
+protections of this API to be bypassed to ease testing and integration.
 Specifically, the contents of the payload, i.e. the histogram contributions, are
 revealed in the clear when the debug mode is enabled. Optionally, a debug key
 can also be set to associate the report with the calling context. In the future,
@@ -2314,8 +2320,8 @@ this mechanism will only be available for callers that are eligible to set
 third-party cookies. In that case, the API caller already has the ability to
 communicate information cross-site.
 
-Issue(57): Tie <code>{{PrivateAggregation/enableDebugMode()}}</code> to
-    third-party cookie eligibility.
+Issue(57): Tie {{PrivateAggregation/enableDebugMode()}} to third-party cookie
+    eligibility.
 
 ### Privacy parameters ### {#privacy-parameters}
 
