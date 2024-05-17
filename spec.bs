@@ -1725,7 +1725,8 @@ modified to add the following steps just before the last step ("Return
         |debugModeConfig|["{{AuctionReportBuyerDebugModeConfig/debugKey}}"].
     1. If |debugKey| is not null:
         1. If |debugKey| is not [=set/contained=] in [=the exclusive range|the
-            range=] 0 to 2<sup>64</sup>, [=exception/throw=] a {{TypeError}}.
+            range=] 0 to 2<sup>64</sup>, exclusive, [=exception/throw=] a
+            {{TypeError}}.
         1. If |enabled| is false, [=exception/throw=] a {{TypeError}}.
     1. Set |auctionConfig|'s [=auction config/auction report buyer debug
         details=] to a new [=debug details=] with the items:
