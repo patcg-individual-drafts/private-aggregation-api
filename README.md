@@ -325,6 +325,9 @@ privateAggregation.enableDebugMode();
 The browser can optionally apply debug mode to reports requested earlier in that
 context.
 
+This javascript function can only be called once per context. Any subsequent
+calls will throw an exception.
+
 #### Debug keys
 To allow sites to associate reports with the contexts that triggered them, we
 also allow setting 64-bit unsigned integer debug keys. These keys are passed as
@@ -332,9 +335,6 @@ an optional field to the javascript call, for example:
 ```
 privateAggregation.enableDebugMode({debugKey: 1234n});
 ```
-
-This javascript function can only be called once per context. Any subsequent
-calls will be ignored.
 
 #### Duplicate debug report
 
