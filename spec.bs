@@ -2053,9 +2053,9 @@ an <a spec="turtledove">auction config</a> |auctionConfig| and a
             interest group set</a> whose
             <a spec="turtledove" for="interest group">owner</a> is
             |buyerOrigin|:
-            1. If [=turtledove/check if required seller capabilities are
-                permitted=] given |auctionConfig| and |ig| is false,
-                [=iteration/continue=]
+            1. If <a spec="turtledove">check if required seller capabilities are
+                permitted</a> given |auctionConfig| and |ig| is false,
+                [=iteration/continue=].
             1. If seller capabilities don't allow this reporting, [=iteration/
                 continue=].
 
