@@ -386,6 +386,11 @@ We will also need a limit on the number of contributions within a single report.
 In the case that too many contributions are specified with a ‘batching scope’,
 we should truncate them to the limit.
 
+However, to reduce the impact of this limit, we will pre-aggregate (i.e. merge)
+any contributions that have the same bucket and [filtering
+ID](https://github.com/patcg-individual-drafts/private-aggregation-api/blob/main/flexible_filtering.md#proposal-filtering-id-in-the-encrypted-payload)
+before truncation.
+
 If necessary, we could instead split the contributions back into multiple
 reports, each respecting the limit.
 
