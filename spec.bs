@@ -651,13 +651,27 @@ null |timeout|:
         agents=] to drop reports for a number of reasons, for example user
         opt-out or an origin not being
         <a href="https://github.com/privacysandbox/attestation">enrolled</a>.
+1. Let |mergedContributions| be a new [=list=].
+1. [=list/For each=] |contribution| of |contributions|:
+    1. Let |hasProcessedContribution| be false.
+    1. [=list/For each] |mergedContribution| of |mergedContributions|:
+        1. If |contribution| and |mergedContribution| have both the same
+            {{PAHistogramContribution/bucket}} and the same
+            {{PAHistogramContribution/filteringId}}:
+            1. Add |contribution|'s {{PAHistogramContribution/value}} to
+                |mergedContribution|'s {{PAHistogramContribution/value}}.
+            1. Set |hasProcessedContribution| to true.
+            1. [=iteration/Break=].
+    1. If |hasProcessedContribution| is false, [=list/append=] |contribution| to
+        |mergedContributions|.
 1. Let |truncatedContributions| be a new [=list=].
-1. If |contributions| has a [=list/size=] greater than [=maximum report
+1. If |mergedContributions| has a [=list/size=] greater than [=maximum report
     contributions=]:
     1. [=set/For each=] |n| of [=the exclusive range|the range=] 0 to [=maximum
         report contributions=], exclusive:
-        1. [=set/Append=] |contributions|[|n|] to |truncatedContributions|.
-1. Otherwise, set |truncatedContributions| to |contributions|.
+        1. [=set/Append=] |mergedContributions|[|n|] to
+            |truncatedContributions|.
+1. Otherwise, set |truncatedContributions| to |mergedContributions|.
 1. Let |contributionSum| be 0.
 1. [=set/iterate|For each=] |contribution| of |truncatedContributions|:
     1. [=Assert=]: |contribution|["{{PAHistogramContribution/value}}"] is
@@ -667,6 +681,11 @@ null |timeout|:
 1. Let |currentWallTime| be the [=current wall time=].
 1. Let |sufficientBudget| be the result of [=consuming budget if permitted=]
     given |contributionSum|, |reportingOrigin|, |api| and |currentWallTime|.
+
+    Issue: Allow for some of the contributions to still be approved even if
+        there isn't enough budget for the entire report. Note that this change
+        would require the merging step to be postponed until after budgeting and
+        the truncation step modified to account for the later merging.
 1. If |sufficientBudget| is false:
     1. Let |isDeterministicReport| be the result of [=determining if a report
         should be sent deterministically=] given |preSpecifiedParams|.
