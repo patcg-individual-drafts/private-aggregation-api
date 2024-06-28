@@ -654,7 +654,7 @@ null |timeout|:
 1. Let |mergedContributions| be a new [=list=].
 1. [=list/For each=] |contribution| of |contributions|:
     1. Let |hasProcessedContribution| be false.
-    1. [=list/For each] |mergedContribution| of |mergedContributions|:
+    1. [=list/For each=] |mergedContribution| of |mergedContributions|:
         1. If |contribution| and |mergedContribution| have both the same
             {{PAHistogramContribution/bucket}} and the same
             {{PAHistogramContribution/filteringId}}:
