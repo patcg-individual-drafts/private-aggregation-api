@@ -22,7 +22,7 @@ Author: Alex Turner (alexmt@chromium.org)
     - [Duplicate debug report](#duplicate-debug-report)
   - [Reducing volume by batching](#reducing-volume-by-batching)
     - [Batching scope](#batching-scope)
-    - [Contributions limit](#contributions-limit)
+    - [Limiting the number of contributions per report](#limiting-the-number-of-contributions-per-report)
     - [Padding](#padding)
   - [Aggregation coordinator choice](#aggregation-coordinator-choice)
 - [Privacy and security](#privacy-and-security)
@@ -245,7 +245,7 @@ aggregating machine learning update vectors or extending the histogram operation
 to support values that are vectors of integers rather than only scalars.
 
 The operation would be indicated by using the appropriate JavaScript call, e.g.
-`contributeToHistogram()` and `contributToDistinctCount()` for histograms and
+`contributeToHistogram()` and `contributeToDistinctCount()` for histograms and
 count distinct, respectively.
 
 ## Reports
@@ -380,21 +380,32 @@ One consideration in the short term is that these calls may have different
 associated [debug modes or keys](#temporary-debugging-mechanism). In this case,
 only calls sharing those details should be batched together.
 
-#### Contributions limit
+#### Limiting the number of contributions per report
 
 We will also need a limit on the number of contributions within a single report.
 In the case that too many contributions are specified with a ‘batching scope’,
-we should truncate them to the limit.
-
-However, to reduce the impact of this limit, we will pre-aggregate (i.e. merge)
-any contributions that have the same bucket and [filtering
+we should truncate them to the limit. To reduce the impact of this limit, we
+will pre-aggregate (i.e. merge) any contributions that have the same bucket and
+[filtering
 ID](https://github.com/patcg-individual-drafts/private-aggregation-api/blob/main/flexible_filtering.md#proposal-filtering-id-in-the-encrypted-payload)
 before truncation.
 
-If necessary, we could instead split the contributions back into multiple
-reports, each respecting the limit.
+Some callers may benefit from different limits. Shared Storage callers can be
+resilient to a low limit because they can simply hold onto any excess
+contributions until their next invocation. On the other hand, Protected Audience
+callers are attached to an auction, so any truncated contributions are
+unrecoverable.
 
-Strawman limit: 20 contributions per report.
+Conveniently, it's not necessary for the limit to be a constant, so long as it
+is determined independently of cross-site data. It follows that the limit may be
+chosen based on the the calling API's identity without any affect on privacy.
+More complex designs that enable finer-grained configuration are also possible,
+but require further analysis (see [issue #81]).
+
+[issue #81]: https://github.com/patcg-individual-drafts/private-aggregation-api/issues/81
+
+We suggest a default limit of 20 contributions per report with a special case of
+100 contributions per report for Protected Audience callers.
 
 #### Padding
 
