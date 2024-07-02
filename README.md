@@ -245,7 +245,7 @@ aggregating machine learning update vectors or extending the histogram operation
 to support values that are vectors of integers rather than only scalars.
 
 The operation would be indicated by using the appropriate JavaScript call, e.g.
-`contributeToHistogram()` and `contributToDistinctCount()` for histograms and
+`contributeToHistogram()` and `contributeToDistinctCount()` for histograms and
 count distinct, respectively.
 
 ## Reports

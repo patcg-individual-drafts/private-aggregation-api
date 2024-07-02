@@ -77,7 +77,7 @@ functionality to be available.
 Overview {#overview}
 --------------------
 
-This document oulines a general-purpose API that can be called from isolated
+This document outlines a general-purpose API that can be called from isolated
 contexts that have access to cross-site data (such as a Shared Storage worklet).
 Within these contexts, potentially identifying data can be encapsulated into
 "aggregatable reports". To prevent leakage, the cross-site data in these reports
