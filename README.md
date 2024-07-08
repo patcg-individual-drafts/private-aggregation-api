@@ -319,7 +319,7 @@ group of Chrome-facilitated testing.
 The following javascript call will then enable debug mode for all future reports
 requested in that context (e.g. Shared Storage operation or Protected Audience
 function call):
-```
+```js
 privateAggregation.enableDebugMode();
 ```
 The browser can optionally apply debug mode to reports requested earlier in that
@@ -332,7 +332,7 @@ calls will throw an exception.
 To allow sites to associate reports with the contexts that triggered them, we
 also allow setting 64-bit unsigned integer debug keys. These keys are passed as
 an optional field to the javascript call, for example:
-```
+```js
 privateAggregation.enableDebugMode({debugKey: 1234n});
 ```
 
