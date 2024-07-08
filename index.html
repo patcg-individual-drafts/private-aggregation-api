@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-UD" rel="stylesheet">
   <meta content="Bikeshed version a1dabb26c, updated Mon Jun 17 15:00:44 2024 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="321eba18bc7ac2bf9ab3c7d8da99b6ab192bdd52" name="revision">
+  <meta content="e6bc809ab982f7549d0b0ee4c5408cfc3ec8a808" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -716,7 +716,7 @@ var[data-var-color="6"] { background-color: #FFBCF2; box-shadow: 0 0 0 2px #FFBC
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2024-07-02">2 July 2024</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2024-07-08">8 July 2024</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1444,36 +1444,64 @@ null <var>timeout</var>:</p>
     agents</a> to drop reports for a number of reasons, for example user
     opt-out or an origin not being <a href="https://github.com/privacysandbox/attestation">enrolled</a>.</p>
     <li data-md>
-     <p>Let <var>truncatedContributions</var> be a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑦">list</a>.</p>
+     <p>Let <var>mergedContributions</var> be a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑦">list</a>.</p>
     <li data-md>
-     <p>If <var>contributions</var> has a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size">size</a> greater than <a data-link-type="dfn" href="#maximum-report-contributions" id="ref-for-maximum-report-contributions">maximum report
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate③">For each</a> <var>contribution</var> of <var>contributions</var>:</p>
+     <ol>
+      <li data-md>
+       <p>Let <var>hasProcessedContribution</var> be false.</p>
+      <li data-md>
+       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate④">For each</a> <var>mergedContribution</var> of <var>mergedContributions</var>:</p>
+       <ol>
+        <li data-md>
+         <p>If <var>contribution</var> and <var>mergedContribution</var> have both the same <code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket①">bucket</a></code> and the same <code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid①">filteringId</a></code>:</p>
+         <ol>
+          <li data-md>
+           <p>Add <var>contribution</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value①">value</a></code> to <var>mergedContribution</var>’s <code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value②">value</a></code>.</p>
+          <li data-md>
+           <p>Set <var>hasProcessedContribution</var> to true.</p>
+          <li data-md>
+           <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-break" id="ref-for-iteration-break">Break</a>.</p>
+         </ol>
+       </ol>
+      <li data-md>
+       <p>If <var>hasProcessedContribution</var> is false, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append③">append</a> <var>contribution</var> to <var>mergedContributions</var>.</p>
+     </ol>
+    <li data-md>
+     <p>Let <var>truncatedContributions</var> be a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑧">list</a>.</p>
+    <li data-md>
+     <p>If <var>mergedContributions</var> has a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size">size</a> greater than <a data-link-type="dfn" href="#maximum-report-contributions" id="ref-for-maximum-report-contributions">maximum report
 contributions</a>:</p>
      <ol>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate③">For each</a> <var>n</var> of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#the-exclusive-range" id="ref-for-the-exclusive-range③">the range</a> 0 to <a data-link-type="dfn" href="#maximum-report-contributions" id="ref-for-maximum-report-contributions①">maximum
+       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑤">For each</a> <var>n</var> of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#the-exclusive-range" id="ref-for-the-exclusive-range③">the range</a> 0 to <a data-link-type="dfn" href="#maximum-report-contributions" id="ref-for-maximum-report-contributions①">maximum
 report contributions</a>, exclusive:</p>
        <ol>
         <li data-md>
-         <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append">Append</a> <var>contributions</var>[<var>n</var>] to <var>truncatedContributions</var>.</p>
+         <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append">Append</a> <var>mergedContributions</var>[<var>n</var>] to <var>truncatedContributions</var>.</p>
        </ol>
      </ol>
     <li data-md>
-     <p>Otherwise, set <var>truncatedContributions</var> to <var>contributions</var>.</p>
+     <p>Otherwise, set <var>truncatedContributions</var> to <var>mergedContributions</var>.</p>
     <li data-md>
      <p>Let <var>contributionSum</var> be 0.</p>
     <li data-md>
-     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate④">For each</a> <var>contribution</var> of <var>truncatedContributions</var>:</p>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑥">For each</a> <var>contribution</var> of <var>truncatedContributions</var>:</p>
      <ol>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑨">Assert</a>: <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value①">value</a></code>"] is
+       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert⑨">Assert</a>: <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value③">value</a></code>"] is
 non-negative.</p>
       <li data-md>
-       <p>Add <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value②">value</a></code>"] to <var>contributionSum</var>.</p>
+       <p>Add <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value④">value</a></code>"] to <var>contributionSum</var>.</p>
      </ol>
     <li data-md>
      <p>Let <var>currentWallTime</var> be the <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-current-wall-time" id="ref-for-dfn-current-wall-time">current wall time</a>.</p>
     <li data-md>
      <p>Let <var>sufficientBudget</var> be the result of <a data-link-type="dfn" href="#consume-budget-if-permitted" id="ref-for-consume-budget-if-permitted①">consuming budget if permitted</a> given <var>contributionSum</var>, <var>reportingOrigin</var>, <var>api</var> and <var>currentWallTime</var>.</p>
+     <p class="issue" id="issue-f90dea64"><a class="self-link" href="#issue-f90dea64"></a> Allow for some of the contributions to still be approved even if
+    there isn’t enough budget for the entire report. Note that this change
+    would require the merging step to be postponed until after budgeting and
+    the truncation step modified to account for the later merging.</p>
     <li data-md>
      <p>If <var>sufficientBudget</var> is false:</p>
      <ol>
@@ -1497,7 +1525,7 @@ usage over time, e.g. the contribution sum over the last 24 hours. The algorithm
 should assume that the contribution will be sent if and only if true is
 returned, i.e. it should consume the budget in that case. If <var>value</var> is zero,
 this algorithm should return true.</p>
-   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="obtain-an-aggregatable-report">obtain an aggregatable report</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑨">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type⑤">context type</a> <var>api</var>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑧">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑦">PAHistogramContribution</a></code>s <var>contributions</var>, a <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details①③">debug details</a> <var>debugDetails</var>, an <a data-link-type="dfn" href="#aggregation-coordinator" id="ref-for-aggregation-coordinator⑦">aggregation coordinator</a> <var>aggregationCoordinator</var>, a <a data-link-type="dfn" href="#pre-specified-report-parameters" id="ref-for-pre-specified-report-parameters⑤">pre-specified report parameters</a> <var>preSpecifiedParams</var>, a [=moment] or null <var>timeout</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment⑤">moment</a> <var>currentTime</var>,
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="obtain-an-aggregatable-report">obtain an aggregatable report</dfn> given an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑨">origin</a> <var>reportingOrigin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type⑤">context type</a> <var>api</var>, a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑨">list</a> of <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑦">PAHistogramContribution</a></code>s <var>contributions</var>, a <a data-link-type="dfn" href="#debug-details" id="ref-for-debug-details①③">debug details</a> <var>debugDetails</var>, an <a data-link-type="dfn" href="#aggregation-coordinator" id="ref-for-aggregation-coordinator⑦">aggregation coordinator</a> <var>aggregationCoordinator</var>, a <a data-link-type="dfn" href="#pre-specified-report-parameters" id="ref-for-pre-specified-report-parameters⑤">pre-specified report parameters</a> <var>preSpecifiedParams</var>, a [=moment] or null <var>timeout</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment⑤">moment</a> <var>currentTime</var>,
 perform the following steps. They return an <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report⑤">aggregatable report</a>.</p>
    <ol>
     <li data-md>
@@ -1569,10 +1597,10 @@ delay</a>.</p>
    <p class="issue" id="issue-2485156c"><a class="self-link" href="#issue-2485156c"></a> Do we have to use the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task" id="ref-for-queue-a-task">queue a task</a> algorithm here?</p>
    <p>The user agent must periodically <a data-link-type="dfn" href="#attempt-to-queue-reports-for-sending" id="ref-for-attempt-to-queue-reports-for-sending">attempt to queue reports for sending</a> given
 its <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache②">aggregatable report cache</a>.</p>
-   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="attempt-to-queue-reports-for-sending">attempt to queue reports for sending</dfn> given a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list⑨">list</a> of <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report⑦">aggregatable reports</a> <var>reports</var>:</p>
+   <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="attempt-to-queue-reports-for-sending">attempt to queue reports for sending</dfn> given a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①⓪">list</a> of <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report⑦">aggregatable reports</a> <var>reports</var>:</p>
    <ol>
     <li data-md>
-     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑤">For each</a> <var>report</var> of <var>reports</var>, run these steps <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel">in
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑦">For each</a> <var>report</var> of <var>reports</var>, run these steps <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/infrastructure.html#in-parallel" id="ref-for-in-parallel">in
 parallel</a>:</p>
      <ol>
       <li data-md>
@@ -1745,7 +1773,7 @@ service payloads</a> given <var>report</var>.</p>
 value to JSON bytes</a> on <var>data</var>.</p>
    </ol>
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="obtain-the-aggregation-service-payloads">obtain the aggregation service payloads</dfn> given an <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report①⓪">aggregatable
-report</a> <var>report</var>, perform the following steps. They return a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①⓪">list</a> of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map⑤">maps</a> or an error.</p>
+report</a> <var>report</var>, perform the following steps. They return a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①①">list</a> of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map⑤">maps</a> or an error.</p>
    <ol>
     <li data-md>
      <p>Let <var>publicKeyTuple</var> be the result of <a data-link-type="dfn" href="#obtain-the-public-key-for-encryption" id="ref-for-obtain-the-public-key-for-encryption">obtaining the public key for
@@ -1764,7 +1792,7 @@ coordinator</a>.</p>
     <li data-md>
      <p>If <var>encryptedPayload</var> is an error, return <var>encryptedPayload</var>.</p>
     <li data-md>
-     <p>Let <var>aggregationServicePayloads</var> be a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①①">list</a>.</p>
+     <p>Let <var>aggregationServicePayloads</var> be a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①②">list</a>.</p>
     <li data-md>
      <p>Let <var>aggregationServicePayload</var> be an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map⑥">ordered map</a> of the following
 key/value pairs:</p>
@@ -1783,7 +1811,7 @@ key/value pairs:</p>
        <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-set" id="ref-for-map-set⑥">Set</a> <var>aggregationServicePayload</var>[<code>debug_cleartext_payload</code>] to <var>plaintextPayload</var>, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#forgiving-base64-encode" id="ref-for-forgiving-base64-encode①">base64 encoded</a>.</p>
      </ol>
     <li data-md>
-     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append③">Append</a> <var>aggregationServicePayload</var> to <var>aggregationServicePayloads</var>.</p>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append④">Append</a> <var>aggregationServicePayload</var> to <var>aggregationServicePayloads</var>.</p>
     <li data-md>
      <p>Return <var>aggregationServicePayloads</var>.</p>
    </ol>
@@ -1816,7 +1844,7 @@ an error. This step may be asynchronous.</p>
    <p>To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="obtain-the-plaintext-payload">obtain the plaintext payload</dfn> given an <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report①①">aggregatable report</a> <var>report</var>, perform the following steps. They return a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#byte-sequence" id="ref-for-byte-sequence③">byte sequence</a>.</p>
    <ol>
     <li data-md>
-     <p>Let <var>payloadData</var> be a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①②">list</a>.</p>
+     <p>Let <var>payloadData</var> be a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①③">list</a>.</p>
     <li data-md>
      <p>Let <var>contributions</var> be <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-contributions" id="ref-for-aggregatable-report-contributions①">contributions</a>.</p>
     <li data-md>
@@ -1830,29 +1858,29 @@ report contributions</a>:</p>
        <p>Let <var>nullContribution</var> be a new <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑧">PAHistogramContribution</a></code> with the
 items:</p>
        <dl>
-        <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket①">bucket</a></code>
+        <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket②">bucket</a></code>
         <dd data-md>
          <p>0</p>
-        <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value③">value</a></code>
+        <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value⑤">value</a></code>
         <dd data-md>
          <p>0</p>
-        <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid①">filteringId</a></code>
+        <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid②">filteringId</a></code>
         <dd data-md>
          <p>0</p>
        </dl>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append④">Append</a> <var>nullContribution</var> to <var>contributions</var>.</p>
+       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append⑤">Append</a> <var>nullContribution</var> to <var>contributions</var>.</p>
      </ol>
      <p class="note" role="note"><span class="marker">Note:</span> This padding protects against the number of contributions being leaked
     through the encrypted payload size, see discussion <a href="#protecting-against-leaks-via-payload-size">below</a>.</p>
     <li data-md>
-     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑥">For each</a> <var>contribution</var> of <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-contributions" id="ref-for-aggregatable-report-contributions②"> contributions</a>:</p>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑧">For each</a> <var>contribution</var> of <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-contributions" id="ref-for-aggregatable-report-contributions②"> contributions</a>:</p>
      <ol>
       <li data-md>
        <p>Let <var>filteringIdMaxBytes</var> be <var>report</var>’s <a data-link-type="dfn" href="#aggregatable-report-filtering-id-max-bytes" id="ref-for-aggregatable-report-filtering-id-max-bytes①">filtering
 id max bytes</a>.</p>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①⑤">Assert</a>: <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid②">filteringId</a></code>"]
+       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#assert" id="ref-for-assert①⑤">Assert</a>: <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid③">filteringId</a></code>"]
 is <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-contain" id="ref-for-list-contain⑤">contained</a> in <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#the-exclusive-range" id="ref-for-the-exclusive-range④">the range</a> 0 to
 256<sup><var>filteringIdMaxBytes</var></sup>, exclusive.</p>
       <li data-md>
@@ -1861,16 +1889,16 @@ pairs:</p>
        <dl>
         <dt data-md>"<code>bucket</code>"
         <dd data-md>
-         <p>The result of <a data-link-type="dfn" href="#encode-an-integer-for-the-payload" id="ref-for-encode-an-integer-for-the-payload">encoding an integer for the payload</a> given <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket②">bucket</a></code>"] and 16.</p>
+         <p>The result of <a data-link-type="dfn" href="#encode-an-integer-for-the-payload" id="ref-for-encode-an-integer-for-the-payload">encoding an integer for the payload</a> given <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket③">bucket</a></code>"] and 16.</p>
         <dt data-md>"<code>value</code>"
         <dd data-md>
-         <p>The result of <a data-link-type="dfn" href="#encode-an-integer-for-the-payload" id="ref-for-encode-an-integer-for-the-payload①">encoding an integer for the payload</a> given <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value④">value</a></code>"] and 4.</p>
+         <p>The result of <a data-link-type="dfn" href="#encode-an-integer-for-the-payload" id="ref-for-encode-an-integer-for-the-payload①">encoding an integer for the payload</a> given <var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value⑥">value</a></code>"] and 4.</p>
         <dt data-md>"<code>id</code>"
         <dd data-md>
-         <p>The result of <a data-link-type="dfn" href="#encode-an-integer-for-the-payload" id="ref-for-encode-an-integer-for-the-payload②">encoding an integer for the payload</a> given <var>contribution</var>[="<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid③">filteringId</a></code>"] and <var>filteringIdMaxBytes</var>.</p>
+         <p>The result of <a data-link-type="dfn" href="#encode-an-integer-for-the-payload" id="ref-for-encode-an-integer-for-the-payload②">encoding an integer for the payload</a> given <var>contribution</var>[="<code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid④">filteringId</a></code>"] and <var>filteringIdMaxBytes</var>.</p>
        </dl>
       <li data-md>
-       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append⑤">Append</a> <var>contributionData</var> to <var>payloadData</var>.</p>
+       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append⑥">Append</a> <var>contributionData</var> to <var>payloadData</var>.</p>
      </ol>
     <li data-md>
      <p>Let <var>payload</var> be an <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map⑧">ordered map</a> of the following key/value pairs:</p>
@@ -2407,9 +2435,9 @@ a new <a data-link-type="dfn" href="#on-event-contribution-cache" id="ref-for-on
     <li data-md>
      <p>Let <var>onEventContributionCache</var> be <var>cacheMap</var>[<var>ig</var>].</p>
     <li data-md>
-     <p>If <var>onEventContributionCache</var>[<var>event</var>] does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①④">exist</a>, set <var>onEventContributionCache</var>[<var>event</var>] to a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①③">list</a>.</p>
+     <p>If <var>onEventContributionCache</var>[<var>event</var>] does not <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-exists" id="ref-for-map-exists①④">exist</a>, set <var>onEventContributionCache</var>[<var>event</var>] to a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①④">list</a>.</p>
     <li data-md>
-     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append⑥">Append</a> <var>entry</var> to <var>onEventContributionCache</var>[<var>event</var>].</p>
+     <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-append" id="ref-for-list-append⑦">Append</a> <var>entry</var> to <var>onEventContributionCache</var>[<var>event</var>].</p>
    </ol>
    <p class="issue" id="issue-2f48ed07③"><a class="self-link" href="#issue-2f48ed07③"></a> Ensure errors are of an appropriate type, e.g. <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#invalidaccesserror" id="ref-for-invalidaccesserror④">InvalidAccessError</a></code> is
     deprecated.</p>
@@ -2543,7 +2571,7 @@ bidding or scoring signals fetch to complete, when called from <code>generateBid
      <p>A <a data-link-type="dfn" href="#worklet-function" id="ref-for-worklet-function①">worklet function</a></p>
    </dl>
    <h4 class="heading settled dfn-paneled" data-dfn-type="dfn" data-level="12.3.7" data-lt="On event contribution cache" data-noexport id="on-event-contribution-cache"><span class="secno">12.3.7. </span><span class="content">On event contribution cache</span><a class="self-link" href="#on-event-contribution-cache" id="ref-for-on-event-contribution-cache②"></a></h4>
-    An on event contribution cache is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map①④">map</a> from <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string①⓪">string</a> to a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①④">list</a> of <a data-link-type="dfn" href="#on-event-contribution-cache-entry" id="ref-for-on-event-contribution-cache-entry①">on event contribution cache entries</a>. 
+    An on event contribution cache is a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#ordered-map" id="ref-for-ordered-map①④">map</a> from <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string①⓪">string</a> to a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①⑤">list</a> of <a data-link-type="dfn" href="#on-event-contribution-cache-entry" id="ref-for-on-event-contribution-cache-entry①">on event contribution cache entries</a>. 
    <h4 class="heading settled" data-level="12.3.8" id="extending-interestgroupscriptrunnerglobalscope"><span class="secno">12.3.8. </span><span class="content">Extending
 InterestGroupScriptRunnerGlobalScope</span><a class="self-link" href="#extending-interestgroupscriptrunnerglobalscope"></a></h4>
    <p>Extend the <a href="https://wicg.github.io/turtledove/#global-scopes">global
@@ -2610,9 +2638,9 @@ modified to add the following steps just before the last step ("Return <var>auct
        <li data-md>
         <p>Let <var>interestGroupBuyers</var> be <var>auctionConfig</var>’s <a data-link-type="dfn" href="https://wicg.github.io/turtledove/#auction-config-interest-group-buyers" id="ref-for-auction-config-interest-group-buyers">interest group buyers</a>.</p>
        <li data-md>
-        <p>If <var>interestGroupBuyers</var> is null, set <var>interestGroupBuyers</var> to a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①⑤">list</a>.</p>
+        <p>If <var>interestGroupBuyers</var> is null, set <var>interestGroupBuyers</var> to a new <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list" id="ref-for-list①⑥">list</a>.</p>
        <li data-md>
-        <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑦">For each</a> <var>index</var> of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#the-exclusive-range" id="ref-for-the-exclusive-range⑦">the range</a> 0 to <var>config</var>["<code class="idl"><a data-link-type="idl" href="#dom-auctionadconfig-auctionreportbuyerkeys" id="ref-for-dom-auctionadconfig-auctionreportbuyerkeys①">auctionReportBuyerKeys</a></code>"]'s <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size④">size</a>,
+        <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑨">For each</a> <var>index</var> of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#the-exclusive-range" id="ref-for-the-exclusive-range⑦">the range</a> 0 to <var>config</var>["<code class="idl"><a data-link-type="idl" href="#dom-auctionadconfig-auctionreportbuyerkeys" id="ref-for-dom-auctionadconfig-auctionreportbuyerkeys①">auctionReportBuyerKeys</a></code>"]'s <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size④">size</a>,
 exclusive:</p>
         <ol>
          <li data-md>
@@ -2622,7 +2650,7 @@ exclusive:</p>
 range</a> 0 to 2<sup>128</sup>, exclusive, <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#dfn-throw" id="ref-for-dfn-throw①⑤">throw</a> a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#exceptiondef-typeerror" id="ref-for-exceptiondef-typeerror⑦">TypeError</a></code>.</p>
          <li data-md>
           <p>If <var>index</var> is equal to or greater than <var>interestGroupBuyers</var>’ <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-size" id="ref-for-list-size⑤"> size</a>, <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-continue" id="ref-for-iteration-continue">continue</a>.</p>
-          <p class="note" role="note"><span class="marker">Note:</span> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-continue" id="ref-for-iteration-continue①">Continue</a> is used (instead of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-break" id="ref-for-iteration-break"> break</a>) to match validation logic for all given buyer keys.</p>
+          <p class="note" role="note"><span class="marker">Note:</span> <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-continue" id="ref-for-iteration-continue①">Continue</a> is used (instead of <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#iteration-break" id="ref-for-iteration-break①"> break</a>) to match validation logic for all given buyer keys.</p>
          <li data-md>
           <p>Let <var>origin</var> be <var>interestGroupBuyers</var>[<var>index</var>].</p>
          <li data-md>
@@ -2771,7 +2799,7 @@ interest group</a> given <var>global</var>.</p>
       <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#map-iterate" id="ref-for-map-iterate②">For each</a> <var>event</var> → <var>entries</var> of <var>onEventContributionCache</var>:</p>
       <ol>
        <li data-md>
-        <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑧">For each</a> <var>onEventEntry</var> of <var>entries</var>:</p>
+        <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate①⓪">For each</a> <var>onEventEntry</var> of <var>entries</var>:</p>
         <ol>
          <li data-md>
           <p>If <var>onEventEntry</var>’s <a data-link-type="dfn" href="#on-event-contribution-cache-entry-debug-scope" id="ref-for-on-event-contribution-cache-entry-debug-scope①">debug scope</a> is <var>debugScope</var>, set <var>onEventEntry</var>’s <a data-link-type="dfn" href="#on-event-contribution-cache-entry-debug-details" id="ref-for-on-event-contribution-cache-entry-debug-details">debug details</a> to <var>debugDetails</var>.</p>
@@ -2902,7 +2930,7 @@ cache</a>:</p>
          <p>If <var>event</var> is "<code>reserved.loss</code>" and <var>origin</var> is <var>winnerOrigin</var>,
 return.</p>
         <li data-md>
-         <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate⑨">For each</a> <var>onEventEntry</var> of <var>entries</var>:</p>
+         <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#list-iterate" id="ref-for-list-iterate①①">For each</a> <var>onEventEntry</var> of <var>entries</var>:</p>
          <ol>
           <li data-md>
            <p>Let <var>filledInContribution</var> be the result of <a data-link-type="dfn" href="#fill-in-the-contribution" id="ref-for-fill-in-the-contribution">filling in the
@@ -2996,13 +3024,13 @@ truncating its fractional part.</p>
          <p>Let <var>contribution</var> be a new <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution⑨">PAHistogramContribution</a></code> with the
 items:</p>
          <dl>
-          <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket③">bucket</a></code>
+          <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket④">bucket</a></code>
           <dd data-md>
            <p><var>bucket</var></p>
-          <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value⑤">value</a></code>
+          <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value⑦">value</a></code>
           <dd data-md>
            <p><var>value</var></p>
-          <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid④">filteringId</a></code>
+          <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid⑤">filteringId</a></code>
           <dd data-md>
            <p>0</p>
          </dl>
@@ -3080,13 +3108,13 @@ the signal value</a> given <var>value</var>, 2<sup>31</sup>−1 and <var>leading
      <p>Let <var>filledInContribution</var> be a new <code class="idl"><a data-link-type="idl" href="#dictdef-pahistogramcontribution" id="ref-for-dictdef-pahistogramcontribution①①">PAHistogramContribution</a></code> with the
 items:</p>
      <dl>
-      <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket④">bucket</a></code>
+      <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-bucket" id="ref-for-dom-pahistogramcontribution-bucket⑤">bucket</a></code>
       <dd data-md>
        <p><var>bucket</var></p>
-      <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value⑥">value</a></code>
+      <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-value" id="ref-for-dom-pahistogramcontribution-value⑧">value</a></code>
       <dd data-md>
        <p><var>value</var></p>
-      <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid⑤">filteringId</a></code>
+      <dt data-md><code class="idl"><a data-link-type="idl" href="#dom-pahistogramcontribution-filteringid" id="ref-for-dom-pahistogramcontribution-filteringid⑥">filteringId</a></code>
       <dd data-md>
        <p><var>contribution</var>["<code class="idl"><a data-link-type="idl" href="#dom-paextendedhistogramcontribution-filteringid" id="ref-for-dom-paextendedhistogramcontribution-filteringid①">filteringId</a></code>"]</p>
      </dl>
@@ -4094,6 +4122,10 @@ origin</a> concept used by the Attribution Reporting API here and elsewhere. <a 
     deprecated. <a class="issue-return" href="#issue-2f48ed07②" title="Jump to section">↵</a></div>
    <div class="issue"> Elsewhere, surround algorithms in a <code>&lt;div algorithm></code> block to match, and
     add styling for all algorithms per <a href="https://github.com/speced/bikeshed/issues/1472">bikeshed/1472</a>. <a class="issue-return" href="#issue-216f1bbd" title="Jump to section">↵</a></div>
+   <div class="issue"> Allow for some of the contributions to still be approved even if
+    there isn’t enough budget for the entire report. Note that this change
+    would require the merging step to be postponed until after budgeting and
+    the truncation step modified to account for the later merging. <a class="issue-return" href="#issue-f90dea64" title="Jump to section">↵</a></div>
    <div class="issue"> Do we have to use the <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/webappapis.html#queue-a-task">queue a task</a> algorithm here? <a class="issue-return" href="#issue-2485156c" title="Jump to section">↵</a></div>
    <div class="issue"> Do we need to queue this task? <a class="issue-return" href="#issue-380e314b" title="Jump to section">↵</a></div>
    <div class="issue"> Register this well-known directory. <a href="https://github.com/patcg-individual-drafts/private-aggregation-api/issues/67">[Issue #67]</a> <a class="issue-return" href="#issue-6bd15926" title="Jump to section">↵</a></div>
@@ -4366,7 +4398,7 @@ let dfnPanelData = {
 "1570624a": {"dfnID":"1570624a","dfnText":"default allowlist","external":true,"refSections":[{"refs":[{"id":"ref-for-policy-controlled-feature-default-allowlist"}],"title":"8. Permissions Policy integration"}],"url":"https://w3c.github.io/webappsec-permissions-policy/#policy-controlled-feature-default-allowlist"},
 "15e48c39": {"dfnID":"15e48c39","dfnText":"set","external":true,"refSections":[{"refs":[{"id":"ref-for-ordered-set"}],"title":"6. Constants"},{"refs":[{"id":"ref-for-ordered-set\u2460"},{"id":"ref-for-ordered-set\u2461"}],"title":"7. Implementation-defined values"}],"url":"https://infra.spec.whatwg.org/#ordered-set"},
 "168f1b6e": {"dfnID":"168f1b6e","dfnText":"global object","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-realm-global"}],"title":"12.4. Algorithm modifications"}],"url":"https://html.spec.whatwg.org/multipage/webappapis.html#concept-realm-global"},
-"16d07e10": {"dfnID":"16d07e10","dfnText":"for each (for list)","external":true,"refSections":[{"refs":[{"id":"ref-for-list-iterate"},{"id":"ref-for-list-iterate\u2460"},{"id":"ref-for-list-iterate\u2461"}],"title":"9.1. Exported algorithms"},{"refs":[{"id":"ref-for-list-iterate\u2462"},{"id":"ref-for-list-iterate\u2463"}],"title":"9.2. Scheduling reports"},{"refs":[{"id":"ref-for-list-iterate\u2464"}],"title":"9.3. Sending reports"},{"refs":[{"id":"ref-for-list-iterate\u2465"}],"title":"9.4. Serializing reports"},{"refs":[{"id":"ref-for-list-iterate\u2466"},{"id":"ref-for-list-iterate\u2467"}],"title":"12.4. Algorithm modifications"},{"refs":[{"id":"ref-for-list-iterate\u2468"}],"title":"12.5. New algorithms"}],"url":"https://infra.spec.whatwg.org/#list-iterate"},
+"16d07e10": {"dfnID":"16d07e10","dfnText":"for each (for list)","external":true,"refSections":[{"refs":[{"id":"ref-for-list-iterate"},{"id":"ref-for-list-iterate\u2460"},{"id":"ref-for-list-iterate\u2461"}],"title":"9.1. Exported algorithms"},{"refs":[{"id":"ref-for-list-iterate\u2462"},{"id":"ref-for-list-iterate\u2463"},{"id":"ref-for-list-iterate\u2464"},{"id":"ref-for-list-iterate\u2465"}],"title":"9.2. Scheduling reports"},{"refs":[{"id":"ref-for-list-iterate\u2466"}],"title":"9.3. Sending reports"},{"refs":[{"id":"ref-for-list-iterate\u2467"}],"title":"9.4. Serializing reports"},{"refs":[{"id":"ref-for-list-iterate\u2468"},{"id":"ref-for-list-iterate\u2460\u24ea"}],"title":"12.4. Algorithm modifications"},{"refs":[{"id":"ref-for-list-iterate\u2460\u2460"}],"title":"12.5. New algorithms"}],"url":"https://infra.spec.whatwg.org/#list-iterate"},
 "1ab127d6": {"dfnID":"1ab127d6","dfnText":"window","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-request-window"}],"title":"9.3. Sending reports"}],"url":"https://fetch.spec.whatwg.org/#concept-request-window"},
 "1adcc035": {"dfnID":"1adcc035","dfnText":"abort when","external":true,"refSections":[{"refs":[{"id":"ref-for-abort-when"}],"title":"9.3. Sending reports"}],"url":"https://infra.spec.whatwg.org/#abort-when"},
 "1e2edd5b": {"dfnID":"1e2edd5b","dfnText":"moment","external":true,"refSections":[{"refs":[{"id":"ref-for-dfn-moment"},{"id":"ref-for-dfn-moment\u2460"}],"title":"4.6. Aggregatable report"},{"refs":[{"id":"ref-for-dfn-moment\u2461"}],"title":"9.1. Exported algorithms"},{"refs":[{"id":"ref-for-dfn-moment\u2462"},{"id":"ref-for-dfn-moment\u2463"},{"id":"ref-for-dfn-moment\u2464"},{"id":"ref-for-dfn-moment\u2465"},{"id":"ref-for-dfn-moment\u2466"},{"id":"ref-for-dfn-moment\u2467"}],"title":"9.2. Scheduling reports"}],"url":"https://w3c.github.io/hr-time/#dfn-moment"},
@@ -4400,7 +4432,7 @@ let dfnPanelData = {
 "4c07280e": {"dfnID":"4c07280e","dfnText":"serialize an infra value to json bytes","external":true,"refSections":[{"refs":[{"id":"ref-for-serialize-an-infra-value-to-json-bytes"}],"title":"9.4. Serializing reports"}],"url":"https://infra.spec.whatwg.org/#serialize-an-infra-value-to-json-bytes"},
 "4d8f32a4": {"dfnID":"4d8f32a4","dfnText":"leading bid info","external":true,"refSections":[{"refs":[{"id":"ref-for-leading-bid-info"},{"id":"ref-for-leading-bid-info\u2460"},{"id":"ref-for-leading-bid-info\u2461"},{"id":"ref-for-leading-bid-info\u2462"}],"title":"12.5. New algorithms"}],"url":"https://wicg.github.io/turtledove/#leading-bid-info"},
 "50b05fad": {"dfnID":"50b05fad","dfnText":"method","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-request-method"}],"title":"9.3. Sending reports"}],"url":"https://fetch.spec.whatwg.org/#concept-request-method"},
-"53275e46": {"dfnID":"53275e46","dfnText":"append (for list)","external":true,"refSections":[{"refs":[{"id":"ref-for-list-append"},{"id":"ref-for-list-append\u2460"},{"id":"ref-for-list-append\u2461"}],"title":"9.1. Exported algorithms"},{"refs":[{"id":"ref-for-list-append\u2462"},{"id":"ref-for-list-append\u2463"},{"id":"ref-for-list-append\u2464"}],"title":"9.4. Serializing reports"},{"refs":[{"id":"ref-for-list-append\u2465"}],"title":"12.1. New WebIDL"}],"url":"https://infra.spec.whatwg.org/#list-append"},
+"53275e46": {"dfnID":"53275e46","dfnText":"append (for list)","external":true,"refSections":[{"refs":[{"id":"ref-for-list-append"},{"id":"ref-for-list-append\u2460"},{"id":"ref-for-list-append\u2461"}],"title":"9.1. Exported algorithms"},{"refs":[{"id":"ref-for-list-append\u2462"}],"title":"9.2. Scheduling reports"},{"refs":[{"id":"ref-for-list-append\u2463"},{"id":"ref-for-list-append\u2464"},{"id":"ref-for-list-append\u2465"}],"title":"9.4. Serializing reports"},{"refs":[{"id":"ref-for-list-append\u2466"}],"title":"12.1. New WebIDL"}],"url":"https://infra.spec.whatwg.org/#list-append"},
 "532887db": {"dfnID":"532887db","dfnText":"interestGroupBuyers","external":true,"refSections":[{"refs":[{"id":"ref-for-dom-auctionadconfig-interestgroupbuyers"}],"title":"12.4. Algorithm modifications"}],"url":"https://wicg.github.io/turtledove/#dom-auctionadconfig-interestgroupbuyers"},
 "5372cca8": {"dfnID":"5372cca8","dfnText":"boolean","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-boolean"}],"title":"12.1. New WebIDL"}],"url":"https://webidl.spec.whatwg.org/#idl-boolean"},
 "54627f47": {"dfnID":"54627f47","dfnText":"starts with","external":true,"refSections":[{"refs":[{"id":"ref-for-string-starts-with"},{"id":"ref-for-string-starts-with\u2460"}],"title":"12.1. New WebIDL"},{"refs":[{"id":"ref-for-string-starts-with\u2461"},{"id":"ref-for-string-starts-with\u2462"}],"title":"12.5. New algorithms"}],"url":"https://infra.spec.whatwg.org/#string-starts-with"},
@@ -4414,7 +4446,7 @@ let dfnPanelData = {
 "5f90bbfb": {"dfnID":"5f90bbfb","dfnText":"undefined","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-undefined"},{"id":"ref-for-idl-undefined\u2460"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-idl-undefined\u2461"}],"title":"10.1. Set local testing mode"},{"refs":[{"id":"ref-for-idl-undefined\u2462"}],"title":"12.1. New WebIDL"}],"url":"https://webidl.spec.whatwg.org/#idl-undefined"},
 "610171dd": {"dfnID":"610171dd","dfnText":"interest group","external":true,"refSections":[{"refs":[{"id":"ref-for-interest-group"}],"title":"12.3.2. Extending interest group"}],"url":"https://wicg.github.io/turtledove/#interest-group"},
 "64108305": {"dfnID":"64108305","dfnText":"evaluate a script","external":true,"refSections":[{"refs":[{"id":"ref-for-evaluate-a-script"}],"title":"12.4. Algorithm modifications"}],"url":"https://wicg.github.io/turtledove/#evaluate-a-script"},
-"649608b9": {"dfnID":"649608b9","dfnText":"list","external":true,"refSections":[{"refs":[{"id":"ref-for-list"}],"title":"4.6. Aggregatable report"},{"refs":[{"id":"ref-for-list\u2460"},{"id":"ref-for-list\u2461"}],"title":"5. Storage"},{"refs":[{"id":"ref-for-list\u2462"},{"id":"ref-for-list\u2463"},{"id":"ref-for-list\u2464"}],"title":"9.1. Exported algorithms"},{"refs":[{"id":"ref-for-list\u2465"},{"id":"ref-for-list\u2466"},{"id":"ref-for-list\u2467"}],"title":"9.2. Scheduling reports"},{"refs":[{"id":"ref-for-list\u2468"}],"title":"9.3. Sending reports"},{"refs":[{"id":"ref-for-list\u2460\u24ea"},{"id":"ref-for-list\u2460\u2460"},{"id":"ref-for-list\u2460\u2461"}],"title":"9.4. Serializing reports"},{"refs":[{"id":"ref-for-list\u2460\u2462"}],"title":"12.1. New WebIDL"},{"refs":[{"id":"ref-for-list\u2460\u2463"}],"title":"12.3.7. On event contribution cache"},{"refs":[{"id":"ref-for-list\u2460\u2464"}],"title":"12.4. Algorithm modifications"}],"url":"https://infra.spec.whatwg.org/#list"},
+"649608b9": {"dfnID":"649608b9","dfnText":"list","external":true,"refSections":[{"refs":[{"id":"ref-for-list"}],"title":"4.6. Aggregatable report"},{"refs":[{"id":"ref-for-list\u2460"},{"id":"ref-for-list\u2461"}],"title":"5. Storage"},{"refs":[{"id":"ref-for-list\u2462"},{"id":"ref-for-list\u2463"},{"id":"ref-for-list\u2464"}],"title":"9.1. Exported algorithms"},{"refs":[{"id":"ref-for-list\u2465"},{"id":"ref-for-list\u2466"},{"id":"ref-for-list\u2467"},{"id":"ref-for-list\u2468"}],"title":"9.2. Scheduling reports"},{"refs":[{"id":"ref-for-list\u2460\u24ea"}],"title":"9.3. Sending reports"},{"refs":[{"id":"ref-for-list\u2460\u2460"},{"id":"ref-for-list\u2460\u2461"},{"id":"ref-for-list\u2460\u2462"}],"title":"9.4. Serializing reports"},{"refs":[{"id":"ref-for-list\u2460\u2463"}],"title":"12.1. New WebIDL"},{"refs":[{"id":"ref-for-list\u2460\u2464"}],"title":"12.3.7. On event contribution cache"},{"refs":[{"id":"ref-for-list\u2460\u2465"}],"title":"12.4. Algorithm modifications"}],"url":"https://infra.spec.whatwg.org/#list"},
 "654cec7d": {"dfnID":"654cec7d","dfnText":"interest group (for generated bid)","external":true,"refSections":[{"refs":[{"id":"ref-for-generated-bid-interest-group"}],"title":"12.4. Algorithm modifications"},{"refs":[{"id":"ref-for-generated-bid-interest-group\u2460"}],"title":"12.5. New algorithms"}],"url":"https://wicg.github.io/turtledove/#generated-bid-interest-group"},
 "68510b3d": {"dfnID":"68510b3d","dfnText":"report a private aggregation event","external":true,"refSections":[{"refs":[{"id":"ref-for-report-a-private-aggregation-event"}],"title":"12.5. New algorithms"}],"url":"https://wicg.github.io/fenced-frame/#report-a-private-aggregation-event"},
 "688f9669": {"dfnID":"688f9669","dfnText":"cache mode","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-request-cache-mode"}],"title":"9.3. Sending reports"}],"url":"https://fetch.spec.whatwg.org/#concept-request-cache-mode"},
@@ -4431,7 +4463,7 @@ let dfnPanelData = {
 "77b4c09a": {"dfnID":"77b4c09a","dfnText":"assert","external":true,"refSections":[{"refs":[{"id":"ref-for-assert"}],"title":"3. Exposing to global scopes"},{"refs":[{"id":"ref-for-assert\u2460"},{"id":"ref-for-assert\u2461"},{"id":"ref-for-assert\u2462"},{"id":"ref-for-assert\u2463"},{"id":"ref-for-assert\u2464"},{"id":"ref-for-assert\u2465"},{"id":"ref-for-assert\u2466"}],"title":"9.1. Exported algorithms"},{"refs":[{"id":"ref-for-assert\u2467"},{"id":"ref-for-assert\u2468"},{"id":"ref-for-assert\u2460\u24ea"}],"title":"9.2. Scheduling reports"},{"refs":[{"id":"ref-for-assert\u2460\u2460"},{"id":"ref-for-assert\u2460\u2461"},{"id":"ref-for-assert\u2460\u2462"}],"title":"9.3. Sending reports"},{"refs":[{"id":"ref-for-assert\u2460\u2463"},{"id":"ref-for-assert\u2460\u2464"}],"title":"9.4. Serializing reports"},{"refs":[{"id":"ref-for-assert\u2460\u2465"}],"title":"11. Shared Storage API monkey patches"},{"refs":[{"id":"ref-for-assert\u2460\u2466"},{"id":"ref-for-assert\u2460\u2467"},{"id":"ref-for-assert\u2460\u2468"}],"title":"12.5. New algorithms"}],"url":"https://infra.spec.whatwg.org/#assert"},
 "79027840": {"dfnID":"79027840","dfnText":"interest group buyers","external":true,"refSections":[{"refs":[{"id":"ref-for-auction-config-interest-group-buyers"}],"title":"12.4. Algorithm modifications"}],"url":"https://wicg.github.io/turtledove/#auction-config-interest-group-buyers"},
 "79bc063f": {"dfnID":"79bc063f","dfnText":"SharedStorageWorkletGlobalScope","external":true,"refSections":[{"refs":[{"id":"ref-for-sharedstorageworkletglobalscope"},{"id":"ref-for-sharedstorageworkletglobalscope\u2460"}],"title":"11. Shared Storage API monkey patches"}],"url":"https://wicg.github.io/shared-storage/#sharedstorageworkletglobalscope"},
-"7b0d918d": {"dfnID":"7b0d918d","dfnText":"break","external":true,"refSections":[{"refs":[{"id":"ref-for-iteration-break"}],"title":"12.4. Algorithm modifications"}],"url":"https://infra.spec.whatwg.org/#iteration-break"},
+"7b0d918d": {"dfnID":"7b0d918d","dfnText":"break","external":true,"refSections":[{"refs":[{"id":"ref-for-iteration-break"}],"title":"9.2. Scheduling reports"},{"refs":[{"id":"ref-for-iteration-break\u2460"}],"title":"12.4. Algorithm modifications"}],"url":"https://infra.spec.whatwg.org/#iteration-break"},
 "7d4424b2": {"dfnID":"7d4424b2","dfnText":"remove (for map)","external":true,"refSections":[{"refs":[{"id":"ref-for-map-remove"},{"id":"ref-for-map-remove\u2460"},{"id":"ref-for-map-remove\u2461"}],"title":"9.1. Exported algorithms"}],"url":"https://infra.spec.whatwg.org/#map-remove"},
 "7deb6835": {"dfnID":"7deb6835","dfnText":"settings object","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-realm-settings-object"}],"title":"12.4. Algorithm modifications"}],"url":"https://html.spec.whatwg.org/multipage/webappapis.html#concept-realm-settings-object"},
 "82c23298": {"dfnID":"82c23298","dfnText":"remote end steps","external":true,"refSections":[{"refs":[{"id":"ref-for-dfn-remote-end-steps"}],"title":"10.1. Set local testing mode"}],"url":"https://w3c.github.io/webdriver/#dfn-remote-end-steps"},
@@ -4578,9 +4610,9 @@ let dfnPanelData = {
 "dom-paextendedhistogramcontribution-bucket": {"dfnID":"dom-paextendedhistogramcontribution-bucket","dfnText":"bucket","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-paextendedhistogramcontribution-bucket"},{"id":"ref-for-dom-paextendedhistogramcontribution-bucket\u2460"}],"title":"12.1. New WebIDL"},{"refs":[{"id":"ref-for-dom-paextendedhistogramcontribution-bucket\u2461"}],"title":"12.5. New algorithms"}],"url":"#dom-paextendedhistogramcontribution-bucket"},
 "dom-paextendedhistogramcontribution-filteringid": {"dfnID":"dom-paextendedhistogramcontribution-filteringid","dfnText":"filteringId","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-paextendedhistogramcontribution-filteringid"}],"title":"12.1. New WebIDL"},{"refs":[{"id":"ref-for-dom-paextendedhistogramcontribution-filteringid\u2460"}],"title":"12.5. New algorithms"}],"url":"#dom-paextendedhistogramcontribution-filteringid"},
 "dom-paextendedhistogramcontribution-value": {"dfnID":"dom-paextendedhistogramcontribution-value","dfnText":"value","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-paextendedhistogramcontribution-value"},{"id":"ref-for-dom-paextendedhistogramcontribution-value\u2460"}],"title":"12.1. New WebIDL"},{"refs":[{"id":"ref-for-dom-paextendedhistogramcontribution-value\u2461"}],"title":"12.5. New algorithms"}],"url":"#dom-paextendedhistogramcontribution-value"},
-"dom-pahistogramcontribution-bucket": {"dfnID":"dom-pahistogramcontribution-bucket","dfnText":"bucket","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-pahistogramcontribution-bucket"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-bucket\u2460"},{"id":"ref-for-dom-pahistogramcontribution-bucket\u2461"}],"title":"9.4. Serializing reports"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-bucket\u2462"},{"id":"ref-for-dom-pahistogramcontribution-bucket\u2463"}],"title":"12.5. New algorithms"}],"url":"#dom-pahistogramcontribution-bucket"},
-"dom-pahistogramcontribution-filteringid": {"dfnID":"dom-pahistogramcontribution-filteringid","dfnText":"filteringId","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-pahistogramcontribution-filteringid"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2460"},{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2461"},{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2462"}],"title":"9.4. Serializing reports"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2463"},{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2464"}],"title":"12.5. New algorithms"}],"url":"#dom-pahistogramcontribution-filteringid"},
-"dom-pahistogramcontribution-value": {"dfnID":"dom-pahistogramcontribution-value","dfnText":"value","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-pahistogramcontribution-value"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-value\u2460"},{"id":"ref-for-dom-pahistogramcontribution-value\u2461"}],"title":"9.2. Scheduling reports"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-value\u2462"},{"id":"ref-for-dom-pahistogramcontribution-value\u2463"}],"title":"9.4. Serializing reports"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-value\u2464"},{"id":"ref-for-dom-pahistogramcontribution-value\u2465"}],"title":"12.5. New algorithms"}],"url":"#dom-pahistogramcontribution-value"},
+"dom-pahistogramcontribution-bucket": {"dfnID":"dom-pahistogramcontribution-bucket","dfnText":"bucket","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-pahistogramcontribution-bucket"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-bucket\u2460"}],"title":"9.2. Scheduling reports"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-bucket\u2461"},{"id":"ref-for-dom-pahistogramcontribution-bucket\u2462"}],"title":"9.4. Serializing reports"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-bucket\u2463"},{"id":"ref-for-dom-pahistogramcontribution-bucket\u2464"}],"title":"12.5. New algorithms"}],"url":"#dom-pahistogramcontribution-bucket"},
+"dom-pahistogramcontribution-filteringid": {"dfnID":"dom-pahistogramcontribution-filteringid","dfnText":"filteringId","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-pahistogramcontribution-filteringid"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2460"}],"title":"9.2. Scheduling reports"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2461"},{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2462"},{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2463"}],"title":"9.4. Serializing reports"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2464"},{"id":"ref-for-dom-pahistogramcontribution-filteringid\u2465"}],"title":"12.5. New algorithms"}],"url":"#dom-pahistogramcontribution-filteringid"},
+"dom-pahistogramcontribution-value": {"dfnID":"dom-pahistogramcontribution-value","dfnText":"value","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-pahistogramcontribution-value"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-value\u2460"},{"id":"ref-for-dom-pahistogramcontribution-value\u2461"},{"id":"ref-for-dom-pahistogramcontribution-value\u2462"},{"id":"ref-for-dom-pahistogramcontribution-value\u2463"}],"title":"9.2. Scheduling reports"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-value\u2464"},{"id":"ref-for-dom-pahistogramcontribution-value\u2465"}],"title":"9.4. Serializing reports"},{"refs":[{"id":"ref-for-dom-pahistogramcontribution-value\u2466"},{"id":"ref-for-dom-pahistogramcontribution-value\u2467"}],"title":"12.5. New algorithms"}],"url":"#dom-pahistogramcontribution-value"},
 "dom-pasignalvalue-basevalue": {"dfnID":"dom-pasignalvalue-basevalue","dfnText":"baseValue","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-pasignalvalue-basevalue"},{"id":"ref-for-dom-pasignalvalue-basevalue\u2460"}],"title":"12.1. New WebIDL"},{"refs":[{"id":"ref-for-dom-pasignalvalue-basevalue\u2461"},{"id":"ref-for-dom-pasignalvalue-basevalue\u2462"}],"title":"12.5. New algorithms"}],"url":"#dom-pasignalvalue-basevalue"},
 "dom-pasignalvalue-offset": {"dfnID":"dom-pasignalvalue-offset","dfnText":"offset","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-pasignalvalue-offset"},{"id":"ref-for-dom-pasignalvalue-offset\u2460"}],"title":"12.1. New WebIDL"},{"refs":[{"id":"ref-for-dom-pasignalvalue-offset\u2461"},{"id":"ref-for-dom-pasignalvalue-offset\u2462"}],"title":"12.5. New algorithms"}],"url":"#dom-pasignalvalue-offset"},
 "dom-pasignalvalue-scale": {"dfnID":"dom-pasignalvalue-scale","dfnText":"scale","external":false,"refSections":[{"refs":[{"id":"ref-for-dom-pasignalvalue-scale"},{"id":"ref-for-dom-pasignalvalue-scale\u2460"}],"title":"12.5. New algorithms"}],"url":"#dom-pasignalvalue-scale"},
@@ -4610,7 +4642,7 @@ let dfnPanelData = {
 "efe8653e": {"dfnID":"efe8653e","dfnText":"iterate (for map)","external":true,"refSections":[{"refs":[{"id":"ref-for-map-iterate"}],"title":"9.1. Exported algorithms"},{"refs":[{"id":"ref-for-map-iterate\u2460"},{"id":"ref-for-map-iterate\u2461"}],"title":"12.4. Algorithm modifications"},{"refs":[{"id":"ref-for-map-iterate\u2462"},{"id":"ref-for-map-iterate\u2463"},{"id":"ref-for-map-iterate\u2464"},{"id":"ref-for-map-iterate\u2465"},{"id":"ref-for-map-iterate\u2466"},{"id":"ref-for-map-iterate\u2467"}],"title":"12.5. New algorithms"}],"url":"https://infra.spec.whatwg.org/#map-iterate"},
 "encode-an-integer-for-the-payload": {"dfnID":"encode-an-integer-for-the-payload","dfnText":"encode an integer for the payload","external":false,"refSections":[{"refs":[{"id":"ref-for-encode-an-integer-for-the-payload"},{"id":"ref-for-encode-an-integer-for-the-payload\u2460"},{"id":"ref-for-encode-an-integer-for-the-payload\u2461"}],"title":"9.4. Serializing reports"}],"url":"#encode-an-integer-for-the-payload"},
 "encrypt-the-payload": {"dfnID":"encrypt-the-payload","dfnText":"encrypt the payload","external":false,"refSections":[{"refs":[{"id":"ref-for-encrypt-the-payload"}],"title":"9.4. Serializing reports"}],"url":"#encrypt-the-payload"},
-"f02cd417": {"dfnID":"f02cd417","dfnText":"iterate (for list)","external":true,"refSections":[{"refs":[{"id":"ref-for-list-iterate"},{"id":"ref-for-list-iterate\u2460"},{"id":"ref-for-list-iterate\u2461"}],"title":"9.1. Exported algorithms"},{"refs":[{"id":"ref-for-list-iterate\u2462"},{"id":"ref-for-list-iterate\u2463"}],"title":"9.2. Scheduling reports"},{"refs":[{"id":"ref-for-list-iterate\u2464"}],"title":"9.3. Sending reports"},{"refs":[{"id":"ref-for-list-iterate\u2465"}],"title":"9.4. Serializing reports"},{"refs":[{"id":"ref-for-list-iterate\u2466"},{"id":"ref-for-list-iterate\u2467"}],"title":"12.4. Algorithm modifications"},{"refs":[{"id":"ref-for-list-iterate\u2468"}],"title":"12.5. New algorithms"}],"url":"https://infra.spec.whatwg.org/#list-iterate"},
+"f02cd417": {"dfnID":"f02cd417","dfnText":"iterate (for list)","external":true,"refSections":[{"refs":[{"id":"ref-for-list-iterate"},{"id":"ref-for-list-iterate\u2460"},{"id":"ref-for-list-iterate\u2461"}],"title":"9.1. Exported algorithms"},{"refs":[{"id":"ref-for-list-iterate\u2462"},{"id":"ref-for-list-iterate\u2463"},{"id":"ref-for-list-iterate\u2464"},{"id":"ref-for-list-iterate\u2465"}],"title":"9.2. Scheduling reports"},{"refs":[{"id":"ref-for-list-iterate\u2466"}],"title":"9.3. Sending reports"},{"refs":[{"id":"ref-for-list-iterate\u2467"}],"title":"9.4. Serializing reports"},{"refs":[{"id":"ref-for-list-iterate\u2468"},{"id":"ref-for-list-iterate\u2460\u24ea"}],"title":"12.4. Algorithm modifications"},{"refs":[{"id":"ref-for-list-iterate\u2460\u2460"}],"title":"12.5. New algorithms"}],"url":"https://infra.spec.whatwg.org/#list-iterate"},
 "f14b47b8": {"dfnID":"f14b47b8","dfnText":"unsigned long long","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-unsigned-long-long"}],"title":"11. Shared Storage API monkey patches"}],"url":"https://webidl.spec.whatwg.org/#idl-unsigned-long-long"},
 "f14ed351": {"dfnID":"f14ed351","dfnText":"upon rejection","external":true,"refSections":[{"refs":[{"id":"ref-for-upon-rejection"}],"title":"11. Shared Storage API monkey patches"}],"url":"https://webidl.spec.whatwg.org/#upon-rejection"},
 "f1d11a13": {"dfnID":"f1d11a13","dfnText":"call","external":true,"refSections":[{"refs":[{"id":"ref-for-sec-call"}],"title":"11. Shared Storage API monkey patches"}],"url":"https://tc39.es/ecma262/#sec-call"},
