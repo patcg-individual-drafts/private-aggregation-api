@@ -877,14 +877,14 @@ evaluation.
 
 ### Error Metrics
 
-In our experiments we are going to use $\text{RMSRE}_\tau$ metric defined as 
+In our experiments we are going to use `$\text{RMSRE}_\tau$` metric defined as 
 [follows](https://developers.google.com/privacy-sandbox/relevance/attribution-reporting/design-decisions#expandable-9):
-$
+`$
     \mathrm{RMSRE}_\tau\left(\{t_i\}_{i = 1}^n, \{e_i\}_{i = 1}^n\right) = 
     \sqrt{\frac{1}{n} \sum_{i = 1}^n \left(\frac{t_i - e_i}{\max(\tau, t_i)}\right)^2},
-$, where $\{t_i\}_1^n$ are true values that we’d like to measure, and 
-$\{e_i\}_1^n$ are the estimates.
-$\{e_i\}_1^n$ are the estimates.
+$`, where `$\{t_i\}_1^n$` are true values that we’d like to measure, and 
+`$\{e_i\}_1^n$` are the estimates.
+`$\{e_i\}_1^n$` are the estimates.
 
 
 ### Experimental Evaluation 
