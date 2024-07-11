@@ -397,10 +397,10 @@ _Note: Both methods described in this section are limited by the
 
 For cumulative reach queries, we can naively apply the direct method above by 
 adding the timestamp to the key of the histogram. 
-If a user is reached at time step $i$, then contributions would be made to all 
-of $i, \dots, T$ buckets. 
-Since there are $T$ queries, the noise will scale by a factor of 
-$O(T / \epsilon)$.
+If a user is reached at time step $`i`$, then contributions would be made to all 
+of $`i, \dots, T`$ buckets. 
+Since there are $`T`$ queries, the noise will scale by a factor of 
+$`O(T / \epsilon)`$.
 Note that with the current API, one would need to wait until the last window to
 obtain the results since reprocessing of the reports is not currently supported.
 
@@ -413,18 +413,18 @@ the single-query cap-one case.
 It is easy to extend this to the multi-query case by appending the query id to 
 the keys. 
 Before we describe the mechanism, let us first make the following observation. 
-Consider the number $n^{(\text{new})}_i$ of users that were reached for the 
-first time at timestep $i$. 
-The answer of cumulative reach up to timestep $t$ is exactly equal to the 
-cumulative sum $\sum_{i=1}^t n^{(\text{new})}_i$. 
-Using this fact, we can simply create $T$ buckets, where bucket $i$ corresponds 
-to $n^{(\text{new})}_i$. 
-When we wish to compute the cumulative reach up to time step $i$, we take the 
-sum of the first $i$ buckets. Since each user contributes to only a single
-bucket, each bucket’s noise standard deviation is only $O(1 / \epsilon)$.
-Since we are summing up to $T$ such (independent) noises, the total noise 
-standard deviation is $O(\sqrt{T} / \epsilon), which is an improvement of
-$O(\sqrt{T})$ over the direct method.
+Consider the number $`n^{(\text{new})}_i`$ of users that were reached for the 
+first time at timestep $`i`$. 
+The answer of cumulative reach up to timestep $`t`$ is exactly equal to the 
+cumulative sum $`\sum_{i=1}^t n^{(\text{new})}_i`$. 
+Using this fact, we can simply create $`T`$ buckets, where bucket $`i`$ corresponds 
+to $`n^{(\text{new})}_i`$. 
+When we wish to compute the cumulative reach up to time step $`i`$, we take the 
+sum of the first $`i`$ buckets. Since each user contributes to only a single
+bucket, each bucket’s noise standard deviation is only $`O(1 / \epsilon)`$.
+Since we are summing up to $`T`$ such (independent) noises, the total noise 
+standard deviation is $`O(\sqrt{T} / \epsilon)`$, which is an improvement of
+$`O(\sqrt{T})`$ over the direct method.
 
 An implementation in Shared Storage is given below. 
 
@@ -522,9 +522,9 @@ Sketching is a technique for estimating the reach (and other quantities of
 interest) using compressed aggregated data structure admitting merge operation.
 Here we only consider one of the most basic families of sketches, called 
 [counting bloom filters (CBFs)](https://en.wikipedia.org/wiki/Counting_Bloom_filter). 
-In this case, we have a hash function $h$ that maps any user ID to one of $m$ 
+In this case, we have a hash function $`h`$ that maps any user ID to one of $`m`$ 
 buckets. 
-The CBF sketch is simply the histogram on these $m$ buckets among all the 
+The CBF sketch is simply the histogram on these $`m`$ buckets among all the 
 reached users. 
 We can estimate the reach based on the number of non-empty buckets in the 
 sketches. 
@@ -553,7 +553,7 @@ that would avoid the need for these
 IDs to map directly to real-world users.
 
 Nevertheless, there are also several disadvantages of this sketch.
-Firstly, each sketch is a histogram with $m$ buckets.
+Firstly, each sketch is a histogram with $`m`$ buckets.
 In contrast, the direct method only outputs a single number per query.
 Therefore, the sketching method can result in a memory usage overhead during
 processing of the aggregatable reports and during post-processing of the summary
@@ -881,9 +881,9 @@ In our experiments we are going to use $`\text{RMSRE}_\tau`$ metric defined as
 [follows](https://developers.google.com/privacy-sandbox/relevance/attribution-reporting/design-decisions#expandable-9):
 $`
     \mathrm{RMSRE}_\tau\left(\{t_i\}_{i = 1}^n, \{e_i\}_{i = 1}^n\right) = 
-    \sqrt{\frac{1}{n} \sum_{i = 1}^n \left(\frac{t_i - e_i}{\max(\tau, t_i)}\right)^2},
-`$, where $\{t_i\}_1^n$ are true values that we’d like to measure, and 
-$`\{e_i\}_1^n`$ are the estimates.
+    \sqrt{\frac{1}{n} \sum_{i=1}^n \left(\frac{t_i - e_i}{\max(\tau, t_i)}\right)^2},
+`$, where 
+$`\{t_i\}_1^n`$ are true values that we’d like to measure, and 
 $`\{e_i\}_1^n`$ are the estimates.
 
 
@@ -909,7 +909,7 @@ e perform four experiments:
 
 To measure the error caused by capping, we sampled 1000 samples of slices for
 each size of the window (1 day, 7 days, 30 days) and each granularity of the
-query, and computed $\text{RMSRE}_\tau$ error where the estimated value is true
+query, and computed $`\text{RMSRE}_\tau`$ error where the estimated value is true
 observed value (before adding noise or using sketches).
 
 ![observation error](figs/observation_error.png)
@@ -924,7 +924,7 @@ The plot shows that to achieve an error of at most 0.1 with probability at least
 To measure the error introduced by noise in case of multiple measurements, we
 sampled 1000 slices for each size of the window (1 day, 7 days, 30 days) and
 each granularity of the query. 
-Next we computed $\text{RMSRE}_\tau$ error where the true value is true observed
+Next we computed $`\text{RMSRE}_\tau`$ error where the true value is true observed
 value and estimated value is the noised observed value.
 
 ![multiple reach measurement error](figs/direct_error.png)
@@ -962,7 +962,7 @@ direct method and should be used for cumulative queries.
 #### Sketch Method Error
 
 For the last experiment, for window sizes of 1, 10, 20, …, 360 days we sampled
-100 slices and computed the $\text{RMSRE}_\tau$ error where the true value is 
+100 slices and computed the $`\text{RMSRE}_\tau`$ error where the true value is 
 true observed value and estimated value is obtained from sketches of size 10000
 (sketches need to be big to accommodate a year worth of data). 
 Note that for each window size, we assume that reach is distributed uniformly 
