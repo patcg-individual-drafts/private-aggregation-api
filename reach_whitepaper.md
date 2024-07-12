@@ -570,7 +570,7 @@ settings to ensure (reasonably) accurate estimates.
 The overall scheme of the reach estimation involving sketches is described on 
 the following diagram.
 
-![alt_text](reach_whitepaper_figs/diagram.png "A flow diagram illustrating a sketch based ad reach estimation. On the client side, aggregatable reports are generated. These reports are then sent to a trusted execution environment on the server side, where they are processed by the Aggregation Service to produce sketches for each day. These sketches are then merged and fed into an estimator to calculate the final ad reach.")
+!["A flow diagram illustrating a sketch based ad reach estimation. On the client side, aggregatable reports are generated. These reports are then sent to a trusted execution environment on the server side, where they are processed by the Aggregation Service to produce sketches for each day. These sketches are then merged and fed into an estimator to calculate the final ad reach."](reach_whitepaper_figs/diagram.png "Computation diagram for sketch-based reach estimation" )
 
 
 We remark that there are many other types of sketches beyond counting bloom 
@@ -877,10 +877,11 @@ evaluation.
 
 In our experiments we are going to use $`\text{RMSRE}_\tau`$ metric defined as 
 [follows](https://developers.google.com/privacy-sandbox/relevance/attribution-reporting/design-decisions#expandable-9):
-$`
+```math
     \mathrm{RMSRE}_\tau\left(\{t_i\}_{i = 1}^n, \{e_i\}_{i = 1}^n\right) = 
     \sqrt{\frac{1}{n} \sum\limits_{i=1}^n \left(\frac{t_i - e_i}{\max(\tau, t_i)}\right)^2},
-`$ where 
+```
+where 
 $`\{t_i\}_1^n`$ are true values that we’d like to measure, and 
 $`\{e_i\}_1^n`$ are the estimates.
 
