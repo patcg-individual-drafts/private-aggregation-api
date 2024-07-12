@@ -1,4 +1,5 @@
 # Reach Implementation Best Practices in the Privacy Sandbox Shared Storage + Private Aggregation APIs
+Authors: Hidayet Aksu (aksu@google.com), Alexander Knop (alexanderknop@google.com), Pasin Manurangsi (pasin@google.com)
 
 This whitepaper aims to provide ad tech companies with actionable guidance on
 implementing reach measurement within the Privacy Sandbox, via the
@@ -234,7 +235,7 @@ of the Private Aggregation fundamentals article to learn more.
 ### Single Reach Measurement with Capping
 
 An implicit assumption in the previous section is that each 
-[privacy unit](https://www.google.com/url?q=https://github.com/patcg-individual-drafts/private-aggregation-api?tab%3Dreadme-ov-file%23implementation-plan&sa=D&source=docs&ust=1715709807432613&usg=AOvVaw2F52S_hQoFFfN3FjYLRq18) 
+[privacy unit](https://github.com/patcg-individual-drafts/private-aggregation-api#implementation-plan) 
 – i.e., &lt;browser x reporting origin ad tech x 10 minutes> – 
 contributes to only a single query. 
 The reason is that (i) the Shared Storage check does not incorporate the bucket
@@ -390,7 +391,7 @@ For example, one might want to measure the reach up until today everyday for the
  entire month. In this case, we would have `T = 30` and “timestep” being a day.
 
 _Note: Both methods described in this section are limited by the 
-[retention policy](https://github.com/WICG/shared-storage?tab=readme-ov-file#data-retention-policy) of Shared Storage which is 30 days from last write._
+[retention policy](https://github.com/WICG/shared-storage?#data-retention-policy) of Shared Storage which is 30 days from last write._
 
 
 #### Direct Method
@@ -569,7 +570,7 @@ settings to ensure (reasonably) accurate estimates.
 The overall scheme of the reach estimation involving sketches is described on 
 the following diagram.
 
-![alt_text](figs/diagram.png "computation diagram")
+![alt_text](reach_whitepaper_figs/diagram.png "A flow diagram illustrating a sketch based ad reach estimation. On the client side, aggregatable reports are generated. These reports are then sent to a trusted execution environment on the server side, where they are processed by the Aggregation Service to produce sketches for each day. These sketches are then merged and fed into an estimator to calculate the final ad reach.")
 
 
 We remark that there are many other types of sketches beyond counting bloom 
@@ -588,7 +589,7 @@ Storage and Private Aggregation APIs.
 Again, for simplicity, we only include the code snippet for the cap-one case
 below. (Note that if there are many different content ids, one might consider 
 splitting them into groups using 
-[filtering ID’s](https://www.google.com/url?q=https://github.com/patcg-individual-drafts/private-aggregation-api/blob/main/flexible_filtering.md&sa=D&source=docs&ust=1717257234668602&usg=AOvVaw01fIhnBOOZisrNsyNBMHqm).)
+[filtering ID’s](https://github.com/patcg-individual-drafts/private-aggregation-api/blob/main/flexible_filtering.md).)
 
 
 ```javascript
@@ -759,9 +760,9 @@ illustrated in Figure 3.
 This discount follows a power-law function relative to the size of the time
 window.
 
-![Reach estimates receive a discount as a function of cap value.](figs/cap-discount.png)
+![Reach estimates receive a discount as a function of cap value.](reach_whitepaper_figs/cap_discount.png)
 
-![Reach does not increase linearly with time windows size.](figs/window-discount.png)
+![Reach does not increase linearly with time windows size.](reach_whitepaper_figs/window_discount.png)
 
 
 ```python
@@ -820,16 +821,13 @@ Listing 1: pseudocode to generate synthetic data.
 <table>
   <tr>
    <td style="background-color: #cccccc">
-    Level
-<p>
-
-    (granularity)
+    Level <br> (granularity)
    </td>
    <td style="background-color: #cccccc">
     Query dimensions
    </td>
    <td style="background-color: #cccccc">
-    Power law shape (b) param \
+    Power law shape (b) param <br>
 # reach per bucket
    </td>
   </tr>
@@ -879,10 +877,10 @@ evaluation.
 
 In our experiments we are going to use $`\text{RMSRE}_\tau`$ metric defined as 
 [follows](https://developers.google.com/privacy-sandbox/relevance/attribution-reporting/design-decisions#expandable-9):
-$`
+$$`
     \mathrm{RMSRE}_\tau\left(\{t_i\}_{i = 1}^n, \{e_i\}_{i = 1}^n\right) = 
     \sqrt{\frac{1}{n} \sum\limits_{i=1}^n \left(\frac{t_i - e_i}{\max(\tau, t_i)}\right)^2},
-`$ where 
+`$$ where 
 $`\{t_i\}_1^n`$ are true values that we’d like to measure, and 
 $`\{e_i\}_1^n`$ are the estimates.
 
@@ -912,7 +910,7 @@ each size of the window (1 day, 7 days, 30 days) and each granularity of the
 query, and computed $`\text{RMSRE}_\tau`$ error where the estimated value is true
 observed value (before adding noise or using sketches).
 
-![observation error](figs/observation_error.png)
+![observation error](reach_whitepaper_figs/observation_error.png)
 
 Next we plot the fraction of the samples with the error below t vs t. 
 The plot shows that to achieve an error of at most 0.1 with probability at least
@@ -927,7 +925,7 @@ each granularity of the query.
 Next we computed $`\text{RMSRE}_\tau`$ error where the true value is true observed
 value and estimated value is the noised observed value.
 
-![multiple reach measurement error](figs/direct_error.png)
+![multiple reach measurement error](reach_whitepaper_figs/direct_error.png)
 
 Next, we plot the fraction of the samples with the total error below t vs t,
 i.e. the error including both capping and noise. 
@@ -938,7 +936,7 @@ window size of a month even for cap equal to 10 the error 0.1 can be achieved
 for all granularities with probability at least 80%, finally, for window size of
 a day, the error 0.1 with probability 80% is only achievable for cap equal to 1.
 
-![total multiple reach measurement error](figs/total_direct_error.png)
+![total multiple reach measurement error](reach_whitepaper_figs/total_direct_error.png)
 
 
 #### Cumulative Reach Method Error
@@ -947,7 +945,7 @@ To measure cumulative reach, one can simply use the approach described above
 (i.e., using direct method); however, as it was mentioned before, point 
 contribution mechanism adds noise with smaller standard deviation.
 
-![cumulative reach method error](figs/cumulative_error.png)
+![cumulative reach method error](reach_whitepaper_figs/cumulative_error.png)
 
 To show that this indeed provides better utility in the applications we plot the
 fraction of the samples with the total error on the last day (i.e., on the 30th
@@ -956,7 +954,7 @@ As one may see from the plots, values of cap where observation error is not too
 large, the point contribution method gives sufficient improvement over the
 direct method and should be used for cumulative queries.
 
-![total cumulative reach method error](figs/total_cumulative_error.png)
+![total cumulative reach method error](reach_whitepaper_figs/total_cumulative_error.png)
 
 
 #### Sketch Method Error
@@ -968,7 +966,7 @@ true observed value and estimated value is obtained from sketches of size 10000
 Note that for each window size, we assume that reach is distributed uniformly 
 across the window.
 
-![sketch method error](figs/sketches_error.png)
+![sketch method error](reach_whitepaper_figs/sketches_error.png)
 
 We plot the window size vs the total error and the shade denotes the 80% 
 probability band. 
@@ -976,7 +974,7 @@ As it can be seen the error is somewhat stable and for a cap larger than 3 the
 error is too high; however, for a cap equal to 3 the median error is around 0.1
 and stays within 0.2 with probability of 80%.
 
-![total sketch method error](figs/total_sketches_error.png)
+![total sketch method error](reach_whitepaper_figs/total_sketches_error.png)
 
 
 ## Conclusion
@@ -995,12 +993,13 @@ This could be addressed with evolution of the API design to allow ad techs to
 perform queries on sketches and only add noise to the final result. 
 
 
-![error comparison](figs/errors_comparison.png)
+![error comparison](reach_whitepaper_figs/errors_comparison.png)
 
 We are hopeful that this paper will enable advertising technologists to
 comprehend the trade-offs associated with various methodologies and develop a
 structured path to implementing reach using the APIs.
 
+For the implementation of experimental evaluations, please refer to the [evaluation code](https://github.com/google-research/google-research/tree/master/privacy_sandbox/reach_whitepaper).
 
 ## Acknowledgements
 
