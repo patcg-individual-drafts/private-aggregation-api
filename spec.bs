@@ -697,11 +697,12 @@ null |timeout|:
     |currentWallTime|.
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
-To <dfn algorithm>consume budget if permitted</dfn> given a {{long}} |value|, an
-[=origin=] <var ignore=''>origin</var>, a [=context type=] |api| and a
+To <dfn algorithm>consume budget if permitted</dfn> given an integer |value|,
+an [=origin=] <var ignore=''>origin</var>, a [=context type=] |api| and a
 [=moment=] |currentTime|, perform [=implementation-defined=] steps. They return
 a [=boolean=], which indicates whether there is sufficient 'contribution budget'
-left to send the requested contribution |value|. This budget should be bound to
+left to send the requested contribution |value| (or multiple contributions with
+a sum of values equal to |value|). This budget should be bound to
 usage over time, e.g. the contribution sum over the last 24 hours. The algorithm
 should assume that the contribution will be sent if and only if true is
 returned, i.e. it should consume the budget in that case. If |value| is zero,
