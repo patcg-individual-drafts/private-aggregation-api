@@ -5,9 +5,9 @@
   <title>Private Aggregation API</title>
   <meta content="UD" name="w3c-status">
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-UD" rel="stylesheet">
-  <meta content="Bikeshed version a1dabb26c, updated Mon Jun 17 15:00:44 2024 -0700" name="generator">
+  <meta content="Bikeshed version c3a8ac783, updated Wed Jul 24 12:20:06 2024 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="e6bc809ab982f7549d0b0ee4c5408cfc3ec8a808" name="revision">
+  <meta content="94f3f554a48a6505d140b8deb1432a495abfb6d4" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -702,21 +702,43 @@ D50 2deg illuminant, L in [0,100], a and b in [-128, 128]
 4 = lab(85,5,15)
 5 = lab(85,-10,-50)
 6 = lab(85,35,-15)
+
+For darkmode:
+0 = oklab(50%   0%  108%)
+1 = oklab(50% -51%   51%)
+2 = oklab(50% -64%  -20%)
+3 = oklab(50%   6%   19%)
+4 = oklab(50% -12%  -64%)
+5 = oklab(50%  44%  -19%)  
+6 = oklab(50% 102%   38%)
 */
+
 [data-algorithm] var { cursor: pointer; }
-var[data-var-color="0"] { background-color: #F4D200; box-shadow: 0 0 0 2px #F4D200; }
-var[data-var-color="1"] { background-color: #FF87A2; box-shadow: 0 0 0 2px #FF87A2; }
-var[data-var-color="2"] { background-color: #96E885; box-shadow: 0 0 0 2px #96E885; }
-var[data-var-color="3"] { background-color: #3EEED2; box-shadow: 0 0 0 2px #3EEED2; }
-var[data-var-color="4"] { background-color: #EACFB6; box-shadow: 0 0 0 2px #EACFB6; }
-var[data-var-color="5"] { background-color: #82DDFF; box-shadow: 0 0 0 2px #82DDFF; }
-var[data-var-color="6"] { background-color: #FFBCF2; box-shadow: 0 0 0 2px #FFBCF2; }
+var[data-var-color] { background-color: var(--var-bg); box-shadow: 0 0 0 2px var(--var-bg); }
+
+var[data-var-color] { --var-bg: #F4D200; }
+var[data-var-color="1"] { --var-bg: #FF87A2; }
+var[data-var-color="2"] { --var-bg: #96E885; }
+var[data-var-color="3"] { --var-bg: #3EEED2; }
+var[data-var-color="4"] { --var-bg: #EACFB6; }
+var[data-var-color="5"] { --var-bg: #82DDFF; }
+var[data-var-color="6"] { --var-vg: #FFBCF2; }
+
+@media (prefers-color-scheme: dark) {
+	var[data-var-color] { --var-bg: #bc1a00; }
+	var[data-var-color="1"] { --var-bg: #007f00; }
+	var[data-var-color="2"] { --var-bg: #008698; }
+	var[data-var-color="3"] { --var-bg: #7f5b2b; }
+	var[data-var-color="4"] { --var-bg: #004df3; }
+	var[data-var-color="5"] { --var-bg: #a1248a; }
+	var[data-var-color="6"] { --var-vg: #ff0000; }
+}
 </style>
  <body class="h-entry">
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2024-07-08">8 July 2024</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2024-08-01">1 August 2024</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1518,9 +1540,11 @@ should be sent deterministically</a> given <var>preSpecifiedParams</var>.</p>
     <li data-md>
      <p><a data-link-type="dfn" href="https://infra.spec.whatwg.org/#set-append" id="ref-for-set-append①">Append</a> <var>report</var> to the user agent’s <a data-link-type="dfn" href="#aggregatable-report-cache" id="ref-for-aggregatable-report-cache①">aggregatable report cache</a>.</p>
    </ol>
-   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="consume budget if permitted" data-dfn-type="dfn" data-noexport id="consume-budget-if-permitted">consume budget if permitted</dfn> given a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long①">long</a></code> <var>value</var>, an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑧">origin</a> <var>origin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type④">context type</a> <var>api</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment④">moment</a> <var>currentTime</var>, perform <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined②">implementation-defined</a> steps. They return
+   <p>To <dfn class="dfn-paneled algorithm" data-algorithm="consume budget if permitted" data-dfn-type="dfn" data-noexport id="consume-budget-if-permitted">consume budget if permitted</dfn> given an integer <var>value</var>,
+an <a data-link-type="dfn" href="https://html.spec.whatwg.org/multipage/browsers.html#concept-origin" id="ref-for-concept-origin⑧">origin</a> <var>origin</var>, a <a data-link-type="dfn" href="#context-type" id="ref-for-context-type④">context type</a> <var>api</var> and a <a data-link-type="dfn" href="https://w3c.github.io/hr-time/#dfn-moment" id="ref-for-dfn-moment④">moment</a> <var>currentTime</var>, perform <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#implementation-defined" id="ref-for-implementation-defined②">implementation-defined</a> steps. They return
 a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#boolean" id="ref-for-boolean⑤">boolean</a>, which indicates whether there is sufficient 'contribution budget'
-left to send the requested contribution <var>value</var>. This budget should be bound to
+left to send the requested contribution <var>value</var> (or multiple contributions with
+a sum of values equal to <var>value</var>). This budget should be bound to
 usage over time, e.g. the contribution sum over the last 24 hours. The algorithm
 should assume that the contribution will be sent if and only if true is
 returned, i.e. it should consume the budget in that case. If <var>value</var> is zero,
@@ -2309,12 +2333,12 @@ equivalently, when that report should be sent after the operation begins.</p>
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-pasignalvalue"><code><c- g>PASignalValue</c-></code></dfn> {
   <c- b>required</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-DOMString" id="ref-for-idl-DOMString"><c- b>DOMString</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="PASignalValue" data-dfn-type="dict-member" data-export data-type="DOMString" id="dom-pasignalvalue-basevalue"><code><c- g>baseValue</c-></code></dfn>;
   <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-double" id="ref-for-idl-double"><c- b>double</c-></a> <dfn class="dfn-paneled idl-code" data-dfn-for="PASignalValue" data-dfn-type="dict-member" data-export data-type="double" id="dom-pasignalvalue-scale"><code><c- g>scale</c-></code></dfn>;
-  (<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint③"><c- b>bigint</c-></a> <c- b>or</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long②"><c- b>long</c-></a>) <dfn class="dfn-paneled idl-code" data-dfn-for="PASignalValue" data-dfn-type="dict-member" data-export data-type="(bigint or long)" id="dom-pasignalvalue-offset"><code><c- g>offset</c-></code></dfn>;
+  (<a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint③"><c- b>bigint</c-></a> <c- b>or</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long①"><c- b>long</c-></a>) <dfn class="dfn-paneled idl-code" data-dfn-for="PASignalValue" data-dfn-type="dict-member" data-export data-type="(bigint or long)" id="dom-pasignalvalue-offset"><code><c- g>offset</c-></code></dfn>;
 };
 
 <c- b>dictionary</c-> <dfn class="dfn-paneled idl-code" data-dfn-type="dictionary" data-export id="dictdef-paextendedhistogramcontribution"><code><c- g>PAExtendedHistogramContribution</c-></code></dfn> {
   <c- b>required</c-> (<a data-link-type="idl-name" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue"><c- n>PASignalValue</c-></a> <c- b>or</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint④"><c- b>bigint</c-></a>) <dfn class="dfn-paneled idl-code" data-dfn-for="PAExtendedHistogramContribution" data-dfn-type="dict-member" data-export data-type="(PASignalValue or bigint)" id="dom-paextendedhistogramcontribution-bucket"><code><c- g>bucket</c-></code></dfn>;
-  <c- b>required</c-> (<a data-link-type="idl-name" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue①"><c- n>PASignalValue</c-></a> <c- b>or</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long③"><c- b>long</c-></a>) <dfn class="dfn-paneled idl-code" data-dfn-for="PAExtendedHistogramContribution" data-dfn-type="dict-member" data-export data-type="(PASignalValue or long)" id="dom-paextendedhistogramcontribution-value"><code><c- g>value</c-></code></dfn>;
+  <c- b>required</c-> (<a data-link-type="idl-name" href="#dictdef-pasignalvalue" id="ref-for-dictdef-pasignalvalue①"><c- n>PASignalValue</c-></a> <c- b>or</c-> <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-long" id="ref-for-idl-long②"><c- b>long</c-></a>) <dfn class="dfn-paneled idl-code" data-dfn-for="PAExtendedHistogramContribution" data-dfn-type="dict-member" data-export data-type="(PASignalValue or long)" id="dom-paextendedhistogramcontribution-value"><code><c- g>value</c-></code></dfn>;
   <a class="idl-code" data-link-type="interface" href="https://webidl.spec.whatwg.org/#idl-bigint" id="ref-for-idl-bigint⑤"><c- b>bigint</c-></a> <dfn class="dfn-paneled idl-code" data-default="0" data-dfn-for="PAExtendedHistogramContribution" data-dfn-type="dict-member" data-export data-type="bigint" id="dom-paextendedhistogramcontribution-filteringid"><code><c- g>filteringId</c-></code></dfn> = 0;
 };
 
@@ -4646,7 +4670,7 @@ let dfnPanelData = {
 "f14b47b8": {"dfnID":"f14b47b8","dfnText":"unsigned long long","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-unsigned-long-long"}],"title":"11. Shared Storage API monkey patches"}],"url":"https://webidl.spec.whatwg.org/#idl-unsigned-long-long"},
 "f14ed351": {"dfnID":"f14ed351","dfnText":"upon rejection","external":true,"refSections":[{"refs":[{"id":"ref-for-upon-rejection"}],"title":"11. Shared Storage API monkey patches"}],"url":"https://webidl.spec.whatwg.org/#upon-rejection"},
 "f1d11a13": {"dfnID":"f1d11a13","dfnText":"call","external":true,"refSections":[{"refs":[{"id":"ref-for-sec-call"}],"title":"11. Shared Storage API monkey patches"}],"url":"https://tc39.es/ecma262/#sec-call"},
-"f8de33a3": {"dfnID":"f8de33a3","dfnText":"long","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-long"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-idl-long\u2460"}],"title":"9.2. Scheduling reports"},{"refs":[{"id":"ref-for-idl-long\u2461"},{"id":"ref-for-idl-long\u2462"}],"title":"12.1. New WebIDL"}],"url":"https://webidl.spec.whatwg.org/#idl-long"},
+"f8de33a3": {"dfnID":"f8de33a3","dfnText":"long","external":true,"refSections":[{"refs":[{"id":"ref-for-idl-long"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-idl-long\u2460"},{"id":"ref-for-idl-long\u2461"}],"title":"12.1. New WebIDL"}],"url":"https://webidl.spec.whatwg.org/#idl-long"},
 "f937b7b6": {"dfnID":"f937b7b6","dfnText":"continue","external":true,"refSections":[{"refs":[{"id":"ref-for-iteration-continue"},{"id":"ref-for-iteration-continue\u2460"},{"id":"ref-for-iteration-continue\u2461"}],"title":"12.4. Algorithm modifications"},{"refs":[{"id":"ref-for-iteration-continue\u2462"},{"id":"ref-for-iteration-continue\u2463"}],"title":"12.5. New algorithms"}],"url":"https://infra.spec.whatwg.org/#iteration-continue"},
 "fa4ea124": {"dfnID":"fa4ea124","dfnText":"initiator","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-request-initiator"}],"title":"9.3. Sending reports"}],"url":"https://fetch.spec.whatwg.org/#concept-request-initiator"},
 "fb9bb722": {"dfnID":"fb9bb722","dfnText":"site","external":true,"refSections":[{"refs":[{"id":"ref-for-site"}],"title":"14.1. Same-origin policy"}],"url":"https://html.spec.whatwg.org/multipage/browsers.html#site"},
