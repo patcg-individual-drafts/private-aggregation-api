@@ -22,7 +22,7 @@ Author: Alex Turner (alexmt@chromium.org)
     - [Duplicate debug report](#duplicate-debug-report)
   - [Reducing volume by batching](#reducing-volume-by-batching)
     - [Batching scope](#batching-scope)
-    - [Contributions limit](#contributions-limit)
+    - [Limiting the number of contributions per report](#limiting-the-number-of-contributions-per-report)
     - [Padding](#padding)
   - [Aggregation coordinator choice](#aggregation-coordinator-choice)
 - [Privacy and security](#privacy-and-security)
@@ -380,21 +380,42 @@ One consideration in the short term is that these calls may have different
 associated [debug modes or keys](#temporary-debugging-mechanism). In this case,
 only calls sharing those details should be batched together.
 
-#### Contributions limit
+#### Limiting the number of contributions per report
 
 We will also need a limit on the number of contributions within a single report.
 In the case that too many contributions are specified with a ‘batching scope’,
-we should truncate them to the limit.
-
-However, to reduce the impact of this limit, we will pre-aggregate (i.e. merge)
-any contributions that have the same bucket and [filtering
+we should truncate them to the limit. To reduce the impact of this limit, we
+will merge any contributions that have the same bucket and [filtering
 ID](https://github.com/patcg-individual-drafts/private-aggregation-api/blob/main/flexible_filtering.md#proposal-filtering-id-in-the-encrypted-payload)
 before truncation.
 
-If necessary, we could instead split the contributions back into multiple
-reports, each respecting the limit.
+Selecting the limit's value presents a tradeoff. Although larger reports have
+higher utility, they are also more expensive to process on the aggregation
+service. To accommodate use cases with diverse utility requirements and cost
+tolerances, we define several limit-selection strategies below.
 
-Strawman limit: 20 contributions per report.
+- *One global limit:* The simplest strategy is to define a single limit that the
+  browser applies to all reports. Our implementation currently enforces a limit
+  of 20 contributions per report.
+
+- *Per-API limit:* The browser may select the limit based on the identity of the
+  calling API. In particular, Protected Audience reports may benefit from a
+  higher limit more than Shared Storage reports. Our implementation plan is to
+  set the limit at 20 contributions per report for Shared Storage and 100
+  contributions per report for Protected Audience.
+
+- *Per-context limit:* Callers may request a different limit on each isolated
+  context they create. However, callers that possess cross-site information
+  cannot use this mechanism. Consequently, Protected Audience buyers cannot set
+  per-context limits. The browser must clamp excessively large values to some
+  maximum value. Our implementation plan is to clamp the requested limit to a
+  maximum of 1000 contributions per report.
+
+- *Per-site limit:* A more complex design that enables sites to configure a
+  global limit may also be possible, but requires further analysis. (See [issue
+  #81].)
+
+  [issue #81]: https://github.com/patcg-individual-drafts/private-aggregation-api/issues/81
 
 #### Padding
 
