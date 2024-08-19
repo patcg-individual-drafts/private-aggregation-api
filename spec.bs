@@ -162,7 +162,6 @@ Note: See [Exposing to global scopes](#exposing) below.
 The <dfn method for="PrivateAggregation">
 contributeToHistogram(PAHistogramContribution contribution)</dfn> method steps
 are:
-</div>
 
 1. If |contribution|["{{PAHistogramContribution/bucket}}"] is not [=set/
     contained=] in [=the exclusive range|the range=] 0 to 2<sup>128</sup>,
@@ -198,10 +197,11 @@ Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
 
 Issue(44): Consider accepting an array of contributions.
 
+</div>
+
 <div algorithm>
 The <dfn method for="PrivateAggregation">
 enableDebugMode(optional PADebugModeOptions options)</dfn> method steps are:
-</div>
 
 1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
 1. Let |debugScope| be the result of running |scopingDetails|' [=scoping
@@ -231,6 +231,7 @@ enableDebugMode(optional PADebugModeOptions options)</dfn> method steps are:
 
 Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
     deprecated.
+</div>
 
 Exposing to global scopes {#exposing}
 =====================================
@@ -486,7 +487,8 @@ Exported algorithms {#exported-algorithms}
 
 Note: These algorithms allow other specifications to integrate with this API.
 
-To <dfn algorithm export>get the privateAggregation</dfn> given a
+<div algorithm>
+To <dfn export>get the privateAggregation</dfn> given a
 {{PrivateAggregation}} |this|:
 1. Let |scopingDetails| be |this|'s [=PrivateAggregation/scoping details=].
 1. If |scopingDetails| is null, [=exception/throw=] a "{{NotAllowedError}}"
@@ -503,18 +505,26 @@ To <dfn algorithm export>get the privateAggregation</dfn> given a
 
 Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
     deprecated.
+</div>
 
-To <dfn algorithm export>append an entry to the contribution cache</dfn> given a
+<div algorithm>
+To <dfn export>append an entry to the contribution cache</dfn> given a
 [=contribution cache entry=] |entry|:
 1. [=list/Append=] |entry| to the [=contribution cache=].
 
-To <dfn algorithm export>get a debug details</dfn> given a [=debug scope=]
+</div>
+
+<div algorithm>
+To <dfn export>get a debug details</dfn> given a [=debug scope=]
 |debugScope|, perform the following steps. They return a [=debug details=].
 1. If [=debug scope map=][|debugScope|] [=map/exists=], return
     [=debug scope map=][|debugScope|].
 1. Otherwise, return a new [=debug details=].
 
-To <dfn algorithm export>mark a debug scope complete</dfn> given a [=debug
+</div>
+
+<div algorithm>
+To <dfn export>mark a debug scope complete</dfn> given a [=debug
 scope=] |debugScope| and an optional [=debug details=] or null
 |debugDetailsOverride| (default null):
 1. Let |debugDetails| be |debugDetailsOverride|.
@@ -533,6 +543,9 @@ scope=] |debugScope| and an optional [=debug details=] or null
         set |entry|'s [=contribution cache entry/debug details=] to
         |debugDetails|.
 
+</div>
+
+<div algorithm>
 To <dfn>determine if a report should be sent deterministically</dfn> given a
 [=pre-specified report parameters=] |preSpecifiedParams|, perform the following
 steps. They return a [=boolean=]:
@@ -546,8 +559,10 @@ Note: If a context ID or non-default filtering ID max bytes was specified, a
     report is sent, even if there are no contributions or there is insufficent
     budget for the requested contributions. See [Protecting against leaks via
     the number of reports](#protecting-against-leaks-via-the-number-of-reports).
+</div>
 
-To <dfn algorithm export>process contributions for a batching scope</dfn> given
+<div algorithm>
+To <dfn export>process contributions for a batching scope</dfn> given
 a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a
 [=context type=] |contextType| and a [=moment=] or null |timeout|:
 1. Let |batchEntries| be a new [=list=].
@@ -599,6 +614,7 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a
 
 Note: These steps break up the contributions based on their [=debug details=] as
     each report can only have one set of metadata.
+</div>
 
 <div algorithm>
 To <dfn export>determine if an origin is an aggregation coordinator</dfn> given
@@ -621,7 +637,8 @@ Issue: Elsewhere, surround algorithms in a `<div algorithm>` block to match, and
     add styling for all algorithms per
     [bikeshed/1472](https://github.com/speced/bikeshed/issues/1472).
 
-To <dfn algorithm export>set the pre-specified report parameters for a batching
+<div algorithm>
+To <dfn export>set the pre-specified report parameters for a batching
 scope</dfn> given a [=pre-specified report parameters=] |params| and a
 [=batching scope=] |batchingScope|:
 
@@ -635,10 +652,13 @@ scope</dfn> given a [=pre-specified report parameters=] |params| and a
 1. [=map/Set=] [=pre-specified report parameters map=][|batchingScope|] to
     |params|.
 
+</div>
+
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
 
-To perform the <dfn algorithm>report creation and scheduling steps</dfn> with an
+<div algorithm>
+To perform the <dfn>report creation and scheduling steps</dfn> with an
 [=origin=] |reportingOrigin|, a [=context type=] |api|, a [=list=] of
 {{PAHistogramContribution}}s |contributions|, a [=debug details=]
 |debugDetails|, an [=aggregation coordinator=] |aggregationCoordinator|, a
@@ -697,9 +717,12 @@ null |timeout|:
     |currentWallTime|.
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
 
-To <dfn algorithm>consume budget if permitted</dfn> given an integer |value|,
-an [=origin=] <var ignore=''>origin</var>, a [=context type=] |api| and a
-[=moment=] |currentTime|, perform [=implementation-defined=] steps. They return
+</div>
+
+<div algorithm>
+To <dfn>consume budget if permitted</dfn> given an integer |value|, an
+[=origin=] <var ignore>origin</var>, a [=context type=] <var ignore>api</var> and a
+[=moment=] <var ignore>currentTime</var>, perform [=implementation-defined=] steps. They return
 a [=boolean=], which indicates whether there is sufficient 'contribution budget'
 left to send the requested contribution |value| (or multiple contributions with
 a sum of values equal to |value|). This budget should be bound to
@@ -707,7 +730,9 @@ usage over time, e.g. the contribution sum over the last 24 hours. The algorithm
 should assume that the contribution will be sent if and only if true is
 returned, i.e. it should consume the budget in that case. If |value| is zero,
 this algorithm should return true.
+</div>
 
+<div algorithm>
 To <dfn>obtain an aggregatable report</dfn> given an [=origin=]
 |reportingOrigin|, a [=context type=] |api|, a [=list=] of
 {{PAHistogramContribution}}s |contributions|, a [=debug details=]
@@ -744,7 +769,10 @@ perform the following steps. They return an [=aggregatable report=].
     :: false
 1. Return |report|.
 
-To <dfn algorithm>obtain a report delivery time</dfn> given a [=moment=]
+</div>
+
+<div algorithm>
+To <dfn>obtain a report delivery time</dfn> given a [=moment=]
 |currentTime| and a [=moment=] or null |timeout|, perform the following steps.
 They return a [=moment=].
 
@@ -756,6 +784,8 @@ They return a [=moment=].
     uniform probability.
 1. Return |currentTime| + [=minimum report delay=] + |r| * [=randomized report
     delay=].
+
+</div>
 
 Sending reports {#sending-reports}
 ----------------------------------
@@ -770,6 +800,7 @@ Issue: Do we have to use the [=queue a task=] algorithm here?
 The user agent must periodically [=attempt to queue reports for sending=] given
 its [=aggregatable report cache=].
 
+<div algorithm>
 To <dfn>attempt to queue reports for sending</dfn> given a [=list=] of
 [=aggregatable reports=] |reports|:
 1. [=list/iterate|For each=] |report| of |reports|, run these steps [=in
@@ -801,6 +832,9 @@ To <dfn>attempt to queue reports for sending</dfn> given a [=list=] of
         Note: It might be more practical to perform this step when the [=user
             agent=] next starts up.
 
+</div>
+
+<div algorithm>
 To <dfn>attempt to deliver a report</dfn> given an [=aggregatable report=]
 |report|:
 1. Let |url| be the result of [=obtaining a reporting endpoint=] given
@@ -826,6 +860,9 @@ To <dfn>attempt to deliver a report</dfn> given an [=aggregatable report=]
     1. Otherwise, [=list/remove=] |report| from the [=aggregatable report
         cache=].
 
+</div>
+
+<div algorithm>
 To <dfn>obtain a reporting endpoint</dfn> given an [=origin=] |reportingOrigin|
 and [=context type=] |api|, perform the following steps. They return a [=URL=].
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
@@ -841,6 +878,9 @@ and [=context type=] |api|, perform the following steps. They return a [=URL=].
 1. [=Assert=]: |result| is not failure.
 1. Return |result|.
 
+</div>
+
+<div algorithm>
 To <dfn>create a report request</dfn> given a [=URL=] |url| and a [=byte
 sequence=] |body|:
 1. Let |request| be a new [=request=] with the following properties:
@@ -872,6 +912,8 @@ sequence=] |body|:
     ::  "`no-store`"
 1. Return |request|.
 
+</div>
+
 Serializing reports {#serializing-reports}
 ------------------------------------------
 
@@ -879,6 +921,7 @@ Note: This section is largely copied from the
     <a href="https://wicg.github.io/attribution-reporting-api/">Attribution
     Reporting API spec</a>, adapting as necessary.
 
+<div algorithm>
 To <dfn>serialize an aggregatable report</dfn> given an [=aggregatable report=]
 |report|, perform the following steps. They return a [=byte sequence=] or an
 error.
@@ -903,6 +946,9 @@ error.
 1. Return the [=byte sequence=] resulting from executing [=serialize an infra
     value to JSON bytes=] on |data|.
 
+</div>
+
+<div algorithm>
 To <dfn>obtain the aggregation service payloads</dfn> given an [=aggregatable
 report=] |report|, perform the following steps. They return a [=list=] of
 [=maps=] or an error.
@@ -932,6 +978,9 @@ report=] |report|, perform the following steps. They return a [=list=] of
 1. [=list/Append=] |aggregationServicePayload| to |aggregationServicePayloads|.
 1. Return |aggregationServicePayloads|.
 
+</div>
+
+<div algorithm>
 To <dfn>obtain the public key for encryption</dfn> given an [=aggregation
 coordinator=] |aggregationCoordinator|, perform the following steps. They return
 a [=tuple=] consisting of a public key and a [=string=], or an error.
@@ -954,6 +1003,9 @@ Note: The user agent is encouraged to enforce regular key rotation. If there are
     multiple keys, the user agent can independently pick a key uniformly at
     random for every encryption operation.
 
+</div>
+
+<div algorithm>
 To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=]
     |report|, perform the following steps. They return a [=byte sequence=].
 1. Let |payloadData| be a new [=list=].
@@ -1003,6 +1055,9 @@ To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=]
 1. Return the [=byte sequence=] resulting from [[!RFC8949|CBOR encoding]]
     |payload|.
 
+</div>
+
+<div algorithm>
 To <dfn>encrypt the payload</dfn> given a [=byte sequence=] |plaintextPayload|,
 public key |pkR| and a [=string=] |sharedInfo|, perform the following steps.
 They return a [=byte sequence=] or an error.
@@ -1018,15 +1073,21 @@ They return a [=byte sequence=] or an error.
     [[RFC9180#name-encryption-to-a-public-key|sender's context]] with |pkR|,
     |info|, |kem_id|, |kdf_id| and |aead_id|.
 1. Let |aad| be \`\` (an empty [=byte sequence=]).
-1. Let |encryptedPayload| be the result of
+1. Let <var ignore>encryptedPayload</var> be the result of
     [[RFC9180#name-encryption-and-decryption|encrypting]] |plaintextPayload|
     with |hpkeContext| and |aad|.
 
+</div>
+
+<div algorithm>
 To <dfn>encode an integer for the payload</dfn> given an integer |intToEncode|
 and an integer |byteLength|, return the representation of |intToEncode| as a
 big-endian [=byte sequence=] of length |byteLength|, left padding with zeroes as
 necessary.
 
+</div>
+
+<div algorithm>
 To <dfn>obtain a report's shared info</dfn> given an [=aggregatable report=]
 |report|, perform the following steps. They return a [=string=].
 1. Let |scheduledReportTime| be the [=duration from=] the [=UNIX epoch=] to
@@ -1046,6 +1107,8 @@ To <dfn>obtain a report's shared info</dfn> given an [=aggregatable report=]
     :: "`1.0`"
 1. Return the result of [=serializing an infra value to a json string=] given
     |sharedInfo|.
+
+</div>
 
 User-agent automation {#user-agent-automation}
 ==============================================
@@ -1078,7 +1141,8 @@ Set local testing mode {#set-local-testing-mode}
     </table>
 </figure>
 
-The [=remote end steps=] are:
+<div algorithm>
+The <dfn export>remote end steps</dfn> are:
 
 1. If |parameters| is not a JSON-formatted [[ECMASCRIPT#sec-objects|Object]],
     return a [=error|WebDriver error=] with [=error code=] [=invalid argument=].
@@ -1091,6 +1155,8 @@ The [=remote end steps=] are:
 
 Note: Without this, [=aggregatable reports=] would be subject to delays, making
     testing difficult.
+
+</div>
 
 Shared Storage API monkey patches {#shared-storage-api-monkey-patches}
 ======================================================================
@@ -1123,7 +1189,8 @@ Add the following algorithm in the subsection
 "<a href="https://wicg.github.io/shared-storage/#run-op">Run Operation
 Methods</a>":
 
-To <dfn algorithm>obtain the aggregation coordinator</dfn> given a
+<div algorithm>
+To <dfn>obtain the aggregation coordinator</dfn> given a
 {{SharedStorageRunOperationMethodOptions}} |options|, perform the following
 steps. They return an [=aggregation coordinator=], null or a {{DOMException}}:
 
@@ -1145,7 +1212,10 @@ steps. They return an [=aggregation coordinator=], null or a {{DOMException}}:
     "`DataError`".
 1. Return |origin|.
 
-To <dfn algorithm>obtain the pre-specified report parameters</dfn> given a
+</div>
+
+<div algorithm>
+To <dfn>obtain the pre-specified report parameters</dfn> given a
 {{SharedStorageRunOperationMethodOptions}} |options|, perform the following
 steps. They return a [=pre-specified report parameters=], null, or a
 {{DOMException}}:
@@ -1170,6 +1240,8 @@ steps. They return a [=pre-specified report parameters=], null, or a
     :: |contextId|
     : [=pre-specified report parameters/filtering ID max bytes=]
     :: |filteringIdMaxBytes|
+
+</div>
 
 The {{WindowSharedStorage}}'s {{WindowSharedStorage/run()}} method steps are
 modified in four ways. First, add the following steps just after step 2 ("If
@@ -1207,8 +1279,9 @@ be |operationMap|[|name|]." (renumbering later steps as appropriate):
 </div>
 
 Third, add the following steps in the same nested scope just before the current
-penultimate step ("If |options| [=map/contains=] |data|", renumbering the last
-step as appropriate):
+penultimate step ("If <var ignore>options</var>
+[=map/contains=] <var ignore>data</var>", renumbering the last step as
+appropriate):
 <div algorithm="shared-storage-run-monkey-patch-3">
 1. Let |hasRunPrivateAggregationCompletionTask| be false.
 1. Let |privateAggregationCompletionTask| be an algorithm to perform the
@@ -1405,7 +1478,6 @@ are to [=get the privateAggregation=] given [=this=].
 <div algorithm>
 The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(DOMString
 event, PAExtendedHistogramContribution contribution)</dfn> method steps are:
-</div>
 1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
 1. If |event| [=string/starts with=] "`reserved.`" and « "`reserved.always`",
     "`reserved.loss`", "`reserved.win`" » does not [=list/contain=] |event|,
@@ -1479,6 +1551,8 @@ Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
     deprecated.
 
 Issue(44): Consider accepting an array of contributions.
+
+</div>
 
 WebIDL modifications {#protected-audience-api-webidl-modifications}
 -------------------------------------------------------------------
@@ -1768,7 +1842,7 @@ Issue: Make all map indexing links (throughout the spec) where possible, i.e.
 </div>
 
 The <a spec="turtledove">generate and score bids</a> algorithm is modified by
-inserting the following step before each of the two "Return |leadingBidInfo|'s
+inserting the following step before each of the two "Return <var ignore>leadingBidInfo</var>'s
 <a spec="turtledove" for="leading bid info">leading bid</a>" steps (one in a
 nested scope), renumbering this and later steps as necessary.
 <div algorithm="protected-audience-generate-and-score-bids-monkey-patch">
@@ -1944,6 +2018,7 @@ New algorithms {#protected-audience-api-specific-new-algorithms}
 
 Add the following definitions:
 
+<div algorithm>
 To <dfn>process the Private Aggregation contributions for an auction</dfn> given
 an <a spec="turtledove">auction config</a> |auctionConfig| and a
 <a spec="turtledove">leading bid info</a> |leadingBidInfo|:
@@ -2090,15 +2165,17 @@ an <a spec="turtledove">auction config</a> |auctionConfig| and a
                 the [=contribution cache=].
 1. [=Mark a debug scope complete=] given |auctionReportBuyersDebugScope| and
     |auctionConfig|'s [=auction config/auction report buyer debug details=].
-1. [=map/For each=] (|origin|, |aggregationCoordinator|) → |batchingScope| of
-    |auctionConfig|'s [=auction config/batching scope map=]:
+1. [=map/For each=] (|origin|, <var ignore>aggregationCoordinator</var>) →
+    |batchingScope| of |auctionConfig|'s [=auction config/batching scope map=]:
     1. [=Process contributions for a batching scope=] given |batchingScope|,
         |origin|, "<code>protected-audience</code>" and null.
 
 Issue: Verify interaction with component auctions.
 
 Issue: Use `[=map/For each=]` where possible.
+</div>
 
+<div algorithm>
 To <dfn>get or create a batching scope</dfn> given an [=origin=] |origin|, an
 [=aggregation coordinator=] |aggregationCoordinator| and an <a
 spec="turtledove">auction config</a> |auctionConfig|, perform the following
@@ -2113,6 +2190,9 @@ steps. They return a [=batching scope=].
         |batchingScopeMap|[|tuple|].
 1. Return |batchingScopeMap|[|tuple|].
 
+</div>
+
+<div algorithm>
 To <dfn>fill in the contribution</dfn> given a
 {{PAExtendedHistogramContribution}} |contribution| and a
 <a spec="turtledove">leading bid info</a> |leadingBidInfo|, perform the
@@ -2133,6 +2213,9 @@ following steps. They return a {{PAHistogramContribution}}.
     :: |contribution|["{{PAExtendedHistogramContribution/filteringId}}"]
 1. Return |filledInContribution|.
 
+</div>
+
+<div algorithm>
 To <dfn>fill in the signal value</dfn> given a {{PASignalValue}} |value|, an
 integer |maxAllowed| and a <a spec="turtledove">leading bid info</a>
 |leadingBidInfo|, perform the following steps. They return an integer.
@@ -2150,6 +2233,9 @@ integer |maxAllowed| and a <a spec="turtledove">leading bid info</a>
 1. Clamp |returnValue| to [=the inclusive range|the range=] 0 to |maxAllowed|,
     inclusive, and return the result.
 
+</div>
+
+<div algorithm>
 To <dfn>determine a signal's numeric value</dfn> given a [=signal base value=]
 |signalBaseValue| and a <a spec="turtledove">leading bid info</a>
 |leadingBidInfo|, perform the following steps. They return a {{double}}.
@@ -2230,6 +2316,9 @@ To <dfn>determine a signal's numeric value</dfn> given a [=signal base value=]
 
         Issue: Consider disallowing this from reportWin() and reportResult().
 
+</div>
+
+<div algorithm>
 To <dfn>maybe obtain an interest group</dfn> given an
 {{InterestGroupScriptRunnerGlobalScope}} |global|, perform the following steps.
 They return an [=interest group=] or null:
@@ -2246,6 +2335,9 @@ They return an [=interest group=] or null:
 
     </dl>
 
+</div>
+
+<div algorithm>
 To <dfn>obtain the Private Aggregation coordinator</dfn> given a
 {{ProtectedAudiencePrivateAggregationConfig}} |config|, perform the following
 steps. They return an [=aggregation coordinator=], null or a {{DOMException}}.
@@ -2256,6 +2348,9 @@ steps. They return an [=aggregation coordinator=], null or a {{DOMException}}.
     string|obtaining the Private Aggregation coordinator=] given
     |config|["{{ProtectedAudiencePrivateAggregationConfig/aggregationCoordinatorOrigin}}"].
 
+</div>
+
+<div algorithm>
 To <dfn lt="obtain the Private Aggregation coordinator from a string">obtain the
 Private Aggregation coordinator</dfn> given a {{USVString}} |originString|,
 perform the following steps. They return an [=aggregation coordinator=] or a
@@ -2271,6 +2366,8 @@ perform the following steps. They return an [=aggregation coordinator=] or a
     given |origin| is false, return a new {{DOMException}} with name
     "`DataError`".
 1. Return |origin|.
+
+</div>
 
 Privacy considerations {#privacy-considerations}
 ================================================
