@@ -525,9 +525,9 @@ significant design and exploration.
 ## Shared Storage in Fenced Frames
 
 When a shared storage operation is run from a fenced frame instead of a
-document, we can no longer set a contextual ID. Arbitrary information can be put
-into the ID which can be leaked out of the fenced frame, so the ability to set
-it is disabled.
+document, we can no longer set a contextual ID. Any cross-site information the
+fenced frame has could be embedded in the context ID, so the ability to set it
+is disabled.
 
 Instead, we propose allowing a Private State Token to be bound to the
 FencedFrameConfig output of a FLEDGE auction. We would reuse the FLEDGE bidder

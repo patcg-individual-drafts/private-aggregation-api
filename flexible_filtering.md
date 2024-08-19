@@ -202,7 +202,7 @@ Protected Audience bidders as these flows require context IDs to make the scale
 practical; we do not currently plan to expose context IDs to bidders (see the
 [explainer](https://github.com/patcg-individual-drafts/private-aggregation-api/blob/main/report_verification.md#specifying-a-contextual-id-and-each-possible-ig-owner)
 for more discussion). We also do not plan on allowing these fields to be set
-from within fenced frames, as that can be used to exfiltrate information.
+from within fenced frames, as they may have access to cross-site information.
 
 #### Backwards compatibility
 
