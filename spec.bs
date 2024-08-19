@@ -1073,10 +1073,9 @@ They return a [=byte sequence=] or an error.
     [[RFC9180#name-encryption-to-a-public-key|sender's context]] with |pkR|,
     |info|, |kem_id|, |kdf_id| and |aead_id|.
 1. Let |aad| be \`\` (an empty [=byte sequence=]).
-1. Let |encryptedPayload| be the result of
+1. Let <var ignore>encryptedPayload</var> be the result of
     [[RFC9180#name-encryption-and-decryption|encrypting]] |plaintextPayload|
     with |hpkeContext| and |aad|.
-1. Return the [=byte sequence=] |encryptedPayload|.
 
 </div>
 
