@@ -42,7 +42,8 @@ spec: webdriver; urlPrefix: https://w3c.github.io/webdriver/
         text: error code; url: dfn-error-code
 spec: fenced-frame; urlPrefix: https://wicg.github.io/fenced-frame/
     type: dfn;
-        for: browsing context; text: fenced frame config instance
+        for: browsing context;
+            text: fenced frame config instance; url: browsing-context-fenced-frame-config-instance
 </pre>
 
 <pre class=link-defaults>
@@ -1219,31 +1220,29 @@ steps. They return an [=aggregation coordinator=], null or a {{DOMException}}:
 
 <div algorithm>
 To <dfn>obtain the pre-specified report parameters</dfn> given a
-{{SharedStorageRunOperationMethodOptions}} |options| and a [=Window/browsing context=] |context|,
-perform the following steps. They return a [=pre-specified report parameters=], null, or a
-{{DOMException}}:
+{{SharedStorageRunOperationMethodOptions}} |options| and a [=browsing context=]
+|context|, perform the following steps. They return a [=pre-specified report
+parameters=], null, or a {{DOMException}}:
 1. If |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"]
     does not [=map/exist=], return null.
 1. Let |privateAggregationConfig| be
     |options|["{{SharedStorageRunOperationMethodOptions/privateAggregationConfig}}"].
-1. Let |calledFromFencedFrame| be true if |context|'s [=browsing context/fenced frame config
-    instance=] is not null, false otherwise.
 1. Let |contextId| be null.
 1. If |privateAggregationConfig|["{{SharedStoragePrivateAggregationConfig/contextId}}"]
     [=map/exists=], set |contextId| to
     |privateAggregationConfig|["{{SharedStoragePrivateAggregationConfig/contextId}}"].
 1. If |contextId|'s [=string/length=] is greater than 64, return a new
     {{DOMException}} with name "`DataError`".
-1. If |calledFromFencedFrame| is true and |contextId| is not null, return a new {{DOMException}}
-    with name "`DataError`".
 1. Let |filteringIdMaxBytes| be the [=default filtering ID max bytes=].
 1. If |privateAggregationConfig|["{{SharedStoragePrivateAggregationConfig/filteringIdMaxBytes}}"]
     [=map/exists=], set |filteringIdMaxBytes| to
     |privateAggregationConfig|["{{SharedStoragePrivateAggregationConfig/filteringIdMaxBytes}}"].
 1. If |filteringIdMaxBytes| is not [=set/contained=] in the [=valid filtering ID
     max bytes range=], return a new {{DOMException}} with name "`DataError`".
-1. If |calledFromFencedFrame| is true and |filteringIdMaxBytes| is not the [=default filtering ID
-    max bytes=], return a new {{DOMException}} with name "`DataError`".
+1. If |context|'s [=browsing context/fenced frame config instance=] is not null:
+    1. If |filteringIdMaxBytes| is not the [=default filtering ID max bytes=] or
+        |contextId| is not null, return a new {{DOMException}} with name
+        "`DataError`".
 1. Return a new [=pre-specified report parameters=] with the items:
     : [=pre-specified report parameters/context ID=]
     :: |contextId|
@@ -1252,12 +1251,14 @@ perform the following steps. They return a [=pre-specified report parameters=], 
 
 </div>
 
-The {{WindowSharedStorage}}'s {{WindowSharedStorage/run()}} method steps are modified in four ways.
-First, add the following steps just after step 4 ("[=Assert=]: window is a [=Window=]"), renumbering
-later steps as appropriate:
+The {{SharedStorageWorklet}}'s {{SharedStorageWorklet/run()}} method steps are
+modified in four ways. First, add the following steps just after step 4
+("[=Assert=]: <var ignore>window</var> is a [=Window=]"), renumbering later
+steps as appropriate:
 <div algorithm="shared-storage-run-monkey-patch-1">
 5. Let |context| be <var ignore>window</var>'s [=Window/browsing context=].
-1. If |context| is null, then return [=a promise rejected with=] a {{TypeError}}.
+1. If |context| is null, then return [=a promise rejected with=] a
+    {{TypeError}}.
 1. Let |preSpecifiedParams| be the result of [=obtaining the pre-specified
     report parameters=] given |options| and |context|.
 1. If |preSpecifiedParams| is a {{DOMException}}, return [=a promise rejected
@@ -1317,9 +1318,9 @@ Finally, at the end of the same nested scope, add the following step:
 
 </div>
 
-The {{WindowSharedStorage}}'s {{WindowSharedStorage/selectURL()}} method steps
-are modified in three ways. First, add the following steps just after step 6 ("If context is null
-..."), renumbering later steps:
+The {{SharedStorageWorklet}}'s {{SharedStorageWorklet/selectURL()}} method steps
+are modified in three ways. First, add the following steps just after step 6
+("If <var ignore>context</var> is null..."), renumbering later steps:
 <div algorithm="shared-storage-selecturl-monkey-patch-1">
 7. Let |preSpecifiedParams| be the result of [=obtaining the pre-specified
     report parameters=] given |options| and <var ignore>context</var>.
