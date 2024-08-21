@@ -1243,8 +1243,8 @@ steps. They return a [=pre-specified report parameters=], null, or a
 
 </div>
 
-The {{WindowSharedStorage}}'s {{WindowSharedStorage/run()}} method steps are
-modified in four ways. First, add the following steps just after step 2 ("If
+The {{SharedStorage}}'s {{SharedStorage/run()}} method steps are modified in
+four ways. First, add the following steps just after step 2 ("If
 {{Worklet/addModule()}} has not yet been called, ..."), renumbering later steps
 as appropriate:
 <div algorithm="shared-storage-run-monkey-patch-1">
@@ -1307,10 +1307,9 @@ Finally, at the end of the same nested scope, add the following step:
 
 </div>
 
-The {{WindowSharedStorage}}'s {{WindowSharedStorage/selectURL()}} method steps
-are modified in three ways. First, add the following steps just after step 5
-("If {{Worklet/addModule()}} has not yet been called, ..."), renumbering later
-steps:
+The {{SharedStorage}}'s {{SharedStorage/selectURL()}} method steps are modified
+in three ways. First, add the following steps just after step 5 ("If
+{{Worklet/addModule()}} has not yet been called, ..."), renumbering later steps:
 <div algorithm="shared-storage-selecturl-monkey-patch-1">
 6. Let |preSpecifiedParams| be the result of [=obtaining the pre-specified
     report parameters=] given |options|.
