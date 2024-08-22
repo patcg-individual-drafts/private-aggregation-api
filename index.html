@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-UD" rel="stylesheet">
   <meta content="Bikeshed version 6270e4735, updated Tue Aug 6 12:12:30 2024 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="49cd4e0d6c1147005bb4e663240197d06280e1c7" name="revision">
+  <meta content="80bc58450fbd63ccf36733284b55c2b2dc426490" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -738,7 +738,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2024-08-21">21 August 2024</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2024-08-22">22 August 2024</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -1985,19 +1985,32 @@ They return a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#byte-
       <p>Let <var>info</var> be the result of <a data-link-type="dfn" href="https://encoding.spec.whatwg.org/#utf-8-encode" id="ref-for-utf-8-encode">UTF-8 encoding</a> the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string-concatenate" id="ref-for-string-concatenate①">concatenation</a> of « "<code>aggregation_service</code>", <var>sharedInfo</var> ».</p>
      <li data-md>
       <p>Let (<var>kem_id</var>, <var>kdf_id</var>, <var>aead_id</var>) be (0x0020, 0x0001, 0x0003).</p>
-      <p class="note" role="note"><span class="marker">Note:</span> These indicate the HPKE algorithm identifiers, specifying the KEM
-    function as DHKEM(X25519, HKDF-SHA256), the KDF function as HKDF-SHA256
-    and the AEAD function as ChaCha20Poly1305.</p>
+      <p class="note" role="note"><span class="marker">Note:</span> The ciphersuite triple above is composed of <a data-link-type="biblio" href="#biblio-rfc9180" title="Hybrid Public Key Encryption">HPKE</a> <a href="https://www.rfc-editor.org/rfc/rfc9180#name-algorithm-identifiers">algorithm identifiers</a>, specifying
+    the <a href="https://www.rfc-editor.org/rfc/rfc9180#name-key-encapsulation-mechanism">KEM</a> as DHKEM(X25519,
+    HKDF-SHA256), the <a href="https://www.rfc-editor.org/rfc/rfc9180#name-key-derivation-functions-kd">KDF</a> function as HKDF-SHA256 and the <a href="https://www.rfc-editor.org/rfc/rfc9180#name-authenticated-encryption-wi">AEAD</a> function as
+    ChaCha20Poly1305.</p>
      <li data-md>
-      <p>Let <var>hpkeContext</var> be the result of setting up an <a data-link-type="biblio" href="#biblio-rfc9180" title="Hybrid Public Key Encryption">HPKE</a> <a href="https://www.rfc-editor.org/rfc/rfc9180#name-encryption-to-a-public-key">sender’s context</a> with <var>pkR</var>, <var>info</var>, <var>kem_id</var>, <var>kdf_id</var> and <var>aead_id</var>.</p>
+      <p>Let (<var>enc</var>, <var>hpkeContext</var>) be the result of setting up an <a data-link-type="biblio" href="#biblio-rfc9180" title="Hybrid Public Key Encryption">HPKE</a> <a href="https://www.rfc-editor.org/rfc/rfc9180#name-encryption-to-a-public-key">sender’s context</a> by calling <code>SetupBaseS()</code> with a public key <var>pkR</var>, application-supplied information <var>info</var>, KEM <var>kem_id</var>, KDF <var>kdf_id</var>, and AEAD <var>aead_id</var>. If this operation
+fails, return an error.</p>
+      <p class="note" role="note"><span class="marker">Note:</span> For clarity, we explicitly passed the KEM, KDF, and AEAD identifiers
+ to <code>SetupBaseS()</code> above, even though RFC9180 omits the parameters from its
+ pseudocode.</p>
      <li data-md>
       <p>Let <var>aad</var> be `` (an empty <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#byte-sequence" id="ref-for-byte-sequence⑦">byte sequence</a>).</p>
      <li data-md>
-      <p>Let <var>encryptedPayload</var> be the result of <a href="https://www.rfc-editor.org/rfc/rfc9180#name-encryption-and-decryption">encrypting</a> <var>plaintextPayload</var> with <var>hpkeContext</var> and <var>aad</var>.</p>
+      <p>Let <var>ciphertext</var> be the result of <a href="https://www.rfc-editor.org/rfc/rfc9180#name-encryption-and-decryption">sealing</a> the payload by calling <code>ContextS.Seal()</code> on the <var>hpkeContext</var> object with additional authenticated
+data <var>aad</var> and plaintext <var>plaintextPayload</var>. If this operation fails, return
+an error.</p>
+     <li data-md>
+      <p>Let <var>encryptedPayload</var> be the concatenation of the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#byte-sequence" id="ref-for-byte-sequence⑧">byte sequences</a> « <var>enc</var>, <var>ciphertext</var> ».</p>
+      <p class="note" role="note"><span class="marker">Note:</span> The length of the encapsulated symmetric key <var>enc</var> generated by our chosen KEM is exactly 32 bytes, as shown in RFC9180’s
+ table of <a href="https://www.rfc-editor.org/rfc/rfc9180#name-key-encapsulation-mechanism">KEM IDs</a>.</p>
+     <li data-md>
+      <p>Return the <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#byte-sequence" id="ref-for-byte-sequence⑨">byte sequence</a> <var>encryptedPayload</var>.</p>
     </ol>
    </div>
    <div class="algorithm" data-algorithm="encode an integer for the payload"> To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="encode-an-integer-for-the-payload">encode an integer for the payload</dfn> given an integer <var>intToEncode</var> and an integer <var>byteLength</var>, return the representation of <var>intToEncode</var> as a
-big-endian <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#byte-sequence" id="ref-for-byte-sequence⑧">byte sequence</a> of length <var>byteLength</var>, left padding with zeroes as
+big-endian <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#byte-sequence" id="ref-for-byte-sequence①⓪">byte sequence</a> of length <var>byteLength</var>, left padding with zeroes as
 necessary. </div>
    <div class="algorithm" data-algorithm="obtain a report’s shared info">
      To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="obtain-a-reports-shared-info">obtain a report’s shared info</dfn> given an <a data-link-type="dfn" href="#aggregatable-report" id="ref-for-aggregatable-report①②">aggregatable report</a> <var>report</var>, perform the following steps. They return a <a data-link-type="dfn" href="https://infra.spec.whatwg.org/#string" id="ref-for-string⑧">string</a>. 
@@ -4508,7 +4521,7 @@ let dfnPanelData = {
 "3a711be7": {"dfnID":"3a711be7","dfnText":"scheme","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-url-scheme"}],"title":"9.4. Serializing reports"}],"url":"https://url.spec.whatwg.org/#concept-url-scheme"},
 "3ba6be6a": {"dfnID":"3ba6be6a","dfnText":"highest scoring other bid","external":true,"refSections":[{"refs":[{"id":"ref-for-leading-bid-info-highest-scoring-other-bid"},{"id":"ref-for-leading-bid-info-highest-scoring-other-bid\u2460"}],"title":"12.5. New algorithms"}],"url":"https://wicg.github.io/turtledove/#leading-bid-info-highest-scoring-other-bid"},
 "3c763838": {"dfnID":"3c763838","dfnText":"SharedStorageRunOperationMethodOptions","external":true,"refSections":[{"refs":[{"id":"ref-for-dictdef-sharedstoragerunoperationmethodoptions"},{"id":"ref-for-dictdef-sharedstoragerunoperationmethodoptions\u2460"},{"id":"ref-for-dictdef-sharedstoragerunoperationmethodoptions\u2461"}],"title":"11. Shared Storage API monkey patches"}],"url":"https://wicg.github.io/shared-storage/#dictdef-sharedstoragerunoperationmethodoptions"},
-"3de9e659": {"dfnID":"3de9e659","dfnText":"byte sequence","external":true,"refSections":[{"refs":[{"id":"ref-for-byte-sequence"}],"title":"9.3. Sending reports"},{"refs":[{"id":"ref-for-byte-sequence\u2460"},{"id":"ref-for-byte-sequence\u2461"},{"id":"ref-for-byte-sequence\u2462"},{"id":"ref-for-byte-sequence\u2463"},{"id":"ref-for-byte-sequence\u2464"},{"id":"ref-for-byte-sequence\u2465"},{"id":"ref-for-byte-sequence\u2466"},{"id":"ref-for-byte-sequence\u2467"}],"title":"9.4. Serializing reports"}],"url":"https://infra.spec.whatwg.org/#byte-sequence"},
+"3de9e659": {"dfnID":"3de9e659","dfnText":"byte sequence","external":true,"refSections":[{"refs":[{"id":"ref-for-byte-sequence"}],"title":"9.3. Sending reports"},{"refs":[{"id":"ref-for-byte-sequence\u2460"},{"id":"ref-for-byte-sequence\u2461"},{"id":"ref-for-byte-sequence\u2462"},{"id":"ref-for-byte-sequence\u2463"},{"id":"ref-for-byte-sequence\u2464"},{"id":"ref-for-byte-sequence\u2465"},{"id":"ref-for-byte-sequence\u2466"},{"id":"ref-for-byte-sequence\u2467"},{"id":"ref-for-byte-sequence\u2468"},{"id":"ref-for-byte-sequence\u2460\u24ea"}],"title":"9.4. Serializing reports"}],"url":"https://infra.spec.whatwg.org/#byte-sequence"},
 "3fca5a9e": {"dfnID":"3fca5a9e","dfnText":"map","external":true,"refSections":[{"refs":[{"id":"ref-for-ordered-map"},{"id":"ref-for-ordered-map\u2460"},{"id":"ref-for-ordered-map\u2461"}],"title":"5. Storage"},{"refs":[{"id":"ref-for-ordered-map\u2462"}],"title":"9.1. Exported algorithms"},{"refs":[{"id":"ref-for-ordered-map\u2463"},{"id":"ref-for-ordered-map\u2464"},{"id":"ref-for-ordered-map\u2465"},{"id":"ref-for-ordered-map\u2466"},{"id":"ref-for-ordered-map\u2467"},{"id":"ref-for-ordered-map\u2468"}],"title":"9.4. Serializing reports"},{"refs":[{"id":"ref-for-ordered-map\u2460\u24ea"},{"id":"ref-for-ordered-map\u2460\u2460"},{"id":"ref-for-ordered-map\u2460\u2461"},{"id":"ref-for-ordered-map\u2460\u2462"}],"title":"12.3.1. Extending auction config"},{"refs":[{"id":"ref-for-ordered-map\u2460\u2463"}],"title":"12.3.7. On event contribution cache"},{"refs":[{"id":"ref-for-ordered-map\u2460\u2464"}],"title":"12.4. Algorithm modifications"}],"url":"https://infra.spec.whatwg.org/#ordered-map"},
 "4013a022": {"dfnID":"4013a022","dfnText":"this","external":true,"refSections":[{"refs":[{"id":"ref-for-this"},{"id":"ref-for-this\u2460"}],"title":"2. Exposed interface"},{"refs":[{"id":"ref-for-this\u2461"}],"title":"3. Exposing to global scopes"},{"refs":[{"id":"ref-for-this\u2462"},{"id":"ref-for-this\u2463"}],"title":"11. Shared Storage API monkey patches"},{"refs":[{"id":"ref-for-this\u2464"},{"id":"ref-for-this\u2465"},{"id":"ref-for-this\u2466"}],"title":"12.1. New WebIDL"}],"url":"https://webidl.spec.whatwg.org/#this"},
 "43ac8374": {"dfnID":"43ac8374","dfnText":"origin (for environment settings object)","external":true,"refSections":[{"refs":[{"id":"ref-for-concept-settings-object-origin"}],"title":"3. Exposing to global scopes"},{"refs":[{"id":"ref-for-concept-settings-object-origin\u2460"},{"id":"ref-for-concept-settings-object-origin\u2461"}],"title":"11. Shared Storage API monkey patches"},{"refs":[{"id":"ref-for-concept-settings-object-origin\u2462"}],"title":"12.4. Algorithm modifications"}],"url":"https://html.spec.whatwg.org/multipage/webappapis.html#concept-settings-object-origin"},
