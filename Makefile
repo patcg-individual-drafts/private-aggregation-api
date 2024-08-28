@@ -13,10 +13,10 @@ clean:
 # out to stale specs. https://speced.github.io/bikeshed/#cli-update
 .PHONY: update
 update:
-	python3 -m bikeshed update
+	bikeshed update
 
 spec.html: spec.bs
-	python3 -m bikeshed --die-on=everything spec $< $@
+	bikeshed --die-on=everything spec $< $@
 
 # Autogenerates a table of contents for the README. This can in turn be rendered
 # as HTML. This is useful for catching mistakes in the README's handwritten TOC.
