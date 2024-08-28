@@ -1206,7 +1206,7 @@ to [=get the privateAggregation=] given [=this=].
 
 Add the following algorithm in the subsection
 "<a href="https://wicg.github.io/shared-storage/#run-op-shared-storage">Run
-Operation Methods on {{SharedStorage}}</a>":
+Operation Methods on `SharedStorage`</a>":
 
 <div algorithm>
 To <dfn>obtain the aggregation coordinator</dfn> given a
