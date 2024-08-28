@@ -23,7 +23,7 @@ spec.html: spec.bs
 README-with-toc.md: README.md
 	pandoc -f gfm --toc --toc-depth 6 -s $< -o $@
 
-# Rule for generating HTML from Markdown for a limited set of targets. This is a
+# Rule for generating HTML from Markdown for a limited set of targets. This uses
 # GNU Make "static pattern" syntax.
 $(HTML_FROM_MD_TARGETS): %.html : %.md
 	pandoc -f gfm -s $< -o $@
