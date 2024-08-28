@@ -1205,8 +1205,8 @@ The {{SharedStorageWorkletGlobalScope/privateAggregation}} [=getter steps=] are
 to [=get the privateAggregation=] given [=this=].
 
 Add the following algorithm in the subsection
-"<a href="https://wicg.github.io/shared-storage/#run-op">Run Operation
-Methods</a>":
+"<a href="https://wicg.github.io/shared-storage/#run-op-shared-storage">Run
+Operation Methods</a>":
 
 <div algorithm>
 To <dfn>obtain the aggregation coordinator</dfn> given a
