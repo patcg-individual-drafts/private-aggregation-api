@@ -201,7 +201,8 @@ We do not currently plan to allow the filtering ID bit size to be configured for
 Protected Audience bidders as these flows require context IDs to make the scale
 practical; we do not currently plan to expose context IDs to bidders (see the
 [explainer](https://github.com/patcg-individual-drafts/private-aggregation-api/blob/main/report_verification.md#specifying-a-contextual-id-and-each-possible-ig-owner)
-for more discussion).
+for more discussion). We also do not plan on allowing these fields to be set
+from within fenced frames, as they may have access to cross-site information.
 
 #### Backwards compatibility
 
@@ -301,8 +302,6 @@ to the potential for a large number of null reports, see
 [explainer](https://github.com/patcg-individual-drafts/private-aggregation-api/blob/main/report_verification.md#specifying-a-contextual-id-and-each-possible-ig-owner)
 for more discussion. Identical considerations would apply to this batching ID in
 the `shared_info`; so, we would not allow a batching ID to be set for bidders.
-Note that Protected Audience auction winners could still report using Shared
-Storage in the rendering (fenced) frame.
 
 #### Backwards compatibility
 
