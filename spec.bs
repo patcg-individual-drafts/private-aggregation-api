@@ -456,8 +456,10 @@ controls which [=origins=] are valid [=aggregation coordinators=]. Every
 <dfn>Default aggregation coordinator</dfn> is an [=aggregation coordinator=]
 that controls which is used for a report if none is explicitly selected.
 
-<dfn>Maximum report contributions</dfn> is a positive integer that controls how
-many contributions can be present in a single report.
+<dfn>Maximum report contributions</dfn> is a [=map=] from [=context type=] to
+positive integers. Semantically, it defines the maximum number of contributions
+that can be present in a single report for every kind of calling context, e.g.
+Shared Storage.
 
 <dfn>Minimum report delay</dfn> is a non-negative [=duration=] that controls the
 minimum delay to deliver an [=aggregatable report=].
@@ -690,9 +692,9 @@ null |timeout|:
         |mergedContributions|.
 1. Let |truncatedContributions| be a new [=list=].
 1. If |mergedContributions| has a [=list/size=] greater than [=maximum report
-    contributions=]:
+    contributions=][|api|]:
     1. [=set/For each=] |n| of [=the exclusive range|the range=] 0 to [=maximum
-        report contributions=], exclusive:
+        report contributions=][|api|], exclusive:
         1. [=set/Append=] |mergedContributions|[|n|] to
             |truncatedContributions|.
 1. Otherwise, set |truncatedContributions| to |mergedContributions|.
@@ -1014,10 +1016,12 @@ To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=]
     |report|, perform the following steps. They return a [=byte sequence=].
 1. Let |payloadData| be a new [=list=].
 1. Let |contributions| be |report|'s [=aggregatable report/contributions=].
-1. [=Assert=]: |contributions|' [=list/size=] is not greater than [=maximum
-    report contributions=].
-1. [=iteration/While=] |contributions|' [=list/size=] is less than [=maximum
-    report contributions=]:
+1. Let |maxContributions| be
+    [=maximum report contributions=][[=aggregatable report/api=]].
+1. [=Assert=]: |contributions|' [=list/size=] is not greater than
+    |maxContributions|.
+1. [=iteration/While=] |contributions|' [=list/size=] is less than
+    |maxContributions|:
     1. Let |nullContribution| be a new {{PAHistogramContribution}} with the
         items:
         : {{PAHistogramContribution/bucket}}
