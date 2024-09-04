@@ -7,7 +7,7 @@
   <link href="https://www.w3.org/StyleSheets/TR/2021/W3C-UD" rel="stylesheet">
   <meta content="Bikeshed version 6270e4735, updated Tue Aug 6 12:12:30 2024 -0700" name="generator">
   <link href="https://patcg-individual-drafts.github.io/private-aggregation-api" rel="canonical">
-  <meta content="419c30eb38fa0ef7ec488f343003f4073dc124c7" name="revision">
+  <meta content="07501bfe5faea9d5ffb24eed8978ac6ac3e9c50a" name="revision">
   <meta content="dark light" name="color-scheme">
   <link href="https://www.w3.org/StyleSheets/TR/2021/dark.css" media="(prefers-color-scheme: dark)" rel="stylesheet" type="text/css">
 <style>/* Boilerplate: style-autolinks */
@@ -738,7 +738,7 @@ var[data-var-color="6"] { --var-vg: #FFBCF2; }
   <div class="head">
    <p data-fill-with="logo"><a class="logo" href="https://www.w3.org/"> <img alt="W3C" height="48" src="https://www.w3.org/StyleSheets/TR/2021/logos/W3C" width="72"> </a> </p>
    <h1 class="p-name no-ref" id="title">Private Aggregation API</h1>
-   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2024-09-03">3 September 2024</time></p>
+   <p id="w3c-state"><a href="https://www.w3.org/standards/types#UD">Unofficial Proposal Draft</a>, <time class="dt-updated" datetime="2024-09-04">4 September 2024</time></p>
    <details open>
     <summary>More details about this document</summary>
     <div data-fill-with="spec-metadata">
@@ -2101,8 +2101,8 @@ error</a> with <a data-link-type="dfn" href="https://w3c.github.io/webdriver/#df
    <p>The <code class="idl"><a data-link-type="idl" href="#dom-sharedstorageworkletglobalscope-privateaggregation" id="ref-for-dom-sharedstorageworkletglobalscope-privateaggregation">privateAggregation</a></code> <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#getter-steps" id="ref-for-getter-steps①">getter steps</a> are
 to <a data-link-type="dfn" href="#get-the-privateaggregation" id="ref-for-get-the-privateaggregation①">get the privateAggregation</a> given <a data-link-type="dfn" href="https://webidl.spec.whatwg.org/#this" id="ref-for-this③">this</a>.</p>
    <p>Add the following algorithm in the subsection
-"<a href="https://wicg.github.io/shared-storage/#run-op">Run Operation
-Methods</a>":</p>
+"<a href="https://wicg.github.io/shared-storage/#run-op-shared-storage">Run
+Operation Methods on <code>SharedStorage</code></a>":</p>
    <div class="algorithm" data-algorithm="obtain the aggregation coordinator">
      To <dfn class="dfn-paneled" data-dfn-type="dfn" data-noexport id="obtain-the-aggregation-coordinator">obtain the aggregation coordinator</dfn> given a <code class="idl"><a data-link-type="idl" href="https://wicg.github.io/shared-storage/#dictdef-sharedstoragerunoperationmethodoptions" id="ref-for-dictdef-sharedstoragerunoperationmethodoptions①">SharedStorageRunOperationMethodOptions</a></code> <var>options</var>, perform the following
 steps. They return an <a data-link-type="dfn" href="#aggregation-coordinator" id="ref-for-aggregation-coordinator⑨">aggregation coordinator</a>, null or a <code class="idl"><a data-link-type="idl" href="https://webidl.spec.whatwg.org/#idl-DOMException" id="ref-for-idl-DOMException④">DOMException</a></code>: 
