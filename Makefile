@@ -9,8 +9,8 @@ clean:
 	-rm spec.html
 	-rm $(HTML_FROM_MD_TARGETS)
 
-# Updates Bikeshed's datafiles. Run this regularly to ensure you're not linking
-# out to stale specs. https://speced.github.io/bikeshed/#cli-update
+# Updates Bikeshed's datafiles. Bikeshed automatically updates them if they're
+# more than a few days old, but this will ensure you have the latest version.
 .PHONY: update
 update:
 	bikeshed update
