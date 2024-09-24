@@ -389,31 +389,27 @@ will merge any contributions that have the same bucket and [filtering
 ID](https://github.com/patcg-individual-drafts/private-aggregation-api/blob/main/flexible_filtering.md#proposal-filtering-id-in-the-encrypted-payload)
 before truncation.
 
-Selecting the limit's value presents a tradeoff. Although larger reports have
-higher utility, they are also more expensive to process on the aggregation
-service. To accommodate use cases with diverse utility requirements and cost
-tolerances, we define several limit-selection strategies below.
+Although larger reports have higher utility, they are also more expensive for
+the aggregation service to process. To accommodate use cases with diverse
+utility requirements and cost tolerances, we will attempt to select reasonable
+defaults with optional overrides:
 
-- *One global limit:* The simplest strategy is to define a single limit that the
-  browser applies to all reports. Our implementation currently enforces a limit
-  of 20 contributions per report.
-
-- *Per-API limit:* The browser may select the limit based on the identity of the
-  calling API. In particular, Protected Audience reports may benefit from a
-  higher limit more than Shared Storage reports. Our implementation plan is to
-  set the limit at 20 contributions per report for Shared Storage and 100
+- *Default limits:* The default limit may depend on the identity of the calling
+  API. In particular, Protected Audience reports may benefit from a higher limit
+  more than Shared Storage reports. Our implementation plan is to set the
+  default limit at 20 contributions per report for Shared Storage and 100
   contributions per report for Protected Audience.
 
-- *Per-context limit:* Callers may request a different limit on each isolated
-  context they create. However, callers that possess cross-site information
-  cannot use this mechanism. Consequently, Protected Audience buyers cannot set
-  per-context limits. The browser must clamp excessively large values to some
-  maximum value. Our implementation plan is to clamp the requested limit to a
-  maximum of 1000 contributions per report.
+- *Per-context limits:* Callers may request a different limit on each isolated
+  context they create. Since this affects the payload size, the requested limit
+  must be specified from outside an isolated context. Consequently, Protected
+  Audience buyers cannot set per-context limits. The browser must clamp
+  excessively large values to some maximum value. Our implementation plan is to
+  clamp the requested limit to a maximum of 1000 contributions per report.
 
-- *Per-site limit:* A more complex design that enables sites to configure a
-  global limit may also be possible, but requires further analysis. (See [issue
-  #81].)
+- *Global config:* A more complex design that enables sites to configure a
+  global limit may also be possible, but it requires further analysis. (See
+  [issue #81].)
 
   [issue #81]: https://github.com/patcg-individual-drafts/private-aggregation-api/issues/81
 
