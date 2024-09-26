@@ -193,6 +193,57 @@ class SendDemoReportOperation {
 register("send-demo-report", SendDemoReportOperation);
 ```
 
+### Cross-site reach measurement
+
+Measuring the number of users that have seen an ad.
+
+In the ad’s iframe:
+
+```js
+await window.sharedStorage.worklet.addModule('reach.js');
+await window.sharedStorage.run('send-reach-report', {
+  // optional one-time context
+  data: { campaignId: '1234' },
+});
+```
+
+Worklet script (i.e. `reach.js`):
+
+```js
+class SendReachReportOperation {
+  async run(data) {
+    const reportSentForCampaign = `report-sent-${data.campaignId}`;
+
+    // Compute reach only for users who haven't previously had a report sent for
+    // this campaign. Users who had a report for this campaign triggered by a
+    // site other than the current one will be skipped.
+    if (await sharedStorage.get(reportSentForCampaign) === 'yes') {
+      return;  // Don't send a report.
+    }
+
+    // The user agent will send the report to a default endpoint after a delay.
+    privateAggregation.contributeToHistogram({
+      bucket: data.campaignId,
+      value: 128,  // A predetermined fixed value; see Scaling values.
+    });
+
+    await sharedStorage.set(reportSentForCampaign, 'yes');
+  }
+}
+register('send-reach-report', SendReachReportOperation);
+```
+
+### _K_+ frequency measurement
+
+By instead maintaining a counter in shared storage, the approach for cross-site
+reach measurement could be extended to _K_+ frequency measurement, i.e.
+measuring the number of users who have seen _K_ or more ads on a given browser,
+for a pre-chosen value of _K_. A unary counter can be maintained by calling
+`window.sharedStorage.append("freq", "1")` on each ad view. Then, the
+`send-reach-report` operation would only send a report if there are more than
+_K_ characters stored at the key `"freq"`. This counter could also be used to
+filter out ads that have been shown too frequently.
+
 ## Goals
 
 This API aims to support a wide range of aggregation use cases, including
@@ -425,7 +476,7 @@ service deployed on AWS, GCP, and other platforms in the future. The specified
 origin would need to be on an allowlist maintained by the browser. If none is
 specified, a default will be used.
 
-This allowlist matches the Attribution Reporting API's, available 
+This allowlist matches the Attribution Reporting API's, available
 [here](https://github.com/WICG/attribution-reporting-api/blob/main/aggregation_coordinator_origin_allowlist.md).
 
 Shared Storage callers would specify this field when calling the `run()` or
