@@ -297,11 +297,11 @@ APIs exposing Private Aggregation {#apis-exposing-private-aggregation}
 
 <em>This section is non-normative.</em>
 
-This API is currently exposed in global scopes defined in two specifications:
-1. <a href="https://wicg.github.io/shared-storage/">Shared Storage</a>'s and
-1. <a href="https://wicg.github.io/turtledove/">Protected Audience</a>'s (via
-    the <a href="#protected-audience-api-monkey-patches">monkey patches</a>
-    below).
+This API is currently exposed in global scopes defined in the specifications of
+two APIs:
+1. <a href="https://wicg.github.io/shared-storage/">Shared Storage</a> and
+1. <a href="https://wicg.github.io/turtledove/">Protected Audience</a> (via the
+    <a href="#protected-audience-api-monkey-patches">monkey patches</a> below).
 
 Structures {#structures}
 ========================
