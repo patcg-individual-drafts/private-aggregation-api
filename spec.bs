@@ -1228,28 +1228,7 @@ partial interface PrivateAggregation {
       DOMString event, PAExtendedHistogramContribution contribution);
 };
 
-dictionary AuctionReportBuyersConfig {
-  required bigint bucket;
-  required double scale;
-};
-
-dictionary AuctionReportBuyerDebugModeConfig {
-  boolean enabled = false;
-
-  // Must only be provided if `enabled` is true.
-  bigint? debugKey;
-};
-
-partial dictionary AuctionAdConfig {
-  sequence<bigint> auctionReportBuyerKeys;
-  record<DOMString, AuctionReportBuyersConfig> auctionReportBuyers;
-  AuctionReportBuyerDebugModeConfig auctionReportBuyerDebugModeConfig;
-};
 </xmp>
-
-Note: `requiredSellerCapabilities` is defined in the <a
-    href="https://wicg.github.io/turtledove/#dictdef-auctionadconfig">Protected
-    Audience spec</a>.
 
 Issue: Do we want to align naming with implementation?
 
@@ -1335,29 +1314,6 @@ Issue(44): Consider accepting an array of contributions.
 
 </div>
 
-WebIDL modifications {#protected-audience-api-webidl-modifications}
--------------------------------------------------------------------
-
-The {{AuctionAdConfig}} and {{AuctionAdInterestGroup}} dictionaries are
-modified to add a new field:
-<xmp class="idl">
-dictionary ProtectedAudiencePrivateAggregationConfig {
-  USVString aggregationCoordinatorOrigin;
-};
-
-partial dictionary AuctionAdConfig {
-  ProtectedAudiencePrivateAggregationConfig privateAggregationConfig;
-};
-
-partial dictionary AuctionAdInterestGroup {
-  ProtectedAudiencePrivateAggregationConfig privateAggregationConfig;
-};
-</xmp>
-
-Note: `sellerCapabilities` is defined in the <a
-    href="https://wicg.github.io/turtledove#dictdef-generatebidinterestgroup">Protected
-    Audience spec</a>
-
 Structures {#protected-audience-api-specific-structures}
 --------------------------------------------------------
 
@@ -1379,29 +1335,6 @@ Extend the <a spec="turtledove">auction config</a> [=struct=] to add new fields:
         non-reserved events.
 : <dfn>permissions policy state</dfn>
 :: A [=permissions policy state=].
-: <dfn>seller Private Aggregation coordinator</dfn>
-:: An [=aggregation coordinator=]. Defaults to the [=default aggregation
-    coordinator=].
-: <dfn>auction report buyer keys</dfn>
-:: A [=map=] from buyer [=origins=] to {{bigint}}s.
-: <dfn>auction report buyers</dfn>
-:: A [=map=] from [=strings=] to {{AuctionReportBuyersConfig}}s.
-: <dfn>auction report buyer debug details</dfn>
-:: A [=debug details=].
-
-    Issue: Consider replacing the strings above with specific enum types.
-
-</dl>
-
-<h4 id="extending-interest-group">Extending interest group</h4>
-
-Extend the <a spec="turtledove">interest group</a> [=struct=] to add a new
-field:
-<dl dfn-for="interest group">
-: <dfn>Private Aggregation coordinator</dfn>
-:: An [=aggregation coordinator=] or null.
-
-    Note: a null value specifies the default coordinator.
 
 </dl>
 
@@ -1507,22 +1440,6 @@ subsection to add an extra field to the end of the list beginning
 Algorithm modifications {#protected-audience-api-algorithm-modifications}
 -------------------------------------------------------------------------
 
-The {{Navigator/joinAdInterestGroup()}} method steps are modified to add the
-following steps at the end of the scope nested under step 5 ("Validate the given
-<var ignore>group</var> and ..."):
-<div algorithm="protected-audience-joinadig-monkey-patch">
-17. If |group|["{{AuctionAdInterestGroup/privateAggregationConfig}}"]
-    [=map/exists=]:
-    1. Let |aggregationCoordinator| be the result of [=obtaining the Private
-        Aggregation coordinator=] given
-        |group|["{{AuctionAdInterestGroup/privateAggregationConfig}}"].
-    1. If |aggregationCoordinator| is a {{DOMException}}, then
-        [=exception/throw=] |aggregationCoordinator|.
-    1. Set <var ignore>interestGroup</var>'s [=interest group/Private
-        Aggregation coordinator=] to |aggregationCoordinator|.
-
-</div>
-
 The {{Navigator/runAdAuction()}} method steps are modified to add the
 following step just after step 5 ("If <var ignore>auctionConfig</var> is a
 failure, then..."), renumbering the later steps as appropriate:
@@ -1533,92 +1450,6 @@ failure, then..."), renumbering the later steps as appropriate:
     :: The result of determining whether <var ignore>global</var>'s [=associated
         Document=] is [=allowed to use=] the
         "<code>[=private-aggregation=]</code>" [=policy-controlled feature=].
-
-</div>
-
-The <a spec="turtledove">validate and convert auction ad config</a> steps are
-modified to add the following steps just before the last step ("Return
-<var ignore>auctionConfig</var>"), renumbering the later step as appropriate:
-<div algorithm="protected-audience-validate-config-monkey-patch">
-31. If |config|["{{AuctionAdConfig/auctionReportBuyerKeys}}"] [=map/exists=]:
-    1. Let |interestGroupBuyers| be |auctionConfig|'s <a spec="turtledove"
-        for="auction config">interest group buyers</a>.
-    1. If |interestGroupBuyers| is null, set |interestGroupBuyers| to a new
-        [=list=].
-    1. [=list/For each=] |index| of [=the exclusive range|the range=] 0 to
-        |config|["{{AuctionAdConfig/auctionReportBuyerKeys}}"]'s [=list/size=],
-        exclusive:
-        1. Let |key| be
-            |config|["{{AuctionAdConfig/auctionReportBuyerKeys}}"][|index|].
-        1. If |key| is not [=set/contained=] in [=the exclusive range|the
-            range=] 0 to 2<sup>128</sup>, exclusive, [=exception/throw=] a
-            {{TypeError}}.
-        1. If |index| is equal to or greater than |interestGroupBuyers|' [=list/
-            size=], [=iteration/continue=].
-
-            Note: [=iteration/Continue=] is used (instead of [=iteration/
-                break=]) to match validation logic for all given buyer keys.
-        1. Let |origin| be |interestGroupBuyers|[|index|].
-        1. [=map/Set=] |auctionConfig|'s [=auction config/auction report buyer
-            keys=][|origin|] to |key|.
-
-            Issue: Check behavior when an origin is repeated in
-                {{AuctionAdConfig/interestGroupBuyers}}.
-1. If |config|["{{AuctionAdConfig/auctionReportBuyers}}"] [=map/exists=]:
-    1. [=map/For each=] |reportType| → |reportBuyerConfig| of
-        |config|["{{AuctionAdConfig/auctionReportBuyers}}"]:
-        1. If « "`interestGroupCount`", "`bidCount`",
-            "`totalGenerateBidLatency`", "`totalSignalsFetchLatency`" » does not
-            [=list/contain=] |reportType|, [=iteration/continue=].
-
-            Note: No error is thrown to allow forward compatibility if
-                additional report types are added later.
-
-            Issue: Should these strings be dash delimited?
-
-        1. If |reportBuyerConfig|["{{AuctionReportBuyersConfig/bucket}}"] is not
-            [=set/contained=] in [=the exclusive range|the range=] 0 to
-            2<sup>128</sup>, exclusive, [=exception/throw=] a {{TypeError}}.
-
-            Issue: Consider validating the case where the bucket used (after
-                summing) is too large. Currently, the implementation appears to
-                overflow. See <a
-                href="https://github.com/WICG/turtledove/issues/1040">
-                protected-audience/1040</a>.
-        1. [=map/Set=] |auctionConfig|'s [=auction config/auction report
-            buyers=][|reportType|] to |reportBuyerConfig|.
-
-1. Set |auctionConfig|'s [=auction config/auction report buyer debug details=]
-    to a new [=debug details=].
-1. If |config|["{{AuctionAdConfig/auctionReportBuyerDebugModeConfig}}"]
-    [=map/exists=]:
-    1. Let |debugModeConfig| be
-        |config|["{{AuctionAdConfig/auctionReportBuyerDebugModeConfig}}"].
-    1. Let |enabled| be
-        |debugModeConfig|["{{AuctionReportBuyerDebugModeConfig/enabled}}"].
-    1. Let |debugKey| be
-        |debugModeConfig|["{{AuctionReportBuyerDebugModeConfig/debugKey}}"].
-    1. If |debugKey| is not null:
-        1. If |debugKey| is not [=set/contained=] in [=the exclusive range|the
-            range=] 0 to 2<sup>64</sup>, exclusive, [=exception/throw=] a
-            {{TypeError}}.
-        1. If |enabled| is false, [=exception/throw=] a {{TypeError}}.
-    1. Set |auctionConfig|'s [=auction config/auction report buyer debug
-        details=] to a new [=debug details=] with the items:
-        : [=debug details/enabled=]
-        :: |enabled|
-        : [=debug details/key=]
-        :: |debugKey|
-1. If |config|["{{AuctionAdConfig/privateAggregationConfig}}"] [=map/exists=]:
-    1. Let |aggregationCoordinator| be the result of [=obtaining the Private
-        Aggregation coordinator=] given
-        |config|["{{AuctionAdConfig/privateAggregationConfig}}"].
-    1. If |aggregationCoordinator| is a {{DOMException}}, return failure.
-    1. Set <var ignore>auctionConfig</var>'s [=auction config/seller Private
-        Aggregation coordinator=] to |aggregationCoordinator|.
-
-Issue: Make all map indexing links (throughout the spec) where possible, i.e.
-    matching this section.
 
 </div>
 
@@ -1759,38 +1590,6 @@ The <a spec="turtledove">report win</a> algorithm is modified by passing in
 the arguments |auctionConfig| and <var ignore>winner</var>'s
 <a spec="turtledove" for="generated bid">interest group</a> to the invocation of
 <a spec="turtledove">evaluate a reporting script</a>.
-
-The <a spec="turtledove" for="interest group">estimated size</a> of an interest
-group algorithm is modified to add the following line at the end of the sum:
-<div algorithm="protected-audience-estimated-size-monkey-patch">
-16. The [=string/length=] of the [=serialization of an origin|serialization=] of
-    <var ignore>ig</var>'s [=interest group/Private Aggregation coordinator=] if
-    the field is not null.
-
-</div>
-
-The <a spec="turtledove" lt="interest group update">update interest groups</a>
-steps are modified to add the following case at the end of the "Switch on
-<var ignore>key</var>" step.
-<div algorithm="protected-audience-update-interest-groups-monkey-patch">
-<dl class="switch">
-: "`privateAggregationConfig`"
-::
-    1. If |value| is not a [=map=] whose [=map/keys=] are [=strings=], jump to
-        the step labeled Abort update.
-    1. If |value|["`aggregationCoordinatorOrigin`"] [=map/exists=]:
-        1. If |value|["`aggregationCoordinatorOrigin`"] is not a [=string=],
-            jump to the step labeled Abort update.
-        1. Let |aggregationCoordinator| be the result of [=obtain the Private
-            Aggregation coordinator from a string|obtaining the Private
-            Aggregation coordinator=] given
-            |value|["`aggregationCoordinatorOrigin`"].
-        1. If |aggregationCoordinator| is a {{DOMException}}, jump to the step
-            labeled Abort update.
-        1. Otherwise, set <var ignore>ig</var>'s [=interest group/Private
-            Aggregation coordinator=] to |aggregationCoordinator|.
-
-</dl>
 
 </div>
 
@@ -2115,38 +1914,6 @@ They return an [=interest group=] or null:
         group=].
 
     </dl>
-
-</div>
-
-<div algorithm>
-To <dfn>obtain the Private Aggregation coordinator</dfn> given a
-{{ProtectedAudiencePrivateAggregationConfig}} |config|, perform the following
-steps. They return an [=aggregation coordinator=], null or a {{DOMException}}.
-
-1. If |config|["{{ProtectedAudiencePrivateAggregationConfig/aggregationCoordinatorOrigin}}"]
-    does not [=map/exist=], return null.
-1. Return the result of [=obtain the Private Aggregation coordinator from a
-    string|obtaining the Private Aggregation coordinator=] given
-    |config|["{{ProtectedAudiencePrivateAggregationConfig/aggregationCoordinatorOrigin}}"].
-
-</div>
-
-<div algorithm>
-To <dfn lt="obtain the Private Aggregation coordinator from a string">obtain the
-Private Aggregation coordinator</dfn> given a {{USVString}} |originString|,
-perform the following steps. They return an [=aggregation coordinator=] or a
-{{DOMException}}.
-
-1. Let |url| be the result of running the [=URL parser=] on |originString|.
-1. If |url| is failure or null, return a new {{DOMException}} with name
-    "`SyntaxError`".
-
-    Issue: Consider throwing an error if the path is not empty.
-1. Let |origin| be |url|'s [=url/origin=].
-1. If the result of [=determining if an origin is an aggregation coordinator=]
-    given |origin| is false, return a new {{DOMException}} with name
-    "`DataError`".
-1. Return |origin|.
 
 </div>
 
