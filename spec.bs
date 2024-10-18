@@ -642,6 +642,24 @@ an [=origin=] |origin|, perform the following steps. They return a [=boolean=].
 </div>
 
 <div algorithm>
+To <dfn export>obtain the Private Aggregation coordinator</dfn> given a
+{{USVString}} |originString|, perform the following steps. They return an
+[=aggregation coordinator=] or a {{DOMException}}.
+
+1. Let |url| be the result of running the [=URL parser=] on |originString|.
+1. If |url| is failure or null, return a new {{DOMException}} with name
+    "`SyntaxError`".
+
+    Issue: Consider throwing an error if the path is not empty.
+1. Let |origin| be |url|'s [=url/origin=].
+1. If the result of [=determining if an origin is an aggregation coordinator=]
+    given |origin| is false, return a new {{DOMException}} with name
+    "`DataError`".
+1. Return |origin|.
+
+</div>
+
+<div algorithm>
 To <dfn export>set the aggregation coordinator for a batching scope</dfn> given
 an [=origin=] |origin| and a [=batching scope=] |batchingScope|:
 
@@ -1513,8 +1531,8 @@ following steps at the end of the scope nested under step 5 ("Validate the given
 <div algorithm="protected-audience-joinadig-monkey-patch">
 17. If |group|["{{AuctionAdInterestGroup/privateAggregationConfig}}"]
     [=map/exists=]:
-    1. Let |aggregationCoordinator| be the result of [=obtaining the Private
-        Aggregation coordinator=] given
+    1. Let |aggregationCoordinator| be the result of [=obtaining the coordinator
+        from a Private Aggregation config=] given
         |group|["{{AuctionAdInterestGroup/privateAggregationConfig}}"].
     1. If |aggregationCoordinator| is a {{DOMException}}, then
         [=exception/throw=] |aggregationCoordinator|.
@@ -1610,8 +1628,8 @@ modified to add the following steps just before the last step ("Return
         : [=debug details/key=]
         :: |debugKey|
 1. If |config|["{{AuctionAdConfig/privateAggregationConfig}}"] [=map/exists=]:
-    1. Let |aggregationCoordinator| be the result of [=obtaining the Private
-        Aggregation coordinator=] given
+    1. Let |aggregationCoordinator| be the result of [=obtaining the coordinator
+        from a Private Aggregation config=] given
         |config|["{{AuctionAdConfig/privateAggregationConfig}}"].
     1. If |aggregationCoordinator| is a {{DOMException}}, return failure.
     1. Set <var ignore>auctionConfig</var>'s [=auction config/seller Private
@@ -1781,8 +1799,7 @@ steps are modified to add the following case at the end of the "Switch on
     1. If |value|["`aggregationCoordinatorOrigin`"] [=map/exists=]:
         1. If |value|["`aggregationCoordinatorOrigin`"] is not a [=string=],
             jump to the step labeled Abort update.
-        1. Let |aggregationCoordinator| be the result of [=obtain the Private
-            Aggregation coordinator from a string|obtaining the Private
+        1. Let |aggregationCoordinator| be the result of [=obtaining the Private
             Aggregation coordinator=] given
             |value|["`aggregationCoordinatorOrigin`"].
         1. If |aggregationCoordinator| is a {{DOMException}}, jump to the step
@@ -2119,34 +2136,14 @@ They return an [=interest group=] or null:
 </div>
 
 <div algorithm>
-To <dfn>obtain the Private Aggregation coordinator</dfn> given a
+To <dfn>obtain the coordinator from a Private Aggregation config</dfn> given a
 {{ProtectedAudiencePrivateAggregationConfig}} |config|, perform the following
 steps. They return an [=aggregation coordinator=], null or a {{DOMException}}.
 
 1. If |config|["{{ProtectedAudiencePrivateAggregationConfig/aggregationCoordinatorOrigin}}"]
     does not [=map/exist=], return null.
-1. Return the result of [=obtain the Private Aggregation coordinator from a
-    string|obtaining the Private Aggregation coordinator=] given
+1. Return the result of [=obtaining the Private Aggregation coordinator=] given
     |config|["{{ProtectedAudiencePrivateAggregationConfig/aggregationCoordinatorOrigin}}"].
-
-</div>
-
-<div algorithm>
-To <dfn lt="obtain the Private Aggregation coordinator from a string">obtain the
-Private Aggregation coordinator</dfn> given a {{USVString}} |originString|,
-perform the following steps. They return an [=aggregation coordinator=] or a
-{{DOMException}}.
-
-1. Let |url| be the result of running the [=URL parser=] on |originString|.
-1. If |url| is failure or null, return a new {{DOMException}} with name
-    "`SyntaxError`".
-
-    Issue: Consider throwing an error if the path is not empty.
-1. Let |origin| be |url|'s [=url/origin=].
-1. If the result of [=determining if an origin is an aggregation coordinator=]
-    given |origin| is false, return a new {{DOMException}} with name
-    "`DataError`".
-1. Return |origin|.
 
 </div>
 
