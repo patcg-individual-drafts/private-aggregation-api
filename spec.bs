@@ -642,6 +642,24 @@ an [=origin=] |origin|, perform the following steps. They return a [=boolean=].
 </div>
 
 <div algorithm>
+To <dfn export>obtain the Private Aggregation coordinator</dfn> given a
+{{USVString}} |originString|, perform the following steps. They return an
+[=aggregation coordinator=] or a {{DOMException}}.
+
+1. Let |url| be the result of running the [=URL parser=] on |originString|.
+1. If |url| is failure or null, return a new {{DOMException}} with name
+    "`SyntaxError`".
+
+    Issue: Consider throwing an error if the path is not empty.
+1. Let |origin| be |url|'s [=url/origin=].
+1. If the result of [=determining if an origin is an aggregation coordinator=]
+    given |origin| is false, return a new {{DOMException}} with name
+    "`DataError`".
+1. Return |origin|.
+
+</div>
+
+<div algorithm>
 To <dfn export>set the aggregation coordinator for a batching scope</dfn> given
 an [=origin=] |origin| and a [=batching scope=] |batchingScope|:
 
@@ -1452,6 +1470,7 @@ failure, then..."), renumbering the later steps as appropriate:
         "<code>[=private-aggregation=]</code>" [=policy-controlled feature=].
 
 </div>
+
 
 The <a spec="turtledove">generate and score bids</a> algorithm is modified by
 inserting the following step before each of the two "Return <var ignore>leadingBidInfo</var>'s
