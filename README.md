@@ -360,8 +360,7 @@ the browser has third-party cookies generally enabled. That is, it will be
 disabled if third-party cookies are disabled/deprecated generally or for a
 particular site/context; note that if third-party cookies are generally
 disabled, but enabled for a particular site, debug mode will not be enabled for
-that site to protect data saved from other sites. This also means debug mode
-will automatically become deprecated when third-party cookies are deprecated.
+that site to protect data saved from other sites.
 
 Though the debug mode is tied to third-party cookie availability, browsers may
 temporarily allow debug mode without third-party cookies in order to support
