@@ -51,7 +51,7 @@ browser would still keep track of the budget usage for each group over the last
 10 min and last 24 hours, but the per-named budget _limits_ themselves would not
 be persisted.
 
-See [Future iteration: global config](?tab=t.0#heading=h.4nsl8koqxkk0) below for
+See [Future iteration: global config](#future-iteration-global-config) below for
 some discussion of a more persistent choice.
 
 ### Default (null) budget
