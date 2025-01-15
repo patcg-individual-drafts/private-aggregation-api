@@ -378,6 +378,8 @@ An aggregatable report is a [=struct=] with the following items:
 :: A [=string=] or null
 : <dfn>filtering ID max bytes</dfn>
 :: A positive integer
+: <dfn>max contributions</dfn>
+:: A positive integer
 : <dfn>queued</dfn>
 :: A [=boolean=]
 
@@ -410,6 +412,8 @@ items:
 :: A [=string=] or null
 : <dfn>filtering ID max bytes</dfn> (default: [=default filtering ID max bytes=])
 :: A positive integer
+: <dfn>max contributions</dfn> (default: null)
+:: A positive integer or null
 
 </dl>
 
@@ -466,10 +470,15 @@ controls which [=origins=] are valid [=aggregation coordinators=]. Every
 <dfn>Default aggregation coordinator</dfn> is an [=aggregation coordinator=]
 that controls which is used for a report if none is explicitly selected.
 
-<dfn>Maximum report contributions</dfn> is a [=map=] from [=context type=] to
-positive integers. Semantically, it defines the maximum number of contributions
-that can be present in a single report for every kind of calling context, e.g.
-Shared Storage.
+<dfn>Maximum maxContributions</dfn> is a positive integer that defines an upper
+bound on the number of contributions per [=aggregatable report=].
+
+<dfn>Default maxContributions by API</dfn> is a [=map=] from [=context types=]
+to positive integers. Semantically, it defines the default number of
+contributions per report for every kind of calling context, e.g. Shared Storage.
+The values in this map are used when callers do not specifically request another
+value. Each value in this map must be less than or equal to [=maximum
+maxContributions=].
 
 <dfn>Minimum report delay</dfn> is a non-negative [=duration=] that controls the
 minimum delay to deliver an [=aggregatable report=].
@@ -569,12 +578,19 @@ steps. They return a [=boolean=]:
     not null, return true.
 1. If |preSpecifiedParams|' [=pre-specified report parameters/filtering ID max
     bytes=] is not the [=default filtering ID max bytes=], return true.
+1. If |preSpecifiedParams|' [=pre-specified report parameters/max
+    contributions=] is not null, return true.
 1. Return false.
 
-Note: If a context ID or non-default filtering ID max bytes was specified, a
-    report is sent, even if there are no contributions or there is insufficent
-    budget for the requested contributions. See [Protecting against leaks via
-    the number of reports](#protecting-against-leaks-via-the-number-of-reports).
+Note: It is sometimes necessary to send a 'null report' to conceal the fact that
+ there were no contributions. For instance, it's possible that budget, which is
+ cross-site data in its own right, was insufficient for the requested
+ contributions. Alternatively, the caller might have chosen to make no
+ contributions after reading cross-site data. In these kinds of scenarios, the
+ absence of a report could reveal cross-site data to the reporting endpoint. See
+ [Protecting against leaks via the number of
+ reports](#protecting-against-leaks-via-the-number-of-reports).
+
 </div>
 
 <div algorithm>
@@ -683,6 +699,9 @@ scope</dfn> given a [=pre-specified report parameters=] |params| and a
     filtering ID max bytes=].
 1. [=Assert=]: |filteringIdMaxBytes| is [=set/contained=] in the [=valid
     filtering ID max bytes range=]
+1. Let |maxContributions| be |params|' [=pre-specified report parameters/max
+    contributions=].
+1. [=Assert=]: |maxContributions| is null or greater than zero.
 1. [=map/Set=] [=pre-specified report parameters map=][|batchingScope|] to
     |params|.
 
@@ -718,11 +737,13 @@ null |timeout|:
             1. [=iteration/Break=].
     1. If |hasProcessedContribution| is false, [=list/append=] |contribution| to
         |mergedContributions|.
+1. Let |effectiveMaxContributions| be the result of [=determining the max
+    contributions=] with |preSpecifiedParams| and |api|.
 1. Let |truncatedContributions| be a new [=list=].
-1. If |mergedContributions| has a [=list/size=] greater than [=maximum report
-    contributions=][|api|]:
-    1. [=set/For each=] |n| of [=the exclusive range|the range=] 0 to [=maximum
-        report contributions=][|api|], exclusive:
+1. If |mergedContributions| has a [=list/size=] greater than
+    |effectiveMaxContributions|:
+    1. [=set/For each=] |n| of [=the exclusive range|the range=] 0 to
+         |effectiveMaxContributions|, exclusive:
         1. [=set/Append=] |mergedContributions|[|n|] to
             |truncatedContributions|.
 1. Otherwise, set |truncatedContributions| to |mergedContributions|.
@@ -771,7 +792,7 @@ To <dfn>obtain an aggregatable report</dfn> given an [=origin=]
 |reportingOrigin|, a [=context type=] |api|, a [=list=] of
 {{PAHistogramContribution}}s |contributions|, a [=debug details=]
 |debugDetails|, an [=aggregation coordinator=] |aggregationCoordinator|, a
-[=pre-specified report parameters=] |preSpecifiedParams|, a [=moment] or null
+[=pre-specified report parameters=] |preSpecifiedParams|, a [=moment=] or null
 |timeout| and a [=moment=] |currentTime|,
 perform the following steps. They return an [=aggregatable report=].
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
@@ -799,6 +820,9 @@ perform the following steps. They return an [=aggregatable report=].
     : [=aggregatable report/filtering ID max bytes=]
     :: |preSpecifiedParams|' [=pre-specified report parameters/filtering ID max
         bytes=]
+    : [=aggregatable report/max contributions=]
+    :: The result of [=determining the max contributions=] with
+        |preSpecifiedParams| and |api|.
     : [=aggregatable report/queued=]
     :: false
 1. Return |report|.
@@ -818,6 +842,20 @@ They return a [=moment=].
     uniform probability.
 1. Return |currentTime| + [=minimum report delay=] + |r| * [=randomized report
     delay=].
+
+</div>
+
+<div algorithm>
+To <dfn>determine the max contributions</dfn> given a [=pre-specified report
+parameters=] |preSpecifiedParams| and a [=context type=] |api|, perform the
+following steps. They return a positive integer.
+1. Let |maxContributions| be |preSpecifiedParams|' [=pre-specified report
+    parameters/max contributions=].
+1. If |maxContributions| is null, return [=default maxContributions by
+    API=][|api|].
+1. If |maxContributions| is greater than [=maximum maxContributions=], return
+    [=maximum maxContributions=].
+1. Return |maxContributions|.
 
 </div>
 
@@ -1044,8 +1082,7 @@ To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=]
     |report|, perform the following steps. They return a [=byte sequence=].
 1. Let |payloadData| be a new [=list=].
 1. Let |contributions| be |report|'s [=aggregatable report/contributions=].
-1. Let |maxContributions| be
-    [=maximum report contributions=][[=aggregatable report/api=]].
+1. Let |maxContributions| be |report|'s [=aggregatable report/max contributions=].
 1. [=Assert=]: |contributions|' [=list/size=] is not greater than
     |maxContributions|.
 1. [=iteration/While=] |contributions|' [=list/size=] is less than
@@ -1258,18 +1295,20 @@ However, the number of reports with the given metadata could expose some
 cross-site information. To protect against this, the API delays sending reports
 by a randomized amount of time to make it difficult to determine whether a
 report was sent or not from any particular event. In the case that a
-[=aggregatable report/context ID=] is supplied or a non-default [=aggregatable
-report/filtering ID max bytes=] is specified, the API makes the number of
-reports sent deterministic (sending 'null reports' if necessary -- each
-containing only a contribution with a value of 0 in the payload). Additional
-mitigations may also be possible in the future, e.g. adding noise to the report
-count.
+[=pre-specified report parameters/context ID=] is supplied, a non-default
+[=pre-specified report parameters/filtering ID max bytes=] is specified, or a
+[=pre-specified report parameters/max contributions=] is specified, the API
+makes the number of reports sent deterministic (sending 'null reports' if
+necessary — each containing only a contribution with a value of 0 in the
+payload). Additional mitigations may also be possible in the future, e.g. adding
+noise to the report count.
 
 ### Protecting against leaks via payload size ### {#protecting-against-leaks-via-payload-size}
 
 The length of the payload could additionally expose some cross-site information,
 namely how many contributions are included. To protect against this, the payload
 is padded to a fixed number of contributions.
+
 ### Temporary debugging mechanism ### {#temporary-debugging-mechanism}
 
 The {{PrivateAggregation/enableDebugMode()}} method allows for many of the
