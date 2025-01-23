@@ -1117,7 +1117,7 @@ To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=]
             |contribution|["{{PAHistogramContribution/value}}"] and 4.
         : "`id`"
         :: The result of [=encoding an integer for the payload=] given
-            |contribution|[="{{PAHistogramContribution/filteringId}}"] and
+            |contribution|["{{PAHistogramContribution/filteringId}}"] and
             |filteringIdMaxBytes|.
     1. [=list/Append=] |contributionData| to |payloadData|.
 1. Let |payload| be an [=ordered map=] of the following key/value pairs:
