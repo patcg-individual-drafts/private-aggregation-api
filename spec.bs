@@ -572,14 +572,17 @@ scope=] |debugScope| and an optional [=debug details=] or null
 
 <div algorithm>
 To <dfn>determine if a report should be sent deterministically</dfn> given a
-[=pre-specified report parameters=] |preSpecifiedParams|, perform the following
-steps. They return a [=boolean=]:
+[=pre-specified report parameters=] |preSpecifiedParams| and a [=context type=]
+|api|, perform the following steps. They return a [=boolean=]:
 1. If |preSpecifiedParams|' [=pre-specified report parameters/context ID=] is
     not null, return true.
 1. If |preSpecifiedParams|' [=pre-specified report parameters/filtering ID max
     bytes=] is not the [=default filtering ID max bytes=], return true.
-1. If |preSpecifiedParams|' [=pre-specified report parameters/max
-    contributions=] is not null, return true.
+1. Let |effectiveMaxContributions| be the result of [=determining the max
+    contributions=] with |api| and |preSpecifiedParams|' [=pre-specified report
+    parameters/max contributions=].
+1. Let |defaultMaxContributions| be [=default maxContributions by API=][|api|].
+1. If |effectiveMaxContributions| is not |defaultMaxContributions|, return true.
 1. Return false.
 
 Note: It is sometimes necessary to send a 'null report' to conceal the fact that
@@ -620,7 +623,7 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a
         map=][|batchingScope|].
     1. [=map/Remove=] [=pre-specified report parameters map=][|batchingScope|].
 1. Let |isDeterministicReport| be the result of [=determining if a report should
-    be sent deterministically=] given |preSpecifiedParams|.
+    be sent deterministically=] given |preSpecifiedParams| and |contextType|.
 1. If |isDeterministicReport| is false, [=assert=]: |timeout| is null.
 
     Note: Timeouts can only be used for deterministic reports.
@@ -738,7 +741,8 @@ null |timeout|:
     1. If |hasProcessedContribution| is false, [=list/append=] |contribution| to
         |mergedContributions|.
 1. Let |effectiveMaxContributions| be the result of [=determining the max
-    contributions=] with |preSpecifiedParams| and |api|.
+    contributions=] with |api| and |preSpecifiedParams|' [=pre-specified report
+    parameters/max contributions=].
 1. Let |truncatedContributions| be a new [=list=].
 1. If |mergedContributions| has a [=list/size=] greater than
     |effectiveMaxContributions|:
@@ -763,7 +767,7 @@ null |timeout|:
         the truncation step modified to account for the later merging.
 1. If |sufficientBudget| is false:
     1. Let |isDeterministicReport| be the result of [=determining if a report
-        should be sent deterministically=] given |preSpecifiedParams|.
+        should be sent deterministically=] given |preSpecifiedParams| and |api|.
     1. If |isDeterministicReport| is false, return.
     1. [=list/Empty=] |truncatedContributions|.
 1. Let |report| be the result of [=obtaining an aggregatable report=] given
@@ -821,8 +825,9 @@ perform the following steps. They return an [=aggregatable report=].
     :: |preSpecifiedParams|' [=pre-specified report parameters/filtering ID max
         bytes=]
     : [=aggregatable report/max contributions=]
-    :: The result of [=determining the max contributions=] with
-        |preSpecifiedParams| and |api|.
+    :: The result of [=determining the max contributions=] with |api| and
+        |preSpecifiedParams|' [=pre-specified report parameters/max
+        contributions=].
     : [=aggregatable report/queued=]
     :: false
 1. Return |report|.
@@ -846,11 +851,9 @@ They return a [=moment=].
 </div>
 
 <div algorithm>
-To <dfn>determine the max contributions</dfn> given a [=pre-specified report
-parameters=] |preSpecifiedParams| and a [=context type=] |api|, perform the
-following steps. They return a positive integer.
-1. Let |maxContributions| be |preSpecifiedParams|' [=pre-specified report
-    parameters/max contributions=].
+To <dfn>determine the max contributions</dfn> given a [=context type=] |api| and
+a positive integer or null |maxContributions|, perform the following steps. They
+return a positive integer.
 1. If |maxContributions| is null, return [=default maxContributions by
     API=][|api|].
 1. If |maxContributions| is greater than [=maximum maxContributions=], return
@@ -1117,7 +1120,7 @@ To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=]
             |contribution|["{{PAHistogramContribution/value}}"] and 4.
         : "`id`"
         :: The result of [=encoding an integer for the payload=] given
-            |contribution|[="{{PAHistogramContribution/filteringId}}"] and
+            |contribution|["{{PAHistogramContribution/filteringId}}"] and
             |filteringIdMaxBytes|.
     1. [=list/Append=] |contributionData| to |payloadData|.
 1. Let |payload| be an [=ordered map=] of the following key/value pairs:
@@ -1297,17 +1300,24 @@ by a randomized amount of time to make it difficult to determine whether a
 report was sent or not from any particular event. In the case that a
 [=pre-specified report parameters/context ID=] is supplied, a non-default
 [=pre-specified report parameters/filtering ID max bytes=] is specified, or a
-[=pre-specified report parameters/max contributions=] is specified, the API
-makes the number of reports sent deterministic (sending 'null reports' if
-necessary — each containing only a contribution with a value of 0 in the
+non-default [=pre-specified report parameters/max contributions=] is specified,
+the API makes the number of reports sent deterministic (sending 'null reports'
+if necessary — each containing only a contribution with a value of 0 in the
 payload). Additional mitigations may also be possible in the future, e.g. adding
 noise to the report count.
 
 ### Protecting against leaks via payload size ### {#protecting-against-leaks-via-payload-size}
 
-The length of the payload could additionally expose some cross-site information,
-namely how many contributions are included. To protect against this, the payload
-is padded to a fixed number of contributions.
+The length of the encrypted payload could additionally expose some cross-site
+information, namely the number of contributions present in the plaintext
+payload. To eliminate this side channel, Private Aggregation ensures that
+payloads contain a predetermined number of contributions prior to encryption,
+potentially truncating or padding with null contributions to match the target.
+
+When [=pre-specified report parameters/max contributions=] is non-null, Private
+Aggregation uses it to inform the target number of contributions. Otherwise, the
+target number is drawn from [=default maxContributions by API=] based on the
+caller's [=context type=].
 
 ### Temporary debugging mechanism ### {#temporary-debugging-mechanism}
 
