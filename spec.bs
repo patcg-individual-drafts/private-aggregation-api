@@ -751,6 +751,8 @@ null |timeout|:
         1. [=set/Append=] |mergedContributions|[|n|] to
             |truncatedContributions|.
 1. Otherwise, set |truncatedContributions| to |mergedContributions|.
+1. Optionally, reorder the items of |truncatedContributions| in an
+    [=implementation-defined=] way.
 1. Let |contributionSum| be 0.
 1. [=set/iterate|For each=] |contribution| of |truncatedContributions|:
     1. [=Assert=]: |contribution|["{{PAHistogramContribution/value}}"] is
