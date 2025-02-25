@@ -171,14 +171,14 @@ The <dfn method for="PrivateAggregation">
 contributeToHistogram(PAHistogramContribution contribution)</dfn> method steps
 are:
 
-1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
-1. Let |validationResult| be the result of [=validate a histogram
-    contribution|validating=] |contribution|.
+1. Let |validationResult| be the result of [=validating a histogram
+    contribution=] given <var ignore>contribution</var> and [=this=]'s
+    [=PrivateAggregation/scoping details=].
 1. If |validationResult| is an [=exception=], [=exception/throw=]
     |validationResult|.
 1. [=Assert=]: |validationResult| is a [=contribution cache entry=].
-1. [=Append an entry to the contribution cache|Append=] |entry| to the
-    [=contribution cache=].
+1. [=Append an entry to the contribution cache|Append=] |validationResult| to
+    the [=contribution cache=].
 
 Issue(44): Consider accepting an array of contributions.
 
