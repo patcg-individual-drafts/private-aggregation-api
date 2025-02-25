@@ -168,11 +168,11 @@ Note: See [Exposing to global scopes](#exposing) below.
 
 <div algorithm>
 The <dfn method for="PrivateAggregation">
-contributeToHistogram(PAHistogramContribution contribution)</dfn> method steps
+contributeToHistogram(PAHistogramContribution |contribution|)</dfn> method steps
 are:
 
 1. Let |validationResult| be the result of [=validating a histogram
-    contribution=] given <var ignore>contribution</var> and [=this=]'s
+    contribution=] given |contribution| and [=this=]'s
     [=PrivateAggregation/scoping details=].
 1. If |validationResult| is an [=exception=], [=exception/throw=]
     |validationResult|.
@@ -355,21 +355,20 @@ A debug details is a [=struct=] with the following items:
 An <dfn export>internal error event</dfn> is one of the following:
 <dl dfn-for="internal error event">
 : "<dfn><code>report-success</code></dfn>"
-:: Triggered if the report was scheduled and no contributions were dropped.
+:: The report was scheduled and no contributions were dropped.
 : "<dfn><code>too-many-contributions</code></dfn>"
-:: Triggered if the report was scheduled, but some contributions were dropped due
-    to the per-report limit.
+:: The report was scheduled, but some contributions were dropped due to the
+    per-report limit.
 : "<dfn><code>empty-report-dropped</code></dfn>"
-:: Triggered if the report was not scheduled as it had no contributions.
+:: The report was not scheduled as it had no contributions.
 : "<dfn><code>pending-report-limit-reached</code></dfn>"
-:: Triggered if the report was scheduled, but the limit of pending reports was
-    reached. That is, attempting to schedule one more report would fail due to
-    the limit.
+:: The report was scheduled, but the limit of pending reports was reached. That
+    is, attempting to schedule one more report would fail due to the limit.
 : "<dfn><code>insufficient-budget</code></dfn>"
-:: Triggered if one or more contributions in the report were dropped (or the
+:: One or more contributions in the report were dropped (or the
     whole report was) as there was not enough contribution budget.
 : "<dfn><code>contribution-timeout-reached</code></dfn>"
-:: Triggered if the context(s) associated with the report was still running when
+:: The context(s) associated with the report was still running when
     the contribution timeout occurred.
 
 </dl>
@@ -415,7 +414,7 @@ A pending contributions is a [=struct=] with the following items:
 :: A [=list=] of {{PAHistogramContribution}}s
 : <dfn>conditional contributions</dfn> (default: a new [=map=])
 :: A [=map=] where its [=map/keys=] are [=error events=] and [=map/values=] are
-    [=lists=] of {{PAHistogramContribution}}
+    [=lists=] of {{PAHistogramContribution}}s
 : <dfn>triggered error events</dfn> (default: a new [=set=])
 :: A [=set=] of [=internal error events=]
 
@@ -859,15 +858,15 @@ parameters=] |preSpecifiedParams| and a [=moment=] or null |timeout|:
 1. Let |effectiveMaxContributions| be the result of [=determining the max
     contributions=] with |api| and |preSpecifiedParams|' [=pre-specified
     report parameters/max contributions=].
-1. Let |notTruncatedMergeKeys| be a new [=set=].
+1. Let |keptMergeKeys| be a new [=set=].
 1. [=list/For each=] |contribution| of |allUnmergedContributions|:
     1. Let |mergeKey| be |contribution|'s [=merge key=].
-    1. If |notTruncatedMergeKeys|' [=list/size=] is |effectiveMaxContributions|
-        and |notTruncatedMergeKeys| does not [=list/contain=] |mergeKey|,
-        [=iteration/continue=].
-    1. Otherwise, [=set/append=] |mergeKey| to |notTruncatedMergeKeys|.
+    1. If |keptMergeKeys|' [=list/size=] is |effectiveMaxContributions| and
+        |keptMergeKeys| does not [=list/contain=] |mergeKey|, [=iteration/
+        continue=].
+    1. Otherwise, [=set/append=] |mergeKey| to |keptMergeKeys|.
 1. [=list/Remove=] all items that have a [=merge key=] that is not [=list/
-    contained=] in |notTruncatedMergeKeys| from |allUnmergedContributions|.
+    contained=] in |keptMergeKeys| from |allUnmergedContributions|.
 1. Let |finalBudgetResults| be the result of [=querying the budget=] given
     |allUnmergedContributions|, |reportingOrigin|, |api|, |currentWallTime| and
     true.
@@ -875,21 +874,20 @@ parameters=] |preSpecifiedParams| and a [=moment=] or null |timeout|:
     |allUnmergedContributions|' [=list/size=].
 1. [=set/For each=] |i| of [=the exclusive range|the range=] 0 to
     |finalBudgetResults|' [=list/size=], exclusive:
-    1. If |finalBudgetResults|[|i|] is false, set |allUnmergedContributions|'
-        {{PAHistogramContribution/value}} to 0.
+    1. If |finalBudgetResults|[|i|] is false, set
+        |allUnmergedContributions|[i]'s {{PAHistogramContribution/value}} to 0.
 1. [=list/Remove=] all items from |allUnmergedContributions| that have a
     {{PAHistogramContribution/value}} of 0.
-1. Let |mergedContributions| be a new [=list=].
+1. Let |mergedContributionsMap| be a new [=ordered map=].
 1. [=list/For each=] |contribution| of |allUnmergedContributions|:
-    1. Let |hasProcessedContribution| be false.
-    1. [=list/For each=] |mergedContribution| of |mergedContributions|:
-        1. If |contribution| and |mergedContribution| have equal [=merge keys=]:
-            1. Add |contribution|'s {{PAHistogramContribution/value}} to
-                |mergedContribution|'s {{PAHistogramContribution/value}}.
-            1. Set |hasProcessedContribution| to true.
-            1. [=iteration/Break=].
-    1. If |hasProcessedContribution| is false, [=list/append=] |contribution| to
-        |mergedContributions|.
+    1. Let |mergeKey| be |contribution|'s [=merge key=].
+    1. If |mergedContributionsMap|[|mergeKey|] [=map/exists=], add
+        |contribution|'s {{PAHistogramContribution/value}} to
+        |mergedContributionsMap|[|mergeKey|]'s {{PAHistogramContribution/
+        value}}.
+    1. Otherwise, [=map/set=] |mergedContributionsMap|[|mergeKey|] to
+        |contribution|.
+1. Let |mergedContributions| be the |mergedContributionsMap|'s [=map/values=].
 1. [=Assert=]: |mergedContributions| has a [=list/size=] less than or equal to
     |effectiveMaxContributions|,
 1. If |mergedContributions| [=list/is empty=] and |isDeterministicReport| is
@@ -913,9 +911,6 @@ To <dfn>compile all unmerged contributions</dfn> given an [=origin=]
 1. Let |wasTimeoutReached| be the [=boolean=] indicating whether both
     |isDeterministicReport| is true and |timeout| is null.
 
-    Note: A null |timeout| for a deterministic report indicates the timeout was
-        reached.
-
     Issue: Update the timeout being sent from Shared Storage to align.
 1. [=Record the internal error event result=] given |pendingContributions|,
     "<code>[=internal error event/contribution-timeout-reached=]</code>" and
@@ -934,10 +929,8 @@ To <dfn>compile all unmerged contributions</dfn> given an [=origin=]
 1. [=list/Remove=] all items from |pendingContributions|' [=pending
     contributions/unconditional contributions=] that have a
     {{PAHistogramContribution/value}} of 0.
-1. Let |insufficientBudget| be a [=boolean=] indicating whether
-    |pendingContributions|' [=pending contributions/unconditional
-    contributions=]' [=list/size=] is less than |provisionalBudgetResults|'
-    [=list/size=].
+1. Let |insufficientBudget| be a [=boolean=] indicating whether any value in
+    |provisionalBudgetResults| is false.
 1. [=Record the internal error event result=] given |pendingContributions|,
     "<code>[=internal error event/insufficient-budget=]</code>" and
     |insufficientBudget|.
@@ -1016,18 +1009,31 @@ Note: Two {{PAHistogramContribution}}s for the same report can be merged if and
 To <dfn>query the budget</dfn> given a [=list=] of {{PAHistogramContribution}}s
 |contributions|, an [=origin=] <var ignore>origin</var>, a [=context type=] <var
 ignore>api</var> and a [=moment=] <var ignore>currentTime</var> and a
-[=boolean=] |consumeIfPermitted|, perform [=implementation-defined=] steps. They
-return a [=list=] of [=booleans=] with the same [=list/size=] as
-|contributions|. The |i|th element in the return value indicates whether there
-is sufficient 'contribution budget' left to send |contributions|[|i|]'s
-{{PAHistogramContribution/value}}. This budget should be bound to usage over
-time, e.g. the contribution sum over the last 24 hours. The result for each
-contribution should take into account any earlier approved contributions from
-this call (even if |consumeIfPermitted| is false). Further, if
-|consumeIfPermitted| is true, the algorithm should assume that each contribution
-will be sent if and only if true is returned for that contribution, i.e. it
-should consume the budget in that case. If |consumeIfPermitted| is false, this
-algorithm should not consume any budget.
+[=boolean=] |consumeIfPermitted|, perform the following steps. They return a
+[=list=] of [=booleans=] with the same [=list/size=] as |contributions|.
+1. Let |resultForEachContribution| be a new [=list=] of [=booleans=].
+1. Let |approvedValueSum| be 0.
+1. [=list/For each=] |contribution| of |contributions|:
+    1. Let |valueToRequest| be |approvedValueSum| + |contribution|'s
+        {{PAHistogramContribution/value}}.
+
+        Note: This ensures that the result for each contribution takes into
+            acccount any earlier approved contributions from this call (even if
+            |consumeIfPermitted| is false).
+    1. Let |sufficientBudget| be a [=boolean=] determined by an
+        [=implementation-defined=] algorithm given |valueToRequest|, |origin|,
+        |api| and |currentTime|. This algorithm should bound budget to usage
+        over time, e.g. the contribution sum over the last 24 hours.
+    1. If |sufficientBudget|, add |contribution|'s {{PAHistogramContribution/
+        value}} to |approvedValueSum|.
+    1. [=list/Append=] |sufficientBudget| to |resultForEachContribution|.
+
+        Note: the |i|th element in the return value indicates whether there is
+            enough budget left to send |contributions|[|i|]'s
+            {{PAHistogramContribution/value}}.
+1. If |consumeIfPermitted|, consume budget using an [=implementation-defined=]
+    algorithm given |approvedValueSum|, |origin|, |api| and |currentTime|.
+1. Return |resultForEachContribution|.
 
 </div>
 
