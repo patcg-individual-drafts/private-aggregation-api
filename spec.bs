@@ -171,37 +171,14 @@ The <dfn method for="PrivateAggregation">
 contributeToHistogram(PAHistogramContribution contribution)</dfn> method steps
 are:
 
-1. If |contribution|["{{PAHistogramContribution/bucket}}"] is not [=set/
-    contained=] in [=the exclusive range|the range=] 0 to 2<sup>128</sup>,
-    exclusive, [=exception/throw=] a {{RangeError}}.
-1. If |contribution|["{{PAHistogramContribution/value}}"] is negative,
-    [=exception/throw=] a {{RangeError}}.
 1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
-1. Let |batchingScope| be the result of running |scopingDetails|' [=scoping
-    details/get batching scope steps=].
-1. Let |filteringIdMaxBytes| be the [=default filtering ID max bytes=].
-1. If [=pre-specified report parameters map=][|batchingScope|] [=map/exists=]:
-    1. Set |filteringIdMaxBytes| to [=pre-specified report parameters
-        map=][|batchingScope|]'s [=pre-specified report parameters/filtering ID
-        max bytes=].
-1. If |contribution|["{{PAHistogramContribution/filteringId}}"] is not [=set/
-    contained=] in [=the exclusive range|the range=] 0 to
-    256<sup>|filteringIdMaxBytes|</sup>, exclusive, [=exception/throw=] a
-    {{RangeError}}.
-1. Let |entry| be a new [=contribution cache entry=] with the items:
-    : [=contribution cache entry/contribution=]
-    :: |contribution|
-    : [=contribution cache entry/batching scope=]
-    :: |batchingScope|
-    : [=contribution cache entry/debug scope=]
-    :: The result of running |scopingDetails|' [=scoping details/get debug scope
-        steps=].
-
+1. Let |validationResult| be the result of [=validate a histogram
+    contribution|validating=] |contribution|.
+1. If |validationResult| is an [=exception=], [=exception/throw=]
+    |validationResult|.
+1. [=Assert=]: |validationResult| is a [=contribution cache entry=].
 1. [=Append an entry to the contribution cache|Append=] |entry| to the
     [=contribution cache=].
-
-Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
-    deprecated.
 
 Issue(44): Consider accepting an array of contributions.
 
@@ -818,6 +795,41 @@ scope</dfn> given a [=pre-specified report parameters=] |params| and a
 1. [=Assert=]: |maxContributions| is null or greater than zero.
 1. [=map/Set=] [=pre-specified report parameters map=][|batchingScope|] to
     |params|.
+
+</div>
+
+<div algorithm>
+To <dfn>validate a histogram contribution</dfn> given a
+{{PAHistogramContribution}} |contribution| and a [=scoping details=]
+|scopingDetails|, perform the following steps. They return a [=contribution
+cache entry=] or an [=exception=].
+
+1. If |contribution|["{{PAHistogramContribution/bucket}}"] is not [=set/
+    contained=] in [=the exclusive range|the range=] 0 to 2<sup>128</sup>,
+    exclusive, return a {{RangeError}}.
+1. If |contribution|["{{PAHistogramContribution/value}}"] is negative, return a
+    {{RangeError}}.
+1. Let |batchingScope| be the result of running |scopingDetails|' [=scoping
+    details/get batching scope steps=].
+1. Let |filteringIdMaxBytes| be the [=default filtering ID max bytes=].
+1. If [=pre-specified report parameters map=][|batchingScope|] [=map/exists=]:
+    1. Set |filteringIdMaxBytes| to [=pre-specified report parameters
+        map=][|batchingScope|]'s [=pre-specified report parameters/filtering ID
+        max bytes=].
+1. If |contribution|["{{PAHistogramContribution/filteringId}}"] is not [=set/
+    contained=] in [=the exclusive range|the range=] 0 to
+    256<sup>|filteringIdMaxBytes|</sup>, exclusive, return a {{RangeError}}.
+1. Return a new [=contribution cache entry=] with the items:
+    : [=contribution cache entry/contribution=]
+    :: |contribution|
+    : [=contribution cache entry/batching scope=]
+    :: |batchingScope|
+    : [=contribution cache entry/debug scope=]
+    :: The result of running |scopingDetails|' [=scoping details/get debug scope
+        steps=].
+
+Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
+    deprecated.
 
 </div>
 
