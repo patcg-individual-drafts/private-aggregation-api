@@ -129,6 +129,8 @@ Exposed interface {#exposed-interface}
  SecureContext]
 interface PrivateAggregation {
   undefined contributeToHistogram(PAHistogramContribution contribution);
+  undefined contributeToHistogramOnEvent(DOMString event,
+                                         record<DOMString, any> contribution);
   undefined enableDebugMode(optional PADebugModeOptions options = {});
 };
 
@@ -151,16 +153,22 @@ Issue: {{PrivateAggregation/enableDebugMode(options)}}'s argument should not
     have a default value of `{}`. Alternatively, {{PADebugModeOptions/debugKey}}
     should not be required in {{PADebugModeOptions}}.
 
-Note: Embedding APIs are expected to also define a
-    `contributeToHistogramOnEvent()` method, see
-    [below](#contributetohistogramonevent).
-
 Each {{PrivateAggregation}} object has the following fields:
 <dl dfn-for="PrivateAggregation">
 : <dfn>scoping details</dfn> (default null)
 :: A [=scoping details=] or null
 : <dfn>allowed to use</dfn> (default false)
 :: A [=boolean=]
+: <dfn>should perform default contributeToHistogramOnEvent() processing</dfn>
+    (default an algorithm that always returns true)
+:: An algorithm that takes a {{DOMString}} and a [=map=] (with {{DOMString}}
+    keys) and returns either a [=boolean=] or an [=exception=].
+
+    Note: This allows embedding APIs to override processing for all calls or
+        just certain ones. A return value of true indicates that this call will
+        be processed using the default implementation in this spec. A return
+        value that is an [=exception=] allows the embedding API's processing to
+        [=exception/throw=].
 
 </dl>
 
@@ -181,6 +189,43 @@ are:
     the [=contribution cache=].
 
 Issue(44): Consider accepting an array of contributions.
+
+</div>
+
+<div algorithm>
+The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(|event|,
+|contribution|)</dfn> method steps are:
+
+1. Let |defaultProcessingResult| be the result of running [=this=]'s
+    [=PrivateAggregation/should perform default contributeToHistogramOnEvent()
+    processing=] given |event| and |contribution|.
+1. If |defaultProcessingResult| is an [=exception=], [=exception/throw=]
+    |defaultProcessingResult|.
+1. If |defaultProcessingResult| is false, return.
+1. Set |contribution| to the result of [=converted to an IDL value|converting=]
+    |contribution|'s [=converted to a JavaScript value|JavaScript value=] to the
+    IDL type {{PAHistogramContribution}}.
+
+    Note: This throws a {{TypeError}} if |contribution| is not compatible.
+1. Let |validationResult| be the result of [=validating a histogram
+    contribution=] given |contribution| and [=this=]'s
+    [=PrivateAggregation/scoping details=].
+1. If |validationResult| is an [=exception=], [=exception/throw=]
+    |validationResult|.
+1. [=Assert=]: |validationResult| is a [=contribution cache entry=].
+1. If |event| does not [=string/start with=] "<code>reserved.</code>",
+    [=exception/throw=] a {{TypeError}}.
+1. Let |unprefixedEvent| be the [=code unit substring=] from
+    "<code>reserved.</code>"'s [=string/length=] to |event|'s [=string/length=]
+    within |event|.
+1. If |unprefixedEvent| [=string/is=] any of the [=internal error events=]:
+    1. Let |maybeContributionCacheEntry|'s [=contribution cache entry/error
+        event=] be |unprefixedEvent|.
+    1. [=Append an entry to the contribution cache|Append=]
+        |maybeContributionCacheEntry| to the [=contribution cache=].
+
+Note: For forward compatibility, we do not throw an error for unrecognized
+    events that [=string/start with=] "<code>reserved.</code>".
 
 </div>
 
@@ -273,35 +318,44 @@ Note: A later algorithm [=asserts=] that, for any [=contribution cache entry=]
     before the [=process contributions for a batching scope=] steps are
     performed given the entry's [=contribution cache entry/batching scope=].
 
-`contributeToHistogramOnEvent()` {#contributetohistogramonevent}
-----------------------------------------------------------------
+Overriding `contributeToHistogramOnEvent()` processing {#contributetohistogramonevent}
+--------------------------------------------------------------------------------------
 
-Each API should also extend the {{PrivateAggregation}} interface to define a
-`contributeToHistogramOnEvent()` method. This method should take two arguments:
-1. A {{DOMString}} `event`.
-2. A {{PAHistogramContribution}} `contribution`. This argument may use an
-    alternate type as long as any valid {{PAHistogramContribution}} dictionary
-    is a valid instance of the actual type used.
+Each API may also set the [=PrivateAggregation/should perform default
+contributeToHistogramOnEvent() processing=] algorithm for the
+{{PrivateAggregation}} object it exposes. This algorithm allows the embedding
+API to override processing for any {{PrivateAggregation/
+contributeToHistogramOnEvent()}} call it wants to.
 
-This interface should accept any `event` that is a [=string/concatenation=] of
-« "<code>reserved.</code>", |errorEvent| » where |errorEvent| is an [=internal
-error event=].
+This algorithm should return true to indicate that the regular processing
+defined in this spec should occur (for that call). It should return an
+[=exception=] to indicate an error has occurred in the embedding API's
+processing. Alternatively, it should return false to indicate that the embedding
+API will process the call, but no [=exception=] should be [=exception/thrown=].
 
-Note: This interface is not defined in this specification so that embedding APIs
-    can extend it to support additional events (for error or non-error
-    conditions), can extend the {{PAHistogramContribution}} object, and can
-    modify the situations where these 'conditional contributions' are forwarded
-    or dropped.
+If the embedding API overrides processing for a call (i.e. the algorithm does
+not return false), it should  accept any `event` that is a [=string/
+concatenation=] of « "<code>reserved.</code>", |errorEvent| » where |errorEvent|
+is an [=internal error event=] and should accept any `contribution` with a
+[=converted to a JavaScript value|JavaScript value=] that is [=converted to an
+IDL value|convertible=] to the IDL type {{PAHistogramContribution}}. That is, it
+should not return an [=exception=] in those cases. However, the embedding API
+may accept additional `event`s or `contribution`s that would not be accepted by
+the default processing defined in this spec.
 
-When contributions conditional on an [=internal error event=] are made, the
-embedding API should call [=append an entry to the contribution cache=] with
-the appropriate entry. If the embedding API extends `event` to support other
-error conditions, it must wait until the error has been determined to have
+If the embedding API overrides processing for a call specifying a contribution
+conditional on an [=internal error event=], the embedding API should call
+[=append an entry to the contribution cache=] with the appropriate entry unless
+it intends to drop that contribution.
+
+If the embedding API overrides processing for a call to support additional error
+events, it must wait until the associated condition has been determined to have
 occurred or not. If the custom error event was triggered, it should use
 <code>[=already triggered non-internal error=]</code> as the [=contribution
 cache entry/error event=] for the associated contributions. If the custom error
-event was not triggered, the contributions should be dropped and no call should
-be made for those contributions.
+event was not triggered, the contributions should be dropped and no call to
+[=append an entry to the contribution cache=] should be made for those
+contributions.
 
 APIs exposing Private Aggregation {#apis-exposing-private-aggregation}
 ----------------------------------------------------------------------
@@ -376,7 +430,7 @@ An <dfn export>internal error event</dfn> is one of the following:
 An <dfn export>error event</dfn> is an [=internal error event=] or the special
 value <dfn><code>already triggered non-internal error</code></dfn>.
 
-Note: This special value is used to represent error events that are not
+Note: This special value is used to represent all error events that are not
     internal to Private Aggregation and that have occurred, see
     [`contributeToHistogramOnEvent()`](#contributetohistogramonevent) above. A
     [=contribution cache entry=] with this value as its [=error event=] is not
