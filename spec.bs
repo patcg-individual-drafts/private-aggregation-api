@@ -324,8 +324,8 @@ Overriding `contributeToHistogramOnEvent()` processing {#contributetohistogramon
 
 Each API may also set the [=PrivateAggregation/should perform default
 contributeToHistogramOnEvent() processing=] algorithm for the
-{{PrivateAggregation}} object it exposes. This algorithm allows the embedding
-API to override processing for any {{PrivateAggregation/
+{{PrivateAggregation}} object it exposes. This hook enables the embedding API to
+override processing for any {{PrivateAggregation/
 contributeToHistogramOnEvent()}} call it wants to.
 
 This algorithm should return true to indicate that the regular processing
@@ -335,7 +335,7 @@ processing. Alternatively, it should return false to indicate that the embedding
 API will process the call, but no [=exception=] should be [=exception/thrown=].
 
 If the embedding API overrides processing for a call (i.e. the algorithm does
-not return false), it should  accept any `event` that is a [=string/
+not return true), it should  accept any `event` that is a [=string/
 concatenation=] of « "<code>reserved.</code>", |errorEvent| » where |errorEvent|
 is an [=internal error event=] and should accept any `contribution` with a
 [=converted to a JavaScript value|JavaScript value=] that is [=converted to an
@@ -352,11 +352,17 @@ it intends to drop that contribution.
 If the embedding API overrides processing for a call to support additional error
 events, it must wait until the associated condition has been determined to have
 occurred or not. If the custom error event was triggered, it should use
-<code>[=already triggered non-internal error=]</code> as the [=contribution
-cache entry/error event=] for the associated contributions. If the custom error
-event was not triggered, the contributions should be dropped and no call to
-[=append an entry to the contribution cache=] should be made for those
-contributions.
+<code>[=already triggered external error=]</code> as the [=contribution cache
+entry/error event=] for the associated contributions. If the custom error event
+was not triggered, the contributions should be dropped and no call to [=append
+an entry to the contribution cache=] should be made for those contributions.
+
+Note also that, if the embedding API overrides processing, it must convert
+`contribution` to the IDL type {{PAHistogramContribution}} before it is able to
+call [=append an entry to the contribution cache=]. This applies whether the
+`contribution` has a [=converted to a JavaScript value|JavaScript value=] that
+is automatically [=converted to an IDL value|convertible=] to the IDL type or
+not.
 
 APIs exposing Private Aggregation {#apis-exposing-private-aggregation}
 ----------------------------------------------------------------------
@@ -429,18 +435,17 @@ An <dfn export>internal error event</dfn> is one of the following:
 </dl>
 
 An <dfn export>error event</dfn> is an [=internal error event=] or the special
-value <dfn><code>triggered embedder-defined error</code></dfn>.
+value <dfn><code>already triggered external error</code></dfn>.
 
-Note: This special value is used to represent all error events that are not
-    internal to Private Aggregation and <em>that have occurred</em>, see
-    [`contributeToHistogramOnEvent()`](#contributetohistogramonevent) above. A
-    [=contribution cache entry=] with this value as its [=error event=] is not
-    handled identically to unconditional contributions, so we track them
-    separately.
+Note: This special value represents any external error event that has already
+    occurred. External error events are defined by embedding APIs and are
+    distinct from [=internal error events=]. See
+    [contributeToHistogramOnEvent()](#contributetohistogramonevent) for more
+    details.
 
 <dfn>All error events</dfn> is a [=list=] of [=error events=] that consists of
 all the [=internal error events=] in the order they are defined above followed
-by <code>[=already triggered non-internal error=]</code>.
+by <code>[=already triggered external error=]</code>.
 
 <h3 dfn-type=dfn>Contribution cache entry</h3>
 A contribution cache entry is a [=struct=] with the following items:
@@ -1034,7 +1039,7 @@ To <dfn>compile all unmerged contributions</dfn> given an [=origin=]
         continue=].
     1. [=Assert=]: |pendingContributions|' [=pending contributions/triggered
         error events=] [=set/contains=] |errorEvent| or |errorEvent| is
-        "<code>[=already triggered non-internal error=]</code>".
+        "<code>[=already triggered external error=]</code>".
 
         Note: When an internal error event is determined to not be triggered,
             its conditional contributions are removed by [=record the internal
