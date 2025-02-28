@@ -161,8 +161,9 @@ Each {{PrivateAggregation}} object has the following fields:
 :: A [=boolean=]
 : <dfn>should perform default contributeToHistogramOnEvent() processing</dfn>
     (default an algorithm that always returns true)
-:: An algorithm that takes a {{DOMString}} and a [=map=] (with {{DOMString}}
-    keys) and returns either a [=boolean=] or an [=exception=].
+:: An algorithm that takes a {{PrivateAggregation}}, {{DOMString}} and a [=map=]
+    (with {{DOMString}} keys) and returns either a [=boolean=] or an
+    [=exception=].
 
     Note: This allows embedding APIs to override processing for all calls or
         just certain ones. A return value of true indicates that this call will
@@ -198,7 +199,7 @@ The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(|event|,
 
 1. Let |defaultProcessingResult| be the result of running [=this=]'s
     [=PrivateAggregation/should perform default contributeToHistogramOnEvent()
-    processing=] given |event| and |contribution|.
+    processing=] given [=this=], |event| and |contribution|.
 1. If |defaultProcessingResult| is an [=exception=], [=exception/throw=]
     |defaultProcessingResult|.
 1. If |defaultProcessingResult| is false, return.
@@ -428,10 +429,10 @@ An <dfn export>internal error event</dfn> is one of the following:
 </dl>
 
 An <dfn export>error event</dfn> is an [=internal error event=] or the special
-value <dfn><code>already triggered non-internal error</code></dfn>.
+value <dfn><code>triggered embedder-defined error</code></dfn>.
 
 Note: This special value is used to represent all error events that are not
-    internal to Private Aggregation and that have occurred, see
+    internal to Private Aggregation and <em>that have occurred</em>, see
     [`contributeToHistogramOnEvent()`](#contributetohistogramonevent) above. A
     [=contribution cache entry=] with this value as its [=error event=] is not
     handled identically to unconditional contributions, so we track them
