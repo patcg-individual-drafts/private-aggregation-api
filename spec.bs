@@ -155,12 +155,12 @@ Issue: {{PrivateAggregation/enableDebugMode(options)}}'s argument should not
 
 Each {{PrivateAggregation}} object has the following fields:
 <dl dfn-for="PrivateAggregation">
-: <dfn>scoping details</dfn> (default null)
+: <dfn export>scoping details</dfn> (default null)
 :: A [=scoping details=] or null
-: <dfn>allowed to use</dfn> (default false)
+: <dfn export>allowed to use</dfn> (default false)
 :: A [=boolean=]
-: <dfn>should perform default contributeToHistogramOnEvent() processing</dfn>
-    (default an algorithm that always returns true)
+: <dfn export>should perform default contributeToHistogramOnEvent()
+    processing</dfn> (default an algorithm that always returns true)
 :: An algorithm that takes a {{PrivateAggregation}}, {{DOMString}} and a [=map=]
     (with {{DOMString}} keys) and returns either a [=boolean=] or an
     [=exception=].
@@ -377,7 +377,7 @@ two APIs:
 Structures {#structures}
 ========================
 
-<h3 dfn-type=dfn>Batching scope</h3>
+<h3 dfn-type=dfn export>Batching scope</h3>
 A batching scope is a <a spec=HTML>unique internal value</a> that identifies
 which {{PAHistogramContribution}}s should be sent in the same [=aggregatable
 report=] unless their [=aggregatable report/debug details=] differ.
@@ -385,13 +385,13 @@ report=] unless their [=aggregatable report/debug details=] differ.
 Issue: Unique internal value is not an exported definition. See
     <a href="https://github.com/whatwg/infra/issues/583">infra/583</a>.
 
-<h3 dfn-type=dfn>Debug scope</h3>
+<h3 dfn-type=dfn export>Debug scope</h3>
 A debug scope is a <a spec=HTML>unique internal value</a> that identifies which
 {{PAHistogramContribution}}s should have their [=debug details=] affected by the
 presence or absence of a call to {{PrivateAggregation/enableDebugMode()}} in the
 same period of execution.
 
-<h3 dfn-type=dfn>Scoping details</h3>
+<h3 dfn-type=dfn export>Scoping details</h3>
 A scoping details is a [=struct=] with the following items:
 <dl dfn-for="scoping details">
 : <dfn>get batching scope steps</dfn>
@@ -447,7 +447,7 @@ Note: This special value represents any external error event that has already
 all the [=internal error events=] in the order they are defined above followed
 by <code>[=already triggered external error=]</code>.
 
-<h3 dfn-type=dfn>Contribution cache entry</h3>
+<h3 dfn-type=dfn export>Contribution cache entry</h3>
 A contribution cache entry is a [=struct=] with the following items:
 <dl dfn-for="contribution cache entry">
 : <dfn>contribution</dfn>
@@ -514,7 +514,7 @@ An aggregatable report is a [=struct=] with the following items:
 Aggregation coordinator {#aggregation-coordinator-structure}
 ------------------------------------------------------------
 
-An <dfn>aggregation coordinator</dfn> is an [=origin=] that the [=allowed
+An <dfn export>aggregation coordinator</dfn> is an [=origin=] that the [=allowed
 aggregation coordinator set=] [=set/contains=].
 
 Issue: Consider switching to the <a spec="attribution-reporting-api">suitable
@@ -531,8 +531,8 @@ Aggregation should pick a unique string (or multiple) for this.
 Pre-specified report parameters {#pre-specified-report-parameters-structure}
 ----------------------------------------------------------------------------
 
-A <dfn>pre-specified report parameters</dfn> is a [=struct=] with the following
-items:
+A <dfn export>pre-specified report parameters</dfn> is a [=struct=] with the
+following items:
 <dl dfn-for="pre-specified report parameters">
 : <dfn>context ID</dfn> (default: null)
 :: A [=string=] or null
@@ -617,8 +617,8 @@ Permissions Policy integration {#permissions-policy-integration}
 ================================================================
 
 This specification defines a [=policy-controlled feature=] identified by the
-string "<code><dfn>private-aggregation</dfn></code>". Its [=policy-controlled
-feature/default allowlist=] is "`*`".
+string "<code><dfn export>private-aggregation</dfn></code>". Its
+[=policy-controlled feature/default allowlist=] is "`*`".
 
 Note: The [=PrivateAggregation/allowed to use=] field is set by other
     specifications that integrate with this API according to this
@@ -697,9 +697,9 @@ scope=] |debugScope| and an optional [=debug details=] or null
 </div>
 
 <div algorithm>
-To <dfn>determine if a report should be sent deterministically</dfn> given a
-[=pre-specified report parameters=] |preSpecifiedParams| and a [=context type=]
-|api|, perform the following steps. They return a [=boolean=]:
+To <dfn export>determine if a report should be sent deterministically</dfn>
+given a [=pre-specified report parameters=] |preSpecifiedParams| and a [=context
+type=] |api|, perform the following steps. They return a [=boolean=]:
 1. If |preSpecifiedParams|' [=pre-specified report parameters/context ID=] is
     not null, return true.
 1. If |preSpecifiedParams|' [=pre-specified report parameters/filtering ID max
@@ -858,7 +858,7 @@ scope</dfn> given a [=pre-specified report parameters=] |params| and a
 </div>
 
 <div algorithm>
-To <dfn>validate a histogram contribution</dfn> given a
+To <dfn export>validate a histogram contribution</dfn> given a
 {{PAHistogramContribution}} |contribution| and a [=scoping details=]
 |scopingDetails|, perform the following steps. They return a [=contribution
 cache entry=] or an [=exception=].
