@@ -129,6 +129,8 @@ Exposed interface {#exposed-interface}
  SecureContext]
 interface PrivateAggregation {
   undefined contributeToHistogram(PAHistogramContribution contribution);
+  undefined contributeToHistogramOnEvent(DOMString event,
+                                         record<DOMString, any> contribution);
   undefined enableDebugMode(optional PADebugModeOptions options = {});
 };
 
@@ -157,6 +159,17 @@ Each {{PrivateAggregation}} object has the following fields:
 :: A [=scoping details=] or null
 : <dfn>allowed to use</dfn> (default false)
 :: A [=boolean=]
+: <dfn>should perform default contributeToHistogramOnEvent() processing</dfn>
+    (default an algorithm that always returns true)
+:: An algorithm that takes a {{PrivateAggregation}}, {{DOMString}} and a [=map=]
+    (with {{DOMString}} keys) and returns either a [=boolean=] or an
+    [=exception=].
+
+    Note: This allows embedding APIs to override processing for all calls or
+        just certain ones. A return value of true indicates that this call will
+        be processed using the default implementation in this spec. A return
+        value that is an [=exception=] allows the embedding API's processing to
+        [=exception/throw=].
 
 </dl>
 
@@ -164,42 +177,56 @@ Note: See [Exposing to global scopes](#exposing) below.
 
 <div algorithm>
 The <dfn method for="PrivateAggregation">
-contributeToHistogram(PAHistogramContribution contribution)</dfn> method steps
+contributeToHistogram(PAHistogramContribution |contribution|)</dfn> method steps
 are:
 
-1. If |contribution|["{{PAHistogramContribution/bucket}}"] is not [=set/
-    contained=] in [=the exclusive range|the range=] 0 to 2<sup>128</sup>,
-    exclusive, [=exception/throw=] a {{RangeError}}.
-1. If |contribution|["{{PAHistogramContribution/value}}"] is negative,
-    [=exception/throw=] a {{RangeError}}.
-1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
-1. Let |batchingScope| be the result of running |scopingDetails|' [=scoping
-    details/get batching scope steps=].
-1. Let |filteringIdMaxBytes| be the [=default filtering ID max bytes=].
-1. If [=pre-specified report parameters map=][|batchingScope|] [=map/exists=]:
-    1. Set |filteringIdMaxBytes| to [=pre-specified report parameters
-        map=][|batchingScope|]'s [=pre-specified report parameters/filtering ID
-        max bytes=].
-1. If |contribution|["{{PAHistogramContribution/filteringId}}"] is not [=set/
-    contained=] in [=the exclusive range|the range=] 0 to
-    256<sup>|filteringIdMaxBytes|</sup>, exclusive, [=exception/throw=] a
-    {{RangeError}}.
-1. Let |entry| be a new [=contribution cache entry=] with the items:
-    : [=contribution cache entry/contribution=]
-    :: |contribution|
-    : [=contribution cache entry/batching scope=]
-    :: |batchingScope|
-    : [=contribution cache entry/debug scope=]
-    :: The result of running |scopingDetails|' [=scoping details/get debug scope
-        steps=].
-
-1. [=Append an entry to the contribution cache|Append=] |entry| to the
-    [=contribution cache=].
-
-Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
-    deprecated.
+1. Let |validationResult| be the result of [=validating a histogram
+    contribution=] given |contribution| and [=this=]'s
+    [=PrivateAggregation/scoping details=].
+1. If |validationResult| is an [=exception=], [=exception/throw=]
+    |validationResult|.
+1. [=Assert=]: |validationResult| is a [=contribution cache entry=].
+1. [=Append an entry to the contribution cache|Append=] |validationResult| to
+    the [=contribution cache=].
 
 Issue(44): Consider accepting an array of contributions.
+
+</div>
+
+<div algorithm>
+The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(|event|,
+|contribution|)</dfn> method steps are:
+
+1. Let |defaultProcessingResult| be the result of running [=this=]'s
+    [=PrivateAggregation/should perform default contributeToHistogramOnEvent()
+    processing=] given [=this=], |event| and |contribution|.
+1. If |defaultProcessingResult| is an [=exception=], [=exception/throw=]
+    |defaultProcessingResult|.
+1. If |defaultProcessingResult| is false, return.
+1. Set |contribution| to the result of [=converted to an IDL value|converting=]
+    |contribution|'s [=converted to a JavaScript value|JavaScript value=] to the
+    IDL type {{PAHistogramContribution}}.
+
+    Note: This throws a {{TypeError}} if |contribution| is not compatible.
+1. Let |validationResult| be the result of [=validating a histogram
+    contribution=] given |contribution| and [=this=]'s
+    [=PrivateAggregation/scoping details=].
+1. If |validationResult| is an [=exception=], [=exception/throw=]
+    |validationResult|.
+1. [=Assert=]: |validationResult| is a [=contribution cache entry=].
+1. If |event| does not [=string/start with=] "<code>reserved.</code>",
+    [=exception/throw=] a {{TypeError}}.
+1. Let |unprefixedEvent| be the [=code unit substring=] from
+    "<code>reserved.</code>"'s [=string/length=] to |event|'s [=string/length=]
+    within |event|.
+1. If |unprefixedEvent| [=string/is=] any of the [=internal error events=]:
+    1. Let |maybeContributionCacheEntry|'s [=contribution cache entry/error
+        event=] be |unprefixedEvent|.
+    1. [=Append an entry to the contribution cache|Append=]
+        |maybeContributionCacheEntry| to the [=contribution cache=].
+
+Note: For forward compatibility, we do not throw an error for unrecognized
+    events that [=string/start with=] "<code>reserved.</code>".
 
 </div>
 
@@ -292,6 +319,51 @@ Note: A later algorithm [=asserts=] that, for any [=contribution cache entry=]
     before the [=process contributions for a batching scope=] steps are
     performed given the entry's [=contribution cache entry/batching scope=].
 
+Overriding `contributeToHistogramOnEvent()` processing {#contributetohistogramonevent}
+--------------------------------------------------------------------------------------
+
+Each API may also set the [=PrivateAggregation/should perform default
+contributeToHistogramOnEvent() processing=] algorithm for the
+{{PrivateAggregation}} object it exposes. This hook enables the embedding API to
+override processing for any {{PrivateAggregation/
+contributeToHistogramOnEvent()}} call it wants to.
+
+This algorithm should return true to indicate that the regular processing
+defined in this spec should occur (for that call). It should return an
+[=exception=] to indicate an error has occurred in the embedding API's
+processing. Alternatively, it should return false to indicate that the embedding
+API will process the call, but no [=exception=] should be [=exception/thrown=].
+
+If the embedding API overrides processing for a call (i.e. the algorithm does
+not return true), it should  accept any `event` that is a [=string/
+concatenation=] of « "<code>reserved.</code>", |errorEvent| » where |errorEvent|
+is an [=internal error event=] and should accept any `contribution` with a
+[=converted to a JavaScript value|JavaScript value=] that is [=converted to an
+IDL value|convertible=] to the IDL type {{PAHistogramContribution}}. That is, it
+should not return an [=exception=] in those cases. However, the embedding API
+may accept additional `event`s or `contribution`s that would not be accepted by
+the default processing defined in this spec.
+
+If the embedding API overrides processing for a call specifying a contribution
+conditional on an [=internal error event=], the embedding API should call
+[=append an entry to the contribution cache=] with the appropriate entry unless
+it intends to drop that contribution.
+
+If the embedding API overrides processing for a call to support additional error
+events, it must wait until the associated condition has been determined to have
+occurred or not. If the custom error event was triggered, it should use
+<code>[=already triggered external error=]</code> as the [=contribution cache
+entry/error event=] for the associated contributions. If the custom error event
+was not triggered, the contributions should be dropped and no call to [=append
+an entry to the contribution cache=] should be made for those contributions.
+
+Note also that, if the embedding API overrides processing, it must convert
+`contribution` to the IDL type {{PAHistogramContribution}} before it is able to
+call [=append an entry to the contribution cache=]. This applies whether the
+`contribution` has a [=converted to a JavaScript value|JavaScript value=] that
+is automatically [=converted to an IDL value|convertible=] to the IDL type or
+not.
+
 APIs exposing Private Aggregation {#apis-exposing-private-aggregation}
 ----------------------------------------------------------------------
 
@@ -340,17 +412,71 @@ A debug details is a [=struct=] with the following items:
 
 </dl>
 
+<h3 id="error-events-heading">Error events</h3>
+An <dfn export>internal error event</dfn> is one of the following:
+<dl dfn-for="internal error event">
+: "<dfn><code>report-success</code></dfn>"
+:: The report was scheduled and no contributions were dropped.
+: "<dfn><code>too-many-contributions</code></dfn>"
+:: The report was scheduled, but some contributions were dropped due to the
+    per-report limit.
+: "<dfn><code>empty-report-dropped</code></dfn>"
+:: The report was not scheduled as it had no contributions.
+: "<dfn><code>pending-report-limit-reached</code></dfn>"
+:: The report was scheduled, but the limit of pending reports was reached. That
+    is, attempting to schedule one more report would fail due to the limit.
+: "<dfn><code>insufficient-budget</code></dfn>"
+:: One or more contributions in the report were dropped (or the
+    whole report was) as there was not enough contribution budget.
+: "<dfn><code>contribution-timeout-reached</code></dfn>"
+:: The context(s) associated with the report was still running when
+    the contribution timeout occurred.
+
+</dl>
+
+An <dfn export>error event</dfn> is an [=internal error event=] or the special
+value <dfn><code>already triggered external error</code></dfn>.
+
+Note: This special value represents any external error event that has already
+    occurred. External error events are defined by embedding APIs and are
+    distinct from [=internal error events=]. See
+    [contributeToHistogramOnEvent()](#contributetohistogramonevent) for more
+    details.
+
+<dfn>All error events</dfn> is a [=list=] of [=error events=] that consists of
+all the [=internal error events=] in the order they are defined above followed
+by <code>[=already triggered external error=]</code>.
+
 <h3 dfn-type=dfn>Contribution cache entry</h3>
 A contribution cache entry is a [=struct=] with the following items:
 <dl dfn-for="contribution cache entry">
 : <dfn>contribution</dfn>
 :: A {{PAHistogramContribution}}
+: <dfn>error event</dfn> (default null)
+:: An [=error event=] or null.
+
+    Note: This indicates which [=error event=] the contribution is conditional
+        on, or null if the contribution is unconditional.
 : <dfn>batching scope</dfn>
 :: A [=batching scope=]
 : <dfn>debug scope</dfn>
 :: A [=debug scope=]
 : <dfn>debug details</dfn> (default null)
 :: A [=debug details=] or null
+
+</dl>
+
+<h3 dfn-type=dfn>Pending contributions</h3>
+
+A pending contributions is a [=struct=] with the following items:
+<dl dfn-for="pending contributions">
+: <dfn>unconditional contributions</dfn> (default: a new [=list=])
+:: A [=list=] of {{PAHistogramContribution}}s
+: <dfn>conditional contributions</dfn> (default: a new [=map=])
+:: A [=map=] where its [=map/keys=] are [=error events=] and [=map/values=] are
+    [=lists=] of {{PAHistogramContribution}}s
+: <dfn>triggered error events</dfn> (default: a new [=set=])
+:: A [=set=] of [=internal error events=]
 
 </dl>
 
@@ -442,7 +568,7 @@ Clearing storage {#clearing-storage}
 
 The user agent must expose controls that allow the user to delete data from
 the [=aggregatable report cache=] as well as any contribution history data
-stored for the [=consume budget if permitted=] algorithm.
+stored for the [=query the budget=] algorithm.
 
 The user agent may expose controls that allow the user to delete data from the
 [=contribution cache=], the [=debug scope map=] and the [=pre-specified report
@@ -600,6 +726,13 @@ Note: It is sometimes necessary to send a 'null report' to conceal the fact that
 To <dfn export>process contributions for a batching scope</dfn> given
 a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a
 [=context type=] |contextType| and a [=moment=] or null |timeout|:
+
+Note: Embedding APIs are expected to set |timeout| to null if a report isn't
+    [=determine if a report should be sent deterministically|deterministic=] or
+    if the timeout was already reached, i.e. if it caused this call to be
+    triggered. (A timeout always has to be set for [=determine if a report
+    should be sent deterministically|deterministic=] reports.)
+
 1. Let |batchEntries| be a new [=list=].
 1. [=list/iterate|For each=] |entry| of the [=contribution cache=]:
     1. If |entry|'s [=contribution cache entry/batching scope=] is
@@ -634,18 +767,32 @@ a [=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a
     1. [=list/Remove=] |entry| from the [=contribution cache=].
     1. Let |debugDetails| be |entry|'s [=contribution cache entry/debug
         details=].
-    1. If |batchedContributions|[|debugDetails|] does not [=map/exist=]:
-        1. [=map/Set=] |batchedContributions|[|debugDetails|] to a new [=list=].
-    1. [=list/Append=] |entry|'s [=contribution cache entry/contribution=] to
-        |batchedContributions|[|debugDetails|].
+    1. If |batchedContributions|[|debugDetails|] does not [=map/exist=], [=map/
+        set=] |batchedContributions|[|debugDetails|] to a new [=pending
+        contributions=].
+    1. If |entry|'s [=contribution cache entry/error event=] is null:
+        1. [=list/Append=] |entry|'s [=contribution cache entry/contribution=]
+            to |batchedContributions|[|debugDetails|]'s [=pending contributions/
+            unconditional contributions=].
+    1. Otherwise:
+        1. Let |conditionalContributions| be
+            |batchedContributions|[|debugDetails|]'s [=pending contributions/
+            conditional contributions=].
+        1. If |conditionalContributions|[|errorEvent|] does not [=map/exist=],
+            [=map/set=] |conditionalContributions|[|errorEvent|] to a new
+            [=list=].
+        1. [=list/Append=] |entry|'s [=contribution cache entry/contribution=]
+            to |conditionalContributions|[|errorEvent|].
 1. If |batchedContributions| [=map/is empty=]:
     1. Let |debugDetails| be a new [=debug details=].
-    1. Set |batchedContributions|[|debugDetails|] to a new [=list=].
-1. [=map/iterate|For each=] |debugDetails| → |contributions| of
+    1. Set |batchedContributions|[|debugDetails|] to a new [=pending
+        contributions=].
+1. [=map/iterate|For each=] |debugDetails| → |pendingContributions| of
     |batchedContributions|:
     1. Perform the [=report creation and scheduling steps=] with
-        |reportingOrigin|, |contextType|, |contributions|, |debugDetails|,
-        |aggregationCoordinator|, |preSpecifiedParams| and |timeout|.
+        |reportingOrigin|, |contextType|, |pendingContributions|,
+        |debugDetails|, |aggregationCoordinator|, |preSpecifiedParams| and
+        |timeout|.
 
 Note: These steps break up the contributions based on their [=debug details=] as
     each report can only have one set of metadata.
@@ -710,68 +857,103 @@ scope</dfn> given a [=pre-specified report parameters=] |params| and a
 
 </div>
 
+<div algorithm>
+To <dfn>validate a histogram contribution</dfn> given a
+{{PAHistogramContribution}} |contribution| and a [=scoping details=]
+|scopingDetails|, perform the following steps. They return a [=contribution
+cache entry=] or an [=exception=].
+
+1. If |contribution|["{{PAHistogramContribution/bucket}}"] is not [=set/
+    contained=] in [=the exclusive range|the range=] 0 to 2<sup>128</sup>,
+    exclusive, return a {{RangeError}}.
+1. If |contribution|["{{PAHistogramContribution/value}}"] is negative, return a
+    {{RangeError}}.
+1. Let |batchingScope| be the result of running |scopingDetails|' [=scoping
+    details/get batching scope steps=].
+1. Let |filteringIdMaxBytes| be the [=default filtering ID max bytes=].
+1. If [=pre-specified report parameters map=][|batchingScope|] [=map/exists=]:
+    1. Set |filteringIdMaxBytes| to [=pre-specified report parameters
+        map=][|batchingScope|]'s [=pre-specified report parameters/filtering ID
+        max bytes=].
+1. If |contribution|["{{PAHistogramContribution/filteringId}}"] is not [=set/
+    contained=] in [=the exclusive range|the range=] 0 to
+    256<sup>|filteringIdMaxBytes|</sup>, exclusive, return a {{RangeError}}.
+1. Return a new [=contribution cache entry=] with the items:
+    : [=contribution cache entry/contribution=]
+    :: |contribution|
+    : [=contribution cache entry/batching scope=]
+    :: |batchingScope|
+    : [=contribution cache entry/debug scope=]
+    :: The result of running |scopingDetails|' [=scoping details/get debug scope
+        steps=].
+
+Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
+    deprecated.
+
+</div>
+
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
 
 <div algorithm>
 To perform the <dfn>report creation and scheduling steps</dfn> with an
-[=origin=] |reportingOrigin|, a [=context type=] |api|, a [=list=] of
-{{PAHistogramContribution}}s |contributions|, a [=debug details=]
-|debugDetails|, an [=aggregation coordinator=] |aggregationCoordinator|, a
-[=pre-specified report parameters=] |preSpecifiedParams| and a [=moment=] or
-null |timeout|:
+[=origin=] |reportingOrigin|, a [=context type=] |api|, a [=pending
+contributions=] |pendingContributions|, a [=debug details=] |debugDetails|, an
+[=aggregation coordinator=] |aggregationCoordinator|, a [=pre-specified report
+parameters=] |preSpecifiedParams| and a [=moment=] or null |timeout|:
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Optionally, return.
 
     Note: This [=implementation-defined=] condition is intended to allow [=user
         agents=] to drop reports for a number of reasons, for example user
-        opt-out or an origin not being
-        <a href="https://github.com/privacysandbox/attestation">enrolled</a>.
-1. Let |mergedContributions| be a new [=list=].
-1. [=list/For each=] |contribution| of |contributions|:
-    1. Let |hasProcessedContribution| be false.
-    1. [=list/For each=] |mergedContribution| of |mergedContributions|:
-        1. If |contribution| and |mergedContribution| have both the same
-            {{PAHistogramContribution/bucket}} and the same
-            {{PAHistogramContribution/filteringId}}:
-            1. Add |contribution|'s {{PAHistogramContribution/value}} to
-                |mergedContribution|'s {{PAHistogramContribution/value}}.
-            1. Set |hasProcessedContribution| to true.
-            1. [=iteration/Break=].
-    1. If |hasProcessedContribution| is false, [=list/append=] |contribution| to
-        |mergedContributions|.
-1. Let |effectiveMaxContributions| be the result of [=determining the max
-    contributions=] with |api| and |preSpecifiedParams|' [=pre-specified report
-    parameters/max contributions=].
-1. Let |truncatedContributions| be a new [=list=].
-1. If |mergedContributions| has a [=list/size=] greater than
-    |effectiveMaxContributions|:
-    1. [=set/For each=] |n| of [=the exclusive range|the range=] 0 to
-         |effectiveMaxContributions|, exclusive:
-        1. [=set/Append=] |mergedContributions|[|n|] to
-            |truncatedContributions|.
-1. Otherwise, set |truncatedContributions| to |mergedContributions|.
-1. Let |contributionSum| be 0.
-1. [=set/iterate|For each=] |contribution| of |truncatedContributions|:
-    1. [=Assert=]: |contribution|["{{PAHistogramContribution/value}}"] is
-        non-negative.
-    1. Add |contribution|["{{PAHistogramContribution/value}}"] to
-        |contributionSum|.
+        opt-out, an origin not being
+        <a href="https://github.com/privacysandbox/attestation">enrolled</a> or
+        a limit on pending reports being reached.
 1. Let |currentWallTime| be the [=current wall time=].
-1. Let |sufficientBudget| be the result of [=consuming budget if permitted=]
-    given |contributionSum|, |reportingOrigin|, |api| and |currentWallTime|.
-
-    Issue: Allow for some of the contributions to still be approved even if
-        there isn't enough budget for the entire report. Note that this change
-        would require the merging step to be postponed until after budgeting and
-        the truncation step modified to account for the later merging.
-1. If |sufficientBudget| is false:
-    1. Let |isDeterministicReport| be the result of [=determining if a report
-        should be sent deterministically=] given |preSpecifiedParams| and |api|.
-    1. If |isDeterministicReport| is false, return.
-    1. [=list/Empty=] |truncatedContributions|.
+1. Let |allUnmergedContributions| be the result of [=compiling all unmerged
+    contributions=], given |reportingOrigin|, |api|, |pendingContributions|,
+    |preSpecifiedParams|, |timeout| and |currentWallTime|.
+1. Let |isDeterministicReport| be the result of [=determining if a report
+    should be sent deterministically=] given |preSpecifiedParams| and |api|.
+1. Let |effectiveMaxContributions| be the result of [=determining the max
+    contributions=] with |api| and |preSpecifiedParams|' [=pre-specified
+    report parameters/max contributions=].
+1. Let |keptMergeKeys| be a new [=set=].
+1. [=list/For each=] |contribution| of |allUnmergedContributions|:
+    1. Let |mergeKey| be |contribution|'s [=merge key=].
+    1. If |keptMergeKeys|' [=list/size=] is |effectiveMaxContributions| and
+        |keptMergeKeys| does not [=list/contain=] |mergeKey|, [=iteration/
+        continue=].
+    1. Otherwise, [=set/append=] |mergeKey| to |keptMergeKeys|.
+1. [=list/Remove=] all items that have a [=merge key=] that is not [=list/
+    contained=] in |keptMergeKeys| from |allUnmergedContributions|.
+1. Let |finalBudgetResults| be the result of [=querying the budget=] given
+    |allUnmergedContributions|, |reportingOrigin|, |api|, |currentWallTime| and
+    true.
+1. [=Assert=]: |finalBudgetResults|' [=list/size=] equals
+    |allUnmergedContributions|' [=list/size=].
+1. [=set/For each=] |i| of [=the exclusive range|the range=] 0 to
+    |finalBudgetResults|' [=list/size=], exclusive:
+    1. If |finalBudgetResults|[|i|] is false, set
+        |allUnmergedContributions|[i]'s {{PAHistogramContribution/value}} to 0.
+1. [=list/Remove=] all items from |allUnmergedContributions| that have a
+    {{PAHistogramContribution/value}} of 0.
+1. Let |mergedContributionsMap| be a new [=ordered map=].
+1. [=list/For each=] |contribution| of |allUnmergedContributions|:
+    1. Let |mergeKey| be |contribution|'s [=merge key=].
+    1. If |mergedContributionsMap|[|mergeKey|] [=map/exists=], add
+        |contribution|'s {{PAHistogramContribution/value}} to
+        |mergedContributionsMap|[|mergeKey|]'s {{PAHistogramContribution/
+        value}}.
+    1. Otherwise, [=map/set=] |mergedContributionsMap|[|mergeKey|] to
+        |contribution|.
+1. Let |mergedContributions| be the |mergedContributionsMap|'s [=map/values=].
+1. [=Assert=]: |mergedContributions| has a [=list/size=] less than or equal to
+    |effectiveMaxContributions|,
+1. If |mergedContributions| [=list/is empty=] and |isDeterministicReport| is
+    false, return.
 1. Let |report| be the result of [=obtaining an aggregatable report=] given
-    |reportingOrigin|, |api|, |truncatedContributions|, |debugDetails|,
+    |reportingOrigin|, |api|, |mergedContributions|, |debugDetails|,
     |aggregationCoordinator|, |preSpecifiedParams|, |timeout| and
     |currentWallTime|.
 1. [=set/Append=] |report| to the user agent's [=aggregatable report cache=].
@@ -779,16 +961,151 @@ null |timeout|:
 </div>
 
 <div algorithm>
-To <dfn>consume budget if permitted</dfn> given an integer |value|, an
-[=origin=] <var ignore>origin</var>, a [=context type=] <var ignore>api</var> and a
-[=moment=] <var ignore>currentTime</var>, perform [=implementation-defined=] steps. They return
-a [=boolean=], which indicates whether there is sufficient 'contribution budget'
-left to send the requested contribution |value| (or multiple contributions with
-a sum of values equal to |value|). This budget should be bound to
-usage over time, e.g. the contribution sum over the last 24 hours. The algorithm
-should assume that the contribution will be sent if and only if true is
-returned, i.e. it should consume the budget in that case. If |value| is zero,
-this algorithm should return true.
+To <dfn>compile all unmerged contributions</dfn> given an [=origin=]
+|reportingOrigin|, a [=context type=] |api|, a [=pending contributions=]
+|pendingContributions|, a [=pre-specified report parameters=]
+|preSpecifiedParams|, a [=moment=] or null |timeout|, and a [=moment=]
+|currentWallTime|, perform the following steps. They return a [=list=] of
+{{PAHistogramContribution}}s.
+
+1. Let |wasTimeoutReached| be the [=boolean=] indicating whether both
+    |isDeterministicReport| is true and |timeout| is null.
+
+    Issue: Update the timeout being sent from Shared Storage to align.
+1. [=Record the internal error event result=] given |pendingContributions|,
+    "<code>[=internal error event/contribution-timeout-reached=]</code>" and
+    |wasTimeoutReached|.
+1. Let |provisionalBudgetResults| be the result of [=querying the budget=] given
+    |pendingContributions|' [=pending contributions/unconditional
+    contributions=], |reportingOrigin|, |api|, |currentWallTime| and false.
+1. [=Assert=]: |provisionalBudgetResults|' [=list/size=] equals
+    |pendingContributions|' [=pending contributions/unconditional
+    contributions=]' [=list/size=].
+1. [=set/For each=] |i| of [=the exclusive range|the range=] 0 to
+    |provisionalBudgetResults|' [=list/size=], exclusive:
+    1. If |provisionalBudgetResults|[|i|] is false, set |pendingContributions|'
+        [=pending contributions/unconditional contributions=][|i|]'s
+        {{PAHistogramContribution/value}} to 0.
+1. [=list/Remove=] all items from |pendingContributions|' [=pending
+    contributions/unconditional contributions=] that have a
+    {{PAHistogramContribution/value}} of 0.
+1. Let |insufficientBudget| be a [=boolean=] indicating whether any value in
+    |provisionalBudgetResults| is false.
+1. [=Record the internal error event result=] given |pendingContributions|,
+    "<code>[=internal error event/insufficient-budget=]</code>" and
+    |insufficientBudget|.
+1. Let |pendingReportLimitReached| be a [=boolean=] determined by an
+    [=implementation-defined=] algorithm.
+
+    Note: This is intended to indicate when a limit on the number of reports
+        simultaneously pending on a budget query was reached (but not exceeded).
+1. [=Record the internal error event result=] given |pendingContributions|,
+    "<code>[=internal error event/pending-report-limit-reached=]</code>" and
+    |pendingReportLimitReached|.
+1. Let |isEmptyAndWouldBeDropped| be a [=boolean=] indicating whether both
+    |isDeterministicReport| is false and |pendingContributions|' [=pending
+    contributions/unconditional contributions=] [=list/is empty=].
+1. [=Record the internal error event result=] given |pendingContributions|,
+    "<code>[=internal error event/empty-report-dropped=]</code>" and
+    |isEmptyAndWouldBeDropped|.
+1. Let |effectiveMaxContributions| be the result of [=determining the max
+    contributions=] with |api| and |preSpecifiedParams|' [=pre-specified
+    report parameters/max contributions=].
+1. Let |tooManyContributions| be false.
+1. Let |provisionallyApprovedMergeKeys| be a new [=set=].
+1. [=list/For each=] |contribution| of |pendingContributions|' [=pending
+    contributions/unconditional contributions=]:
+    1. Let |mergeKey| be |contribution|'s [=merge key=].
+    1. If |provisionallyApprovedMergeKeys|' [=list/size=] is
+        |effectiveMaxContributions| and |provisionallyApprovedMergeKeys| does
+        not [=list/contain=] |mergeKey|, set |tooManyContributions| to true.
+    1. Otherwise, [=set/append=] |mergeKey| to |provisionallyApprovedMergeKeys|.
+1. [=Record the internal error event result=] given |pendingContributions|,
+    "<code>[=internal error event/too-many-contributions=]</code>" and
+    |tooManyContributions|.
+1. [=list/Remove=] all items that have a [=merge key=] that is not [=list/
+    contained=] in |provisionallyApprovedMergeKeys| from |pendingContributions|'
+    [=pending contributions/unconditional contributions=].
+1. Let |reportSuccess| be the [=boolean=] indicating whether <em>none</em> of
+    the following are true: |isEmptyAndWouldBeDropped|, |tooManyContributions|,
+    |insufficientBudget|, |pendingReportLimitReached|.
+1. [=Record the internal error event result=] given |pendingContributions|,
+    "<code>[=internal error event/report-success=]</code>" and
+    |reportSuccess|.
+1. Let |allUnmergedContributions| be a new [=list=].
+1. [=list/For each=] |errorEvent| of [=all error events=]:
+    1. If |pendingContributions|' [=pending contributions/conditional
+        contributions=][|errorEvent|] does not [=map/exist=], [=iteration/
+        continue=].
+    1. [=Assert=]: |pendingContributions|' [=pending contributions/triggered
+        error events=] [=set/contains=] |errorEvent| or |errorEvent| is
+        "<code>[=already triggered external error=]</code>".
+
+        Note: When an internal error event is determined to not be triggered,
+            its conditional contributions are removed by [=record the internal
+            error event result=]
+    1. [=list/Extend=] |allUnmergedContributions| with |pendingContributions|'
+        [=pending contributions/conditional contributions=][|errorEvent|].
+1. [=list/Extend=] |allUnmergedContributions| with |pendingContributions|'
+    [=pending contributions/unconditional contributions=].
+
+    Note: Unconditional contributions come last to prioritize successful
+        measurement of errors.
+1. Return |allUnmergedContributions|.
+
+</div>
+
+<div algorithm>
+Each {{PAHistogramContribution}} |contribution| has a <dfn>merge key</dfn> that
+is the following [=tuple=]: (|contribution|'s {{PAHistogramContribution/
+bucket}}, |contribution|'s {{PAHistogramContribution/filteringId}}).
+
+Note: Two {{PAHistogramContribution}}s for the same report can be merged if and
+    only if they have the same merge key.
+
+</div>
+
+<div algorithm>
+To <dfn>query the budget</dfn> given a [=list=] of {{PAHistogramContribution}}s
+|contributions|, an [=origin=] <var ignore>origin</var>, a [=context type=] <var
+ignore>api</var> and a [=moment=] <var ignore>currentTime</var> and a
+[=boolean=] |consumeIfPermitted|, perform the following steps. They return a
+[=list=] of [=booleans=] with the same [=list/size=] as |contributions|.
+1. Let |resultForEachContribution| be a new [=list=] of [=booleans=].
+1. Let |approvedValueSum| be 0.
+1. [=list/For each=] |contribution| of |contributions|:
+    1. Let |valueToRequest| be |approvedValueSum| + |contribution|'s
+        {{PAHistogramContribution/value}}.
+
+        Note: This ensures that the result for each contribution takes into
+            acccount any earlier approved contributions from this call (even if
+            |consumeIfPermitted| is false).
+    1. Let |sufficientBudget| be a [=boolean=] determined by an
+        [=implementation-defined=] algorithm given |valueToRequest|, |origin|,
+        |api| and |currentTime|. This algorithm should bound budget to usage
+        over time, e.g. the contribution sum over the last 24 hours.
+    1. If |sufficientBudget|, add |contribution|'s {{PAHistogramContribution/
+        value}} to |approvedValueSum|.
+    1. [=list/Append=] |sufficientBudget| to |resultForEachContribution|.
+
+        Note: the |i|th element in the return value indicates whether there is
+            enough budget left to send |contributions|[|i|]'s
+            {{PAHistogramContribution/value}}.
+1. If |consumeIfPermitted|, consume budget using an [=implementation-defined=]
+    algorithm given |approvedValueSum|, |origin|, |api| and |currentTime|.
+1. Return |resultForEachContribution|.
+
+</div>
+
+<div algorithm>
+To <dfn>record the internal error event result</dfn> given a [=pending
+contributions=] |pendingContributions|, an [=internal error event=]
+|errorEvent| and a [=boolean=] |wasTriggered|, perform the following steps:
+1. If |wasTriggered|, [=set/append=] |errorEvent| to |pendingContributions|'
+    [=pending contributions/triggered error events=].
+1. Otherwise, [=map/remove=] |pendingContributions|' [=pending contributions/
+    conditional contributions=][|errorEvent|].
+
 </div>
 
 <div algorithm>
@@ -1346,9 +1663,9 @@ Clearing site data {#clearing-site-data}
 ----------------------------------------
 
 The [=aggregatable report cache=] as well as any contribution history data
-stored for the [=consume budget if permitted=] algorithm contain data about a
-user’s web activity. As such, user controls to delete this data are required,
-see [clearing storage](#clearing-storage).
+stored for the [=query the budget=] algorithm contain data about a user’s web
+activity. As such, user controls to delete this data are required, see [clearing
+storage](#clearing-storage).
 
 On the other hand, the [=contribution cache=], the [=debug scope map=] and the
 [=pre-specified report parameters map=] only contain short-lived data tied to
@@ -1440,7 +1757,7 @@ scope map=] and [=pre-specified report parameters map=] are attributed to the
 reporting [=origin=] and the data included in any report with a given reporting
 [=origin=] are generated with only data from that [=origin=].
 
-One notable exception is the [=consume budget if permitted=] algorithm which is
+One notable exception is the [=query the budget=] algorithm which is
 [=implementation-defined=] and can consider contribution history from other
 [=origins=]. For example, the algorithm could consider all history from a
 particular [=site=]. This would be an explicit relaxation of the same-origin
@@ -1451,8 +1768,8 @@ all available budget, causing subsequent origins to be unable to access the API.
 This trades off security for privacy, in that the limits are there to reduce the
 efficacy of many origins colluding together to violate privacy. However, this
 security risk is lessened if the set of origins limited are all [=same site=].
-[=User agents=] should consider these tradeoffs when choosing the [=consume
-budget if permitted=] algorithm.
+[=User agents=] should consider these tradeoffs when choosing the [=query the
+budget=] algorithm.
 
 Protecting the histogram contributions {#protecting-the-histogram-contributions}
 --------------------------------------------------------------------------------
