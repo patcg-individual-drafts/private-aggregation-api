@@ -435,7 +435,7 @@ An <dfn export>internal error event</dfn> is one of the following:
 </dl>
 
 An <dfn export>error event</dfn> is an [=internal error event=] or the special
-value <dfn><code>already triggered external error</code></dfn>.
+value <dfn export><code>already triggered external error</code></dfn>.
 
 Note: This special value represents any external error event that has already
     occurred. External error events are defined by embedding APIs and are
