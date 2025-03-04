@@ -1,5 +1,7 @@
 # HTML files that are generated from Markdown sources.
-HTML_FROM_MD_TARGETS=README.html README-with-toc.html
+HTML_FROM_MD_TARGETS = README.html README-with-toc.html
+COMMIT = $(shell git rev-parse HEAD)
+EXPORTS_REPORT_NAME = "exports-report.${COMMIT}.txt"
 
 .PHONY: all
 all: spec.html $(HTML_FROM_MD_TARGETS)
@@ -8,6 +10,7 @@ all: spec.html $(HTML_FROM_MD_TARGETS)
 clean:
 	-rm spec.html
 	-rm $(HTML_FROM_MD_TARGETS)
+	-rm exports-report.*.txt
 
 # Updates Bikeshed's datafiles. Bikeshed automatically updates them if they're
 # more than a few days old, but this will ensure you have the latest version.
@@ -27,3 +30,9 @@ README-with-toc.md: README.md
 # GNU Make "static pattern" syntax.
 $(HTML_FROM_MD_TARGETS): %.html : %.md
 	pandoc -f gfm -s $< -o $@
+
+.PHONY: write-exports-report
+write-exports-report: ${EXPORTS_REPORT_NAME}
+
+${EXPORTS_REPORT_NAME}: spec.bs
+	bikeshed debug --print-exports > $@
