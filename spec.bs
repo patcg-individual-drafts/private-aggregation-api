@@ -1553,8 +1553,9 @@ Set local testing mode {#set-local-testing-mode}
     </table>
 </figure>
 
-<div algorithm>
-The <dfn export>remote end steps</dfn> are:
+<div algorithm="remote end steps">
+The <a spec="webdriver2">remote end steps</a> given <var ignore>session</var>,
+<var ignore>URL variables</var> and |parameters| are:
 
 1. If |parameters| is not a JSON-formatted [[ECMASCRIPT#sec-objects|Object]],
     return a [=error|WebDriver error=] with [=error code=] [=invalid argument=].
