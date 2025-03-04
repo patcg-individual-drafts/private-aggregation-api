@@ -394,9 +394,9 @@ same period of execution.
 <h3 dfn-type=dfn export>Scoping details</h3>
 A scoping details is a [=struct=] with the following items:
 <dl dfn-for="scoping details">
-: <dfn>get batching scope steps</dfn>
+: <dfn export>get batching scope steps</dfn>
 :: An algorithm returning a [=batching scope=]
-: <dfn>get debug scope steps</dfn>
+: <dfn export>get debug scope steps</dfn>
 :: An algorithm returning a [=debug scope=]
 
 </dl>
@@ -534,11 +534,12 @@ Pre-specified report parameters {#pre-specified-report-parameters-structure}
 A <dfn export>pre-specified report parameters</dfn> is a [=struct=] with the
 following items:
 <dl dfn-for="pre-specified report parameters">
-: <dfn>context ID</dfn> (default: null)
+: <dfn export>context ID</dfn> (default: null)
 :: A [=string=] or null
-: <dfn>filtering ID max bytes</dfn> (default: [=default filtering ID max bytes=])
+: <dfn export>filtering ID max bytes</dfn> (default: [=default filtering ID max
+    bytes=])
 :: A positive integer
-: <dfn>max contributions</dfn> (default: null)
+: <dfn export>max contributions</dfn> (default: null)
 :: A positive integer or null
 
 </dl>
@@ -577,12 +578,12 @@ parameters map=].
 Constants {#constants}
 ======================
 
-<dfn>Default filtering ID max bytes</dfn> is a positive integer controlling the
-max bytes used if none is explicitly chosen. Its value is 1.
+<dfn export>Default filtering ID max bytes</dfn> is a positive integer
+controlling the max bytes used if none is explicitly chosen. Its value is 1.
 
-<dfn>Valid filtering ID max bytes range</dfn> is a [=set=] of positive integers
-controlling the allowable values of max bytes. Its value is [=the inclusive
-range|the range=] 1 to 8, inclusive.
+<dfn export>Valid filtering ID max bytes range</dfn> is a [=set=] of positive
+integers controlling the allowable values of max bytes. Its value is [=the
+inclusive range|the range=] 1 to 8, inclusive.
 
 Issue: Consider adding more constants.
 
