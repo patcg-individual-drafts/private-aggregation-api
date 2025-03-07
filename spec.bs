@@ -450,18 +450,18 @@ by <code>[=already triggered external error=]</code>.
 <h3 dfn-type=dfn export>Contribution cache entry</h3>
 A contribution cache entry is a [=struct=] with the following items:
 <dl dfn-for="contribution cache entry">
-: <dfn>contribution</dfn>
+: <dfn export>contribution</dfn>
 :: A {{PAHistogramContribution}}
-: <dfn>error event</dfn> (default null)
+: <dfn export>error event</dfn> (default null)
 :: An [=error event=] or null.
 
     Note: This indicates which [=error event=] the contribution is conditional
         on, or null if the contribution is unconditional.
-: <dfn>batching scope</dfn>
+: <dfn export>batching scope</dfn>
 :: A [=batching scope=]
-: <dfn>debug scope</dfn>
+: <dfn export>debug scope</dfn>
 :: A [=debug scope=]
-: <dfn>debug details</dfn> (default null)
+: <dfn export>debug details</dfn> (default null)
 :: A [=debug details=] or null
 
 </dl>
