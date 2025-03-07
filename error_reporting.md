@@ -114,8 +114,9 @@ Audience contexts:
   contributions were dropped due to the per-report limit
 - `reserved.empty-report-dropped`: a report was not scheduled as it had no
   contributions
-- `reserved.too-many-pending-reports`: a report was not scheduled as there were
-  already too many pending reports
+- `reserved.pending-report-limit-reached`: a report was scheduled, but the limit
+  of pending reports was reached. That is, attempting to schedule one more
+  report would fail due to the limit.
 - `reserved.insufficient-budget-for-report`: a report was not scheduled as there
   was not enough budget
 - `reserved.uncaught-exception`: a JavaScript exception was thrown and not
