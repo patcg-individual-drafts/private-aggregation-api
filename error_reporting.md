@@ -169,7 +169,7 @@ explainer](https://github.com/patcg-individual-drafts/private-aggregation-api/bl
 ### Two phase processing
 
 We propose a two phase processing model where first contributions that are not
-conditional on error events are tenatively processed. (For example, testing
+conditional on error events are tentatively processed. (For example, testing
 whether there is sufficient budget for all the contributions and whether they
 fit into the limit on the number of contributions.) The outcome of that
 processing will then be used to determine which error events should be
