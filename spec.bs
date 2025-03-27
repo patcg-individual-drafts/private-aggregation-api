@@ -131,6 +131,7 @@ interface PrivateAggregation {
   undefined contributeToHistogram(PAHistogramContribution contribution);
   undefined contributeToHistogramOnEvent(DOMString event,
                                          record<DOMString, any> contribution);
+  undefined reserveNamedBudgets(record<DOMString, double> namedBudgets);
   undefined enableDebugMode(optional PADebugModeOptions options = {});
 };
 
@@ -138,6 +139,7 @@ dictionary PAHistogramContribution {
   required bigint bucket;
   required long value;
   bigint filteringId = 0;
+  DOMString budgetName;
 };
 
 dictionary PADebugModeOptions {
@@ -180,9 +182,13 @@ The <dfn method for="PrivateAggregation">
 contributeToHistogram(PAHistogramContribution |contribution|)</dfn> method steps
 are:
 
+1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
+1. Let |namedBudgetExists| be the result of [=checking that a contribution's
+    named budget exists=] given |contribution| and |scopingDetails|.
+1. If |namedBudgetExists| is false, [=exception/throw=] a "{{DataError}}"
+    {{DOMException}}.
 1. Let |validationResult| be the result of [=validating a histogram
-    contribution=] given |contribution| and [=this=]'s
-    [=PrivateAggregation/scoping details=].
+    contribution=] given |contribution| and |scopingDetails|.
 1. If |validationResult| is an [=exception=], [=exception/throw=]
     |validationResult|.
 1. [=Assert=]: |validationResult| is a [=contribution cache entry=].
@@ -197,6 +203,11 @@ Issue(44): Consider accepting an array of contributions.
 The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(|event|,
 |contribution|)</dfn> method steps are:
 
+1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
+1. Let |namedBudgetExists| be the result of [=checking that a contribution's
+    named budget exists=] given |contribution| and |scopingDetails|.
+1. If |namedBudgetExists| is false, [=exception/throw=] a "{{DataError}}"
+    {{DOMException}}.
 1. Let |defaultProcessingResult| be the result of running [=this=]'s
     [=PrivateAggregation/should perform default contributeToHistogramOnEvent()
     processing=] given [=this=], |event| and |contribution|.
@@ -209,8 +220,7 @@ The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(|event|,
 
     Note: This throws a {{TypeError}} if |contribution| is not compatible.
 1. Let |validationResult| be the result of [=validating a histogram
-    contribution=] given |contribution| and [=this=]'s
-    [=PrivateAggregation/scoping details=].
+    contribution=] given |contribution| and |scopingDetails|.
 1. If |validationResult| is an [=exception=], [=exception/throw=]
     |validationResult|.
 1. [=Assert=]: |validationResult| is a [=contribution cache entry=].
@@ -227,6 +237,59 @@ The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(|event|,
 
 Note: For forward compatibility, we do not throw an error for unrecognized
     events that [=string/start with=] "<code>reserved.</code>".
+
+</div>
+
+<div algorithm>
+The <dfn method
+for="PrivateAggregation">reserveNamedBudgets(record&lt;DOMString, double&gt;
+|namedBudgets|)</dfn> method steps are:
+
+1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
+1. Let |batchingScope| be the result of running |scopingDetails|' [=scoping
+    details/get batching scope steps=].
+1. If [=named budget ledgers map=][|batchingScope|] [=map/exists=],
+    [=exception/throw=] a "{{DataError}}" {{DOMException}}.
+1. If |namedBudgets| is null or undefined, [=exception/throw=] a "{{DataError}}"
+    {{DOMException}}.
+1. If |namedBudgets| [=map/is empty=], [=exception/throw=] a "{{DataError}}"
+    {{DOMException}}.
+1. If |namedBudgets|' [=map/size=] is greater than [=maximum number of named
+    budgets=], [=exception/throw=] a "{{DataError}}" {{DOMException}}.
+1. Let |names| be the result of [=map/getting the keys=] of |namedBudgets|.
+1. [=list/iterate|For each=] |name| of |names|:
+    1. [=Assert=] that |name| is not null.
+
+        Issue: Determine whether {{DOMString}} is nullable. If not, delete
+            this step.
+    1. If |name|'s [=string/length=] is greater than [=maximum length of budget
+        name=], [=exception/throw=] a "{{DataError}}" {{DOMException}}.
+1. Let |ledgers| be a new [=list=] of [=named budget ledgers=].
+1. [=list/iterate|For each=] |budgetingScope| in [=all budgeting scopes=]:
+    1. Let |maxBudget| be |budgetingScope|'s [=budgeting scope/max budget=].
+    1. Let |remainingBudget| be |maxBudget|.
+    1. Let |ledger| be a new [=named budget ledger=].
+    1. [=map/For each=] |name| → |fraction| of |namedBudgets|:
+        1. If |fraction| is NaN, ±Inf, or -0, [=exception/throw=] a
+            "{{DataError}}" {{DOMException}}.
+        1. If |fraction| is negative or greater than 1, [=exception/throw=] a
+            "{{DataError}}" {{DOMException}}.
+        1. Let |allocation| be the floor of |fraction| * |maxBudget|.
+        1. If |allocation| is not contained in [=the inclusive range=] from 0 to
+            |maxBudget|, [=exception/throw=] a "{{DataError}}" {{DOMException}}.
+        1. If |allocation| is greater than |remainingBudget|,
+            [=exception/throw=] a "{{DataError}}" {{DOMException}}.
+        1. Set |remainingBudget| to |remainingBudget| - |allocation|.
+        1. [=map/Set=] |ledger|[|name|] to |allocation|.
+    1. [=map/Set=] |ledger|[null] to |remainingBudget|.
+
+    Note: The null key represents the default budget. If any of the budget names
+     is the empty string, it will be treated like any other named budget.
+
+    1. [=list/Append=] |ledger| to |ledgers|.
+1. [=map/Set=] [=named budget ledgers map=][|batchingScope|] to |ledgers|.
+
+Issue: Review the types of all exceptions used above.
 
 </div>
 
@@ -384,6 +447,31 @@ report=] unless their [=aggregatable report/debug details=] differ.
 
 Issue: Unique internal value is not an exported definition. See
     <a href="https://github.com/whatwg/infra/issues/583">infra/583</a>.
+
+<h3 dfn-type=dfn>Budgeting scope</h3>
+A budgeting scope defines a maximum amount of budget that a site is permitted to
+consume over a duration of time. Specifically, it defines an a upper bound on
+the <math><msub><mi>L</mi><mn>1</mn></msub></math> norm of a site's
+contributions' values, per API, over a rolling time window. It is a [=struct=]
+with the following items:
+
+<dl dfn-for="budgeting scope">
+: <dfn>max budget</dfn>
+:: A positive integer
+: <dfn ignore>duration</dfn>
+:: A [=duration=]
+: <dfn ignore>caller type</dfn>
+:: A [=context type=]
+
+ Issue: Currently, this spec only references [=budgeting scope/max budget=]. We
+ need to decide whether deleting the unused fields will improve clarity.
+
+</dl>
+
+<h3 dfn-type=dfn>Named budget ledger</h3>
+A named budget ledger tracks the remaining budget per named budget. It is a
+[=map=] from [=strings|budget names=] or null to integers. The null key
+represents the default budget.
 
 <h3 dfn-type=dfn export>Debug scope</h3>
 A debug scope is a <a spec=HTML>unique internal value</a> that identifies which
@@ -556,6 +644,9 @@ A [=user agent=] holds an <dfn>aggregation coordinator map</dfn>, which is a
 A [=user agent=] holds a <dfn>pre-specified report parameters map</dfn>, which
 is a [=map=] from [=batching scopes=] to [=pre-specified report parameters=].
 
+A [=user agent=] holds a <dfn>named budget ledgers map</dfn>, which is a [=map=]
+from [=batching scopes=] to [=lists=] of [=named budget ledgers=].
+
 A [=user agent=] holds a <dfn>contribution cache</dfn>, which is a [=list=] of
 [=contribution cache entries=].
 
@@ -613,6 +704,60 @@ minimum delay to deliver an [=aggregatable report=].
 <dfn>Randomized report delay</dfn> is a positive [=duration=] that controls the
 random delay to deliver an [=aggregatable report=]. This delay is additional to
 the [=minimum report delay=].
+
+<dfn>All budgeting scopes</dfn> is a non-empty [=list=] of [=budgeting scopes=].
+
+<div class="advisement"><span class="marker">WARNING:</span> When defining a
+[=budgeting scope=], be aware that certain values of [=budgeting scope/max
+budget=] are incompatible with the way that
+{{PrivateAggregation/reserveNamedBudgets}} interprets budget fractions.
+Implementers must verify that every slice <math><mi>n</mi></math> of their
+chosen [=budgeting scope/max budget=] <math><mi>m</mi></math>, where
+<math>
+<mn>0</mn>
+<mo>≤</mo>
+<mi>n</mi>
+<mo>≤</mo>
+<mi>m</mi>
+</math>, can round-trip through a double-valued budget fraction like so:
+<math>
+<mrow>
+<mo>⌊</mo>
+<mo>(</mo>
+<mfrac><mi>n</mi><mi>m</mi></mfrac>
+<mo>)</mo>
+<mo>×</mo>
+<mi>m</mi>
+<mo>⌋</mo>
+</mrow>
+<mo>=</mo>
+<mi>n</mi>
+</math>. We've already verified this property for
+<math>
+<mrow>
+<mi>m</mi>
+<mo>∈</mo>
+<mo>{</mo>
+<msup><mn>2</mn> <mi>k</mi></msup>
+<mo>|</mo>
+<mn>0</mn>
+<mo>≤</mo>
+<mi>k</mi>
+<mo>≤</mo>
+<mi>32</mi>
+<mo>}</mo>
+</mrow>
+</math>, but other values are not guaranteed to be safe. For instance, a budget
+slice of 64 cannot be represented by a double fraction relative to a [=budgeting
+scope/max budget=] of 103.
+</div>
+
+<dfn>Maximum number of named budgets</dfn> is a positive integer that defines an
+upper bound on the number of named budgets that may be configured per [=batching
+scope=].
+
+<dfn>Maximum length of budget name</dfn> is a positive integer that defines an
+upper bound on the [=string/length=] of a budget name.
 
 Permissions Policy integration {#permissions-policy-integration}
 ================================================================
@@ -791,9 +936,9 @@ Note: Embedding APIs are expected to set |timeout| to null if a report isn't
 1. [=map/iterate|For each=] |debugDetails| → |pendingContributions| of
     |batchedContributions|:
     1. Perform the [=report creation and scheduling steps=] with
-        |reportingOrigin|, |contextType|, |pendingContributions|,
-        |debugDetails|, |aggregationCoordinator|, |preSpecifiedParams| and
-        |timeout|.
+        |batchingScope|, |reportingOrigin|, |contextType|,
+        |pendingContributions|, |debugDetails|, |aggregationCoordinator|,
+        |preSpecifiedParams| and |timeout|.
 
 Note: These steps break up the contributions based on their [=debug details=] as
     each report can only have one set of metadata.
@@ -897,11 +1042,13 @@ Scheduling reports {#scheduling-reports}
 ----------------------------------------
 
 <div algorithm>
-To perform the <dfn>report creation and scheduling steps</dfn> with an
-[=origin=] |reportingOrigin|, a [=context type=] |api|, a [=pending
-contributions=] |pendingContributions|, a [=debug details=] |debugDetails|, an
-[=aggregation coordinator=] |aggregationCoordinator|, a [=pre-specified report
-parameters=] |preSpecifiedParams| and a [=moment=] or null |timeout|:
+To perform the <dfn>report creation and scheduling steps</dfn> with a
+[=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a [=context
+type=] |api|, a [=pending contributions=] |pendingContributions|, a [=debug
+details=] |debugDetails|, an [=aggregation coordinator=]
+|aggregationCoordinator|, a [=pre-specified report parameters=]
+|preSpecifiedParams| and a [=moment=] or null |timeout|:
+
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Optionally, return.
 
@@ -914,6 +1061,11 @@ parameters=] |preSpecifiedParams| and a [=moment=] or null |timeout|:
 1. Let |allUnmergedContributions| be the result of [=compiling all unmerged
     contributions=], given |reportingOrigin|, |api|, |pendingContributions|,
     |preSpecifiedParams|, |timeout| and |currentWallTime|.
+1. If [=named budget ledgers map=][|batchingScope|] [=map/exists=]:
+    1. Let |ledgers| be  [=named budget ledgers map=][|batchingScope|].
+    1. Set |allUnmergedContributions| to the result of [=taking contributions
+        while named budgets are solvent=] given |allUnmergedContributions| and
+        |ledgers|.
 1. Let |isDeterministicReport| be the result of [=determining if a report
     should be sent deterministically=] given |preSpecifiedParams| and |api|.
 1. Let |effectiveMaxContributions| be the result of [=determining the max
@@ -1403,7 +1555,8 @@ To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=]
     |report|, perform the following steps. They return a [=byte sequence=].
 1. Let |payloadData| be a new [=list=].
 1. Let |contributions| be |report|'s [=aggregatable report/contributions=].
-1. Let |maxContributions| be |report|'s [=aggregatable report/max contributions=].
+1. Let |maxContributions| be |report|'s [=aggregatable report/max
+    contributions=].
 1. [=Assert=]: |contributions|' [=list/size=] is not greater than
     |maxContributions|.
 1. [=iteration/While=] |contributions|' [=list/size=] is less than
@@ -1520,6 +1673,61 @@ To <dfn>obtain a report's shared info</dfn> given an [=aggregatable report=]
     :: "`1.0`"
 1. Return the result of [=serializing an infra value to a json string=] given
     |sharedInfo|.
+
+</div>
+
+Budgeting {#budgeting}
+------------------------------------------------
+
+<div algorithm>
+To <dfn>check that a contribution's named budget exists</dfn> with a
+{{PAHistogramContribution}} |contribution| and a [=scoping details=]
+|scopingDetails|, perform the following steps. They return a boolean.
+
+1. Let |batchingScope| be the result of running |scopingDetails|' [=scoping
+    details/get batching scope steps=].
+1. Let |budgetName| be |contribution|.{{PAHistogramContribution/budgetName}}.
+1. If |budgetName| is not undefined:
+    1. If [=named budget ledgers map=][|batchingScope|] does not [=map/exist=]:
+        1. Return false.
+
+         Note: This happens when |contribution| references a named budget, but
+          the caller has not successfully defined any named budgets with
+          {{PrivateAggregation/reserveNamedBudgets()}}.
+1. Otherwise, set |budgetName| to null.
+1. If [=named budget ledgers map=][|batchingScope|] [=map/exists=]:
+    1. Let |ledgers| be [=named budget ledgers map=][|batchingScope|].
+    1. [=list/For each=] |ledger| of |ledgers|:
+        1. If |ledger|[|budgetName|] does not [=map/exist=], return false.
+1. Return true.
+
+</div>
+
+<div algorithm>
+To <dfn>take contributions while named budgets are solvent</dfn> with a [=list=]
+of {{PAHistogramContribution}}s |contributions| and a [=list=] of [=named budget
+ledgers=] |ledgers|, perform the following steps.  They return a [=list=] of
+{{PAHistogramContribution}}s and have the side effect of mutating the contents
+of |ledgers|.
+
+1. Let |filteredContributions| be a new [=list=].
+1. [=list/For each=] |contribution| of |contributions|:
+    1. Let |name| be |contribution|.{{PAHistogramContribution/budgetName}}.
+    1. If |name| is undefined, set |name| to null.
+    1. Let |dropContribution| be false.
+    1. [=list/For each=] |ledger| of |ledgers|:
+        1. [=Assert=] that |ledger|[|name|] [=map/exists=].
+        1. If |contribution|.{{PAHistogramContribution/value}} is greater than
+            |ledger|[|name|]:
+            1. Set |dropContribution| to true.
+            1. [=iteration/Break=].
+    1. If |dropContribution|, [=iteration/continue=].
+    1. [=list/For each=] |ledger| of |ledgers|:
+        1. Set |ledger|[|name|] to |ledger|[|name|] -
+            |contribution|.{{PAHistogramContribution/value}}.
+        1. [=Assert=] that |ledger|[|name|] is non-negative.
+    1. [=list/Append=] |contribution| to |filteredContributions|.
+1. Return |filteredContributions|.
 
 </div>
 
