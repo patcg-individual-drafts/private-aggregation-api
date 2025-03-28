@@ -713,40 +713,35 @@ budget=] are incompatible with the way that
 {{PrivateAggregation/reserveNamedBudgets}} interprets budget fractions.
 Implementers must verify that every slice <math><mi>n</mi></math> of their
 chosen [=budgeting scope/max budget=] <math><mi>m</mi></math>, where
+<math><mn>0</mn> <mo>≤</mo> <mi>n</mi> <mo>≤</mo> <mi>m</mi></math>, can
+round-trip through a double-valued budget fraction like so:
 <math>
-<mn>0</mn>
-<mo>≤</mo>
-<mi>n</mi>
-<mo>≤</mo>
-<mi>m</mi>
-</math>, can round-trip through a double-valued budget fraction like so:
-<math>
-<mrow>
-<mo>⌊</mo>
-<mo>(</mo>
-<mfrac><mi>n</mi><mi>m</mi></mfrac>
-<mo>)</mo>
-<mo>×</mo>
-<mi>m</mi>
-<mo>⌋</mo>
-</mrow>
-<mo>=</mo>
-<mi>n</mi>
+    <mrow>
+        <mo>⌊</mo>
+        <mo>(</mo>
+        <mfrac><mi>n</mi><mi>m</mi></mfrac>
+        <mo>)</mo>
+        <mo>×</mo>
+        <mi>m</mi>
+        <mo>⌋</mo>
+    </mrow>
+    <mo>=</mo>
+    <mi>n</mi>
 </math>. We've already verified this property for
 <math>
-<mrow>
-<mi>m</mi>
-<mo>∈</mo>
-<mo>{</mo>
-<msup><mn>2</mn> <mi>k</mi></msup>
-<mo>|</mo>
-<mn>0</mn>
-<mo>≤</mo>
-<mi>k</mi>
-<mo>≤</mo>
-<mi>32</mi>
-<mo>}</mo>
-</mrow>
+    <mrow>
+        <mi>m</mi>
+        <mo>∈</mo>
+        <mo>{</mo>
+        <msup><mn>2</mn> <mi>k</mi></msup>
+        <mo>|</mo>
+        <mn>0</mn>
+        <mo>≤</mo>
+        <mi>k</mi>
+        <mo>≤</mo>
+        <mi>32</mi>
+        <mo>}</mo>
+    </mrow>
 </math>, but other values are not guaranteed to be safe. For instance, a budget
 slice of 64 cannot be represented by a double fraction relative to a [=budgeting
 scope/max budget=] of 103.
