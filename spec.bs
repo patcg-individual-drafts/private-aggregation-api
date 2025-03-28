@@ -463,10 +463,10 @@ with the following items:
 : <dfn ignore>caller type</dfn>
 :: A [=context type=]
 
+</dl>
+
 Issue: Currently, this spec only references [=budgeting scope/max budget=]. We
 need to decide whether deleting the unused fields will improve clarity.
-
-</dl>
 
 <h3 dfn-type=dfn>Named budget ledger</h3>
 A named budget ledger tracks the remaining budget per named budget. It is a
