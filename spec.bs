@@ -153,6 +153,10 @@ Issue: {{PrivateAggregation/enableDebugMode(options)}}'s argument should not
     have a default value of `{}`. Alternatively, {{PADebugModeOptions/debugKey}}
     should not be required in {{PADebugModeOptions}}.
 
+Issue: Consider making the type of
+    {{PrivateAggregation/contributeToHistogramOnEvent(event, contribution)}}'s
+    second argument less generic.
+
 Each {{PrivateAggregation}} object has the following fields:
 <dl dfn-for="PrivateAggregation">
 : <dfn export>scoping details</dfn> (default null)
