@@ -720,6 +720,13 @@ controlling the max bytes used if none is explicitly chosen. Its value is 1.
 integers controlling the allowable values of max bytes. Its value is [=the
 inclusive range|the range=] 1 to 8, inclusive.
 
+<dfn>Maximum number of named budgets</dfn> is a positive integer that defines an
+upper bound on the number of named budgets that may be configured per [=batching
+scope=]. Its value is 25.
+
+<dfn>Maximum length of budget name</dfn> is a positive integer that defines an
+upper bound on the [=string/length=] of a budget name. Its value is 25.
+
 Issue: Consider adding more constants.
 
 [=Implementation-defined=] values {#implementation-defined-values}
@@ -761,13 +768,6 @@ represented exactly by a {{double}}, for all integral <math><mi>n</mi></math> in
 the range
 <math><mo>[</mo><mn>0</mn><mo>,</mo><msup><mn>2</mn><mi>k</mi></msup><mo>]</mo></math>.
 </div>
-
-<dfn>Maximum number of named budgets</dfn> is a positive integer that defines an
-upper bound on the number of named budgets that may be configured per [=batching
-scope=].
-
-<dfn>Maximum length of budget name</dfn> is a positive integer that defines an
-upper bound on the [=string/length=] of a budget name.
 
 Permissions Policy integration {#permissions-policy-integration}
 ================================================================
