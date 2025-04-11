@@ -78,7 +78,7 @@ Audience script runners. For example:
 
 ```js
 privateAggregation.contributeToHistogramOnEvent(
-  "reserved.uncaught-exception", { bucket: 123n, value: 45, filteringId: 6n });
+  "reserved.uncaught-error", { bucket: 123n, value: 45, filteringId: 6n });
 ```
 
 We would expand the existing list of `reserved.` events supported. We would also
@@ -120,8 +120,8 @@ Audience contexts:
 - `reserved.insufficient-budget`: one or more contributions were dropped from a
   scheduled report (or the entire report was not scheduled) as there was not
   enough budget
-- `reserved.uncaught-exception`: a JavaScript exception was thrown and not
-  caught in this context
+- `reserved.uncaught-error`: a JavaScript exception or other error was thrown
+  and not caught in this context
 
 The following event would only be available in Shared Storage contexts:
 
