@@ -78,15 +78,16 @@ Audience script runners. For example:
 
 ```js
 privateAggregation.contributeToHistogramOnEvent(
-  "reserved.uncaught-exception", { bucket: 123n, value: 45, filteringId: 6n });
+  "reserved.uncaught-error", { bucket: 123n, value: 45, filteringId: 6n });
 ```
 
 We would expand the existing list of `reserved.` events supported. We would also
 expose this API to Shared Storage, but without the ['filling
 in'](https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md#reporting-api-informal-specification)
-logic (i.e. without support for signalBuckets and signalValues). Note also that
-certain events would only be valid in one type of context; for example, the
-existing Protected Audience-specific
+logic that is allowed for Protected Audience callers (i.e. without support for
+signalBuckets and signalValues). Note also that certain events would only be
+valid in one type of context; for example, the existing Protected
+Audience-specific
 [events](https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md#triggering-reports)
 would not be exposed to Shared Storage callers.
 
@@ -114,12 +115,14 @@ Audience contexts:
   contributions were dropped due to the per-report limit
 - `reserved.empty-report-dropped`: a report was not scheduled as it had no
   contributions
-- `reserved.too-many-pending-reports`: a report was not scheduled as there were
-  already too many pending reports
-- `reserved.insufficient-budget-for-report`: a report was not scheduled as there
-  was not enough budget
-- `reserved.uncaught-exception`: a JavaScript exception was thrown and not
-  caught in this context
+- `reserved.pending-report-limit-reached`: a report was scheduled, but the limit
+  of pending reports was reached. That is, attempting to schedule one more
+  report would fail due to the limit.
+- `reserved.insufficient-budget`: one or more contributions were dropped from a
+  scheduled report (or the entire report was not scheduled) as there was not
+  enough budget
+- `reserved.uncaught-error`: a JavaScript exception or other error was thrown
+  and not caught in this context
 
 The following event would only be available in Shared Storage contexts:
 
@@ -163,6 +166,22 @@ must be reserved. Otherwise, those contributions would likely also be dropped
 due to the budget limit. This “named budget” functionality also supports other
 use cases and has been proposed in [a separate
 explainer](https://github.com/patcg-individual-drafts/private-aggregation-api/blob/main/named_budgets.md).
+
+### Two phase processing
+
+We propose a two phase processing model where first contributions that are not
+conditional on error events are tentatively processed. (For example, testing
+whether there is sufficient budget for all the contributions and whether they
+fit into the limit on the number of contributions.) The outcome of that
+processing will then be used to determine which error events should be
+triggered. Then, the entire report, including both the unconditional
+contributions and triggered conditional contributions is processed again.
+
+This avoids complexity from the possibility that error events being triggered
+could affect whether other error events could be triggered. However, it does
+mean that errors caused by conditional contributions only may be more difficult
+to measure. To prioritize measuring errors, unconditional contributions will be
+dropped first if truncation is required.
 
 ## Privacy and security
 
