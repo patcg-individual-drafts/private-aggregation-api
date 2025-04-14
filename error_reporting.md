@@ -84,9 +84,10 @@ privateAggregation.contributeToHistogramOnEvent(
 We would expand the existing list of `reserved.` events supported. We would also
 expose this API to Shared Storage, but without the ['filling
 in'](https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md#reporting-api-informal-specification)
-logic (i.e. without support for signalBuckets and signalValues). Note also that
-certain events would only be valid in one type of context; for example, the
-existing Protected Audience-specific
+logic that is allowed for Protected Audience callers (i.e. without support for
+signalBuckets and signalValues). Note also that certain events would only be
+valid in one type of context; for example, the existing Protected
+Audience-specific
 [events](https://github.com/WICG/turtledove/blob/main/FLEDGE_extended_PA_reporting.md#triggering-reports)
 would not be exposed to Shared Storage callers.
 
