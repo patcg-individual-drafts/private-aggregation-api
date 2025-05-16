@@ -131,6 +131,7 @@ interface PrivateAggregation {
   undefined contributeToHistogram(PAHistogramContribution contribution);
   undefined contributeToHistogramOnEvent(DOMString event,
                                          record<DOMString, any> contribution);
+  undefined reserveNamedBudgets(record<DOMString, double> namedBudgets);
   undefined enableDebugMode(optional PADebugModeOptions options = {});
 };
 
@@ -138,6 +139,7 @@ dictionary PAHistogramContribution {
   required bigint bucket;
   required long value;
   bigint filteringId = 0;
+  DOMString? namedBudget = null;
 };
 
 dictionary PADebugModeOptions {
@@ -169,7 +171,12 @@ Each {{PrivateAggregation}} object has the following fields:
         just certain ones. A return value of true indicates that this call will
         be processed using the default implementation in this spec. A return
         value that is an [=exception=] allows the embedding API's processing to
-        [=exception/throw=].
+        [=exception/throw=].  See [[#overriding-contributetohistogramonevent]]
+        for more details.
+: <dfn export>embedding API supports named budgets</dfn> (default false)
+:: A [=boolean=]. Embedding APIs that set this to true should define a
+    "<code>namedBudget</code>" field in their custom contribution dictionary
+    that accepts nullable {{DOMString}} values with a default of null.
 
 </dl>
 
@@ -227,6 +234,67 @@ The <dfn method for="PrivateAggregation">contributeToHistogramOnEvent(|event|,
 
 Note: For forward compatibility, we do not throw an error for unrecognized
     events that [=string/start with=] "<code>reserved.</code>".
+
+</div>
+
+<div algorithm>
+The <dfn method
+for="PrivateAggregation">reserveNamedBudgets(|namedBudgets|)</dfn> method steps are:
+
+1. If [=this=]'s [=PrivateAggregation/embedding API supports named budgets=] is
+    false, [=exception/throw=] a "{{NotAllowedError}}" {{DOMException}}.
+1. Let |scopingDetails| be [=this=]'s [=PrivateAggregation/scoping details=].
+1. Let |batchingScope| be the result of running |scopingDetails|' [=scoping
+    details/get batching scope steps=].
+1. If [=named budget ledgers map=][|batchingScope|] [=map/exists=],
+    [=exception/throw=] a "{{DataError}}" {{DOMException}}.
+
+    Note: Repeat calls are not permitted once a set of named budgets has been
+    accepted.
+1. If |namedBudgets| [=map/is empty=], [=exception/throw=] a "{{DataError}}"
+    {{DOMException}}.
+1. If |namedBudgets|' [=map/size=] is greater than [=maximum number of named
+    budgets=], [=exception/throw=] a "{{DataError}}" {{DOMException}}.
+1. [=map/For each=] |name| → |fraction| of |namedBudgets|:
+    1. If |name|'s [=string/length=] is greater than [=maximum length of budget
+        name=], [=exception/throw=] a "{{DataError}}" {{DOMException}}.
+
+        Note: The empty string is treated the same as any other budget name.
+        It is distinct from null, which is used to represent the default budget.
+    1. If |fraction| is less than or equal to zero or it is greater than 1,
+        [=exception/throw=] a "{{DataError}}" {{DOMException}}.
+
+        Note: The value of |fraction| is guaranteed to be finite by the
+        definition of {{double}}.
+1. Let |ledgers| be a new [=list=] of [=named budget ledgers=].
+1. [=list/iterate|For each=] |budgetingScope| in [=all budgeting scopes=]:
+    1. Let |maxBudget| be a positive integer equal to |budgetingScope|'s
+        [=budgeting scope/max budget=].
+    1. Let |maxBudgetDouble| be a {{double}} value equal to |maxBudget|.
+    1. Let |remainingBudget| be |maxBudget|.
+    1. Let |ledger| be a new [=named budget ledger=].
+    1. [=map/For each=] |name| → |fraction| of |namedBudgets|:
+        1. Let |allocationDouble| be the value of |fraction| multiplied by
+            |maxBudgetDouble|.
+        1. Let |allocation| be an integer equal to the floor of
+            |allocationDouble|.
+        1. If |allocation| is not contained in [=the inclusive range|the range=]
+            from 0 to |maxBudget|, inclusive, [=exception/throw=] a
+            "{{DataError}}" {{DOMException}}.
+        1. If |allocation| is greater than |remainingBudget|,
+            [=exception/throw=] a "{{DataError}}" {{DOMException}}.
+        1. Set |remainingBudget| to |remainingBudget| - |allocation|.
+        1. [=map/Set=] |ledger|[|name|] to |allocation|.
+    1. If |remainingBudget| is zero, [=exception/throw=] a "{{DataError}}"
+        {{DOMException}}.
+
+        Note: This ensures that at least some budget is reserved for the default
+        budget.
+    1. [=map/Set=] |ledger|[null] to |remainingBudget|.
+    1. [=list/Append=] |ledger| to |ledgers|.
+1. [=map/Set=] [=named budget ledgers map=][|batchingScope|] to |ledgers|.
+
+Issue: Review the types of all exceptions used above.
 
 </div>
 
@@ -319,8 +387,8 @@ Note: A later algorithm [=asserts=] that, for any [=contribution cache entry=]
     before the [=process contributions for a batching scope=] steps are
     performed given the entry's [=contribution cache entry/batching scope=].
 
-Overriding `contributeToHistogramOnEvent()` processing {#contributetohistogramonevent}
---------------------------------------------------------------------------------------
+Overriding `contributeToHistogramOnEvent()` processing {#overriding-contributetohistogramonevent}
+-------------------------------------------------------------------------------------------------
 
 Each API may also set the [=PrivateAggregation/should perform default
 contributeToHistogramOnEvent() processing=] algorithm for the
@@ -328,21 +396,63 @@ contributeToHistogramOnEvent() processing=] algorithm for the
 override processing for any {{PrivateAggregation/
 contributeToHistogramOnEvent()}} call it wants to.
 
-This algorithm should return true to indicate that the regular processing
+This hook algorithm should return true to indicate that the regular processing
 defined in this spec should occur (for that call). It should return an
 [=exception=] to indicate an error has occurred in the embedding API's
 processing. Alternatively, it should return false to indicate that the embedding
 API will process the call, but no [=exception=] should be [=exception/thrown=].
 
-If the embedding API overrides processing for a call (i.e. the algorithm does
-not return true), it should  accept any `event` that is a [=string/
-concatenation=] of « "<code>reserved.</code>", |errorEvent| » where |errorEvent|
-is an [=internal error event=] and should accept any `contribution` with a
-[=converted to a JavaScript value|JavaScript value=] that is [=converted to an
-IDL value|convertible=] to the IDL type {{PAHistogramContribution}}. That is, it
-should not return an [=exception=] in those cases. However, the embedding API
-may accept additional `event`s or `contribution`s that would not be accepted by
-the default processing defined in this spec.
+<table class="complex data longlastcol">
+    <thead>
+        <tr>
+            <th>Hook's return value</th>
+            <th>
+                Effect on the current call to
+                {{PrivateAggregation/contributeToHistogramOnEvent()}}
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>True</td>
+            <td>
+                This call will perform default processing and may
+                [=exception/throw=] if it chooses to.
+            </td>
+        </tr>
+        <tr>
+            <td>Any [=exception=]</td>
+            <td>
+                This call will skip default processing and [=exception/throw=]
+                the returned [=exception=].
+            </td>
+        </tr>
+        <tr>
+            <td>False</td>
+            <td>
+                This call will skip default processing and return without
+                [=exception/throwing=].
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+If the embedding API overrides processing for a call specifying a contribution
+with a "<code>namedBudget</code>" field and the value of
+[=PrivateAggregation/embedding API supports named budgets=] is true, it must
+[=validate a contribution's named budget=] with the contribution's
+"<code>namedBudget</code>".  If the validation result is false, the algorithm
+must return an [=exception=].
+
+If the embedding API overrides processing for a call, it should  accept any
+`event` that is a [=string/ concatenation=] of « "<code>reserved.</code>",
+|errorEvent| » where |errorEvent| is an [=internal error event=] and should
+accept any `contribution` with a [=converted to a JavaScript value|JavaScript
+value=] that is [=converted to an IDL value|convertible=] to the IDL type
+{{PAHistogramContribution}}. That is, it should not return an [=exception=] in
+those cases. However, the embedding API may accept additional `event`s or
+`contribution`s that would not be accepted by the default processing defined in
+this spec.
 
 If the embedding API overrides processing for a call specifying a contribution
 conditional on an [=internal error event=], the embedding API should call
@@ -384,6 +494,26 @@ report=] unless their [=aggregatable report/debug details=] differ.
 
 Issue: Unique internal value is not an exported definition. See
     <a href="https://github.com/whatwg/infra/issues/583">infra/583</a>.
+
+<h3 dfn-type=dfn>Budgeting scope</h3>
+A budgeting scope defines a maximum amount of budget that a site is permitted to
+consume over a duration of time. Specifically, it defines an a upper bound on
+the <math><msub><mi>L</mi><mn>1</mn></msub></math> norm of a site's
+contributions' values, per API, over a rolling time window. It is a [=struct=]
+with the following items:
+
+<dl dfn-for="budgeting scope">
+: <dfn>max budget</dfn>
+:: A positive integer
+: <dfn>duration</dfn>
+:: A [=duration=]
+
+</dl>
+
+<h3 dfn-type=dfn>Named budget ledger</h3>
+A named budget ledger tracks the remaining budget per named budget. It is a
+[=map=] from [=strings|budget names=] or null to integers. The null key
+represents the default budget.
 
 <h3 dfn-type=dfn export>Debug scope</h3>
 A debug scope is a <a spec=HTML>unique internal value</a> that identifies which
@@ -439,9 +569,8 @@ value <dfn export><code>already triggered external error</code></dfn>.
 
 Note: This special value represents any external error event that has already
     occurred. External error events are defined by embedding APIs and are
-    distinct from [=internal error events=]. See
-    [contributeToHistogramOnEvent()](#contributetohistogramonevent) for more
-    details.
+    distinct from [=internal error events=].  See
+    [[#overriding-contributetohistogramonevent]] for more details.
 
 <dfn>All error events</dfn> is a [=list=] of [=error events=] that consists of
 all the [=internal error events=] in the order they are defined above followed
@@ -556,6 +685,12 @@ A [=user agent=] holds an <dfn>aggregation coordinator map</dfn>, which is a
 A [=user agent=] holds a <dfn>pre-specified report parameters map</dfn>, which
 is a [=map=] from [=batching scopes=] to [=pre-specified report parameters=].
 
+A [=user agent=] holds a <dfn>named budget ledgers map</dfn>, which is a [=map=]
+from [=batching scopes=] to [=lists=] of [=named budget ledgers=].
+
+Issue: Move [=named budget ledgers map=] to a field of {{PrivateAggregation}}
+because it does not outlive an isolated context.
+
 A [=user agent=] holds a <dfn>contribution cache</dfn>, which is a [=list=] of
 [=contribution cache entries=].
 
@@ -585,6 +720,13 @@ controlling the max bytes used if none is explicitly chosen. Its value is 1.
 integers controlling the allowable values of max bytes. Its value is [=the
 inclusive range|the range=] 1 to 8, inclusive.
 
+<dfn>Maximum number of named budgets</dfn> is a positive integer that defines an
+upper bound on the number of named budgets that may be configured per [=batching
+scope=]. Its value is 25.
+
+<dfn>Maximum length of budget name</dfn> is a positive integer that defines an
+upper bound on the [=string/length=] of a budget name. Its value is 25.
+
 Issue: Consider adding more constants.
 
 [=Implementation-defined=] values {#implementation-defined-values}
@@ -613,6 +755,19 @@ minimum delay to deliver an [=aggregatable report=].
 <dfn>Randomized report delay</dfn> is a positive [=duration=] that controls the
 random delay to deliver an [=aggregatable report=]. This delay is additional to
 the [=minimum report delay=].
+
+<dfn>All budgeting scopes</dfn> is a non-empty [=list=] of [=budgeting scopes=].
+
+<div class="advisement"><span class="marker">WARNING:</span>
+Implementers must only use [=budgeting scope/max budgets=] of the form
+<math><msup><mn>2</mn><mn>k</mn></msup></math>, where
+<math><mn>0</mn><mo>≤</mo><mi>k</mi><mo>≤</mo><mn>52</mn></math>.  This ensures
+that all budget fractions
+<math><mi>n</mi><mo>/</mo><msup><mn>2</mn><mi>k</mi></msup></math> can be
+represented exactly by a {{double}}, for all integral <math><mi>n</mi></math> in
+the range
+<math><mo>[</mo><mn>0</mn><mo>,</mo><msup><mn>2</mn><mi>k</mi></msup><mo>]</mo></math>.
+</div>
 
 Permissions Policy integration {#permissions-policy-integration}
 ================================================================
@@ -791,9 +946,9 @@ Note: Embedding APIs are expected to set |timeout| to null if a report isn't
 1. [=map/iterate|For each=] |debugDetails| → |pendingContributions| of
     |batchedContributions|:
     1. Perform the [=report creation and scheduling steps=] with
-        |reportingOrigin|, |contextType|, |pendingContributions|,
-        |debugDetails|, |aggregationCoordinator|, |preSpecifiedParams| and
-        |timeout|.
+        |batchingScope|, |reportingOrigin|, |contextType|,
+        |pendingContributions|, |debugDetails|, |aggregationCoordinator|,
+        |preSpecifiedParams| and |timeout|.
 
 Note: These steps break up the contributions based on their [=debug details=] as
     each report can only have one set of metadata.
@@ -879,6 +1034,10 @@ cache entry=] or an [=exception=].
 1. If |contribution|["{{PAHistogramContribution/filteringId}}"] is not [=set/
     contained=] in [=the exclusive range|the range=] 0 to
     256<sup>|filteringIdMaxBytes|</sup>, exclusive, return a {{RangeError}}.
+
+1. Let |namedBudgetExists| be the result of [=validating a contribution's named
+    budget=] given |contribution| and |scopingDetails|.
+1. If |namedBudgetExists| is false, return a "{{DataError}}" {{DOMException}}.
 1. Return a new [=contribution cache entry=] with the items:
     : [=contribution cache entry/contribution=]
     :: |contribution|
@@ -893,15 +1052,43 @@ Issue: Ensure errors are of an appropriate type, e.g. {{InvalidAccessError}} is
 
 </div>
 
+<div algorithm>
+To <dfn export>validate a contribution's named budget</dfn> with a {{DOMString}}
+or null |namedBudget| and a [=scoping details=] |scopingDetails|, perform the
+following steps. They return a boolean.
+
+1. If |namedBudget| is null, return true.
+1. Let |batchingScope| be the result of running |scopingDetails|' [=scoping
+    details/get batching scope steps=].
+1. If [=named budget ledgers map=][|batchingScope|] does not [=map/exist=],
+    return false.
+
+    Note: This happens when the |namedBudget| is non-null, but the script never
+    successfully reserved any budgets with
+    {{PrivateAggregation/reserveNamedBudgets()}}.
+1. Let |ledgers| be [=named budget ledgers map=][|batchingScope|].
+1. [=Assert=] that |ledgers| is not [=list/empty=].
+1. [=list/For each=] |ledger| of |ledgers|:
+    1. If |ledger|[|namedBudget|] does not [=map/exist=], return false.
+
+        Note: This happens when a script did successfully call
+        {{PrivateAggregation/reserveNamedBudgets()}}, but none of the named
+        budgets reserved by that call were |namedBudget|.
+1. Return true.
+
+</div>
+
 Scheduling reports {#scheduling-reports}
 ----------------------------------------
 
 <div algorithm>
-To perform the <dfn>report creation and scheduling steps</dfn> with an
-[=origin=] |reportingOrigin|, a [=context type=] |api|, a [=pending
-contributions=] |pendingContributions|, a [=debug details=] |debugDetails|, an
-[=aggregation coordinator=] |aggregationCoordinator|, a [=pre-specified report
-parameters=] |preSpecifiedParams| and a [=moment=] or null |timeout|:
+To perform the <dfn>report creation and scheduling steps</dfn> with a
+[=batching scope=] |batchingScope|, an [=origin=] |reportingOrigin|, a [=context
+type=] |api|, a [=pending contributions=] |pendingContributions|, a [=debug
+details=] |debugDetails|, an [=aggregation coordinator=]
+|aggregationCoordinator|, a [=pre-specified report parameters=]
+|preSpecifiedParams| and a [=moment=] or null |timeout|:
+
 1. [=Assert=]: |reportingOrigin| is a [=potentially trustworthy origin=].
 1. Optionally, return.
 
@@ -911,9 +1098,13 @@ parameters=] |preSpecifiedParams| and a [=moment=] or null |timeout|:
         <a href="https://github.com/privacysandbox/attestation">enrolled</a> or
         a limit on pending reports being reached.
 1. Let |currentWallTime| be the [=current wall time=].
+1. Let |ledgers| be a new [=list=].
+1. If [=named budget ledgers map=][|batchingScope|] [=map/exists=]:
+    1. Let |ledgers| be  [=named budget ledgers map=][|batchingScope|].
+    1. [=map/Remove=] [=named budget ledgers map=][|batchingScope|].
 1. Let |allUnmergedContributions| be the result of [=compiling all unmerged
     contributions=], given |reportingOrigin|, |api|, |pendingContributions|,
-    |preSpecifiedParams|, |timeout| and |currentWallTime|.
+    |ledgers|, |preSpecifiedParams|, |timeout| and |currentWallTime|.
 1. Let |isDeterministicReport| be the result of [=determining if a report
     should be sent deterministically=] given |preSpecifiedParams| and |api|.
 1. Let |effectiveMaxContributions| be the result of [=determining the max
@@ -929,8 +1120,8 @@ parameters=] |preSpecifiedParams| and a [=moment=] or null |timeout|:
 1. [=list/Remove=] all items that have a [=merge key=] that is not [=list/
     contained=] in |keptMergeKeys| from |allUnmergedContributions|.
 1. Let |finalBudgetResults| be the result of [=querying the budget=] given
-    |allUnmergedContributions|, |reportingOrigin|, |api|, |currentWallTime| and
-    true.
+    |allUnmergedContributions|, |ledgers|, |reportingOrigin|, |api|,
+    |currentWallTime| and true.
 1. [=Assert=]: |finalBudgetResults|' [=list/size=] equals
     |allUnmergedContributions|' [=list/size=].
 1. [=set/For each=] |i| of [=the exclusive range|the range=] 0 to
@@ -964,10 +1155,10 @@ parameters=] |preSpecifiedParams| and a [=moment=] or null |timeout|:
 <div algorithm>
 To <dfn>compile all unmerged contributions</dfn> given an [=origin=]
 |reportingOrigin|, a [=context type=] |api|, a [=pending contributions=]
-|pendingContributions|, a [=pre-specified report parameters=]
-|preSpecifiedParams|, a [=moment=] or null |timeout|, and a [=moment=]
-|currentWallTime|, perform the following steps. They return a [=list=] of
-{{PAHistogramContribution}}s.
+|pendingContributions|, a [=list=] of [=named budget ledgers=] |ledgers|, a
+[=pre-specified report parameters=] |preSpecifiedParams|, a [=moment=] or null
+|timeout|, and a [=moment=] |currentWallTime|, perform the following steps. They
+return a [=list=] of {{PAHistogramContribution}}s.
 
 1. Let |wasTimeoutReached| be the [=boolean=] indicating whether both
     |isDeterministicReport| is true and |timeout| is null.
@@ -978,7 +1169,8 @@ To <dfn>compile all unmerged contributions</dfn> given an [=origin=]
     |wasTimeoutReached|.
 1. Let |provisionalBudgetResults| be the result of [=querying the budget=] given
     |pendingContributions|' [=pending contributions/unconditional
-    contributions=], |reportingOrigin|, |api|, |currentWallTime| and false.
+    contributions=], |ledgers|, |reportingOrigin|, |api|, |currentWallTime| and
+    false.
 1. [=Assert=]: |provisionalBudgetResults|' [=list/size=] equals
     |pendingContributions|' [=pending contributions/unconditional
     contributions=]' [=list/size=].
@@ -1068,33 +1260,78 @@ Note: Two {{PAHistogramContribution}}s for the same report can be merged if and
 
 <div algorithm>
 To <dfn>query the budget</dfn> given a [=list=] of {{PAHistogramContribution}}s
-|contributions|, an [=origin=] <var ignore>origin</var>, a [=context type=] <var
-ignore>api</var> and a [=moment=] <var ignore>currentTime</var> and a
-[=boolean=] |consumeIfPermitted|, perform the following steps. They return a
-[=list=] of [=booleans=] with the same [=list/size=] as |contributions|.
+|contributions|, a [=list=] of [=named budget ledgers=]
+|remainingBudgetLedgers|, an [=origin=] |origin|, a [=context type=] |api|, a
+[=moment=] |currentTime|, and a [=boolean=] |consumeIfPermitted|, perform the
+following steps. They return a [=list=] of [=booleans=] with the same
+[=list/size=] as |contributions|.
+
+1. If |remainingBudgetLedgers| is [=list/empty=]:
+    1. [=list/For each=] |budgetingScope| of [=all budgeting scopes=]:
+        1. Let |remainingBudgetLedger| be a new [=named budget ledger=].
+        1. [=map/Set=] |remainingBudgetLedger|[null] to |budgetingScope|'s
+            [=budgeting scope/max budget=].
+        1. [=list/Append=] |remainingBudgetLedger| to |remainingBudgetLedgers|.
+1. Let |numScopes| be the [=list/size=] of [=all budgeting scopes=].
+1. [=Assert=] that |numScopes| is equal to the [=list/size=] of
+    |remainingBudgetLedgers|.
+1. [=list/For each=] |i| in [=the exclusive range|the range=] from 0 to
+    |numScopes|, exclusive:
+    1. Let |budgetingScope| be [=all budgeting scopes=][|i|].
+    1. Let |duration| be |budgetingScope|'s [=budgeting scope/duration=].
+    1. Let |remainingBudgetLedger| be |remainingBudgetLedgers|[|i|].
+    1. [=map/For each=] |name| → |maxBudget| of |remainingBudgetLedger|:
+        1. Let |budgetConsumed| be an integer determined by an
+            [=implementation-defined=] algorithm given |origin|, |api|, |name|,
+            and |duration|. This algorithm should return a value greater than or
+            equal to the sum of the values of contributions that referenced the
+            named budget |name| and were accepted in the last |duration| units
+            of time. The contributions must have originated from an isolated
+            context of type |api| that was loaded from |origin|.
+        1. [=Assert=] that |maxBudget| is less than or equal to
+            |budgetingScope|'s [=budgeting scope/max budget=].
+        1. If |budgetConsumed| is greater than or equal to |maxBudget|:
+            1. [=map/Set=] |remainingBudgetLedger|[|name|] to 0.
+        1. Otherwise:
+            1. [=map/Set=] |remainingBudgetLedger|[|name|] to |maxBudget| -
+                |budgetConsumed|.
+
+    Note: At this point, we have adjusted the values of each ledger in
+    |remainingBudgetLedgers| based on |origin|'s historical budget consumption.
+    Next, we will accept contributions on a first-come, first-served basis, by
+    subtracting the value of each contribution from the ledgers in
+    |remainingBudgetLedgers| until one would become empty.
+
 1. Let |resultForEachContribution| be a new [=list=] of [=booleans=].
-1. Let |approvedValueSum| be 0.
+1. Let |ledgerConsumed| be a new [=named budget ledger=].
 1. [=list/For each=] |contribution| of |contributions|:
-    1. Let |valueToRequest| be |approvedValueSum| + |contribution|'s
-        {{PAHistogramContribution/value}}.
-
-        Note: This ensures that the result for each contribution takes into
-            acccount any earlier approved contributions from this call (even if
-            |consumeIfPermitted| is false).
-    1. Let |sufficientBudget| be a [=boolean=] determined by an
-        [=implementation-defined=] algorithm given |valueToRequest|, |origin|,
-        |api| and |currentTime|. This algorithm should bound budget to usage
-        over time, e.g. the contribution sum over the last 24 hours.
-    1. If |sufficientBudget|, add |contribution|'s {{PAHistogramContribution/
-        value}} to |approvedValueSum|.
-    1. [=list/Append=] |sufficientBudget| to |resultForEachContribution|.
-
-        Note: the |i|th element in the return value indicates whether there is
-            enough budget left to send |contributions|[|i|]'s
+    1. Let |name| be |contribution|'s {{PAHistogramContribution/namedBudget}}.
+    1. If |ledgerConsumed|[|name|] does not [=map/exist=], [=map/set=] it to
+        zero.
+    1. Let |dropContribution| be false.
+    1. [=list/For each=] |remainingBudgetLedger| of |remainingBudgetLedgers|:
+        1. [=Assert=] that |remainingBudgetLedger|[|name|] [=map/exists=].
+        1. Let |proposedBudget| be |ledgerConsumed|[|name|] + |contribution|'s
             {{PAHistogramContribution/value}}.
+        1. If |proposedBudget| is greater than |remainingBudgetLedger|[|name|]:
+            1. Set |dropContribution| to true.
+            1. [=iteration/Break=].
+    1. If |dropContribution|:
+        1. [=list/Append=] false to |resultForEachContribution|.
+        1. [=iteration/Continue=].
+    1. [=list/For each=] |remainingBudgetLedger| of |remainingBudgetLedgers|:
+        1. Let |value| be |contribution|'s {{PAHistogramContribution/value}}.
+        1. [=map/Set=] |remainingBudgetLedger|[|name|] to
+            |remainingBudgetLedger|[|name|] - |value|.
+        1. [=map/Set=] |ledgerConsumed|[|name|] to |ledgerConsumed|[|name|] +
+            |value|.
+    1. [=list/Append=] true to |resultForEachContribution|.
 1. If |consumeIfPermitted|, consume budget using an [=implementation-defined=]
-    algorithm given |approvedValueSum|, |origin|, |api| and |currentTime|.
+    algorithm given |ledgerConsumed|, |origin|, |api|, and |currentTime|.
 1. Return |resultForEachContribution|.
+
+Issue: Specify the two implementation-defined algorithms mentioned above in the
+list of [Implementation-defined values](#implementation-defined-values).
 
 </div>
 
@@ -1401,7 +1638,8 @@ To <dfn>obtain the plaintext payload</dfn> given an [=aggregatable report=]
     |report|, perform the following steps. They return a [=byte sequence=].
 1. Let |payloadData| be a new [=list=].
 1. Let |contributions| be |report|'s [=aggregatable report/contributions=].
-1. Let |maxContributions| be |report|'s [=aggregatable report/max contributions=].
+1. Let |maxContributions| be |report|'s [=aggregatable report/max
+    contributions=].
 1. [=Assert=]: |contributions|' [=list/size=] is not greater than
     |maxContributions|.
 1. [=iteration/While=] |contributions|' [=list/size=] is less than
